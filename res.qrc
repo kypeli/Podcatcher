@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/MainPage.qml</file>
+        <file>qml/PodcastEpisodes.qml</file>
+        <file>qml/PodcastEpisodesChannelInfo.qml</file>
+        <file>qml/PodcastEpisodesList.qml</file>
+        <file>qml/PodcastDownloadingProgress.qml</file>
+        <file>qml/EmptyChannelPage.qml</file>
+        <file>gfx/cancel-podcast-download.png</file>
+        <file>qml/BrowsePodcasts.qml</file>
+        <file>gfx/loading.gif</file>
+        <file>qml/SearchPodcasts.qml</file>
+        <file>qml/DPointerIntro.qml</file>
+        <file>gfx/d-pointer-logo.png</file>
+        <file>qml/EpisodeDescriptionPage.qml</file>
+        <file>qml/QueueButton.qml</file>
+        <file>qml/ScrollBar.qml</file>
+        <file>qml/About.qml</file>
+        <file>gfx/d-pointer-logo-small.png</file>
+        <file>gfx/refresh.png</file>
+        <file>gfx/scrollbar.png</file>
+        <file>gfx/Podcatcher_generic_podcast_cover.png</file>
+        <file>qml/PodcastChannelLogo.qml</file>
+    </qresource>
+</RCC>
