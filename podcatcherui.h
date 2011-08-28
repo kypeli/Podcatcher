@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE void addPodcast(QString rssUrl, QString logoUrl = QString());
     Q_INVOKABLE void refreshChannels();
     Q_INVOKABLE void deletePodcasts(int channelId);
+    Q_INVOKABLE bool isDownloading();
     Q_INVOKABLE bool isLiteVersion();
 
     void downloadNewEpisodes(QString channelId);
@@ -54,6 +55,8 @@ private slots:
     void onDeleteChannel(QString channelId);
     void onAllListened(QString channelId);
     void onDeletePodcast(int channelId, int index);
+    void onOpenWeb(int channelId, int index);
+    void refreshChannelsModel();
 
 private:
     void refreshEpisodes();

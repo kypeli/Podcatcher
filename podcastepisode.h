@@ -85,6 +85,9 @@ private slots:
     void onPodcastEpisodeDownloadCompleted();
 
 private:
+    bool isValidAudiofile() const;
+    bool isOnlyWebsiteUrl() const;
+
     int m_dbid;
     int m_channelid;
     QString m_title;

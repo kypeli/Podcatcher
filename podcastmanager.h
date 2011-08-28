@@ -62,6 +62,7 @@ public:
     void cancelDownloadPodcast(PodcastEpisode *episode);
     void cancelQueueingPodcast(PodcastEpisode *episode);
     void deleteAllDownloadedPodcasts(int channelId);
+    bool isDownloading();
 
     static QString redirectedRequest(QNetworkReply *reply);
 

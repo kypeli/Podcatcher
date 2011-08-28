@@ -184,7 +184,8 @@ QList<PodcastEpisode *> PodcastEpisodesModel::undownloadedEpisodes(int max)
 
     for (int i=0; i<max; i++) {
         PodcastEpisode *episode = m_episodes.at(i);
-        if (episode->playFilename().isEmpty() &&
+        if (!episode->downloadLink().isEmpty() &&
+            episode->playFilename().isEmpty() &&
             episode->episodeState() == "get" &&
             episode->hasBeenCanceled() == false) {
             episodes << episode;

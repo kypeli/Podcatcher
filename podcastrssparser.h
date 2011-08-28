@@ -40,6 +40,8 @@ signals:
 
 public slots:
 
+private:
+
 };
 
 #endif // PODCASTRSSPARSER_H

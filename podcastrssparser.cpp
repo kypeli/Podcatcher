@@ -81,6 +81,7 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
 
     QDomNodeList channelNodes = docElement.elementsByTagName("item");  // Find all the "item nodes from the feed XML.
     qDebug() << "I have" << channelNodes.size() << "episode elements";
+    QLocale loc(QLocale::C);
 
     for (uint i=0; i<channelNodes.length(); i++) {
         QDomNode node = channelNodes.at(i);
@@ -97,8 +98,8 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
         QString pubDateString = node.firstChildElement("pubDate").text();
 
         QString tryParseDate = pubDateString.left(QString("ddd, dd MMM yyyy HH:mm:ss").length());  // QDateTime cannot parse RFC 822 time format, so remove the timezone information from it.
-        QDateTime pubDate = QDateTime::fromString(tryParseDate,
-                                                  "ddd, dd MMM yyyy HH:mm:ss");
+        QDateTime pubDate = loc.toDateTime(tryParseDate,
+                                           "ddd, dd MMM yyyy HH:mm:ss");
         if (!pubDate.isValid()) {
             // We probably could not parse the date which in some broken podcast feeds is
             // defined only by one integer instead of two (like "2 Jul" instead of "02 Jul")
@@ -107,17 +108,16 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
             qDebug() << "Could not parse pubDate. Trying with just one date integer.";
 
             tryParseDate = pubDateString.left(QString("ddd, d MMM yyyy HH:mm:ss").length());
-            pubDate = QDateTime::fromString(tryParseDate,
+            pubDate = loc.toDateTime(tryParseDate,
                                             "ddd, d MMM yyyy HH:mm:ss");
         }
 
-        // Fuck you Hacker Public Radio.
         if (!pubDate.isValid()) {
             // Let's try just once more just to please Hacker Public Radio
             qDebug() << "Could not parse pubDate. Trying with an odd format from Hacker Public Radio";
 
             tryParseDate = pubDateString.left(QString("yyyy-MM-dd").length());
-            pubDate = QDateTime::fromString(tryParseDate,
+            pubDate = loc.toDateTime(tryParseDate,
                                             "yyyy-MM-dd");
         }
 
@@ -128,12 +128,8 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
             episode->setPubTime(pubDate);
         }
 
-//        qDebug() << episode->title() << episode->description() << episode->duration() << episode->pubTime();
 
         QDomNamedNodeMap attrMap = node.firstChildElement("enclosure").attributes();
-//        qDebug() << attrMap.namedItem("url").toAttr().value();
-//        qDebug() << attrMap.namedItem("length").toAttr().value();
-
         episode->setDownloadLink(attrMap.namedItem("url").toAttr().value());
         episode->setDownloadSize(attrMap.namedItem("length").toAttr().value().toInt());
 

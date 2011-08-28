@@ -595,3 +595,8 @@ void PodcastManager::onAutodownloadOnChanged()
     m_autodownloadOn = QVariant(m_autodlSettingKey->value()).toBool();
 }
 
+bool PodcastManager::isDownloading()
+{
+    return m_isDownloading;
+}
+

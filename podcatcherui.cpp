@@ -34,13 +34,13 @@ PodcatcherUI::PodcatcherUI()
     modelFactory = PodcastEpisodesModelFactory::episodesFactory();
 
     connect(&m_pManager, SIGNAL(podcastChannelSaved()),
-            this, SLOT(refreshChannels()));
+            this, SLOT(refreshChannelsModel()));
 
     connect(&m_pManager, SIGNAL(showInfoBanner(QString)),
             this, SIGNAL(showInfoBanner(QString)));
 
     connect(&m_pManager, SIGNAL(podcastEpisodeDownloaded(PodcastEpisode *)),
-            this, SLOT(refreshChannels()));
+            this, SLOT(refreshChannelsModel()));
 
     connect(&m_pManager, SIGNAL(downloadingPodcasts(bool)),
             this, SIGNAL(downloadingPodcasts(bool)));
@@ -74,20 +74,38 @@ PodcatcherUI::PodcatcherUI()
     connect(rootDeclarativeItem, SIGNAL(deleteDownloaded(int, int)),
             this, SLOT(onDeletePodcast(int, int)));
 
+    connect(rootDeclarativeItem, SIGNAL(openWeb(int, int)),
+            this, SLOT(onOpenWeb(int, int)));
+
     refreshChannels();    // Fetch all the Podcast channels from the DB and show them in the UI
 
 }
 
 void PodcatcherUI::refreshChannels()
 {
-    qDebug() << "Refresh channels in the UI";
+    qDebug() << "Refresh channels and epsiodes.";
+
+    refreshChannelsModel();
+    refreshEpisodes();
+}
+
+void PodcatcherUI::refreshChannelsModel()
+{
+    qDebug() << "Refresh channels model in the UI.";
 
     m_channelsModel = PodcastManager::toPodcastChannelsModel(m_pManager.podcastChannels());
-    qDebug() << "Channels to UI: " << m_channelsModel.size();
 
     rootContext()->setContextProperty("channelsModel", QVariant::fromValue(m_channelsModel));
+}
 
-    refreshEpisodes();
+void PodcatcherUI::refreshEpisodes()
+{
+    qDebug() << "\n ********* Refresh episodes for all channels ******** \n";
+
+    foreach(QObject *o, m_channelsModel) {
+        int channelid = QVariant(o->property("channelId")).toInt();
+        onRefreshEpisodes(channelid);
+    }
 }
 
 void PodcatcherUI::addPodcast(QString rssUrl, QString logoUrl)
@@ -106,6 +124,11 @@ void PodcatcherUI::addPodcast(QString rssUrl, QString logoUrl)
     m_pManager.requestPodcastChannel(QUrl(newPodcast), logoCache);
 
     emit showInfoBanner("Fetching channel information...");
+}
+
+bool PodcatcherUI::isDownloading()
+{
+    return m_pManager.isDownloading();
 }
 
 void PodcatcherUI::onShowChannel(QString channelId)
@@ -148,7 +171,7 @@ void PodcatcherUI::onPlayPodcast(int channelId, int index)
     episode->setLastPlayed(QDateTime::currentDateTime());
     episodesModel->refreshEpisode(episode);
 
-    refreshChannels();
+    refreshChannelsModel();
 
     QUrl file = QUrl::fromLocalFile(episode->playFilename());
 
@@ -156,7 +179,12 @@ void PodcatcherUI::onPlayPodcast(int channelId, int index)
 
     ContentAction::Action launchPlayerAction;
     launchPlayerAction = ContentAction::Action::defaultActionForFile(file);
-    launchPlayerAction.trigger();
+    if (!launchPlayerAction.isValid()) {
+        qDebug() << "Action for file is not valid!";
+        emit showInfoBanner("I am sorry! Could not launch audio player for this podcast.");
+    } else {
+        launchPlayerAction.trigger();
+    }
 }
 
 void PodcatcherUI::onRefreshEpisodes(int channelId)
@@ -190,22 +218,12 @@ void PodcatcherUI::onCancelDownload(int channelId, int index)
     episodesModel->refreshEpisode(episode);
 }
 
-void PodcatcherUI::refreshEpisodes()
-{
-    qDebug() << "\n ********* Refresh episodes for all channels ******** \n";
-
-    foreach(QObject *o, m_channelsModel) {
-        int channelid = QVariant(o->property("channelId")).toInt();
-        onRefreshEpisodes(channelid);
-    }
-}
-
 void PodcatcherUI::onDeleteChannel(QString channelId)
 {
     qDebug() << "Yep, lets delete the channel and some episodes from channel" << channelId;
     m_pManager.removePodcastChannel(channelId.toInt());
 
-    refreshChannels();
+    refreshChannelsModel();
 }
 
 void PodcatcherUI::onAllListened(QString channelId)
@@ -218,7 +236,7 @@ void PodcatcherUI::onAllListened(QString channelId)
         episode->setAsPlayed();
         episodesModel->refreshEpisode(episode);
     }
-    refreshChannels();
+    refreshChannelsModel();
 }
 
 void PodcatcherUI::onDeletePodcast(int channelId, int index)
@@ -230,14 +248,26 @@ void PodcatcherUI::onDeletePodcast(int channelId, int index)
     qDebug() << "Episode name:" << episode->title() << episode->playFilename();
     episode->deleteDownload();
     episodesModel->refreshEpisode(episode);
-    refreshChannels();
+
+    refreshChannelsModel();
 }
 
 void PodcatcherUI::deletePodcasts(int channelId)
 {
     m_pManager.deleteAllDownloadedPodcasts(channelId);
-    refreshChannels();
+
+    refreshChannelsModel();
 }
+
+void PodcatcherUI::onOpenWeb(int channelId, int index)
+{
+    qDebug() << "OPening web page to episode page.";
+    PodcastEpisodesModel *episodesModel = modelFactory->episodesModel(channelId);
+    PodcastEpisode *episode = episodesModel->episode(index);
+    qDebug() << "Episode web URL:" << episode->title() << episode->playFilename() << episode->downloadLink();
+    QDesktopServices::openUrl(QUrl(episode->downloadLink()));
+}
+
 
 bool PodcatcherUI::isLiteVersion()
 {
@@ -247,5 +277,4 @@ bool PodcatcherUI::isLiteVersion()
     return false;
 #endif
 }
-
 

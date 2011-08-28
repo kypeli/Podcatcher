@@ -55,6 +55,9 @@ void PodcastEpisode::setDownloadLink(const QString &downloadLink)
 
 QString PodcastEpisode::downloadLink() const
 {
+    if (m_downloadLink.isEmpty()) {
+        qWarning() << "Download link for postcast is empty! Cannot download.";
+    }
     return m_downloadLink;
 }
 
@@ -137,6 +140,12 @@ QString PodcastEpisode::episodeState() const
 
     if (!m_playFilename.isEmpty()) {
         return "downloaded";
+    }
+
+    if (!m_hasBeenCanceled) {
+        if (m_downloadLink.isEmpty()) {
+            return "undownloadable";
+        }
     }
 
     switch(m_state) {
@@ -343,3 +352,25 @@ void PodcastEpisode::setAsPlayed()
     setLastPlayed(QDateTime::currentDateTime());
 }
 
+bool PodcastEpisode::isValidAudiofile() const
+{
+    qDebug() << "DOWNLOAD LINK:" << m_downloadLink;
+    if (m_downloadLink.isEmpty()) {
+        return false;
+    }
+
+    // Download file must be some of these.
+    if (m_downloadLink.endsWith(".mp3", Qt::CaseInsensitive) ||
+        m_downloadLink.endsWith(".mp4", Qt::CaseInsensitive) ||
+        m_downloadLink.endsWith(".ogg", Qt::CaseInsensitive) ||
+        m_downloadLink.endsWith(".wav", Qt::CaseInsensitive) ) {
+        return true;
+    }
+
+    return false;
+}
+
+bool PodcastEpisode::isOnlyWebsiteUrl() const
+{
+    return (!isValidAudiofile() && QUrl(m_downloadLink).isValid());
+}

@@ -197,12 +197,6 @@ QList<PodcastChannel *> PodcastSQLManager::channelsInDB()
         channel->setLogo(q.value(3).toString());
         channel->setUrl(q.value(4).toString());
         channel->setUnplayedEpisodes(q.value(5).toInt());
-
-
-        qDebug() << "Unplayed: " << channel->unplayedEpisodes();
-
-        qDebug() << " * Id:" << channel->channelId() << "Deescription: " << channel->description() << "Title:" << channel->title() << "Logo:" << channel->logo();
-
         channels.append(channel);
     }
 
@@ -230,8 +224,6 @@ PodcastChannel * PodcastSQLManager::channelInDB(int channelId)
     channel->setDescription(q.value(1).toString());
     channel->setLogo(q.value(2).toString());
     channel->setUrl(q.value(3).toString());
-
-    qDebug() << " * Id:" << channel->channelId() << "Title:" << channel->title() << "Logo:" << channel->logo();
 
     return channel;
 }
@@ -353,8 +345,6 @@ QList<PodcastEpisode *> PodcastSQLManager::episodesInDB(int channelId)
 
         // Since we requested channels for this channel, we might as well be sure the value is what we requested as parameter.
         episode->setChannelId(channelId);
-
-        qDebug() << " * id" << episode->dbid() << "Title:" << episode->title() << "Last played:" << episode->lastPlayed();
 
         episodes.append(episode);
     }
