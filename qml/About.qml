@@ -105,7 +105,7 @@ Page {
                           "Team Qontactors and<BR>team CoCo of Harmattan<BR><BR><BR>" +
                           "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
                           "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
-                          "...also greets to fopa and B<BR>of Sourcerers!";
+                          "...also greets to fopaman and BCG<BR>of Sorcerers!";
 
                     horizontalAlignment: Text.AlignHCenter;
                 }
