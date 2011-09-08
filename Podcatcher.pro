@@ -13,7 +13,8 @@ QT+= declarative network xml sql
 CONFIG += link_pkgconfig
 PKGCONFIG += gq-gconf
 
-DEFINES += LITE
+# DEFINES += LITE
+DEFINES += PODCATCHER_VERSION=103
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -24,7 +25,8 @@ SOURCES += main.cpp \
     podcatcherui.cpp \
     podcastepisode.cpp \
     podcastepisodesmodel.cpp \
-    podcastepisodesmodelfactory.cpp
+    podcastepisodesmodelfactory.cpp \
+    podcastchannelsmodel.cpp
 
 OTHER_FILES += \
     qml/MainPage.qml \
@@ -52,7 +54,11 @@ OTHER_FILES += \
     qml/QueueButton.qml \
     qml/About.qml \
     PodcatcherSettings.xml \
-    PodcatcherSettings.desktop
+    PodcatcherSettings.desktop \
+    podcatcher.schema \
+    qml/PodcastChannelLogo.qml \
+    qml/PodcatcherInfoBanner.qml \
+    qtc_packaging/debian_harmattan/postinst
 
 RESOURCES += \
     res.qrc
@@ -75,10 +81,11 @@ HEADERS += \
     podcastsqlmanager.h \
     podcastglobals.h \
     podcatcherui.h \
-    podcasttester.h \
+#     podcasttester.h \
     podcastepisode.h \
     podcastepisodesmodel.h \
-    podcastepisodesmodelfactory.h
+    podcastepisodesmodelfactory.h \
+    podcastchannelsmodel.h
 
 qml.files = qml/MainPage.qml qml/main.qml qml/PodcastEpisodes.qml qml/PodcastEpisodesChannelInfo.qml qml/PodcastEpisodesList.qml qml/PodcastDownloadingProgress.qml qml/EmptyChannelPage.qml qml/BrowsePodcasts.qml qml/SearchPodcasts.qml qml/DPointerIntro.qml qml/EpisodeDescriptionPage.qml qml/ScrollBar.qml qml/QueueButton.qml
 qml.path = /opt/$${TARGET}/bin/qml
@@ -89,10 +96,14 @@ settings.path=/usr/share/duicontrolpanel/uidescriptions/
 settingsdesktop.files=PodcatcherSettings.desktop
 settingsdesktop.path=/usr/lib/duicontrolpanel/
 
+settingsschemaFoo.files=podcatcher.schema
+settingsschemaFoo.path=/tmp
+
+INSTALLS += settings settingsdesktop settingsschemaFoo
+
 system(cp gfx/Podcatcher_full.png gfx/Podcatcher.png)
 contains(DEFINES, LITE) {
     system(cp gfx/Podcatcher_lite.png gfx/Podcatcher.png)
 }
-# INSTALLS += settings settingsdesktop
 
 # INSTALLS += qml

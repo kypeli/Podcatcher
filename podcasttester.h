@@ -36,7 +36,7 @@ public:
 
         QList<PodcastChannel *> channels = podcastManager.podcastChannels();
         foreach(PodcastChannel *chan, channels) {
-            qDebug() <<  chan->channelId() << chan->title() << chan->logo();
+            qDebug() <<  chan->channelDbId() << chan->title() << chan->logo();
         }
     }
 

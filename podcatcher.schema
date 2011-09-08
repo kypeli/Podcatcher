@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<gconfschemafile>
+    <schemalist>
+        <schema>
+            <key>/schemas/apps/ControlPanel/Podcatcher/autodownload</key>
+            <applyto>/apps/ControlPanel/Podcatcher/autodownload</applyto>
+            <type>bool</type>
+            <locale name="C">
+                <short>Auto-download podcasts</short>
+                <long>
+                    Should Podcatcher automatically download new episodes when the device is connected to the WiFi.
+                </long>
+            </locale>
+            <default>true</default>
+        </schema>
+        <schema>
+            <key>/schemas/apps/ControlPanel/Podcatcher/autodownload_num</key>
+            <applyto>/apps/ControlPanel/Podcatcher/autodownload_num</applyto>
+            <type>int</type>
+            <locale name="C">
+                <short>How many podcasts to auto-download</short>
+                <long>
+                    The number of podcast episodes that should be automatically downloaded.
+                </long>
+            </locale>
+            <default>1</default>
+        </schema>
+        <schema>
+            <key>/schemas/apps/ControlPanel/Podcatcher/keep_episodes</key>
+            <applyto>/apps/ControlPanel/Podcatcher/keep_episodes</applyto>
+            <type>int</type>
+            <locale name="C">
+                <short>Remove podcast episodes older than days</short>
+                <long>
+                    Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.
+                </long>
+            </locale>
+            <default>0</default>
+        </schema>
+        <schema>
+            <key>/schemas/apps/ControlPanel/Podcatcher/keep_unplayed</key>
+            <applyto>/apps/ControlPanel/Podcatcher/keep_unplayed</applyto>
+            <type>bool</type>
+            <locale name="C">
+                <short>Keep unplayed episodes</short>
+                <long>
+                    Should unplayed episodes be kept even if they are older than number of days.
+                </long>
+            </locale>
+            <default>true</default>
+        </schema>
+    </schemalist>
+</gconfschemafile>

@@ -180,7 +180,20 @@ Page {
 
     }
 
+    Connections {
+        target: ui
+        onShowInfoBanner: {
+            console.log("Showing banner: "+text);
+            uiInfoBanner.text = text
+            uiInfoBanner.show();
+        }
+    }
 
+    InfoBanner {
+        id: uiInfoBanner
+        topMargin: 10
+        leftMargin: 10
+    }
 
 }
 

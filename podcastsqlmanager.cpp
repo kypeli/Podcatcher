@@ -121,14 +121,18 @@ int PodcastSQLManager::podcastChannelToDB(PodcastChannel *channel)
         return 0;
     }
 
+    mutex.lock();
     if (!m_connection.isOpen()) {
         qWarning() << "SQL connection not open. Returning.";
+        mutex.unlock();
         return 0;
     }
 
+    mutex.unlock();  // isChannelInDB() is also locking...
     if (isChannelInDB(channel)) {
         return 0;
     }
+    mutex.lock();
 
     QSqlQuery q(m_connection);
 
@@ -144,6 +148,8 @@ int PodcastSQLManager::podcastChannelToDB(PodcastChannel *channel)
 
     m_connection.commit();
 
+    mutex.unlock();
+
     // Update the channel with the id it got in DB
     channel->setId(q.lastInsertId().toInt());
 
@@ -152,7 +158,9 @@ int PodcastSQLManager::podcastChannelToDB(PodcastChannel *channel)
 
 bool PodcastSQLManager::isChannelInDB(PodcastChannel *channel)
 {
+    mutex.lock();
     QSqlQuery q(m_connection);
+    mutex.unlock();
 
     // Find out if the channel is already in our DB.
     // Do not add if the channel is already there.
@@ -175,7 +183,10 @@ bool PodcastSQLManager::isChannelInDB(PodcastChannel *channel)
 
 QList<PodcastChannel *> PodcastSQLManager::channelsInDB()
 {
+    mutex.lock();
     QSqlQuery q(m_connection);
+    mutex.unlock();
+
     QList<PodcastChannel *> channels;
 
     qDebug() << "Returning Podcast channels from DB:";
@@ -203,13 +214,17 @@ QList<PodcastChannel *> PodcastSQLManager::channelsInDB()
     return channels;
 }
 
-PodcastChannel * PodcastSQLManager::channelInDB(int channelId)
+PodcastChannel * PodcastSQLManager::channelInDB(int channelId, PodcastChannel *channel)
 {
+    mutex.lock();
     QSqlQuery q(m_connection);
+    mutex.unlock();
 
     qDebug() << "Returning Podcast channel from DB with id" << channelId;
 
-    q.prepare("SELECT title, description, logo, rssurl FROM channels WHERE channels.id = :id");
+    q.prepare("SELECT title, description, logo, rssurl, "
+              "(SELECT COUNT(id) FROM episodes WHERE episodes.channelid = channels.id AND episodes.lastPlayed = 0 AND episodes.playLocation <> '') "
+              "FROM channels WHERE channels.id = :id");
     q.bindValue(":id", channelId);
     q.exec();
     if (!q.next()) {
@@ -218,12 +233,15 @@ PodcastChannel * PodcastSQLManager::channelInDB(int channelId)
         return 0;
     }
 
-    PodcastChannel *channel = new PodcastChannel;
+    if (channel == 0) {
+        channel = new PodcastChannel;
+    }
     channel->setId(channelId);
     channel->setTitle(q.value(0).toString());
     channel->setDescription(q.value(1).toString());
     channel->setLogo(q.value(2).toString());
     channel->setUrl(q.value(3).toString());
+    channel->setUnplayedEpisodes(q.value(4).toInt());
 
     return channel;
 }
@@ -234,8 +252,10 @@ int PodcastSQLManager::podcastEpisodesToDB(QList<PodcastEpisode *> parsedEpisode
 {
     qDebug() << "Got" << parsedEpisodes.length() << "episodes for channel" << channelid;
 
+    mutex.lock();
     if (!m_connection.isOpen()) {
         qWarning() << "SQL connection not open. Returning.";
+        mutex.unlock();
         return 0;
     }
 
@@ -266,6 +286,7 @@ int PodcastSQLManager::podcastEpisodesToDB(QList<PodcastEpisode *> parsedEpisode
     }
 
     m_connection.commit();
+    mutex.unlock();
 
     return q.numRowsAffected();
 }
@@ -276,8 +297,10 @@ bool PodcastSQLManager::podcastEpisodeToDB(PodcastEpisode *episode, int channeli
         return false;
     }
 
+    mutex.lock();
     if (!m_connection.isOpen()) {
         qWarning() << "SQL connection not open. Returning.";
+        mutex.unlock();
         return false;
     }
 
@@ -305,21 +328,26 @@ bool PodcastSQLManager::podcastEpisodeToDB(PodcastEpisode *episode, int channeli
     if (!q.exec()) {
         qDebug() << "Last query: " << q.lastQuery();
         qDebug() << "Error: " << q.lastError();
+        mutex.unlock();
         return false;
     }
 
+    mutex.unlock();
     return true;
 }
 
 QList<PodcastEpisode *> PodcastSQLManager::episodesInDB(int channelId)
 {
+    mutex.lock();
     QSqlQuery q(m_connection);
+    mutex.unlock();
+
     QList<PodcastEpisode *> episodes;
 
     qDebug() << "Returning Podcast episodes from DB for channel:" << channelId;
 
     q.prepare("SELECT id, title, downloadLink, playLocation, description, published, duration, downloadSize, channelid, lastPlayed, hasBeenCanceled "
-              "FROM episodes WHERE episodes.channelid = :chanId ORDER BY episodes.published DESC LIMIT 50");
+              "FROM episodes WHERE episodes.channelid = :chanId ORDER BY episodes.published DESC");
     q.bindValue(":chanId", channelId);
 
     if (!q.exec()) {
@@ -356,7 +384,9 @@ QList<PodcastEpisode *> PodcastSQLManager::episodesInDB(int channelId)
 QDateTime PodcastSQLManager::latestEpisodeTimestampInDB(int channelId)
 {
     QDateTime latestDate = QDateTime();
+    mutex.lock();
     QSqlQuery q(m_connection);
+    mutex.unlock();
 
     q.prepare("SELECT published FROM episodes WHERE episodes.channelid = :chanId ORDER BY episodes.published DESC LIMIT 1");
     q.bindValue(":chanId", channelId);
@@ -379,12 +409,16 @@ QDateTime PodcastSQLManager::latestEpisodeTimestampInDB(int channelId)
 void PodcastSQLManager::updatePodcastInDB(PodcastEpisode *episode)
 {
     qDebug() << "Updating episode data to DB";
+    mutex.lock();
     if (!m_connection.isOpen()) {
+        mutex.unlock();
         qWarning() << "SQL connection not open. Returning.";
         return;
     }
 
     QSqlQuery q(m_connection);
+    mutex.unlock();
+
     q.prepare("UPDATE episodes SET title=:title, downloadLink=:downloadLink, playLocation=:playLocation, description=:description, "
               "published=:published, duration=:duration, downloadSize=:downloadSize, lastPlayed=:lastPlayed, hasBeenCanceled=:hasBeenCanceled "
               "WHERE id=:id");
@@ -410,7 +444,9 @@ void PodcastSQLManager::updatePodcastInDB(PodcastEpisode *episode)
 
 void PodcastSQLManager::removeChannelFromDB(int channelId)
 {
+    mutex.lock();
     QSqlQuery q(m_connection);
+    mutex.unlock();
 
     qDebug() << "Deleting all episodes from DB with channel: " << channelId;
 
@@ -432,5 +468,24 @@ void PodcastSQLManager::removeChannelFromDB(int channelId)
         qWarning() << "SQL query:" << q.lastQuery();
     }
 
+}
+
+bool PodcastSQLManager::removePodcastFromDB(PodcastEpisode *episode)
+{
+    mutex.lock();
+    QSqlQuery q(m_connection);
+    mutex.unlock();
+
+    qDebug() << "Deleting episode from DB with id: " << episode->dbid();
+
+    q.prepare("DELETE FROM episodes WHERE episodes.id = :episodeId");
+    q.bindValue(":episodeId", episode->dbid());
+    if (!q.exec()) {
+        qWarning() << "SQL error:" << q.lastError();
+        qWarning() << "SQL query:" << q.lastQuery();
+        return false;
+    }
+
+    return true;
 }
 

@@ -66,9 +66,9 @@ Page {
             height: channelLogo.height + 20
 
 
-            Image {
+            PodcastChannelLogo{
                 id: channelLogo
-                source: channel.logo
+                channelLogo: channel.logo
                 anchors.left: podcastEpisodeRect.left
                 anchors.top: podcastEpisodeRect.top
                 anchors.leftMargin: 10

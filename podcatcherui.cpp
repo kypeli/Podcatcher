@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <QTimer>
+
 #include <QtDebug>
 
 #include "contentaction/contentaction.h"
@@ -26,21 +28,16 @@
 
 PodcatcherUI::PodcatcherUI()
 {
-    rootContext()->setContextProperty("channelsModel", QVariant());
+    m_channelsModel = m_pManager.podcastChannelsModel();
+    rootContext()->setContextProperty("channelsModel", m_channelsModel);
     rootContext()->setContextProperty("ui", this);
     setSource(QUrl("qrc:/qml/main.qml"));
 //    setSource(QUrl("/opt/Podcatcher/bin/qml/main.qml"));   // TODO: Take .qrc into use again! Remember to fix the .pro file too!
 
     modelFactory = PodcastEpisodesModelFactory::episodesFactory();
 
-    connect(&m_pManager, SIGNAL(podcastChannelSaved()),
-            this, SLOT(refreshChannelsModel()));
-
     connect(&m_pManager, SIGNAL(showInfoBanner(QString)),
             this, SIGNAL(showInfoBanner(QString)));
-
-    connect(&m_pManager, SIGNAL(podcastEpisodeDownloaded(PodcastEpisode *)),
-            this, SLOT(refreshChannelsModel()));
 
     connect(&m_pManager, SIGNAL(downloadingPodcasts(bool)),
             this, SIGNAL(downloadingPodcasts(bool)));
@@ -59,7 +56,7 @@ PodcatcherUI::PodcatcherUI()
     connect(rootDeclarativeItem, SIGNAL(playPodcast(int, int)),
             this, SLOT(onPlayPodcast(int, int)));
 
-    connect(rootDeclarativeItem, SIGNAL(refreshEpisodes(int)),
+    connect(rootDeclarativeItem, SIGNAL(refreshAllEpisodes(int)),
             this, SLOT(onRefreshEpisodes(int)));
 
     connect(rootDeclarativeItem, SIGNAL(cancelDownload(int, int)),
@@ -74,38 +71,9 @@ PodcatcherUI::PodcatcherUI()
     connect(rootDeclarativeItem, SIGNAL(deleteDownloaded(int, int)),
             this, SLOT(onDeletePodcast(int, int)));
 
-    connect(rootDeclarativeItem, SIGNAL(openWeb(int, int)),
-            this, SLOT(onOpenWeb(int, int)));
+    m_pManager.refreshAllChannels();   // Refresh all feeds and download new episodes.
 
-    refreshChannels();    // Fetch all the Podcast channels from the DB and show them in the UI
-
-}
-
-void PodcatcherUI::refreshChannels()
-{
-    qDebug() << "Refresh channels and epsiodes.";
-
-    refreshChannelsModel();
-    refreshEpisodes();
-}
-
-void PodcatcherUI::refreshChannelsModel()
-{
-    qDebug() << "Refresh channels model in the UI.";
-
-    m_channelsModel = PodcastManager::toPodcastChannelsModel(m_pManager.podcastChannels());
-
-    rootContext()->setContextProperty("channelsModel", QVariant::fromValue(m_channelsModel));
-}
-
-void PodcatcherUI::refreshEpisodes()
-{
-    qDebug() << "\n ********* Refresh episodes for all channels ******** \n";
-
-    foreach(QObject *o, m_channelsModel) {
-        int channelid = QVariant(o->property("channelId")).toInt();
-        onRefreshEpisodes(channelid);
-    }
+    QTimer::singleShot(10000, &m_pManager, SLOT(cleanupEpisodes()));
 }
 
 void PodcatcherUI::addPodcast(QString rssUrl, QString logoUrl)
@@ -148,11 +116,9 @@ void PodcatcherUI::onShowChannel(QString channelId)
         channel->setDescription(newDesc);
     }
 
-//   m_pManager.downloadNewEpisodes(channelId.toInt());
-
    rootContext()->setContextProperty("channel", channel);
 
-   PodcastEpisodesModel *episodesModel = modelFactory->episodesModel(channel->channelId());
+   PodcastEpisodesModel *episodesModel = modelFactory->episodesModel(channel->channelDbId());   // FIXME: Do not expose DB id.
    rootContext()->setContextProperty("episodesModel", episodesModel);
 }
 
@@ -167,11 +133,16 @@ void PodcatcherUI::onDownloadPodcast(int channelId, int index)
 void PodcatcherUI::onPlayPodcast(int channelId, int index)
 {
     PodcastEpisodesModel *episodesModel = modelFactory->episodesModel(channelId);
+    if (episodesModel == 0) {
+        qWarning() << "Could not get episodes model. Cannot play episode.";
+        return;
+    }
+
     PodcastEpisode *episode = episodesModel->episode(index);
     episode->setLastPlayed(QDateTime::currentDateTime());
     episodesModel->refreshEpisode(episode);
 
-    refreshChannelsModel();
+    m_channelsModel->refreshChannel(channelId);
 
     QUrl file = QUrl::fromLocalFile(episode->playFilename());
 
@@ -223,7 +194,6 @@ void PodcatcherUI::onDeleteChannel(QString channelId)
     qDebug() << "Yep, lets delete the channel and some episodes from channel" << channelId;
     m_pManager.removePodcastChannel(channelId.toInt());
 
-    refreshChannelsModel();
 }
 
 void PodcatcherUI::onAllListened(QString channelId)
@@ -236,7 +206,8 @@ void PodcatcherUI::onAllListened(QString channelId)
         episode->setAsPlayed();
         episodesModel->refreshEpisode(episode);
     }
-    refreshChannelsModel();
+
+    m_channelsModel->refreshChannel(channelId.toInt());
 }
 
 void PodcatcherUI::onDeletePodcast(int channelId, int index)
@@ -249,25 +220,14 @@ void PodcatcherUI::onDeletePodcast(int channelId, int index)
     episode->deleteDownload();
     episodesModel->refreshEpisode(episode);
 
-    refreshChannelsModel();
+    m_channelsModel->refreshChannel(channelId);
 }
 
 void PodcatcherUI::deletePodcasts(int channelId)
 {
     m_pManager.deleteAllDownloadedPodcasts(channelId);
-
-    refreshChannelsModel();
+    m_channelsModel->refreshChannel(channelId);
 }
-
-void PodcatcherUI::onOpenWeb(int channelId, int index)
-{
-    qDebug() << "OPening web page to episode page.";
-    PodcastEpisodesModel *episodesModel = modelFactory->episodesModel(channelId);
-    PodcastEpisode *episode = episodesModel->episode(index);
-    qDebug() << "Episode web URL:" << episode->title() << episode->playFilename() << episode->downloadLink();
-    QDesktopServices::openUrl(QUrl(episode->downloadLink()));
-}
-
 
 bool PodcatcherUI::isLiteVersion()
 {
@@ -276,5 +236,16 @@ bool PodcatcherUI::isLiteVersion()
 #else
     return false;
 #endif
+}
+
+QString PodcatcherUI::versionString()
+{
+    QString tmpVersion(QString::number(PODCATCHER_VERSION));
+    QString version = tmpVersion.at(0);
+    for (int i=1; i<tmpVersion.length(); i++) {
+        version.append(".").append(tmpVersion.at(i));
+    }
+
+    return version;
 }
 

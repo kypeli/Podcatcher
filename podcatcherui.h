@@ -23,6 +23,7 @@
 #include <QtDeclarative>
 
 #include "podcastmanager.h"
+#include "podcastchannelsmodel.h"
 
 class PodcatcherUI : public QDeclarativeView
 {
@@ -31,10 +32,10 @@ public:
     explicit PodcatcherUI();
 
     Q_INVOKABLE void addPodcast(QString rssUrl, QString logoUrl = QString());
-    Q_INVOKABLE void refreshChannels();
     Q_INVOKABLE void deletePodcasts(int channelId);
     Q_INVOKABLE bool isDownloading();
     Q_INVOKABLE bool isLiteVersion();
+    Q_INVOKABLE QString versionString();
 
     void downloadNewEpisodes(QString channelId);
 
@@ -55,15 +56,11 @@ private slots:
     void onDeleteChannel(QString channelId);
     void onAllListened(QString channelId);
     void onDeletePodcast(int channelId, int index);
-    void onOpenWeb(int channelId, int index);
-    void refreshChannelsModel();
 
 private:
-    void refreshEpisodes();
-
     PodcastManager m_pManager;
+    PodcastChannelsModel *m_channelsModel;
     PodcastEpisodesModelFactory *modelFactory;
-    QList<QObject *> m_channelsModel;
     QMap<QString, QString> logoCache;
 };
 

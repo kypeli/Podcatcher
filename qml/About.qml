@@ -62,7 +62,7 @@ Page {
             Text {
                 width: 300;
                 font.pointSize: 18
-                text: "1.0.0";
+                text: ui.versionString();
                 horizontalAlignment: Text.AlignHCenter;
                 anchors.horizontalCenter: parent.horizontalCenter
             }

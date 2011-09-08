@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QList>
 #include <QSqlDatabase>
+#include <QMutex>
 
 #include "podcastchannel.h"
 #include "podcastepisode.h"
@@ -30,7 +31,7 @@ class PodcastSQLManager : public QObject
     Q_OBJECT
 public:
     QList<PodcastChannel *> channelsInDB();
-    PodcastChannel* channelInDB(int channelId);
+    PodcastChannel* channelInDB(int channelId, PodcastChannel *channel = 0);
 
     QList<PodcastEpisode *> episodesInDB(int channelId);
 
@@ -42,6 +43,8 @@ public:
 
     int podcastEpisodesToDB(QList<PodcastEpisode *> parsedEpisodes,
                             int channel_id);
+
+    bool removePodcastFromDB(PodcastEpisode *episode);
 
     void updatePodcastInDB(PodcastEpisode *episode);
 
@@ -65,6 +68,8 @@ private:
     // Disable instatiation.
     PodcastSQLManager(PodcastSQLManager const&);              // Don't Implement
     void operator=(PodcastSQLManager const&);                 // Don't implement
+
+    QMutex mutex;
 };
 
 class PodcastSQLManagerFactory

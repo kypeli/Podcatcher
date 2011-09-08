@@ -167,6 +167,31 @@ Item {
                     }
                 }
 
+                Button {
+                    id: webButton
+                    text: "WEB"
+                    anchors.right: podcastItem.right
+                    anchors.rightMargin: 15
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 100
+                    visible: false
+
+                    onClicked: {
+                        appWindow.openWeb(channelId, index);  // Channel id = which model to use, index = row in the model.
+                    }
+                }
+
+                Label {
+                    id: errorDownloadingLabel
+                    visible: false
+                    text: "No media"
+                    anchors.right: podcastItem.right
+                    font.pointSize: 20
+                    anchors.rightMargin: 5
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 170
+                }
+
                 PodcastDownloadingProgress {
                     id: downloadProgress
                     anchors.right: podcastItem.right
@@ -264,6 +289,47 @@ Item {
                             visible: false
                         }
 
+                    },
+                    State {
+                        name: "undownloadable"
+                        PropertyChanges {
+                            target: downloadButton
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: playButton
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: channelPublished
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: errorDownloadingLabel
+                            visible: true
+                        }
+
+                    },
+
+                    State {
+                        name: "website"
+                        PropertyChanges {
+                            target: downloadButton
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: playButton
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: channelPublished
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: webButton
+                            visible: true
+                        }
+
                     }
                 ]
 
@@ -292,5 +358,4 @@ Item {
             }
          }
     }
-
 }

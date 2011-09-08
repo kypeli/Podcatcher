@@ -131,9 +131,9 @@ Page {
                 height: 90
                 width: parent.width
 
-                Image {
-                    id: channelLogo;
-                    source: logo
+                PodcastChannelLogo {
+                    id: channelLogoId;
+                    channelLogo: logo
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.height;
@@ -142,7 +142,7 @@ Page {
 
                 Label {
                     id: channelName;
-                    anchors.left: channelLogo.right
+                    anchors.left: channelLogoId.right
                     anchors.leftMargin: 10;
                     anchors.verticalCenter: parent.verticalCenter
                     text: title
@@ -222,6 +222,16 @@ Page {
             } else {
                 mainPage.state = ""
             }
+        }
+    }
+
+    Component.onCompleted: {
+        console.log("Is downloading: " + ui.isDownloading());
+        if (ui.isDownloading()) {
+            mainPage.state = "downloading";
+        }
+        else {
+            mainPage.state = "";
         }
     }
 

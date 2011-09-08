@@ -31,7 +31,7 @@ void PodcastChannel::setId(int id)
     m_id = id;
 }
 
-int PodcastChannel::channelId()
+int PodcastChannel::channelDbId()
 {
     return m_id;
 }
@@ -109,7 +109,7 @@ void PodcastChannel::setIsRefreshing(bool refreshing)
 {
     if (m_isRefreshing != refreshing) {
         m_isRefreshing = refreshing;
-        emit refreshingChanged();
+        emit channelChanged();
     }
 }
 
@@ -127,6 +127,17 @@ void PodcastChannel::setUnplayedEpisodes(int unplayed)
 {
     if (unplayed != m_unplayedEpisodes) {
         m_unplayedEpisodes = unplayed;
-        emit unplayedEpisodesChanged();
+        emit channelChanged();
     }
 }
+
+bool PodcastChannel::operator<(const PodcastChannel &other) const
+{
+    if (m_title < other.title() ) {
+        return true;
+    } else  {
+        return false;
+    }
+
+}
+

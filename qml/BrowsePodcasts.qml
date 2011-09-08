@@ -39,6 +39,7 @@ Page {
         ToolIcon {
             iconId: "toolbar-search"
             onClicked: {
+               myMenu.close();
                openFile("SearchPodcasts.qml");
             }
             anchors.horizontalCenter: parent.horizontalCenter

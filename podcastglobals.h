@@ -26,7 +26,4 @@ const QString PODCATCHER_PATH = QString("%1/%2/").arg(QDesktopServices::storageL
                                           .arg(PODCATCHER_WORKDIR_NAME);
 const QString PODCATCHER_PODCAST_DLDIR = QString("%1/MyDocs/.sounds/podcasts/").arg(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
 
-const int DOWNLOAD_NEW_EPISODES = 1;
-
-
 #endif // PODCASTGLOBALS_H

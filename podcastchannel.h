@@ -24,12 +24,11 @@
 class PodcastChannel : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int channelId READ channelId WRITE setId NOTIFY idChanged)
-    Q_PROPERTY(QString logo READ logo WRITE setLogo NOTIFY logoChanged)
-    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
-    Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
-    Q_PROPERTY(bool isRefreshing READ isRefreshing WRITE setIsRefreshing NOTIFY refreshingChanged)
-    Q_PROPERTY(int unplayedEpisodes READ unplayedEpisodes WRITE setUnplayedEpisodes NOTIFY unplayedEpisodesChanged)
+    Q_PROPERTY(int channelId READ channelDbId WRITE setId)
+    Q_PROPERTY(QString logo READ logo WRITE setLogo)
+    Q_PROPERTY(QString title READ title WRITE setTitle)
+    Q_PROPERTY(QString description READ description WRITE setDescription)
+    Q_PROPERTY(bool isRefreshing READ isRefreshing WRITE setIsRefreshing)
 
 public:
     explicit PodcastChannel(QObject *parent = 0);
@@ -47,7 +46,7 @@ public:
     void setXml(QByteArray xml);
 
     // Property getters.
-    int channelId();
+    int channelDbId();
     QString title() const;
     QString logoUrl() const;
     QString logo() const;
@@ -61,13 +60,10 @@ public:
     // Utility methods.
     void dumpInfo() const;
 
+    bool operator<(const PodcastChannel &other) const;
+
 signals:
-    void idChanged();
-    void logoChanged();
-    void titleChanged();
-    void descriptionChanged();
-    void refreshingChanged();
-    void unplayedEpisodesChanged();
+    void channelChanged();
 
 public slots:
 

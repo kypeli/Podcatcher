@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<settings>
+  <group title="Auto-download podcasts">
+      <boolean key="/apps/ControlPanel/Podcatcher/autodownload"
+            title="When connected to WiFi">
+      </boolean>
+      <selection key="/apps/ControlPanel/Podcatcher/autodownload_num"
+            title="Get number of new episodes">
+            <option title="1" >1</option>
+            <option title="5" >5</option>
+            <option title="All" >0</option>
+      </selection>
+  </group>
+  <group title="Cleaning">
+    <selection key="/apps/ControlPanel/Podcatcher/keep_episodes"
+         title="Keep number of latest episodes">
+         <option title="5" >5</option>
+         <option title="10" >10</option>
+         <option title="All" >0</option>
+    </selection>
+    <boolean key="/apps/ControlPanel/Podcatcher/keep_unplayed"
+           title="Keep unplayed episodes?">
+   </boolean>
+  </group>
+</settings>

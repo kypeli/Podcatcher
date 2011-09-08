@@ -25,36 +25,62 @@
 #include <QImage>
 #include <QFile>
 #include <QDir>
+#include <QMap>
 
 #include <QtDebug>
 #include <QCryptographicHash>
-#include <QMap>
+#include <QtConcurrentRun>
+#include <QFuture>
 
 #include "podcastmanager.h"
 #include "podcastsqlmanager.h"
 #include "podcastrssparser.h"
 #include "podcastglobals.h"
-#include "podcastepisodesmodelfactory.h"
 
 PodcastManager::PodcastManager(QObject *parent) :
     QObject(parent),
+    m_channelsModel(new PodcastChannelsModel(this)),
     m_networkManager(new QNetworkAccessManager(this)),
     m_dlNetworkManager(new QNetworkAccessManager(this)),
     m_episodeModelFactory(PodcastEpisodesModelFactory::episodesFactory()),
     m_isDownloading(false)
 {
-    sqlmanager = PodcastSQLManagerFactory::sqlmanager();
     connect(this, SIGNAL(podcastChannelReady(PodcastChannel*)),
             this, SLOT(savePodcastChannel(PodcastChannel*)));
 
-    m_autodlSettingKey = new GConfItem("/apps/ControlPanel/Podcatcher/autodownload",this);
-    if (!m_autodlSettingKey->value().isValid()) {
-        m_autodlSettingKey->set(m_autodownloadOn);
-    }
+    // Get the current settings values.
+    qDebug() << "Current settings: ";
 
-    connect(m_autodlSettingKey, SIGNAL(valueChanged()),
+    m_autoDlConf = new GConfItem("/apps/ControlPanel/Podcatcher/autodownload", this);
+    m_autodownloadOnSettings = m_autoDlConf->value().toBool();
+    qDebug() << "  * Autodownload: on" << m_autodownloadOnSettings;
+
+    m_autoDlNumConf = new GConfItem("/apps/ControlPanel/Podcatcher/autodownload_num", this);
+    m_autodownloadNumSettings = m_autoDlNumConf->value().toInt();
+    qDebug() << "  * Automatically get episodes: " << m_autodownloadNumSettings;
+
+    m_keepNumEpisodesConf = new GConfItem("/apps/ControlPanel/Podcatcher/keep_episodes", this);
+    m_keepNumEpisodesSettings = m_keepNumEpisodesConf->value().toInt();
+    qDebug() << "  * Autodelete episodes after num days:" << m_keepNumEpisodesSettings;
+
+    m_autoDelUnplayedConf = new GConfItem("/apps/ControlPanel/Podcatcher/keep_unplayed", this);
+    m_autoDelUnplayedSettings = m_autoDelUnplayedConf->value().toBool();
+    qDebug() << "  * Keep unplayed episodes:" << m_autoDelUnplayedSettings;
+
+    // Connect to the changed signals for each of the settings above.
+    connect(m_autoDlConf, SIGNAL(valueChanged()),
             this, SLOT(onAutodownloadOnChanged()));
+    connect(m_autoDlNumConf, SIGNAL(valueChanged()),
+            this, SLOT(onAutodownloadNumChanged()));
+    connect(m_keepNumEpisodesConf, SIGNAL(valueChanged()),
+            this, SLOT(onAutodelDaysChanged()));
+    connect(m_autoDelUnplayedConf, SIGNAL(valueChanged()),
+            this, SLOT(onAutodelUnplayedChanged()));
+}
 
+PodcastChannelsModel * PodcastManager::podcastChannelsModel() const
+{
+    return m_channelsModel;
 }
 
 void PodcastManager::requestPodcastChannel(const QUrl &rssUrl, const QMap<QString, QString> &logoCache)
@@ -72,7 +98,7 @@ void PodcastManager::requestPodcastChannel(const QUrl &rssUrl, const QMap<QStrin
     PodcastChannel *channel = new PodcastChannel(this);
     channel->setUrl(rssUrl.toString());
 
-    if (sqlmanager->isChannelInDB(channel)) {
+    if (m_channelsModel->channelAlreadyExists(channel)) {
         qDebug() << "Channel is already in DB. Not doing anything.";
         delete channel;
         emit showInfoBanner("Already subscribed to the channel.");
@@ -91,6 +117,25 @@ void PodcastManager::requestPodcastChannel(const QUrl &rssUrl, const QMap<QStrin
 
     m_networkManager->get(request);
 }
+
+void PodcastManager::refreshAllChannels()
+{
+    qDebug() << "\n ********* Refresh episodes for all channels ******** \n";
+
+    foreach(PodcastChannel *channel, m_channelsModel->channels()) {
+        int channelid = channel->channelDbId();
+        PodcastChannel *channel = podcastChannel(channelid);
+
+        qDebug() << "Refreshing channel: " << channelid << channel->title();
+
+        if (channel == 0) {
+            qWarning() << "Got NULL episode!";
+            break;
+        }
+        refreshPodcastChannelEpisodes(channel, true);
+    }
+}
+
 
 void PodcastManager::refreshPodcastChannelEpisodes(PodcastChannel *channel, bool forceNetwork)
 {
@@ -123,27 +168,11 @@ void PodcastManager::refreshPodcastChannelEpisodes(PodcastChannel *channel, bool
 }
 
 
-QList<PodcastChannel *> PodcastManager::podcastChannels()
-{
-    return sqlmanager->channelsInDB();
-}
-
-QList<QObject *> PodcastManager::toPodcastChannelsModel(QList<PodcastChannel *> list)
-{
-    QList<QObject *> model;
-    foreach(PodcastChannel* channel, list) {
-        model.append(channel);
-    }
-
-    return model;
-
-}
-
 PodcastChannel * PodcastManager::podcastChannel(int id)
 {
     PodcastChannel *channel;
     if (!m_channelsCache.contains(id)) {
-        channel = sqlmanager->channelInDB(id);
+        channel = m_channelsModel->podcastChannelById(id);
         if (channel == 0) {
             return channel;
         }
@@ -342,11 +371,11 @@ bool PodcastManager::savePodcastEpisodes(PodcastChannel *channel)
         return false;
     }
 
-    PodcastEpisodesModel *episodeModel = m_episodeModelFactory->episodesModel(channel->channelId());  // FIXME: If we make more than one refresh, this will be a wrong channel!
+    PodcastEpisodesModel *episodeModel = m_episodeModelFactory->episodesModel(channel->channelDbId());  // FIXME: Pass only channel to episodes model - not the DB id.
     episodeModel->addEpisodes(*parsedEpisodes);
 
-    qDebug() << "Downloading automatically new episodes:" << m_autodownloadOn << " WiFi:" << PodcastManager::isConnectedToWiFi();
-    if (m_autodownloadOn && PodcastManager::isConnectedToWiFi()) {
+    qDebug() << "Downloading automatically new episodes:" << m_autodownloadOnSettings << " WiFi:" << PodcastManager::isConnectedToWiFi();
+    if (m_autodownloadOnSettings && PodcastManager::isConnectedToWiFi()) {
         downloadNewEpisodes(episodeModel->channelId());
     }
 
@@ -360,7 +389,10 @@ void PodcastManager::downloadNewEpisodes(int channelId) {
 
     qDebug() << "Downloading new episodes for channel: " << channelId;
 
-    QList<PodcastEpisode *> episodes = episodesModel->undownloadedEpisodes(DOWNLOAD_NEW_EPISODES);
+    // If the settings value for "get number of episodes" == 0, then we fetch "all episodes". So set 999.
+    // Otherwise use the number as specified in the settings.
+    int downloadEpisodes = (m_autodownloadNumSettings == 0) ? 999 : m_autodownloadNumSettings;
+    QList<PodcastEpisode *> episodes = episodesModel->undownloadedEpisodes(downloadEpisodes);
     foreach(PodcastEpisode *episode, episodes) {
         qDebug() << "Downloading podcast:" << episode->downloadLink();
         downloadPodcast(episode);
@@ -371,7 +403,7 @@ void PodcastManager::downloadNewEpisodes(int channelId) {
 void PodcastManager::savePodcastChannel(PodcastChannel *channel)
 {
     qDebug() << "Adding channel to DB:" << channel->title();
-    sqlmanager->podcastChannelToDB(channel);
+    m_channelsModel->addChannel(channel);
 
     qDebug() << "Podcast channel saved to DB. Refreshing episodes...";
     refreshPodcastChannelEpisodes(channel);
@@ -393,6 +425,7 @@ void PodcastManager::onPodcastEpisodeDownloaded(PodcastEpisode *episode)
 
     PodcastEpisodesModel *episodeModel = m_episodeModelFactory->episodesModel(episode->channelid());
     episodeModel->refreshEpisode(episode);
+    m_channelsModel->refreshChannel(episode->channelid());
 
     emit podcastEpisodeDownloaded(episode);
 
@@ -556,9 +589,6 @@ void PodcastManager::removePodcastChannel(int channelId)
      * Delete channel data.
      * Do not touch the episode anymore!
      */
-    // Delete channels and episodes from SQL.
-    sqlmanager->removeChannelFromDB(channelId);
-
     // Deleting locally cached channel logo.
     PodcastChannel *channel = m_channelsCache.value(channelId);
 
@@ -569,6 +599,8 @@ void PodcastManager::removePodcastChannel(int channelId)
         qWarning() << "Could not remove cached logo for channel:" << channel->title() << fi.absoluteFilePath();
     }
 
+    // Finally remove the channel from the model and the cache.
+    m_channelsModel->removeChannel(channel);
     m_channelsCache.remove(channelId);
 
     // Finally delete the memory reserved for the channel
@@ -588,15 +620,78 @@ void PodcastManager::deleteAllDownloadedPodcasts(int channelId)
     }
 }
 
-void PodcastManager::onAutodownloadOnChanged()
-{
-    qDebug() << "Setting changed: autodl: " << QVariant(m_autodlSettingKey->value()).toBool();
-
-    m_autodownloadOn = QVariant(m_autodlSettingKey->value()).toBool();
-}
-
 bool PodcastManager::isDownloading()
 {
     return m_isDownloading;
 }
+
+void PodcastManager::onAutodownloadOnChanged()
+{
+    qDebug() << "Setting changed: autodl: " << QVariant(m_autoDlConf->value()).toBool();
+
+    m_autodownloadOnSettings = QVariant(m_autoDlConf->value()).toBool();
+}
+
+void PodcastManager::onAutodownloadNumChanged()
+{
+    qDebug() << "Setting changed: autodownload number of episodes: " << QVariant(m_autoDlNumConf->value()).toInt();
+
+    m_autodownloadNumSettings = QVariant(m_autoDlNumConf->value()).toInt();
+}
+
+void PodcastManager::onAutodelDaysChanged()
+{
+    qDebug() << "Setting changed: autodelete after days: " << QVariant(m_keepNumEpisodesConf->value()).toInt();
+
+    m_keepNumEpisodesSettings = QVariant(m_keepNumEpisodesConf->value()).toInt();
+}
+
+void PodcastManager::onAutodelUnplayedChanged()
+{
+    qDebug() << "Setting changed: autodelete unplayed episodes: " << QVariant(m_autoDelUnplayedConf->value()).toBool();
+
+    m_autoDelUnplayedSettings = QVariant(m_autoDelUnplayedConf->value()).toBool();
+}
+
+void PodcastManager::cleanupEpisodes()
+{
+    if (m_keepNumEpisodesSettings == 0) {
+        // Keep all episodes.
+        return;
+    }
+
+    m_cleanupChannels = m_channelsModel->channels();
+    if (m_cleanupChannels.isEmpty()) {
+        return;
+    }
+
+    PodcastEpisodesModel *episodesModel = m_episodeModelFactory->episodesModel((m_cleanupChannels.takeLast())->channelDbId());
+
+    QFuture<void> future = QtConcurrent::run(episodesModel,
+                                             &PodcastEpisodesModel::cleanOldEpisodes,
+                                             m_keepNumEpisodesSettings,
+                                             m_autoDelUnplayedSettings);
+
+    m_futureWatcher.setFuture(future);
+    connect(&m_futureWatcher, SIGNAL(finished()),
+            this, SLOT(onCleanupEpisodeModelFinished()));
+}
+
+void PodcastManager::onCleanupEpisodeModelFinished()
+{
+    if (m_cleanupChannels.isEmpty()) {
+        // All channels cleaned up.
+        return;
+    }
+
+    PodcastEpisodesModel *episodesModel = m_episodeModelFactory->episodesModel((m_cleanupChannels.takeLast())->channelDbId());
+
+    QFuture<void> future = QtConcurrent::run(episodesModel,
+                                             &PodcastEpisodesModel::cleanOldEpisodes,
+                                             m_keepNumEpisodesSettings,
+                                             m_autoDelUnplayedSettings);
+
+    m_futureWatcher.setFuture(future);
+}
+
 

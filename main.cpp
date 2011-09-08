@@ -19,20 +19,19 @@
 #include <QtDeclarative>
 
 #include "podcatcherui.h"
-#include "podcasttester.h"
 
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     PodcatcherUI ui;
-    PodcastTester tester;
+//    PodcastTester tester;
 
     QStringList args = app.arguments();
     if (args.contains("-testchannels")) {
-        tester.testChannels();
+//        tester.testChannels();
     } else if (args.contains("-testepisodes")) {
-        tester.testEpisodes();
+//        tester.testEpisodes();
     } else {
         ui.showFullScreen();
     }

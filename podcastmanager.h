@@ -23,11 +23,13 @@
 #include <QUrl>
 #include <QMap>
 #include <QVariant>
+#include <QFutureWatcher>
 
 #include <gq/gconfitem.h>
 
 #include "podcastchannel.h"
 #include "podcastepisode.h"
+#include "podcastchannelsmodel.h"
 #include "podcastepisodesmodel.h"
 #include "podcastepisodesmodelfactory.h"
 
@@ -38,6 +40,8 @@ class PodcastManager : public QObject
     Q_OBJECT
 public:
     explicit PodcastManager(QObject *parent = 0);
+
+    PodcastChannelsModel* podcastChannelsModel() const;
 
     /**
      * Request that the PodcastManager retrieves a new podcast stream
@@ -51,11 +55,11 @@ public:
     void requestPodcastChannel(const QUrl &rssUrl, const QMap<QString, QString> &logoCache = QMap<QString, QString>());
 
     void refreshPodcastChannelEpisodes(PodcastChannel *channel, bool forceNetworkUpdate = false);
+    void refreshAllChannels();
     void downloadNewEpisodes(int channelId);
 
-    QList<PodcastChannel *> podcastChannels();
-    static QList<QObject *> toPodcastChannelsModel(QList<PodcastChannel *> list);
-    PodcastChannel* podcastChannel(int id);
+//    static QList<QObject *> toPodcastChannelsModel(QList<PodcastChannel *> list);
+    PodcastChannel* podcastChannel(int channelId);
     void removePodcastChannel(int channelId);
 
     void downloadPodcast(PodcastEpisode *episode);
@@ -82,6 +86,7 @@ signals:
     void downloadingPodcasts(bool downloading);
 
 public slots:
+    void cleanupEpisodes();     // This is a slot, since it is called from Podcatcher UI constructor with single shot timer.
 
 private slots:
    void savePodcastChannel(PodcastChannel *channel);
@@ -94,6 +99,11 @@ private slots:
    void onPodcastEpisodeDownloadFailed(PodcastEpisode* episode);
 
    void onAutodownloadOnChanged();
+   void onAutodownloadNumChanged();
+   void onAutodelDaysChanged();
+   void onAutodelUnplayedChanged();
+
+   void onCleanupEpisodeModelFinished();
 
 private:
    void executeNextDownload();
@@ -102,10 +112,11 @@ private:
    PodcastChannel * channelForNetworkReply(QNetworkReply *reply);
    bool savePodcastEpisodes(PodcastChannel *channel);
 
-   // We need multiple QNAMs to be able to do concurrent downloads.   
+   PodcastChannelsModel *m_channelsModel;
+
+   // We need multiple QNAMs to be able to do concurrent downloads.
    QNetworkAccessManager *m_networkManager;
    QNetworkAccessManager *m_dlNetworkManager;  // Share this between all the episodes;
-   PodcastSQLManager     *sqlmanager;
 
    QMap<QNetworkReply*, PodcastChannel *> m_channelNetworkRequestCache;
    QMap<int, PodcastChannel *> m_channelsCache;
@@ -117,9 +128,18 @@ private:
    bool m_isDownloading;
    QMap<QString, QString> m_logoCache;
 
-   GConfItem *m_autodlSettingKey;
-   bool m_autodownloadOn;
+   GConfItem *m_autoDlConf;
+   GConfItem *m_autoDlNumConf;
+   GConfItem *m_keepNumEpisodesConf;
+   GConfItem *m_autoDelUnplayedConf;
 
+    QList<PodcastChannel *> m_cleanupChannels;
+    QFutureWatcher<void> m_futureWatcher;
+
+   bool m_autodownloadOnSettings;
+   int m_autodownloadNumSettings;
+   int m_keepNumEpisodesSettings;
+   bool m_autoDelUnplayedSettings;
 };
 
 #endif // PODCASTMANAGER_H

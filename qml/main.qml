@@ -23,6 +23,7 @@ PageStackWindow {
     signal showChannel(string id)
     signal downloadPodcast(int channelid, int index)
     signal playPodcast(int channelId, int index)
+    signal openWeb(int channelId, int index)
     signal refreshEpisodes(int channelId)
     signal cancelDownload(int channelId, int index)
     signal cancelQueue(int channelId, int index)

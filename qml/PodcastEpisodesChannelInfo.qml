@@ -26,9 +26,9 @@ Item {
         width: parent.width
         height:  parent.height
 
-        Image {
+        PodcastChannelLogo {
             id: channelLogo;
-            source: channel.logo
+            channelLogo: channel.logo
             anchors.left: podcastInfoRect.left
             anchors.top: podcastInfoRect.top
             anchors.leftMargin: 10

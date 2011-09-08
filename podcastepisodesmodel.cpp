@@ -149,6 +149,34 @@ void PodcastEpisodesModel::addEpisodes(QList<PodcastEpisode *> episodes)
 
 }
 
+void PodcastEpisodesModel::delEpisode(PodcastEpisode *episode)
+{
+    qDebug() << "Deleting episode with name: " << episode->title() << ", pub date:" << episode->pubTime();
+    for (int i=0; i<m_episodes.length(); i++) {
+        if (episode == m_episodes.at(i)) {
+            qDebug() << "Remove from model, index: " << i;
+            beginRemoveRows(QModelIndex(), i, i);
+            m_episodes.removeAt(i);
+            endRemoveRows();
+
+            m_sqlmanager->removePodcastFromDB(episode);
+        }
+    }
+
+    delete episode;
+}
+
+void PodcastEpisodesModel::delEpisode(int index, PodcastEpisode *episode)
+{
+    qDebug() << "Deleting episode with name: " << episode->title() << ", pub date:" << episode->pubTime();
+
+    beginRemoveRows(QModelIndex(), index, index);
+    m_episodes.removeAt(index);
+    endRemoveRows();
+
+    m_sqlmanager->removePodcastFromDB(episode);
+    delete episode;
+}
 
 PodcastEpisode * PodcastEpisodesModel::episode(int index)
 {
@@ -182,11 +210,14 @@ QList<PodcastEpisode *> PodcastEpisodesModel::undownloadedEpisodes(int max)
         return episodes;
     }
 
+    if (max > m_episodes.length()) {
+        max = m_episodes.length();
+    }
+
     for (int i=0; i<max; i++) {
         PodcastEpisode *episode = m_episodes.at(i);
         if (!episode->downloadLink().isEmpty() &&
             episode->playFilename().isEmpty() &&
-            episode->episodeState() == "get" &&
             episode->hasBeenCanceled() == false) {
             episodes << episode;
         }
@@ -251,5 +282,39 @@ QList<PodcastEpisode *> PodcastEpisodesModel::unplayedEpisodes()
 QList<PodcastEpisode *> PodcastEpisodesModel::episodes()
 {
     return m_episodes;
+}
+
+void PodcastEpisodesModel::cleanOldEpisodes(int keepNumEpisodes, bool keepUnplayed)
+{
+    if (keepNumEpisodes == 0) {
+        return;
+    }
+
+    QList<PodcastEpisode *> episodesToDel;
+    for (int i=keepNumEpisodes; i<m_episodes.length(); i++) {
+        PodcastEpisode *episode = m_episodes.at(i);
+
+        // If we want to keep unplayed episodes...
+        if (keepUnplayed) {
+            // Check if the episode filename is not empty (we have an episode)
+            // and that the last played is not set, then we know we have an unplayed and
+            // downloaded episode that we want to keep.
+            if (!episode->playFilename().isEmpty() &&
+                episode->lastPlayed().isValid()) {
+                continue;
+            }
+        }
+
+        // Otherwise, delete the episode and the download
+        if (!episode->playFilename().isEmpty()) {
+            episode->deleteDownload();
+        }
+
+        episodesToDel << episode;
+    }
+
+    foreach(PodcastEpisode *episode, episodesToDel) {
+        delEpisode(episode);
+    }
 }
 

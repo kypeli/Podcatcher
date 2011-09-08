@@ -51,6 +51,10 @@ public:
 
     void addEpisode(PodcastEpisode *episode);
     void addEpisodes(QList<PodcastEpisode *> episode);
+
+    void delEpisode(PodcastEpisode *episode);
+    void delEpisode(int index, PodcastEpisode *episode);
+
     PodcastEpisode *episode(int index);
 
     PodcastEpisodesModel * episodesModel(int channelId);
@@ -58,11 +62,11 @@ public:
 
     void refreshEpisode(PodcastEpisode *episode);
 
-
     QList<PodcastEpisode *> episodes();
     QList<PodcastEpisode *> undownloadedEpisodes(int maxUndownloadedEpisodes);
     QList<PodcastEpisode *> unplayedEpisodes();
 
+    void cleanOldEpisodes(int keepNumEpisodes, bool keepUnplayed);
     void removeAll();
 
 signals:
