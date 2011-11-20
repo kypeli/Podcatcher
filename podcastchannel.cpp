@@ -23,6 +23,7 @@ PodcastChannel::PodcastChannel(QObject *parent) :
     QObject(parent)
 {
     m_isRefreshing = false;
+    m_isDownloading = false;
     m_unplayedEpisodes = 0;
 }
 
@@ -129,6 +130,20 @@ void PodcastChannel::setUnplayedEpisodes(int unplayed)
         m_unplayedEpisodes = unplayed;
         emit channelChanged();
     }
+}
+
+void PodcastChannel::setIsDownloading(bool downloading)
+{
+    if (downloading != m_isDownloading) {
+        m_isDownloading = downloading;
+        emit channelChanged();
+        emit downloadingChanged();
+    }
+}
+
+bool PodcastChannel::isDownloading() const
+{
+    return m_isDownloading;
 }
 
 bool PodcastChannel::operator<(const PodcastChannel &other) const

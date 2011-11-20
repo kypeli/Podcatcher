@@ -122,6 +122,8 @@ void PodcastManager::refreshAllChannels()
 {
     qDebug() << "\n ********* Refresh episodes for all channels ******** \n";
 
+    emit showInfoBanner("Refreshing episodes...");
+
     foreach(PodcastChannel *channel, m_channelsModel->channels()) {
         int channelid = channel->channelDbId();
         PodcastChannel *channel = podcastChannel(channelid);
@@ -165,6 +167,9 @@ void PodcastManager::refreshPodcastChannelEpisodes(PodcastChannel *channel, bool
 
     connect(reply, SIGNAL(finished()),
             this, SLOT(onPodcastEpisodesRequestCompleted()));
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            this, SLOT(onPodcastEpisodesRequestError(QNetworkReply::NetworkError)));
 }
 
 
@@ -216,11 +221,11 @@ void PodcastManager::cancelDownloadPodcast(PodcastEpisode *episode)
         qWarning() << "Canceled episode was not in the queue.";
     }
 
+    PodcastChannel *channel = m_channelsModel->podcastChannelById(episode->channelid());
+    channel->setIsDownloading(false);
+
     m_isDownloading = false;
     executeNextDownload();
-
-//    PodcastEpisodesModel *episodeModel = m_episodeModelFactory->episodesModel(episode->channelid());
-//    episodeModel->refreshEpisode(episode);
 }
 
 
@@ -259,12 +264,18 @@ void PodcastManager::onPodcastChannelCompleted()
     channel->setXml(data);
     channelRequestMap.remove(reply->url().toString());
 
+    if (PodcastRSSParser::isValidPodcastFeed(data) == false) {
+        qDebug() << "Podcast feed is not valid! Not adding data to DB...";
+        emit showInfoBanner("Podcast feed is not valid. Cannot add subscription...");
+        return;
+    }
+
     bool rssOk;
     rssOk = PodcastRSSParser::populateChannelFromChannelXML(channel,
                                                             channel->xml());
-
     if (rssOk == false) {
-        emit showInfoBanner("Unable to add subscription from that location");
+        emit showInfoBanner("Podcast feed is not valid. Cannot add subscription...");
+        return;
     }
 
     // Cache the channel logo locally on file system.
@@ -343,6 +354,7 @@ void PodcastManager::onPodcastEpisodesRequestCompleted()
     qDebug() << "Podcast channel refresh finished";
 
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+
     PodcastChannel *channel = channelForNetworkReply(reply);
     if (channel == 0) {
         qWarning() << "Podcast channel from reply is NULL! Doing nothing.";
@@ -358,6 +370,13 @@ void PodcastManager::onPodcastEpisodesRequestCompleted()
     savePodcastEpisodes(channel);
 }
 
+void PodcastManager::onPodcastEpisodesRequestError(QNetworkReply::NetworkError error)
+{
+    if (error != QNetworkReply::NoError) {
+        emit showInfoBanner("Cannot refresh. Network error.");
+    }
+}
+
 bool PodcastManager::savePodcastEpisodes(PodcastChannel *channel)
 {
     QByteArray episodeXmlData = channel->xml();
@@ -367,7 +386,7 @@ bool PodcastManager::savePodcastEpisodes(PodcastChannel *channel)
                                                              episodeXmlData);
 
     if (rssOk == false) {
-        emit showInfoBanner("Unable to add subscription from that location");
+        emit showInfoBanner("Podcast feed invalid. Cannot add subscription.");
         return false;
     }
 
@@ -427,6 +446,9 @@ void PodcastManager::onPodcastEpisodeDownloaded(PodcastEpisode *episode)
     episodeModel->refreshEpisode(episode);
     m_channelsModel->refreshChannel(episode->channelid());
 
+    PodcastChannel *channel = m_channelsModel->podcastChannelById(episode->channelid());
+    channel->setIsDownloading(false);
+
     emit podcastEpisodeDownloaded(episode);
 
     m_isDownloading = false;
@@ -449,6 +471,9 @@ void PodcastManager::onPodcastEpisodeDownloadFailed(PodcastEpisode *episode)
             this, SLOT(onPodcastEpisodeDownloadFailed(PodcastEpisode*)));
 
     m_isDownloading = false;
+    PodcastChannel *channel = m_channelsModel->podcastChannelById(episode->channelid());
+    channel->setIsDownloading(false);
+
 
     if (m_episodeDownloadQueue.contains(episode)) {
         m_episodeDownloadQueue.removeOne(episode);
@@ -473,6 +498,8 @@ void PodcastManager::executeNextDownload()
         connect(episode, SIGNAL(podcastEpisodeDownloadFailed(PodcastEpisode*)),
                 this, SLOT(onPodcastEpisodeDownloadFailed(PodcastEpisode*)));
 
+        PodcastChannel *channel = m_channelsModel->podcastChannelById(episode->channelid());
+        channel->setIsDownloading(true);
 
         episode->setState(PodcastEpisode::DownloadingState);
         episode->setHasBeenCanceled(false);
@@ -491,7 +518,7 @@ QString PodcastManager::redirectedRequest(QNetworkReply *reply)
                      reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
 
     if (possibleRedirectUrl.toUrl().isValid()) {
-        QUrl redirectedUrl = possibleRedirectUrl.toUrl();
+        QUrl redirectedUrl = QUrl::fromUserInput(possibleRedirectUrl.toString());
         qDebug() << "We have been redirected. New URL is " << redirectedUrl;
         return redirectedUrl.toString();
     }

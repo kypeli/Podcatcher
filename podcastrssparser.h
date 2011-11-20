@@ -24,6 +24,7 @@
 #include "podcastchannel.h"
 #include "podcastepisode.h"
 
+class QDomNode;
 class PodcastRSSParser : public QObject
 {
     Q_OBJECT
@@ -36,11 +37,15 @@ public:
     static bool populateEpisodesFromChannelXML(QList<PodcastEpisode *> *episodes,
                                                QByteArray xmlReply);
 
+    static bool isValidPodcastFeed(QByteArray xmlReply);
+
 signals:
 
 public slots:
 
 private:
+    static QDateTime parsePubDate(const QDomNode &node);
+    static QString trimPubDate(const QString &pubdate);
 
 };
 

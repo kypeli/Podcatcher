@@ -16,7 +16,7 @@
  * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 1.1
-import com.meego 1.0
+import com.nokia.meego 1.0
 import com.nokia.extras 1.0
 
 Page {
@@ -132,30 +132,54 @@ Page {
                     }
                 }
 
-                Label {
-                    id: channelName;
+                Item {
+                    id: channelNameItem
                     anchors.left: channelLogo.right
                     anchors.leftMargin: 10;
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: title
-                    width: searchItem.width - channelLogo.width - subscribeButton.width
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                }
+                    width: searchItem.width - channelLogo.width - 10
+                    height: parent.height
 
-                Button {
-                    id: subscribeButton
-                    anchors.right: searchItem.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "Subscribe"
-                    width: 150
+                    Column {
+                        width: parent.width
+                        spacing: 5
 
-                    onClicked: {
-                        console.log("Subscribe to podcast with url: " + url)
-                        mainPage.addPodcast(url, logoUrl);
-                        pageStack.pop(mainPage);
+                        Row {
+                            width: parent.width
+
+                            Label {
+                                id: channelName;
+                                text: title
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                font.pixelSize: 25
+                                width: parent.width - subscribeButton.width
+                            }
+
+                            Button {
+                                id: subscribeButton
+                                anchors.leftMargin: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Subscribe"
+                                width: 150
+
+                                onClicked: {
+                                    console.log("Subscribe to podcast with url: " + url)
+                                    mainPage.addPodcast(url, logoUrl);
+                                    pageStack.pop(mainPage);
+                                }
+                            }
+                        }
+
+                        Label {
+                            id: channelUrl;
+                            text: url
+                            font.pixelSize: 17
+                            color: "grey"
+                            width: parent.width
+                            elide: Text.ElideRight
+                        }
+
                     }
                 }
-
             }
 
             XmlListModel {

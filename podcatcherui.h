@@ -35,6 +35,7 @@ public:
     Q_INVOKABLE void deletePodcasts(int channelId);
     Q_INVOKABLE bool isDownloading();
     Q_INVOKABLE bool isLiteVersion();
+    Q_INVOKABLE void refreshChannels();
     Q_INVOKABLE QString versionString();
 
     void downloadNewEpisodes(QString channelId);

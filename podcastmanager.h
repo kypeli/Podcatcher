@@ -24,6 +24,7 @@
 #include <QMap>
 #include <QVariant>
 #include <QFutureWatcher>
+#include <QNetworkReply>
 
 #include <gq/gconfitem.h>
 
@@ -34,7 +35,6 @@
 #include "podcastepisodesmodelfactory.h"
 
 class PodcastSQLManager;
-class QNetworkReply;
 class PodcastManager : public QObject
 {
     Q_OBJECT
@@ -58,7 +58,6 @@ public:
     void refreshAllChannels();
     void downloadNewEpisodes(int channelId);
 
-//    static QList<QObject *> toPodcastChannelsModel(QList<PodcastChannel *> list);
     PodcastChannel* podcastChannel(int channelId);
     void removePodcastChannel(int channelId);
 
@@ -94,6 +93,7 @@ private slots:
    void onPodcastChannelLogoCompleted();
 
    void onPodcastEpisodesRequestCompleted();
+   void onPodcastEpisodesRequestError(QNetworkReply::NetworkError error);
 
    void onPodcastEpisodeDownloaded(PodcastEpisode *episode);
    void onPodcastEpisodeDownloadFailed(PodcastEpisode* episode);

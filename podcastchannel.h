@@ -29,6 +29,7 @@ class PodcastChannel : public QObject
     Q_PROPERTY(QString title READ title WRITE setTitle)
     Q_PROPERTY(QString description READ description WRITE setDescription)
     Q_PROPERTY(bool isRefreshing READ isRefreshing WRITE setIsRefreshing)
+    Q_PROPERTY(bool isDownloading READ isDownloading WRITE setIsDownloading NOTIFY downloadingChanged)
 
 public:
     explicit PodcastChannel(QObject *parent = 0);
@@ -41,6 +42,7 @@ public:
     void setUrl(const QString &url);
     void setDescription(const QString &desc);
     void setIsRefreshing(bool refreshing);
+    void setIsDownloading(bool downloading);
     void setUnplayedEpisodes(int unplayed);
 
     void setXml(QByteArray xml);
@@ -53,6 +55,7 @@ public:
     QString url() const;
     QString description() const;
     bool isRefreshing() const;
+    bool isDownloading() const;
     int unplayedEpisodes() const;
 
     QByteArray xml() const;
@@ -64,6 +67,7 @@ public:
 
 signals:
     void channelChanged();
+    void downloadingChanged();
 
 public slots:
 
@@ -75,6 +79,7 @@ private:
     QString m_url;
     QString m_description;
     bool m_isRefreshing;
+    bool m_isDownloading;
     int m_unplayedEpisodes;
 
     QByteArray m_xml;

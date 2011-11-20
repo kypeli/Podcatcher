@@ -17,6 +17,7 @@ class PodcastChannelsModel : public QAbstractListModel
         DescriptionRole,
         LogoRole,
         IsRefreshingRole,
+        IsDownloadingRole,
         UnplayedEpisodesRole
     };
 

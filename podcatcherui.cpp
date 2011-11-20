@@ -139,12 +139,26 @@ void PodcatcherUI::onPlayPodcast(int channelId, int index)
     }
 
     PodcastEpisode *episode = episodesModel->episode(index);
-    episode->setLastPlayed(QDateTime::currentDateTime());
-    episodesModel->refreshEpisode(episode);
-
-    m_channelsModel->refreshChannel(channelId);
 
     QUrl file = QUrl::fromLocalFile(episode->playFilename());
+
+    // If the file doens't exist, update the state in the DB
+    // and do nothing more.
+    QFile checkFile(file.toLocalFile());
+    if (!checkFile.exists()) {
+        qDebug() << "Original file " << file.toLocalFile() << " doesn't exist anymore.";
+        episode->setPlayFilename("");
+        episode->setState(PodcastEpisode::GetState);
+        episode->setLastPlayed(QDateTime());
+        episodesModel->refreshEpisode(episode);
+
+        emit showInfoBanner("Podcast episode not found.");
+        return;
+    }
+
+    episode->setLastPlayed(QDateTime::currentDateTime());
+    episodesModel->refreshEpisode(episode);
+    m_channelsModel->refreshChannel(channelId);
 
     qDebug() << "Launching the music player for file" << file;
 
@@ -242,10 +256,17 @@ QString PodcatcherUI::versionString()
 {
     QString tmpVersion(QString::number(PODCATCHER_VERSION));
     QString version = tmpVersion.at(0);
-    for (int i=1; i<tmpVersion.length(); i++) {
-        version.append(".").append(tmpVersion.at(i));
+    version.append(".").append(tmpVersion.at(1));
+    version.append(".");
+    for (int i=2; i<tmpVersion.length(); i++) {
+        version.append(tmpVersion.at(i));
     }
 
     return version;
+}
+
+void PodcatcherUI::refreshChannels()
+{
+    m_pManager.refreshAllChannels();
 }
 

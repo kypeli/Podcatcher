@@ -16,8 +16,9 @@
  * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 1.1
-import com.meego 1.0
+import com.nokia.meego 1.0
 import com.nokia.extras 1.0
+
 
 Item {
     id: podcastsEpisodesList
@@ -25,6 +26,37 @@ Item {
     signal selectedEpisodeDescription(string desc)
 
     property int channelId
+
+    function downloadingStatusText(alreadyDownloadedSize, totalDownloadSize) {
+        var downloadedStatus = parseInt(alreadyDownloadedSize) / 1024;  // to kB
+        var totalDownloadStatus = parseInt(totalDownloadSize) / 1024;   // to kB
+
+        var downloaded_mbs = Math.round(downloadedStatus / 1024);  // 1MB = 1024kB
+        var total_mbs = Math.round(totalDownloadStatus / 1024); // 1MB = 1024kB
+
+        var download_statusText = "Downloaded ";
+
+        if (downloaded_mbs == 0) {
+            download_statusText += Math.round(downloadedStatus % 1024) + " kB";
+        } else {
+            download_statusText += (downloadedStatus / 1024).toFixed(1) + " MB";
+        }
+
+        var total;
+        if (total_mbs == 0) {
+             total = Math.round(totalDownloadStatus % 1024);
+            if (total > 0 ) {
+                download_statusText += " of total " + total + " kB";
+            }
+        } else {
+            total = Math.round(totalDownloadStatus / 1024);
+            if (total > 0 ) {
+                download_statusText += " of total " + total + " MB";
+            }
+        }
+
+        return download_statusText;
+    }
 
     Rectangle {
         id: podcastEpisodesInfoRect
@@ -80,6 +112,14 @@ Item {
                     visible: false
                 }
 
+                Rectangle {
+                    id: listItemBackground
+                    width: parent.width
+                    height: parent.height
+                    color: "transparent"
+                    anchors.left: downloadedIndicator.right;
+                }
+
                 Row {
                     id: episodeRow
                     width: parent.width - downloadProgress.width
@@ -117,6 +157,15 @@ Item {
                             font.pixelSize: 16
                             text: lastTimePlayed
                             height: Text.paintedHeight
+                        }
+
+                        Label {
+                            id: downloadBytesText
+                            anchors.left: episodeName.left
+                            font.pixelSize: 16
+                            text: downloadingStatusText(alreadyDownloadedSize, totalDownloadSize);
+                            height: Text.paintedHeight
+                            visible: false;
                         }
                     }
                 }
@@ -248,6 +297,10 @@ Item {
                         }
                         PropertyChanges {
                             target: channelPublished
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: downloadBytesText
                             visible: true
                         }
                     },
@@ -273,12 +326,17 @@ Item {
                             target: downloadButton
                             visible: false
                         }
+                        PropertyChanges {
+                            target: downloadBytesText
+                            visible: false
+                        }
                     },
                     State {
                         name: "played"
                         PropertyChanges {
                             target: downloadedIndicator
-                            visible: false
+                            visible: true
+                            color:  "#d8d8d9"
                         }
                         PropertyChanges {
                             target: playButton

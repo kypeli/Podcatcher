@@ -219,6 +219,7 @@ void PodcastEpisode::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     Q_UNUSED(bytesTotal)
 
     m_bytesDownloaded = bytesReceived;
+    m_downloadSize = bytesTotal;
     emit episodeChanged();
 }
 

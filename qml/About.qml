@@ -16,7 +16,7 @@
  * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 1.1
-import com.meego 1.0
+import com.nokia.meego 1.0
 
 Page {
     id: mainPage
@@ -105,7 +105,7 @@ Page {
                           "Team Qontactors and<BR>team CoCo of Harmattan<BR><BR><BR>" +
                           "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
                           "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
-                          "...also greets to fopaman and BCG<BR>of Sorcerers!";
+                          "...also greets to Fopaman and BCG<BR>of Sorcerers!";
 
                     horizontalAlignment: Text.AlignHCenter;
                 }

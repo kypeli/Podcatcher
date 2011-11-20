@@ -11,6 +11,7 @@ PodcastChannelsModel::PodcastChannelsModel(QObject *parent) :
     roles[DescriptionRole] = "description";
     roles[LogoRole] = "logo";
     roles[IsRefreshingRole] = "isRefreshing";
+    roles[IsDownloadingRole] = "isDownloading";
     roles[UnplayedEpisodesRole] = "unplayedEpisodes";
 
     setRoleNames(roles);
@@ -56,6 +57,10 @@ QVariant PodcastChannelsModel::data(const QModelIndex &index, int role) const
 
     case IsRefreshingRole:
         return channel->isRefreshing();
+        break;
+
+    case IsDownloadingRole:
+        return channel->isDownloading();
         break;
 
     case UnplayedEpisodesRole:

@@ -44,6 +44,7 @@ bool PodcastRSSParser::populateChannelFromChannelXML(PodcastChannel *channel, QB
 
     QDomDocument xmlDocument;
     if (xmlDocument.setContent(xmlReply) == false) {        // Construct the XML document and parse it.
+        qWarning() << "Could not parse channel XML content! Data: " << QString(xmlDocument.toByteArray());
         return false;
     }
 
@@ -81,7 +82,6 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
 
     QDomNodeList channelNodes = docElement.elementsByTagName("item");  // Find all the "item nodes from the feed XML.
     qDebug() << "I have" << channelNodes.size() << "episode elements";
-    QLocale loc(QLocale::C);
 
     for (uint i=0; i<channelNodes.length(); i++) {
         QDomNode node = channelNodes.at(i);
@@ -91,43 +91,14 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
         episode->setDescription(node.firstChildElement("description").text());
         episode->setDuration(node.firstChildElement("itunes:duration").text());
 
-        // Set the publication timestamp by parsing the RFC 822 time format from the XML
-        // feed and then truncating the parsed string so that it does not include the timezone
-        // information as QDateTime cannot parse that. Create a QDateTime from this string
-        // and store it in the ChannelEpisode.
-        QString pubDateString = node.firstChildElement("pubDate").text();
-
-        QString tryParseDate = pubDateString.left(QString("ddd, dd MMM yyyy HH:mm:ss").length());  // QDateTime cannot parse RFC 822 time format, so remove the timezone information from it.
-        QDateTime pubDate = loc.toDateTime(tryParseDate,
-                                           "ddd, dd MMM yyyy HH:mm:ss");
-        if (!pubDate.isValid()) {
-            // We probably could not parse the date which in some broken podcast feeds is
-            // defined only by one integer instead of two (like "2 Jul" instead of "02 Jul")
-            // I am looking at you Skeptics Guide to the Universe!
-
-            qDebug() << "Could not parse pubDate. Trying with just one date integer.";
-
-            tryParseDate = pubDateString.left(QString("ddd, d MMM yyyy HH:mm:ss").length());
-            pubDate = loc.toDateTime(tryParseDate,
-                                            "ddd, d MMM yyyy HH:mm:ss");
-        }
-
-        if (!pubDate.isValid()) {
-            // Let's try just once more just to please Hacker Public Radio
-            qDebug() << "Could not parse pubDate. Trying with an odd format from Hacker Public Radio";
-
-            tryParseDate = pubDateString.left(QString("yyyy-MM-dd").length());
-            pubDate = loc.toDateTime(tryParseDate,
-                                            "yyyy-MM-dd");
-        }
-
+        QDateTime pubDate = parsePubDate(node);
 
         if (!pubDate.isValid()) {
             qWarning() << "Could not parse pubDate for podcast episode!";
+            return false;
         } else {
             episode->setPubTime(pubDate);
         }
-
 
         QDomNamedNodeMap attrMap = node.firstChildElement("enclosure").attributes();
         episode->setDownloadLink(attrMap.namedItem("url").toAttr().value());
@@ -136,5 +107,102 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
         episodes->append(episode);
     }
 
-    return episodes;
+    return true;
 }
+
+bool PodcastRSSParser::isValidPodcastFeed(QByteArray xmlReply)
+{
+    qDebug() << "Checking is podcast feed is valid.";
+    if (xmlReply.size() < 10) {
+        qDebug() << "Not valid!";
+        return false;
+    }
+
+    QDomDocument xmlDocument;
+    if (xmlDocument.setContent(xmlReply) == false) {        // Construct the XML document and parse it.
+        return false;
+    }
+
+    QDomElement docElement = xmlDocument.documentElement();
+
+    QDomNodeList channelNodes = docElement.elementsByTagName("item");  // Find all the "item nodes from the feed XML.
+
+    for (uint i=0; i<channelNodes.length(); i++) {
+        QDomNode node = channelNodes.at(i);
+
+        QDateTime pubDate = parsePubDate(node);
+
+        if (!pubDate.isValid()) {
+            qDebug() << "Not valid!";
+            return false;
+        }
+    }
+
+    qDebug() << "Is valid.";
+    return true;
+}
+
+QDateTime PodcastRSSParser::parsePubDate(const QDomNode &node)
+{
+    // Set the publication timestamp by parsing the RFC 822 time format from the XML
+    // feed and then truncating the parsed string so that it does not include the timezone
+    // information as QDateTime cannot parse that. Create a QDateTime from this string
+    // and store it in the ChannelEpisode.
+    QString pubDateString = node.firstChildElement("pubDate").text();
+    qDebug() << "Feed pubdate: " << pubDateString;
+
+    // Some feeds use just "date". Let's go for that as well is we didn't find it in "pubDate".
+    if (pubDateString.isEmpty()) {
+        pubDateString = node.firstChildElement("date").text();
+        qDebug() << "Empty <pubDate> tag. Feed pubdate: " << pubDateString;
+    }
+
+    if (pubDateString.isEmpty()) {
+        qDebug() << "Could not find pubDate attribute. Giving up...";
+        return QDateTime();
+    }
+
+    pubDateString = trimPubDate(pubDateString);
+
+    QLocale loc(QLocale::C);
+    QString tryParseDate = pubDateString.left(QString("dd MMM yyyy HH:mm:ss").length());  // QDateTime cannot parse RFC 822 time format, so remove the timezone information from it.
+    QDateTime pubDate = loc.toDateTime(tryParseDate,
+                                       "dd MMM yyyy HH:mm:ss");
+    if (!pubDate.isValid()) {
+        // We probably could not parse the date which in some broken podcast feeds is
+        // defined only by one integer instead of two (like "2 Jul" instead of "02 Jul")
+        // I am looking at you Skeptics Guide to the Universe!
+
+        qDebug() << "Could not parse pubDate. Trying with just one date integer.";
+
+        tryParseDate = pubDateString.left(QString("d MMM yyyy HH:mm:ss").length());
+        pubDate = loc.toDateTime(tryParseDate,
+                                        "d MMM yyyy HH:mm:ss");
+    }
+
+    if (!pubDate.isValid()) {
+        // Let's try just once more just to please Hacker Public Radio
+        qDebug() << "Could not parse pubDate. Trying with an odd format from Hacker Public Radio";
+
+        tryParseDate = pubDateString.left(QString("yyyy-MM-dd").length());
+        pubDate = loc.toDateTime(tryParseDate,
+                                        "yyyy-MM-dd");
+    }
+
+    return pubDate;
+}
+
+QString PodcastRSSParser::trimPubDate(const QString &pubdate) {
+    QString parsedString = pubdate;
+
+    // Remove optional day field.
+    // Input is <pubDate>Wed, 6 Jul 2005 13:00:00 PDT</pubDate>
+    // So we remove the start with "Wed, "
+    if (parsedString.indexOf(',') > 0) {
+        parsedString = parsedString.mid(pubdate.indexOf(',') + 2);
+    }
+
+    qDebug() << "Trimmed feed URL: " << parsedString;
+    return parsedString;
+}
+

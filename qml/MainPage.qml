@@ -16,7 +16,7 @@
  * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 1.1
-import com.meego 1.0
+import com.nokia.meego 1.0
 import com.nokia.extras 1.0
 
 Page {
@@ -27,9 +27,6 @@ Page {
     property int contextUnplayedEpisodes;
 
     state: ""
-
-    anchors.margins: UiConstants.DefaultMargin
-    anchors.fill: parent
 
     function openFile(file) {
         var component = Qt.createComponent(file)
@@ -117,6 +114,22 @@ Page {
             }
         }
 
+        Rectangle {
+            id: highlight1
+            width: parent.width
+            height: 1
+            color: "#CDCECF"
+            border.width: 0
+        }
+
+        Rectangle {
+            id: highlight2
+            width: parent.width
+            height: 1
+            color: "#FFFFFF"
+            border.width: 0
+        }
+
         ListView {
             id: podcastChannelsList
             model: channelsModel
@@ -140,6 +153,14 @@ Page {
                     height: parent.height;
                 }
 
+                Rectangle {
+                    id: listItemBackground
+                    width: parent.width
+                    height: 90
+                    color: "transparent"
+                    anchors.left: channelLogoId.right;
+                }
+
                 Label {
                     id: channelName;
                     anchors.left: channelLogoId.right
@@ -156,9 +177,22 @@ Page {
                     largeSized: true
                     anchors.right: drilldownArrow.left
                     anchors.margins: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: (value > 0)
-                }
+                    visible: ((value > 0) || isDownloading)
+                    y: parent.height/2 - height/2  // We can't use anchors (animation would not work) so center vertically like this.
+
+                    SequentialAnimation on y {
+                        running: isDownloading
+                        loops: Animation.Infinite
+                        PropertyAnimation { to: unplayedNumber.y + unplayedNumber.height / 3; duration: 500; easing.type: Easing.InOutQuad }
+                        PropertyAnimation { to: unplayedNumber.y - unplayedNumber.height / 3; duration: 500; easing.type: Easing.InOutQuad }
+
+                        onRunningChanged: {
+                            if (isDownloading === false) {
+                                unplayedNumber.y = unplayedNumber.parent.height/2 - unplayedNumber.height/2;
+                            }
+                        }
+                    }
+               }
 
                Image {
                    id: drilldownArrow
