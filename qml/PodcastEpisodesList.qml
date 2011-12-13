@@ -21,7 +21,7 @@ import com.nokia.extras 1.0
 
 
 Item {
-    id: podcastsEpisodesList
+    id: podcastsEpisodesList    
 
     signal selectedEpisodeDescription(string desc)
 
@@ -98,6 +98,13 @@ Item {
                             console.log("Press and hold, index: " + index);
                             podcastEpisodesList.currentIndex = index
                             contextMenu.open();
+                        }
+
+                        if (episodeState == "get") {
+                            console.log("Press and hold, streaming index: " + index);
+                            podcastEpisodesList.currentIndex = index
+                            streamingContextMenu.open();
+
                         }
                     }
 
@@ -416,4 +423,34 @@ Item {
             }
          }
     }
+
+    Menu { id: streamingContextMenu; visualParent: pageStack;
+        MenuLayout {
+            MenuItem {
+                text: "Start streaming the podcast"
+                onClicked: {
+                    appWindow.startStreaming(podcastsEpisodesList.channelId, podcastEpisodesList.currentIndex);
+                }
+
+            }
+         }
+    }
+
+    Connections {
+        target: ui
+        onStreamingUrlResolved: {
+            if (streamUrl.length < 5) {
+                mainPage.infoBanner.text = "Unable to stream podcast.";
+                mainPahe.infoBanner.show();
+            } else {
+                console.log("Streaming " + streamUrl + streamUrl);
+                mainPage.audioStreamer.playStream(streamUrl, streamTitle);
+
+                if (episodesPage.pageStack.depth > 1)  {
+                    episodesPage.pageStack.pop();
+                }
+            }
+        }
+    }
+
 }

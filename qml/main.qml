@@ -20,6 +20,7 @@ import com.nokia.meego 1.0
 
 PageStackWindow {
     id: appWindow
+
     signal showChannel(string id)
     signal downloadPodcast(int channelid, int index)
     signal playPodcast(int channelId, int index)
@@ -30,6 +31,7 @@ PageStackWindow {
     signal deleteChannel(string channelId)
     signal allListened(string channelId)
     signal deleteDownloaded(int channelId, int index)
+    signal startStreaming(int channelId, int index)
 
     showToolBar: false
     showStatusBar: false
@@ -42,6 +44,5 @@ PageStackWindow {
     MainPage{
         id: mainPage
     }
-
 
 }

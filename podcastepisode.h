@@ -67,6 +67,7 @@ public:
     QString episodeState() const;
     QDateTime lastPlayed() const;
     bool hasBeenCanceled() const;
+    void getAudioUrl();
 
     void cancelCurrentDownload();
     void deleteDownload();
@@ -77,16 +78,18 @@ signals:
     void podcastEpisodeDownloaded(PodcastEpisode *episode);
     void podcastEpisodeDownloadFailed(PodcastEpisode *episode);
     void downloadedBytesUpdated(int bytes);
+    void streamingUrlResolved(QString url, QString title);
 
 public slots:
 
 private slots:
     void onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void onPodcastEpisodeDownloadCompleted();
+    void onAudioUrlMetadataChanged();
 
 private:
-    bool isValidAudiofile() const;
-    bool isOnlyWebsiteUrl() const;
+//    bool isValidAudiofile() const;
+//    bool isOnlyWebsiteUrl() const;
 
     int m_dbid;
     int m_channelid;
@@ -104,6 +107,9 @@ private:
 
     QNetworkAccessManager *m_dlNetworkManager;
     QNetworkReply *m_currentDownload;
+
+    QNetworkAccessManager *m_streamResolverManager;
+    int m_streamResolverTries;
 };
 
 #endif // PODCASTEPISODE_H

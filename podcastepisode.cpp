@@ -353,6 +353,7 @@ void PodcastEpisode::setAsPlayed()
     setLastPlayed(QDateTime::currentDateTime());
 }
 
+/*
 bool PodcastEpisode::isValidAudiofile() const
 {
     qDebug() << "DOWNLOAD LINK:" << m_downloadLink;
@@ -370,8 +371,64 @@ bool PodcastEpisode::isValidAudiofile() const
 
     return false;
 }
+*/
 
-bool PodcastEpisode::isOnlyWebsiteUrl() const
+/*bool PodcastEpisode::isOnlyWebsiteUrl() const
 {
     return (!isValidAudiofile() && QUrl(m_downloadLink).isValid());
+}
+*/
+void PodcastEpisode::getAudioUrl()
+{
+    m_streamResolverTries = 0;
+    m_streamResolverManager = new QNetworkAccessManager(this);
+    QNetworkRequest request;
+    request.setUrl(this->downloadLink());
+
+    QNetworkReply *reply = m_streamResolverManager->get(request);
+    connect(reply, SIGNAL(metaDataChanged()),
+            this,  SLOT(onAudioUrlMetadataChanged()));
+
+}
+
+void PodcastEpisode::onAudioUrlMetadataChanged()
+{
+    bool audioFound = false;
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+
+    if (m_streamResolverTries >= 5) {
+        qDebug() << "Did not find a proper MP3 URL to stream! Giving up after " << m_streamResolverTries << " tries.";
+        emit streamingUrlResolved("", "");
+        m_streamResolverManager->deleteLater();
+    }
+
+    QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
+
+    if (contentType == "audio/mpeg" ||
+        contentType == "audio/mpeg3") {
+        qDebug() << "Found MP3 URL to stream: " << reply->url();
+        emit streamingUrlResolved(reply->url().toString(), m_title);
+        m_streamResolverManager->deleteLater();
+        audioFound = true;
+    }
+
+    QString redirectedUrl = PodcastManager::redirectedRequest(reply);
+    if (QUrl(redirectedUrl).isValid()) {
+        qDebug() << "We have been redirected...";
+        QNetworkRequest request;
+        request.setUrl(redirectedUrl);
+
+        QNetworkReply *newReply = m_streamResolverManager->get(request);
+        connect(newReply, SIGNAL(metaDataChanged()),
+                this,  SLOT(onAudioUrlMetadataChanged()));
+
+        m_streamResolverTries++;
+
+    } else if (!audioFound) {
+        qDebug() << "Error resolving streaming URL!";
+        emit streamingUrlResolved("", "");
+        m_streamResolverManager->deleteLater();
+    }
+
+    reply->deleteLater();
 }

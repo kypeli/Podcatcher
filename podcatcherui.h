@@ -44,6 +44,7 @@ signals:
     void showInfoBanner(QString text);
     void downloadedBytesUpdated(int bytes);
     void downloadingPodcasts(bool downloading);
+    void streamingUrlResolved(QString streamUrl, QString streamTitle);
 
 public slots:
 
@@ -57,6 +58,8 @@ private slots:
     void onDeleteChannel(QString channelId);
     void onAllListened(QString channelId);
     void onDeletePodcast(int channelId, int index);
+    void onStartStreaming(int channelId, int index);
+    void onStreamingUrlResolved(QString streamUrl, QString streamTitle);
 
 private:
     PodcastManager m_pManager;

@@ -71,6 +71,9 @@ PodcatcherUI::PodcatcherUI()
     connect(rootDeclarativeItem, SIGNAL(deleteDownloaded(int, int)),
             this, SLOT(onDeletePodcast(int, int)));
 
+    connect(rootDeclarativeItem, SIGNAL(startStreaming(int, int)),
+            this, SLOT(onStartStreaming(int, int)));
+
     m_pManager.refreshAllChannels();   // Refresh all feeds and download new episodes.
 
     QTimer::singleShot(10000, &m_pManager, SLOT(cleanupEpisodes()));
@@ -241,6 +244,33 @@ void PodcatcherUI::deletePodcasts(int channelId)
 {
     m_pManager.deleteAllDownloadedPodcasts(channelId);
     m_channelsModel->refreshChannel(channelId);
+}
+
+void PodcatcherUI::onStartStreaming(int channelId, int index)
+{
+    qDebug() << "Requested streaming of epsiode:" << channelId << index;
+
+    PodcastEpisodesModel *episodesModel = modelFactory->episodesModel(channelId);
+    PodcastEpisode *episode = episodesModel->episode(index);
+
+    connect(episode, SIGNAL(streamingUrlResolved(QString, QString)),
+            this, SLOT(onStreamingUrlResolved(QString, QString)));
+
+    qDebug() << "Episode url:" << episode->downloadLink() << ", need to find a MP3 file for this link.";
+    episode->getAudioUrl();
+}
+
+void PodcatcherUI::onStreamingUrlResolved(QString streamUrl, QString streamTitle)
+{
+    PodcastEpisode *episode = qobject_cast<PodcastEpisode *>(sender());
+    disconnect(episode, SIGNAL(streamingUrlResolved(QString, QString)),
+            this, SLOT(onStreamingUrlResolved(QString, QString)));
+
+    if (streamUrl.isEmpty()) {
+        emit showInfoBanner("Unable to stream podcast.");
+    } else {
+        emit streamingUrlResolved(streamUrl, streamTitle);
+    }
 }
 
 bool PodcatcherUI::isLiteVersion()

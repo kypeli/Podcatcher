@@ -26,7 +26,15 @@ Page {
 
     tools:
         ToolBarLayout {
-        ToolIcon { iconId: "toolbar-back"; onClicked: { myMenu.close(); pageStack.pop(); } }
+        ToolIcon { id: backToolButton; iconId: "toolbar-back";
+            onClicked: {
+                myMenu.close();
+                if (pageStack.depth > 1)  {
+                    pageStack.pop();
+                }
+            }
+        }
+
         ToolIcon {
             iconId: "toolbar-refresh"
             onClicked: {

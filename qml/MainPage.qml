@@ -26,6 +26,9 @@ Page {
     property string contextMenuChannelName;
     property int contextUnplayedEpisodes;
 
+    property variant audioStreamer : audioStreamerUi
+    property variant infoBanner : uiInfoBanner
+
     state: ""
 
     function openFile(file) {
@@ -44,6 +47,8 @@ Page {
 
     tools:
         ToolBarLayout {
+        id: mainToolbar
+
         ToolIcon {
             iconId: "toolbar-add"
             onClicked: {
@@ -111,6 +116,7 @@ Page {
                     running: mainPage.state == "downloading"
                     loops: Animation.Infinite; duration: 1400
                 }
+                smooth: true
             }
         }
 
@@ -136,7 +142,7 @@ Page {
             visible: (podcastChannelsList.count > 0);
             spacing: 1
             width: parent.width
-            height: parent.height - mainPageTitle.height
+            height: parent.height - mainPageTitle.height - audioStreamerUi.height
             clip: true
 
             delegate: Item {
@@ -226,7 +232,17 @@ Page {
                 fetchingChannelBanner.hide();
             }
         }
+
+        AudioStreamer {
+            id: audioStreamerUi
+            width: parent.width
+            height: 0
+            visible: false
+        }
     }
+
+
+
 
     InfoBanner {
         id: uiInfoBanner
@@ -256,6 +272,16 @@ Page {
             } else {
                 mainPage.state = ""
             }
+        }
+    }
+
+    Connections {
+        target: audioStreamer
+
+        onPlayStream: {
+            console.log("Showing audio streamer.");
+            audioStreamerUi.height = 130
+            audioStreamerUi.visible = true
         }
     }
 
