@@ -16,12 +16,21 @@ Item {
     state: ""
 
     function durationText(curPos) {
-
         var curPosSecs = Math.floor((parseInt(curPos) / 1000));
 
         var curPlayTimeSecs = (curPosSecs % 60);
-        var curPlayTimeMins = Math.floor((curPosSecs / 60));
-        var curPlayTimeHours = Math.floor((curPlayTimeMins / 60));
+        var curPlayTimeMins = Math.floor((curPosSecs / 60)); console.log("MINS: " + curPlayTimeMins);
+        var curPlayTimeHours = Math.floor((curPosSecs / 3600));
+
+        if (curPlayTimeHours == 0) {
+            curPlayTimeHours = ""
+        } else if (curPlayTimeHours < 10) {
+            curPlayTimeHours = "0" + curPlayTimeHours.toString();
+        }
+
+        if (curPlayTimeHours > 0) {
+            curPlayTimeMins = curPlayTimeMins % 60;
+        }
 
         if (curPlayTimeSecs < 10) {
             curPlayTimeSecs = "0" + curPlayTimeSecs;
@@ -31,18 +40,11 @@ Item {
             curPlayTimeMins = "0" + curPlayTimeMins;
         }
 
-        if (curPlayTimeHours == 0) {
-            curPlayTimeHours = ""
-        } else if (curPlayTimeMins < 10) {
-            curPlayTimeHours = "0" + curPlayTimeHours;
-        }
-
-        if (curPlayTimeHours.length > 0) {
+        if (curPlayTimeHours.toString().length > 0) {
             curPlayTimeHours = curPlayTimeHours + " : ";
         }
 
-
-        var playtimeString = curPlayTimeHours + curPlayTimeMins + " : " + curPlayTimeSecs;
+        var playtimeString = curPlayTimeHours.toString() + curPlayTimeMins.toString() + " : " + curPlayTimeSecs.toString();
 
         return playtimeString;
     }
