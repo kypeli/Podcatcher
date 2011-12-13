@@ -19,7 +19,7 @@ Item {
         var curPosSecs = Math.floor((parseInt(curPos) / 1000));
 
         var curPlayTimeSecs = (curPosSecs % 60);
-        var curPlayTimeMins = Math.floor((curPosSecs / 60)); console.log("MINS: " + curPlayTimeMins);
+        var curPlayTimeMins = Math.floor((curPosSecs / 60));
         var curPlayTimeHours = Math.floor((curPosSecs / 3600));
 
         if (curPlayTimeHours == 0) {
