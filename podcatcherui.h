@@ -60,6 +60,7 @@ private slots:
     void onDeletePodcast(int channelId, int index);
     void onStartStreaming(int channelId, int index);
     void onStreamingUrlResolved(QString streamUrl, QString streamTitle);
+    void onAutoDownloadChanged(int channelId, bool autoDownload);
 
 private:
     PodcastManager m_pManager;

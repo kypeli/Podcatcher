@@ -228,12 +228,14 @@ void PodcastEpisode::onPodcastEpisodeDownloadCompleted()
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
 
     QString redirectedUrl = PodcastManager::redirectedRequest(reply);
-    if (!redirectedUrl.isEmpty()) {
+    if (redirectedUrl.isEmpty() == false) {
         m_downloadLink = redirectedUrl;
         reply->deleteLater();
         downloadEpisode();
         return;
     }
+
+// TODO: Proper way of handling downloads that are not audio or video formats.
 
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Download of podcast was not succesfull: " << reply->errorString();
@@ -353,25 +355,7 @@ void PodcastEpisode::setAsPlayed()
     setLastPlayed(QDateTime::currentDateTime());
 }
 
-/*
-bool PodcastEpisode::isValidAudiofile() const
-{
-    qDebug() << "DOWNLOAD LINK:" << m_downloadLink;
-    if (m_downloadLink.isEmpty()) {
-        return false;
-    }
 
-    // Download file must be some of these.
-    if (m_downloadLink.endsWith(".mp3", Qt::CaseInsensitive) ||
-        m_downloadLink.endsWith(".mp4", Qt::CaseInsensitive) ||
-        m_downloadLink.endsWith(".ogg", Qt::CaseInsensitive) ||
-        m_downloadLink.endsWith(".wav", Qt::CaseInsensitive) ) {
-        return true;
-    }
-
-    return false;
-}
-*/
 
 /*bool PodcastEpisode::isOnlyWebsiteUrl() const
 {
@@ -393,7 +377,6 @@ void PodcastEpisode::getAudioUrl()
 
 void PodcastEpisode::onAudioUrlMetadataChanged()
 {
-    bool audioFound = false;
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
 
     if (m_streamResolverTries >= 5) {
@@ -402,33 +385,45 @@ void PodcastEpisode::onAudioUrlMetadataChanged()
         m_streamResolverManager->deleteLater();
     }
 
+    if (isValidAudiofile(reply)) {
+        emit streamingUrlResolved(reply->url().toString(), m_title);
+        m_streamResolverManager->deleteLater();
+    } else {
+        QString redirectedUrl = PodcastManager::redirectedRequest(reply);
+
+        if (QUrl(redirectedUrl).isValid()) {
+            qDebug() << "We have been redirected...";
+            QNetworkRequest request;
+            request.setUrl(redirectedUrl);
+
+            QNetworkReply *newReply = m_streamResolverManager->get(request);
+            connect(newReply, SIGNAL(metaDataChanged()),
+                    this,  SLOT(onAudioUrlMetadataChanged()));
+
+            m_streamResolverTries++;
+
+        } else {
+            qDebug() << "Error resolving streaming URL!";
+            emit streamingUrlResolved("", "");
+            m_streamResolverManager->deleteLater();
+        }
+    }
+
+    reply->deleteLater();
+}
+
+bool PodcastEpisode::isValidAudiofile(QNetworkReply *reply) const
+{
     QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
 
     if (contentType == "audio/mpeg" ||
         contentType == "audio/mpeg3") {
         qDebug() << "Found MP3 URL to stream: " << reply->url();
-        emit streamingUrlResolved(reply->url().toString(), m_title);
-        m_streamResolverManager->deleteLater();
-        audioFound = true;
+        return true;
     }
 
-    QString redirectedUrl = PodcastManager::redirectedRequest(reply);
-    if (QUrl(redirectedUrl).isValid()) {
-        qDebug() << "We have been redirected...";
-        QNetworkRequest request;
-        request.setUrl(redirectedUrl);
+    qDebug() << "No audio file found:" << reply->url();
 
-        QNetworkReply *newReply = m_streamResolverManager->get(request);
-        connect(newReply, SIGNAL(metaDataChanged()),
-                this,  SLOT(onAudioUrlMetadataChanged()));
-
-        m_streamResolverTries++;
-
-    } else if (!audioFound) {
-        qDebug() << "Error resolving streaming URL!";
-        emit streamingUrlResolved("", "");
-        m_streamResolverManager->deleteLater();
-    }
-
-    reply->deleteLater();
+    return false;
 }
+

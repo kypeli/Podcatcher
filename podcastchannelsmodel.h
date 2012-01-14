@@ -18,7 +18,8 @@ class PodcastChannelsModel : public QAbstractListModel
         LogoRole,
         IsRefreshingRole,
         IsDownloadingRole,
-        UnplayedEpisodesRole
+        UnplayedEpisodesRole,
+        AutoDownloadOnRole
     };
 
 public:
@@ -34,6 +35,8 @@ public:
     PodcastChannel * podcastChannelById(int id);
     bool channelAlreadyExists(PodcastChannel *channel);
     void refreshChannel(int id);
+    void setAutoDownloadToDB(bool autoDownload);
+    void updateChannel(PodcastChannel *channel);
 
 signals:
 
@@ -41,7 +44,6 @@ public slots:
 
 private slots:
     void onChannelChanged();
-
 
 private:
     explicit PodcastChannelsModel(QObject *parent = 0);  // Do not let instantiation of this class...

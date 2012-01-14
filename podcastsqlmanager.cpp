@@ -60,59 +60,8 @@ PodcastSQLManager::PodcastSQLManager(QObject *parent) :
         return;
     }
 
-    // If database does not contain table "channels", so create it.
-    if (!m_connection.tables().contains("channels")) {
-        QSqlQuery q(m_connection);
-        m_connection.transaction();
+    createTables();
 
-        qDebug() << "Creating table 'channels'";
-
-        q.exec("CREATE TABLE channels (id INTEGER PRIMARY KEY, "
-                                      "rssurl TEXT, "
-                                      "title TEXT, "
-                                      "description TEXT, "
-                                      "logo TEXT)");
-   //     q.exec("INSERT INTO channels(description, logo) VALUES ('This is a test channel', 'test.jpg')");
-
-        if (!m_connection.commit()) {
-            qDebug() << "SQL error: " << m_connection.lastError().text();
-        }
-
-        if (!q.isValid()) {
-            qDebug() << q.lastError().text();
-        }
-
-    }
-
-    // If database does not contain the table "episodes", so crate it.
-    if (!m_connection.tables().contains("episodes")) {
-        QSqlQuery q(m_connection);
-        m_connection.transaction();
-
-        qDebug() << "Creating table 'episodes'";
-
-        q.exec("CREATE TABLE episodes (id INTEGER PRIMARY KEY, "
-                                      "title TEXT, "
-                                      "channelid INTEGER, "
-                                      "downloadLink TEXT, "
-                                      "lastPlayed INTEGER, "
-                                      "playLocation TEXT, "
-                                      "description TEXT, "
-                                      "published INTEGER, "
-                                      "duration TEXT, "
-                                      "downloadSize INTEGER, "
-                                       "hasBeenCanceled BOOLEAN, "
-                                      "FOREIGN KEY(channelid) REFERENCES channels(id))");
-//        q.exec("INSERT INTO episodes(description, channelid) VALUES ('This is a test episode', 1)");
-
-        if (!m_connection.commit()) {
-            qDebug() << "SQL error: " <<  m_connection.lastError().text();
-        }
-
-        if (!q.isValid()) {
-            qDebug() << q.lastError().text();
-        }
-    }
 }
 
 int PodcastSQLManager::podcastChannelToDB(PodcastChannel *channel)
@@ -139,11 +88,12 @@ int PodcastSQLManager::podcastChannelToDB(PodcastChannel *channel)
     // Item not found in database. Go ahead and insert it.
     m_connection.transaction();
 
-    q.prepare("INSERT INTO channels(rssurl, title, description, logo) VALUES (:url, :title, :desc, :logo)");
+    q.prepare("INSERT INTO channels(rssurl, title, description, logo, autoDownloadOn) VALUES (:url, :title, :desc, :logo, :autoDownloadOn)");
     q.bindValue(":url", channel->url());
     q.bindValue(":desc", channel->description());
     q.bindValue(":title", channel->title());
     q.bindValue(":logo", channel->logo());
+    q.bindValue(":autoDownloadOn", channel->isAutoDownloadOn());
     q.exec();
 
     m_connection.commit();
@@ -192,7 +142,8 @@ QList<PodcastChannel *> PodcastSQLManager::channelsInDB()
     qDebug() << "Returning Podcast channels from DB:";
 
     q.prepare("SELECT id, title, description, logo, rssurl, "
-              "(SELECT COUNT(id) FROM episodes WHERE episodes.channelid = channels.id AND episodes.lastPlayed = 0 AND episodes.playLocation <> '') "
+              "(SELECT COUNT(id) FROM episodes WHERE episodes.channelid = channels.id AND episodes.lastPlayed = 0 AND episodes.playLocation <> ''), "
+              "autoDownloadOn "
               "FROM channels ORDER BY channels.title");
 
     if (q.exec() == false) {
@@ -208,6 +159,8 @@ QList<PodcastChannel *> PodcastSQLManager::channelsInDB()
         channel->setLogo(q.value(3).toString());
         channel->setUrl(q.value(4).toString());
         channel->setUnplayedEpisodes(q.value(5).toInt());
+        channel->setAutoDownloadOn(q.value(6).toBool());
+
         channels.append(channel);
     }
 
@@ -223,7 +176,8 @@ PodcastChannel * PodcastSQLManager::channelInDB(int channelId, PodcastChannel *c
     qDebug() << "Returning Podcast channel from DB with id" << channelId;
 
     q.prepare("SELECT title, description, logo, rssurl, "
-              "(SELECT COUNT(id) FROM episodes WHERE episodes.channelid = channels.id AND episodes.lastPlayed = 0 AND episodes.playLocation <> '') "
+              "(SELECT COUNT(id) FROM episodes WHERE episodes.channelid = channels.id AND episodes.lastPlayed = 0 AND episodes.playLocation <> ''), "
+              "autoDownloadOn "
               "FROM channels WHERE channels.id = :id");
     q.bindValue(":id", channelId);
     q.exec();
@@ -242,6 +196,7 @@ PodcastChannel * PodcastSQLManager::channelInDB(int channelId, PodcastChannel *c
     channel->setLogo(q.value(2).toString());
     channel->setUrl(q.value(3).toString());
     channel->setUnplayedEpisodes(q.value(4).toInt());
+    channel->setAutoDownloadOn(q.value(5).toBool());
 
     return channel;
 }
@@ -406,6 +361,38 @@ QDateTime PodcastSQLManager::latestEpisodeTimestampInDB(int channelId)
     return latestDate;
 }
 
+bool PodcastSQLManager::updateChannelInDB(PodcastChannel *channel) {
+    qDebug() << "Updating podcast channel data to DB";
+    mutex.lock();
+    if (!m_connection.isOpen()) {
+        mutex.unlock();
+        qWarning() << "SQL connection not open. Returning.";
+        return false;
+    }
+
+    QSqlQuery q(m_connection);
+    mutex.unlock();
+
+    q.prepare("UPDATE channels SET title=:title, description=:description, logo=:logo, rssurl=:rssurl, autoDownloadOn=:autoDownloadOn "
+              "WHERE id=:id");
+    q.bindValue(":title", channel->title());
+    q.bindValue(":description", channel->description());
+    q.bindValue(":logo", channel->logo());
+    q.bindValue(":rssurl", channel->url());
+    q.bindValue(":autoDownloadOn", channel->isAutoDownloadOn());
+    q.bindValue(":id", channel->channelDbId());
+
+    if (!q.exec()) {
+        qDebug() << "Last query: " << q.lastQuery();
+        qDebug() << "Error: " << q.lastError();
+        mutex.unlock();
+        return false;
+    }
+
+    mutex.unlock();
+    return true;
+}
+
 void PodcastSQLManager::updatePodcastInDB(PodcastEpisode *episode)
 {
     qDebug() << "Updating episode data to DB";
@@ -488,4 +475,116 @@ bool PodcastSQLManager::removePodcastFromDB(PodcastEpisode *episode)
 
     return true;
 }
+
+void PodcastSQLManager::createTables()
+{
+    // If database does not contain table "channels", so create it.
+    if (!m_connection.tables().contains("channels")) {
+        QSqlQuery q(m_connection);
+        m_connection.transaction();
+
+        qDebug() << "Creating table 'channels'";
+
+        q.exec("CREATE TABLE channels (id INTEGER PRIMARY KEY, "
+                                      "rssurl TEXT, "
+                                      "title TEXT, "
+                                      "description TEXT, "
+                                      "logo TEXT, "
+                                      "autoDownloadOn BOOLEAN)");
+
+        if (!m_connection.commit()) {
+            qDebug() << "SQL error: " << m_connection.lastError().text();
+        }
+
+        if (!q.isValid()) {
+            qDebug() << q.lastError().text();
+        }
+
+    }
+
+    // If database does not contain the table "episodes", so crate it.
+    if (!m_connection.tables().contains("episodes")) {
+        QSqlQuery q(m_connection);
+        m_connection.transaction();
+
+        qDebug() << "Creating table 'episodes'";
+
+        q.exec("CREATE TABLE episodes (id INTEGER PRIMARY KEY, "
+                                      "title TEXT, "
+                                      "channelid INTEGER, "
+                                      "downloadLink TEXT, "
+                                      "lastPlayed INTEGER, "
+                                      "playLocation TEXT, "
+                                      "description TEXT, "
+                                      "published INTEGER, "
+                                      "duration TEXT, "
+                                      "downloadSize INTEGER, "
+                                      "hasBeenCanceled BOOLEAN, "
+                                      "FOREIGN KEY(channelid) REFERENCES channels(id))");
+
+        if (!m_connection.commit()) {
+            qDebug() << "SQL error: " <<  m_connection.lastError().text();
+        }
+
+        if (!q.isValid()) {
+            qDebug() << q.lastError().text();
+        }
+    }
+}
+
+void PodcastSQLManager::checkAndCreateAutoDownload(bool autoDownload)
+{
+    QSqlQuery q(m_connection);
+
+    if (q.exec("SELECT autoDownloadOn FROM channels") == false) {
+        qDebug() << "SQL: channels does not contain 'autoDownloadOn'. Adding column.";
+
+        QSqlQuery q_create(m_connection);
+
+        // Column does not exist. Create it.
+        if (q_create.exec("ALTER TABLE channels ADD COLUMN autoDownloadOn BOOLEAN") == false) {
+            qDebug()   << "SQL error: " <<  q_create.lastError().text();
+            qWarning() << "SQL query:"  <<  q_create.lastQuery();
+        }
+    }
+
+    // Find out if we have any results from the previous SELECT.
+    bool foundAutoDownloads = false;
+    while(q.next()) {
+        qDebug() << "SQL: Found autodownload values in DB. Not setting default ones.";
+        foundAutoDownloads = true;
+        break;
+    }
+
+    if (foundAutoDownloads == false) {
+        qDebug() << "SQL: No auto dowload values in DB. Setting defaults (from Settings).";
+
+        q.clear();
+
+        q.prepare("UPDATE channels SET autoDownloadOn=:autoDownloadOn");
+        q.bindValue(":autoDownloadOn", autoDownload);
+
+        if (q.exec() == false) {
+            qDebug()   << "SQL error: " <<  q.lastError().text();
+            qWarning() << "SQL query:"  <<  q.lastQuery();
+        }
+    }
+
+
+}
+
+void PodcastSQLManager::updateChannelAutoDownloadToDB(bool autoDownloadOn)
+{
+    QSqlQuery q(m_connection);
+
+    q.prepare("UPDATE channels SET autoDownloadOn=:autoDownload");
+    q.bindValue(":autoDownload", autoDownloadOn);
+    if (q.exec() == false) {
+        qDebug()   << "SQL error: " <<  q.lastError().text();
+        qWarning() << "SQL query:"  <<  q.lastQuery();
+    }
+
+}
+
+
 

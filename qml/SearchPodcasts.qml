@@ -29,16 +29,12 @@ Page {
         ToolIcon { iconId: "toolbar-back"; onClicked: { pageStack.pop(); } }
     }
 
-    Image  {
+    BusyIndicator  {
         id: loadingIndicator
         anchors.centerIn: parent
-        source: "qrc:///gfx/loading.gif"
         visible: (searchPodcastsModel.status == XmlListModel.Loading );
-        NumberAnimation on rotation {
-            from: 0; to: 360;
-            running: searchPodcastsModel.status == XmlListModel.Loading;
-            loops: Animation.Infinite; duration: 900
-        }
+        running: (searchPodcastsModel.status == XmlListModel.Loading );
+        platformStyle: BusyIndicatorStyle { size: "large" }
     }
 
     Item {
@@ -118,18 +114,13 @@ Page {
                     visible: status == Image.Ready
                 }
 
-                Image  {
+                BusyIndicator  {
                     id: loadingIndicatorEpisode
                     anchors.left: parent.left
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "qrc:///gfx/loading.gif"
                     visible: (channelLogo.status != Image.Ready);
-                    NumberAnimation on rotation {
-                        from: 0; to: 360;
-                        running: channelLogo.state != Image.Ready
-                        loops: Animation.Infinite; duration: 900
-                    }
+                    running: (channelLogo.status != Image.Ready);
                 }
 
                 Item {
@@ -197,7 +188,7 @@ Page {
                 }
             }
 
-            ScrollBar{
+            ScrollBar {
                 scrollArea: parent
                 anchors.right: parent.right
                 anchors.top: parent.top

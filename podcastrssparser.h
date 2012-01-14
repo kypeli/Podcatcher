@@ -25,6 +25,7 @@
 #include "podcastepisode.h"
 
 class QDomNode;
+class QDomNodeList;
 class PodcastRSSParser : public QObject
 {
     Q_OBJECT
@@ -46,6 +47,7 @@ public slots:
 private:
     static QDateTime parsePubDate(const QDomNode &node);
     static QString trimPubDate(const QString &pubdate);
+    static bool containsEnclosure(const QDomNodeList &itemNodes);
 
 };
 

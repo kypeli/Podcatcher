@@ -24,6 +24,7 @@ PodcastChannel::PodcastChannel(QObject *parent) :
 {
     m_isRefreshing = false;
     m_isDownloading = false;
+    m_autoDownloadOn = false;
     m_unplayedEpisodes = 0;
 }
 
@@ -145,6 +146,19 @@ bool PodcastChannel::isDownloading() const
 {
     return m_isDownloading;
 }
+
+void PodcastChannel::setAutoDownloadOn(bool autoDownloadOn) {
+    if (m_autoDownloadOn != autoDownloadOn) {
+        m_autoDownloadOn = autoDownloadOn;
+        emit autoDownloadOnChanged();
+    }
+}
+
+bool PodcastChannel::isAutoDownloadOn() const {
+    qDebug() << "Channel autodownload: " << m_autoDownloadOn;
+    return m_autoDownloadOn;
+}
+
 
 bool PodcastChannel::operator<(const PodcastChannel &other) const
 {

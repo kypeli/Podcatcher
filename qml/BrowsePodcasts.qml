@@ -52,31 +52,33 @@ Page {
 
     }
 
-    Image  {
+    BusyIndicator {
         id: loadingIndicator
         anchors.centerIn: parent
-        source: "qrc:///gfx/loading.gif"
         visible: (popularPodcastsModel.status == XmlListModel.Loading );
-        NumberAnimation on rotation {
-            from: 0; to: 360;
-            running: popularPodcastsModel.status == XmlListModel.Loading;
-            loops: Animation.Infinite; duration: 900
-        }
+        running: (popularPodcastsModel.status == XmlListModel.Loading );
+        opacity: 1.0
+        platformStyle: BusyIndicatorStyle { size: "large" }
     }
 
     Item {
         anchors.centerIn: parent;
+        width: parent.width
         visible: (popularPodcastsModel.status == XmlListModel.Error);
         Label {
             anchors.centerIn: parent
             text: "I am sorry!<BR><BR>"
-            font.pixelSize: 35
+            font.pixelSize: 25
             font.bold: true
+            width: parent.width
+            elide: Text.ElideRight
         }
 
         Label {
             anchors.centerIn: parent
-            text: "Seems gPodder.net is unavailable at the moment."
+            text: "Cannot get popular podcasts at this time."
+            width: parent.width
+            elide: Text.ElideRight
         }
     }
 
@@ -135,7 +137,15 @@ Page {
                         anchors.centerIn: loadedItem
                         opacity: 0.2
 
-                        Image  {
+                        BusyIndicator {
+                            id: loadingIndicatorEpisode
+                            anchors.centerIn: parent
+                            visible: (popularItem.state == "notLoaded");
+                            running: (popularItem.state == "notLoaded");
+                            opacity: 1.0
+                        }
+
+/*                        Image  {
                             id: loadingIndicatorEpisode
                             anchors.centerIn: parent
                             source: "qrc:///gfx/loading.gif"
@@ -147,7 +157,7 @@ Page {
                                 loops: Animation.Infinite; duration: 900
                             }
                         }
-
+*/
                         Image {
                             id: popularLogoId;
                             source: logo;

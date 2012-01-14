@@ -111,6 +111,7 @@ private:
    void insertChannelForNetworkReply(QNetworkReply *reply, PodcastChannel *channel);
    PodcastChannel * channelForNetworkReply(QNetworkReply *reply);
    bool savePodcastEpisodes(PodcastChannel *channel);
+   void updateAutoDLSettingsFromCache();
 
    PodcastChannelsModel *m_channelsModel;
 

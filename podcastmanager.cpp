@@ -26,6 +26,7 @@
 #include <QFile>
 #include <QDir>
 #include <QMap>
+#include <QSettings>
 
 #include <QtDebug>
 #include <QCryptographicHash>
@@ -45,6 +46,7 @@ PodcastManager::PodcastManager(QObject *parent) :
     m_episodeModelFactory(PodcastEpisodesModelFactory::episodesFactory()),
     m_isDownloading(false)
 {
+
     connect(this, SIGNAL(podcastChannelReady(PodcastChannel*)),
             this, SLOT(savePodcastChannel(PodcastChannel*)));
 
@@ -76,6 +78,8 @@ PodcastManager::PodcastManager(QObject *parent) :
             this, SLOT(onAutodelDaysChanged()));
     connect(m_autoDelUnplayedConf, SIGNAL(valueChanged()),
             this, SLOT(onAutodelUnplayedChanged()));
+
+    updateAutoDLSettingsFromCache();
 }
 
 PodcastChannelsModel * PodcastManager::podcastChannelsModel() const
@@ -394,7 +398,12 @@ bool PodcastManager::savePodcastEpisodes(PodcastChannel *channel)
     episodeModel->addEpisodes(*parsedEpisodes);
 
     qDebug() << "Downloading automatically new episodes:" << m_autodownloadOnSettings << " WiFi:" << PodcastManager::isConnectedToWiFi();
-    if (m_autodownloadOnSettings && PodcastManager::isConnectedToWiFi()) {
+
+    // Automatically download new episodes in the channel if
+    //  - If podcast channel has the auto-download enabled (which is controlled by the Podcatcher Settings too).
+    //  - We are connected to the WiFi
+    if (PodcastManager::isConnectedToWiFi() &&
+        channel->isAutoDownloadOn()) {
         downloadNewEpisodes(episodeModel->channelId());
     }
 
@@ -421,6 +430,8 @@ void PodcastManager::downloadNewEpisodes(int channelId) {
 
 void PodcastManager::savePodcastChannel(PodcastChannel *channel)
 {
+    channel->setAutoDownloadOn(m_autodownloadOnSettings);
+
     qDebug() << "Adding channel to DB:" << channel->title();
     m_channelsModel->addChannel(channel);
 
@@ -470,10 +481,14 @@ void PodcastManager::onPodcastEpisodeDownloadFailed(PodcastEpisode *episode)
     disconnect(episode, SIGNAL(podcastEpisodeDownloadFailed(PodcastEpisode*)),
             this, SLOT(onPodcastEpisodeDownloadFailed(PodcastEpisode*)));
 
+    if (m_isDownloading) {
+        emit showInfoBanner("Download failed.");
+    }
+
     m_isDownloading = false;
     PodcastChannel *channel = m_channelsModel->podcastChannelById(episode->channelid());
     channel->setIsDownloading(false);
-
+    episode->setState(PodcastEpisode::GetState);
 
     if (m_episodeDownloadQueue.contains(episode)) {
         m_episodeDownloadQueue.removeOne(episode);
@@ -657,6 +672,12 @@ void PodcastManager::onAutodownloadOnChanged()
     qDebug() << "Setting changed: autodl: " << QVariant(m_autoDlConf->value()).toBool();
 
     m_autodownloadOnSettings = QVariant(m_autoDlConf->value()).toBool();
+
+    foreach (PodcastChannel *channel, m_channelsModel->channels()) {
+        channel->setAutoDownloadOn(m_autodownloadOnSettings);
+    }
+
+    m_channelsModel->setAutoDownloadToDB(m_autodownloadOnSettings);
 }
 
 void PodcastManager::onAutodownloadNumChanged()
@@ -719,6 +740,25 @@ void PodcastManager::onCleanupEpisodeModelFinished()
                                              m_autoDelUnplayedSettings);
 
     m_futureWatcher.setFuture(future);
+}
+
+void PodcastManager::updateAutoDLSettingsFromCache()
+{
+    QSettings settings("D-Pointer", "Podcatcher");
+
+    if (!settings.contains("autoDlOn")) {
+        settings.setValue("autoDlOn", m_autodownloadOnSettings);
+        onAutodownloadOnChanged();
+    } else {
+        bool lastKnownAutoDlOn = settings.value("autoDlOn").toBool();
+
+        if (lastKnownAutoDlOn != m_autodownloadOnSettings) {
+            onAutodownloadOnChanged();
+            settings.setValue("autoDlOn", m_autodownloadOnSettings);
+        }
+
+        lastKnownAutoDlOn = settings.value("autoDlOn").toBool();
+    }
 }
 
 

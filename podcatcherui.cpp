@@ -74,9 +74,13 @@ PodcatcherUI::PodcatcherUI()
     connect(rootDeclarativeItem, SIGNAL(startStreaming(int, int)),
             this, SLOT(onStartStreaming(int, int)));
 
+    connect(rootDeclarativeItem, SIGNAL(autoDownloadChanged(int, bool)),
+            this, SLOT(onAutoDownloadChanged(int, bool)));
+
     m_pManager.refreshAllChannels();   // Refresh all feeds and download new episodes.
 
     QTimer::singleShot(10000, &m_pManager, SLOT(cleanupEpisodes()));
+
 }
 
 void PodcatcherUI::addPodcast(QString rssUrl, QString logoUrl)
@@ -273,6 +277,13 @@ void PodcatcherUI::onStreamingUrlResolved(QString streamUrl, QString streamTitle
     }
 }
 
+void PodcatcherUI::onAutoDownloadChanged(int channelId, bool autoDownload)
+{
+    PodcastChannel *channel = m_channelsModel->podcastChannelById(channelId);
+    channel->setAutoDownloadOn(autoDownload);
+    m_channelsModel->updateChannel(channel);
+}
+
 bool PodcatcherUI::isLiteVersion()
 {
 #ifdef LITE
@@ -299,4 +310,5 @@ void PodcatcherUI::refreshChannels()
 {
     m_pManager.refreshAllChannels();
 }
+
 

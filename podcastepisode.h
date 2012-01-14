@@ -88,7 +88,7 @@ private slots:
     void onAudioUrlMetadataChanged();
 
 private:
-//    bool isValidAudiofile() const;
+    bool isValidAudiofile(QNetworkReply *reply) const;
 //    bool isOnlyWebsiteUrl() const;
 
     int m_dbid;

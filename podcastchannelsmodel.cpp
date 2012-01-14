@@ -1,6 +1,7 @@
 #include <QtDebug>
 
 #include "podcastchannelsmodel.h"
+#include "dbhelper.h"
 
 PodcastChannelsModel::PodcastChannelsModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -13,8 +14,12 @@ PodcastChannelsModel::PodcastChannelsModel(QObject *parent) :
     roles[IsRefreshingRole] = "isRefreshing";
     roles[IsDownloadingRole] = "isDownloading";
     roles[UnplayedEpisodesRole] = "unplayedEpisodes";
+    roles[AutoDownloadOnRole] = "autoDownloadOn";
 
     setRoleNames(roles);
+
+    DBHelper dbhelper;
+    dbhelper.createAutoDownloadFieldChannels();
 
     m_sqlmanager = PodcastSQLManagerFactory::sqlmanager();
     foreach(PodcastChannel *channel, m_sqlmanager->channelsInDB()) {
@@ -65,6 +70,10 @@ QVariant PodcastChannelsModel::data(const QModelIndex &index, int role) const
 
     case UnplayedEpisodesRole:
         return channel->unplayedEpisodes();
+        break;
+
+    case AutoDownloadOnRole:
+        return channel->isAutoDownloadOn();
         break;
     }
 
@@ -170,6 +179,16 @@ void PodcastChannelsModel::onChannelChanged()
         QModelIndex modelIndex = createIndex(channelIndex, 0);
         emit dataChanged(modelIndex, modelIndex);
     }
+}
+
+void PodcastChannelsModel::setAutoDownloadToDB(bool autoDownload)
+{
+    m_sqlmanager->updateChannelAutoDownloadToDB(autoDownload);
+}
+
+void PodcastChannelsModel::updateChannel(PodcastChannel *channel)
+{
+    m_sqlmanager->updateChannelInDB(channel);
 }
 
 

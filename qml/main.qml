@@ -32,6 +32,7 @@ PageStackWindow {
     signal allListened(string channelId)
     signal deleteDownloaded(int channelId, int index)
     signal startStreaming(int channelId, int index)
+    signal autoDownloadChanged(int channelId, bool autoDownload)
 
     showToolBar: false
     showStatusBar: false

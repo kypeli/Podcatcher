@@ -125,15 +125,20 @@ bool PodcastRSSParser::isValidPodcastFeed(QByteArray xmlReply)
 
     QDomElement docElement = xmlDocument.documentElement();
 
-    QDomNodeList channelNodes = docElement.elementsByTagName("item");  // Find all the "item nodes from the feed XML.
+    QDomNodeList itemNodes = docElement.elementsByTagName("item");  // Find all the "item nodes from the feed XML.
 
-    for (uint i=0; i<channelNodes.length(); i++) {
-        QDomNode node = channelNodes.at(i);
+    for (uint i=0; i<itemNodes.length(); i++) {
+        QDomNode node = itemNodes.at(i);
 
         QDateTime pubDate = parsePubDate(node);
 
         if (!pubDate.isValid()) {
-            qDebug() << "Not valid!";
+            qDebug() << "INVALID FEED: Pubdate not valid!";
+            return false;
+        }
+
+        if (!containsEnclosure(itemNodes)) {
+            qDebug() << "INVALID FEED: Does not contain media.";
             return false;
         }
     }
@@ -204,5 +209,16 @@ QString PodcastRSSParser::trimPubDate(const QString &pubdate) {
 
     qDebug() << "Trimmed feed URL: " << parsedString;
     return parsedString;
+}
+
+bool PodcastRSSParser::containsEnclosure(const QDomNodeList &itemNodes) {
+    QDomNode node = itemNodes.at(0);
+    QDomElement enclosure = node.firstChildElement("enclosure");
+    if (enclosure.isNull()) {
+        qDebug() << "Podcast feed does not contain the <enclosure> tag.";
+        return false;
+    }
+
+    return true;
 }
 

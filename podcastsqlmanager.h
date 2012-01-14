@@ -37,22 +37,17 @@ public:
 
     int podcastChannelToDB(PodcastChannel *channel);
     bool isChannelInDB(PodcastChannel *channel);
-
     bool podcastEpisodeToDB(PodcastEpisode *episode,
                             int channel_id);
-
     int podcastEpisodesToDB(QList<PodcastEpisode *> parsedEpisodes,
                             int channel_id);
-
     bool removePodcastFromDB(PodcastEpisode *episode);
-
+    bool updateChannelInDB(PodcastChannel *channel);
     void updatePodcastInDB(PodcastEpisode *episode);
-
-//    void updateEpisodeData(QString key, QString newValue, int id);
-
     QDateTime latestEpisodeTimestampInDB(int channelId);
-
     void removeChannelFromDB(int channelId);
+    void updateChannelAutoDownloadToDB(bool autoDownloadOn);
+    void checkAndCreateAutoDownload(bool autoDownloadOn);
 
 signals:
 
@@ -60,7 +55,7 @@ public slots:
 
 private:
     PodcastSQLManager(QObject *parent = 0);
-    //    bool episodeInDB(PodcastEpisode *episode);
+    void createTables();
 
     QSqlDatabase m_connection;
     friend class PodcastSQLManagerFactory;

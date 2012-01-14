@@ -30,6 +30,7 @@ class PodcastChannel : public QObject
     Q_PROPERTY(QString description READ description WRITE setDescription)
     Q_PROPERTY(bool isRefreshing READ isRefreshing WRITE setIsRefreshing)
     Q_PROPERTY(bool isDownloading READ isDownloading WRITE setIsDownloading NOTIFY downloadingChanged)
+    Q_PROPERTY(bool isAutoDownloadOn READ isAutoDownloadOn WRITE setAutoDownloadOn NOTIFY autoDownloadOnChanged)
 
 public:
     explicit PodcastChannel(QObject *parent = 0);
@@ -44,6 +45,7 @@ public:
     void setIsRefreshing(bool refreshing);
     void setIsDownloading(bool downloading);
     void setUnplayedEpisodes(int unplayed);
+    void setAutoDownloadOn(bool autoDownloadOn);
 
     void setXml(QByteArray xml);
 
@@ -57,6 +59,8 @@ public:
     bool isRefreshing() const;
     bool isDownloading() const;
     int unplayedEpisodes() const;
+    bool isAutoDownloadOn() const;
+
 
     QByteArray xml() const;
 
@@ -68,6 +72,7 @@ public:
 signals:
     void channelChanged();
     void downloadingChanged();
+    void autoDownloadOnChanged();
 
 public slots:
 
@@ -81,6 +86,7 @@ private:
     bool m_isRefreshing;
     bool m_isDownloading;
     int m_unplayedEpisodes;
+    bool m_autoDownloadOn;
 
     QByteArray m_xml;
 };

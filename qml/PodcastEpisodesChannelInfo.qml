@@ -40,15 +40,44 @@ Item {
         Label {
             id: channelDescription
             width: podcastInfoRect.width - channelLogo.width - 50
+            height: channelLogo.height + 20
 
-            text: (channel.description.length > 180 ? channel.description.substr(0, 180).concat("...") : channel.description)
-            font.pointSize: 10
+            text: (channel.description.length > 210 ? channel.description.substr(0, 210).concat("...") : channel.description)
+            font.pixelSize: 20
             wrapMode: Text.WordWrap
 
             anchors.left: channelLogo.right
             anchors.leftMargin: 15
             anchors.top:  channelLogo.top
         }
+
+        Item {
+            id: autoDownloadSwitch
+            anchors.top: channelDescription.bottom;
+            anchors.topMargin: 5
+            anchors.left: channelLogo.left
+
+            Row {
+                width: parent.width
+                spacing: 15
+
+                Label {
+                    text: "Auto-download:"
+                    anchors.verticalCenter: switchWidget.verticalCenter;
+                }
+
+                Switch {
+                    id: switchWidget
+                    checked: channel.isAutoDownloadOn
+
+                    onCheckedChanged: {
+                        appWindow.autoDownloadChanged(channel.channelId, checked);
+                    }
+                }
+            }
+
+        }
+
     }
 
 }
