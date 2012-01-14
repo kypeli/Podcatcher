@@ -222,3 +222,29 @@ bool PodcastRSSParser::containsEnclosure(const QDomNodeList &itemNodes) {
     return true;
 }
 
+QList<QString> PodcastRSSParser::parseGPodderSubscription(QByteArray gpodderXml) {
+    QDomDocument xmlDocument;
+    if (xmlDocument.setContent(gpodderXml) == false) {
+        qDebug() << "Could not parse gPodder.net response to get subscriptions.";
+        return QList<QString>();
+    }
+
+    QList<QString> subscriptions;
+    QDomElement docElement = xmlDocument.documentElement();
+    QDomNodeList channelNodes = docElement.elementsByTagName("podcast");  // Get all the "podcast" nodes..
+    for (uint i=0; i<channelNodes.length(); i++) {
+        QDomNode node = channelNodes.at(i);
+
+        QDomElement subscriptionUrl = node.firstChildElement("url");
+        if (subscriptionUrl.isNull()) {
+            qDebug() << "Could not find 'url' in gPodder subscription.";
+            continue;
+        }
+
+        qDebug() << "Found new subscription from gPodder.net: " << subscriptionUrl.text();
+        subscriptions.append(subscriptionUrl.text());
+    }
+
+    return subscriptions;
+}
+

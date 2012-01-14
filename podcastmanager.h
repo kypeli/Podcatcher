@@ -35,6 +35,7 @@
 #include "podcastepisodesmodelfactory.h"
 
 class PodcastSQLManager;
+class QAuthenticator;
 class PodcastManager : public QObject
 {
     Q_OBJECT
@@ -53,6 +54,9 @@ public:
      * PodcastStream and hence will be deleted when the manager is deleted.
      */
     void requestPodcastChannel(const QUrl &rssUrl, const QMap<QString, QString> &logoCache = QMap<QString, QString>());
+
+    void fetchSubscriptionsFromGPodder(QString username, QString password);
+    void requestPodcastChannelFromGPodder(const QUrl &rssUrl);
 
     void refreshPodcastChannelEpisodes(PodcastChannel *channel, bool forceNetworkUpdate = false);
     void refreshAllChannels();
@@ -105,6 +109,9 @@ private slots:
 
    void onCleanupEpisodeModelFinished();
 
+   void onGPodderRequestFinished();
+   void onGPodderAuthRequired(QNetworkReply *reply, QAuthenticator *auth);
+
 private:
    void executeNextDownload();
    QNetworkReply * downloadChannelLogo(QString logoUrl);
@@ -118,6 +125,7 @@ private:
    // We need multiple QNAMs to be able to do concurrent downloads.
    QNetworkAccessManager *m_networkManager;
    QNetworkAccessManager *m_dlNetworkManager;  // Share this between all the episodes;
+   QNetworkAccessManager *m_gpodderQNAM;
 
    QMap<QNetworkReply*, PodcastChannel *> m_channelNetworkRequestCache;
    QMap<int, PodcastChannel *> m_channelsCache;
@@ -141,6 +149,9 @@ private:
    int m_autodownloadNumSettings;
    int m_keepNumEpisodesSettings;
    bool m_autoDelUnplayedSettings;
+
+   QString m_gpodderUsername;
+   QString m_gpodderPassword;
 };
 
 #endif // PODCASTMANAGER_H

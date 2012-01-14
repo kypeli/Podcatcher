@@ -114,6 +114,11 @@ bool PodcastChannelsModel::addChannel(PodcastChannel *channel)
 
 bool PodcastChannelsModel::removeChannel(PodcastChannel *channel)
 {
+    if (channel == NULL) {
+        qWarning() << "Channel is NULL.";
+        return false;
+    }
+
     int dbid = channel->channelDbId();
     // Remove from DB
     m_sqlmanager->removeChannelFromDB(dbid);

@@ -40,6 +40,8 @@ public:
 
     static bool isValidPodcastFeed(QByteArray xmlReply);
 
+    static QList<QString> parseGPodderSubscription(QByteArray gpodderXml);
+
 signals:
 
 public slots:

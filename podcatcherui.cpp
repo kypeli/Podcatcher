@@ -56,9 +56,6 @@ PodcatcherUI::PodcatcherUI()
     connect(rootDeclarativeItem, SIGNAL(playPodcast(int, int)),
             this, SLOT(onPlayPodcast(int, int)));
 
-    connect(rootDeclarativeItem, SIGNAL(refreshAllEpisodes(int)),
-            this, SLOT(onRefreshEpisodes(int)));
-
     connect(rootDeclarativeItem, SIGNAL(cancelDownload(int, int)),
             this, SLOT(onCancelDownload(int, int)));
 
@@ -282,6 +279,11 @@ void PodcatcherUI::onAutoDownloadChanged(int channelId, bool autoDownload)
     PodcastChannel *channel = m_channelsModel->podcastChannelById(channelId);
     channel->setAutoDownloadOn(autoDownload);
     m_channelsModel->updateChannel(channel);
+}
+
+void PodcatcherUI::importFromGPodder(QString username, QString password)
+{
+    m_pManager.fetchSubscriptionsFromGPodder(username, password);
 }
 
 bool PodcatcherUI::isLiteVersion()

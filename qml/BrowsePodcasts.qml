@@ -287,18 +287,50 @@ Page {
 
     }
 
+    ImportFromGPodderSheet {
+        id: importFromGPodderSheet
+    }
+
+
     Menu {
         id: myMenu
         visualParent: pageStack
         MenuLayout {
+            MenuItem {
+                text: "Import podcasts from gPodder"
+                onClicked: {
+                    if (ui.isLiteVersion()) {
+                        liteDialog.open();
+                    } else {
+                        importFromGPodderSheet.open();
+                    }
+                }
+            }
+
             MenuItem {
                 text: "Add URL manually"
                 onClicked: {
                     addNewPodcastSheet.open();
                 }
             }
+
         }
     }
+
+    QueryDialog {
+        id: liteDialog
+
+        titleText: "Podcatcher Lite"
+        message: "I am sorry!\n\n" +
+        "This feature is only available in the full version of Podcatcher.\n\nPlease purchase it from the Nokia Store to import your subscriptions from gPodder.net."
+
+        acceptButtonText: "Continue"
+
+        onAccepted: {
+            liteDialog.close();
+        }
+    }
+
 
 }
 

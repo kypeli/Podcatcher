@@ -37,6 +37,7 @@ public:
     Q_INVOKABLE bool isLiteVersion();
     Q_INVOKABLE void refreshChannels();
     Q_INVOKABLE QString versionString();
+    Q_INVOKABLE void importFromGPodder(QString username, QString password);
 
     void downloadNewEpisodes(QString channelId);
 
@@ -67,6 +68,7 @@ private:
     PodcastChannelsModel *m_channelsModel;
     PodcastEpisodesModelFactory *modelFactory;
     QMap<QString, QString> logoCache;
+
 };
 
 #endif // PODCATCHERUI_H

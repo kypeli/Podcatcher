@@ -19,6 +19,7 @@
 #include <QNetworkReply>
 #include <QNetworkConfiguration>
 #include <QNetworkConfigurationManager>
+#include <QAuthenticator>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
@@ -179,7 +180,7 @@ void PodcastManager::refreshPodcastChannelEpisodes(PodcastChannel *channel, bool
 
 PodcastChannel * PodcastManager::podcastChannel(int id)
 {
-    PodcastChannel *channel;
+    PodcastChannel *channel = NULL;
     if (!m_channelsCache.contains(id)) {
         channel = m_channelsModel->podcastChannelById(id);
         if (channel == 0) {
@@ -633,12 +634,13 @@ void PodcastManager::removePodcastChannel(int channelId)
      */
     // Deleting locally cached channel logo.
     PodcastChannel *channel = m_channelsCache.value(channelId);
-
-    QUrl channelLogoUrl(channel->logo());
-    QFile channelLogo(channelLogoUrl.toLocalFile());
-    if (!channelLogo.remove()) {
-        QFileInfo fi(channelLogo);
-        qWarning() << "Could not remove cached logo for channel:" << channel->title() << fi.absoluteFilePath();
+    if (channel != NULL) {
+        QUrl channelLogoUrl(channel->logo());
+        QFile channelLogo(channelLogoUrl.toLocalFile());
+        if (!channelLogo.remove()) {
+            QFileInfo fi(channelLogo);
+            qWarning() << "Could not remove cached logo for channel:" << channel->title() << fi.absoluteFilePath();
+        }
     }
 
     // Finally remove the channel from the model and the cache.
@@ -760,5 +762,127 @@ void PodcastManager::updateAutoDLSettingsFromCache()
         lastKnownAutoDlOn = settings.value("autoDlOn").toBool();
     }
 }
+
+void PodcastManager::fetchSubscriptionsFromGPodder(QString gpodderUsername, QString gpodderPassword) {
+
+    if (gpodderUsername.isEmpty() ||
+        gpodderPassword.isEmpty()) {
+        emit showInfoBanner("gPodder.net authentication information required.");
+        return;
+    }
+
+    m_gpodderUsername = gpodderUsername;
+    m_gpodderPassword = gpodderPassword;
+
+    m_gpodderQNAM = new QNetworkAccessManager();
+
+    connect(m_gpodderQNAM, SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)),
+            this, SLOT(onGPodderAuthRequired(QNetworkReply *, QAuthenticator *)));
+
+    QString gpodderUrl = QString("http://gpodder.net/subscriptions/%1.xml").arg(m_gpodderUsername);
+
+    qDebug() << "Sending request to gPodder.net: " << gpodderUrl;
+
+    QNetworkReply *reply = m_gpodderQNAM->get(QNetworkRequest(QUrl(gpodderUrl)));
+    connect(reply, SIGNAL(finished()),
+            this, SLOT(onGPodderRequestFinished()));
+}
+
+void PodcastManager::onGPodderAuthRequired(QNetworkReply *reply, QAuthenticator *auth)
+{
+    Q_UNUSED(reply);
+
+    if (m_gpodderUsername.isEmpty() ||
+        m_gpodderPassword.isEmpty()) {
+
+        qDebug() << "Could not authenticate user with gPodder.net.";
+
+        // This means that we are here a second time and the credentials the user gave are not correct.
+        emit showInfoBanner("gPodder.net credentials not accepted. Try again.");
+
+        // Clean up the resources. This ends here...
+        QNetworkAccessManager *qnam = reply->manager();
+        disconnect(reply, SIGNAL(finished()), this,
+                          SLOT(onGPodderRequestFinished()));
+        disconnect(qnam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this,
+                               SLOT(onGPodderAuthRequired(QNetworkReply *, QAuthenticator *)));
+
+        qnam->deleteLater();
+        reply->close();
+        reply->deleteLater();
+
+        return;
+    }
+
+    qDebug() << "Sending HTTP AUTH to gPodder.net";
+
+    auth->setUser(m_gpodderUsername);
+    auth->setPassword(m_gpodderPassword);
+
+    m_gpodderUsername = "";
+    m_gpodderPassword = "";
+}
+
+void PodcastManager::onGPodderRequestFinished()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    QNetworkAccessManager *gpodderQNAM = reply->manager();
+
+    disconnect(reply, SIGNAL(finished()), this,
+                      SLOT(onGPodderRequestFinished()));
+    disconnect(gpodderQNAM, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this,
+                           SLOT(onGPodderAuthRequired(QNetworkReply *, QAuthenticator *)));
+    QByteArray xml = reply->readAll();
+
+    qDebug() << "Response from gpodder: " << xml;
+
+    reply->deleteLater();
+    gpodderQNAM->deleteLater();
+
+    QList<QString> subscriptionUrls = PodcastRSSParser::parseGPodderSubscription(xml);
+    if (subscriptionUrls.size() < 1) {
+        emit showInfoBanner("No subscriptions found from gPodder.net");
+        return;
+    }
+
+    emit showInfoBanner("Getting subscriptions from gPodder.net...");
+
+    foreach(QString url, subscriptionUrls) {
+        requestPodcastChannelFromGPodder(QUrl(url));
+    }
+
+}
+
+void PodcastManager::requestPodcastChannelFromGPodder(const QUrl &rssUrl)
+{
+    qDebug() << "Requesting Podcast channel" << rssUrl;
+
+    if (!rssUrl.isValid()) {
+        qWarning() << "Provided podcast channel URL is not valid.";
+        return;
+    }
+
+    PodcastChannel *channel = new PodcastChannel(this);
+    channel->setUrl(rssUrl.toString());
+
+    if (m_channelsModel->channelAlreadyExists(channel)) {
+        qDebug() << "Channel is already in DB. Not doing anything.";
+        delete channel;
+        return;
+    }
+
+    channelRequestMap.insert(rssUrl.toString(), channel);
+
+    QNetworkRequest request;
+    request.setUrl(rssUrl);
+
+    QNetworkReply *reply = m_networkManager->get(request);
+
+    connect(reply, SIGNAL(finished()),
+            this, SLOT(onPodcastChannelCompleted()));
+
+    m_networkManager->get(request);
+}
+
 
 

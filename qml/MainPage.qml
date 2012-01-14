@@ -42,7 +42,11 @@ Page {
 
     function addPodcast(url, logo) {
 //        fetchingChannelBanner.show();
-        ui.addPodcast(url, logo);
+        ui.addPodcast(url, logo);        
+    }
+
+    function gpodderImport(username, password) {
+        ui.importFromGPodder(username, password);
     }
 
     tools:
