@@ -51,8 +51,8 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 width:  parent.width - 20
 
-                font.pixelSize: 35
-                text: (episodeDescriptionPage.episodeName.length > 45 ? episodeDescriptionPage.episodeName.substr(0, 45).concat("...") : episodeDescriptionPage.episodeName)
+                font.pixelSize: 28
+                text: (episodeDescriptionPage.episodeName.length > 55 ? episodeDescriptionPage.episodeName.substr(0, 55).concat("...") : episodeDescriptionPage.episodeName)
                 color:  "white"
                 wrapMode: Text.WordWrap
             }

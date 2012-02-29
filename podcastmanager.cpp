@@ -871,6 +871,11 @@ void PodcastManager::requestPodcastChannelFromGPodder(const QUrl &rssUrl)
         return;
     }
 
+    if (channelRequestMap.contains(rssUrl.toString())) {
+        qDebug() << "Duplicate URL from gPodder.net. Not requesting the same podcast again.";
+        return;
+    }
+
     channelRequestMap.insert(rssUrl.toString(), channel);
 
     QNetworkRequest request;

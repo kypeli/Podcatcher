@@ -70,7 +70,7 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 width:  parent.width - 20
 
-                font.pixelSize: 35
+                font.pixelSize: 28
                 text: (channel.title.length > 50 ? channel.title.substr(0, 50).concat("...") : channel.title)
                 color:  "white"
             }

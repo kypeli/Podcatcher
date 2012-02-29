@@ -124,7 +124,7 @@ Page {
                 Item {
                     id: loadedItem
                     width: 130
-                    height: 220
+                    height: 230
 
                     Rectangle {
                         id: popularItemId
@@ -145,19 +145,6 @@ Page {
                             opacity: 1.0
                         }
 
-/*                        Image  {
-                            id: loadingIndicatorEpisode
-                            anchors.centerIn: parent
-                            source: "qrc:///gfx/loading.gif"
-                            visible: (popularItem.state == "notLoaded");
-                            opacity: 1.0
-                            NumberAnimation on rotation {
-                                from: 0; to: 360;
-                                running: popularItem.state == "notLoaded"
-                                loops: Animation.Infinite; duration: 900
-                            }
-                        }
-*/
                         Image {
                             id: popularLogoId;
                             source: logo;

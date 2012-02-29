@@ -169,6 +169,29 @@ Page {
                     height: 90
                     color: "transparent"
                     anchors.left: channelLogoId.right;
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        onClicked: {
+                            appWindow.showChannel(channelId);
+                            openFile("PodcastEpisodes.qml");
+                        }
+
+                        onPressAndHold:{
+                            console.log("Press and hold, index: " + index);
+                            podcastChannelsList.currentIndex = channelId;
+                            mainPage.contextMenuChannelName = title;
+                            mainPage.contextUnplayedEpisodes = unplayedEpisodes;
+                            contextMenu.open();
+                        }
+
+                        states: State {
+                            name: "pressed"
+                            when: (mouseArea.pressed)
+                            PropertyChanges { target: listItemBackground; color: "#9501C5" }
+                        }
+                    }
                 }
 
                 Label {
@@ -212,23 +235,6 @@ Page {
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    onClicked: {
-                        appWindow.showChannel(channelId);
-                        openFile("PodcastEpisodes.qml");
-                    }
-
-                    onPressAndHold:{
-                        console.log("Press and hold, index: " + index);
-                        podcastChannelsList.currentIndex = channelId;
-                        mainPage.contextMenuChannelName = title;
-                        mainPage.contextUnplayedEpisodes = unplayedEpisodes;
-                        contextMenu.open();
-                    }
-
-                }
             }
 
             onCountChanged: {

@@ -73,7 +73,7 @@ Item {
             clip: true
             spacing: 20
             anchors.top:  podcastEpisodesInfoRect.top
-            anchors.leftMargin: 16
+            anchors.leftMargin: 5
             cacheBuffer: parent.height
 
             delegate: Item {
@@ -83,6 +83,7 @@ Item {
                 width: parent.width
 
                 MouseArea {
+                    id: itemMouseArea
                     anchors.fill: parent
                     onClicked: {
                         episodeDescriptionPage.episodeDescriptionText = description;
@@ -108,6 +109,13 @@ Item {
                         }
                     }
 
+                    states: State {
+                        name: "pressed"
+                        when: (itemMouseArea.pressed)
+                        PropertyChanges { target: listItemBackground; color: "#9501C5" }
+                    }
+
+
                 }
 
                 Rectangle {
@@ -122,7 +130,7 @@ Item {
                 Rectangle {
                     id: listItemBackground
                     width: parent.width
-                    height: parent.height
+                    height: episodeRow.height
                     color: "transparent"
                     anchors.left: downloadedIndicator.right;
                 }

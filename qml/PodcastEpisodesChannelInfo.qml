@@ -43,7 +43,7 @@ Item {
             height: channelLogo.height + 20
 
             text: (channel.description.length > 210 ? channel.description.substr(0, 210).concat("...") : channel.description)
-            font.pixelSize: 20
+            font.pixelSize: 18
             wrapMode: Text.WordWrap
 
             anchors.left: channelLogo.right
