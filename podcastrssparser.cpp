@@ -86,19 +86,25 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
     for (uint i=0; i<channelNodes.length(); i++) {
         QDomNode node = channelNodes.at(i);
 
-        PodcastEpisode *episode = new PodcastEpisode;
-        episode->setTitle(node.firstChildElement("title").text());
-        episode->setDescription(node.firstChildElement("description").text());
-        episode->setDuration(node.firstChildElement("itunes:duration").text());
+        if (isEmptyItem(node)) {
+            qWarning() << "Empty podcast item. Ignoring...";
+            continue;
+        }
 
+        PodcastEpisode *episode = new PodcastEpisode;
         QDateTime pubDate = parsePubDate(node);
 
         if (!pubDate.isValid()) {
             qWarning() << "Could not parse pubDate for podcast episode!";
-            return false;
+            delete episode;
+            continue;
         } else {
             episode->setPubTime(pubDate);
         }
+
+        episode->setTitle(node.firstChildElement("title").text());
+        episode->setDescription(node.firstChildElement("description").text());
+        episode->setDuration(node.firstChildElement("itunes:duration").text());
 
         QDomNamedNodeMap attrMap = node.firstChildElement("enclosure").attributes();
         episode->setDownloadLink(attrMap.namedItem("url").toAttr().value());
@@ -130,6 +136,11 @@ bool PodcastRSSParser::isValidPodcastFeed(QByteArray xmlReply)
     for (uint i=0; i<itemNodes.length(); i++) {
         QDomNode node = itemNodes.at(i);
 
+        if (isEmptyItem(node)) {
+            qWarning() << "Empty podcast item. Ignoring...";
+            continue;
+        }
+
         QDateTime pubDate = parsePubDate(node);
 
         if (!pubDate.isValid()) {
@@ -145,6 +156,22 @@ bool PodcastRSSParser::isValidPodcastFeed(QByteArray xmlReply)
 
     qDebug() << "Is valid.";
     return true;
+}
+
+bool PodcastRSSParser::isEmptyItem(const QDomNode &node) {
+    QDomElement testElement;
+
+    // If a given node is not found, firstChildElement() will return null.
+    // If we cant find any of those DOM elements, this is an empty node.
+    testElement = node.firstChildElement("title");
+    testElement = node.firstChildElement("pubDate");
+    testElement = node.firstChildElement("enclosure");
+
+    if (testElement.isNull()) {
+        return true;
+    }
+
+    return false;
 }
 
 QDateTime PodcastRSSParser::parsePubDate(const QDomNode &node)

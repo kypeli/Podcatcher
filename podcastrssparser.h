@@ -50,6 +50,7 @@ private:
     static QDateTime parsePubDate(const QDomNode &node);
     static QString trimPubDate(const QString &pubdate);
     static bool containsEnclosure(const QDomNodeList &itemNodes);
+    static bool isEmptyItem(const QDomNode &node);
 
 };
 
