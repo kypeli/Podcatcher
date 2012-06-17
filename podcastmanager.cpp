@@ -96,7 +96,8 @@ void PodcastManager::requestPodcastChannel(const QUrl &rssUrl, const QMap<QStrin
 
     if (!rssUrl.isValid()) {
         qWarning() << "Provided podcast channel URL is not valid.";
-        emit showInfoBanner("Unable to add subscription from that location");
+        QString faultyUrlSnippet = rssUrl.toString().left(10);
+        emit showInfoBanner("Unable to add subscription from "+ faultyUrlSnippet +"...");
         return;
     }
 
@@ -106,7 +107,7 @@ void PodcastManager::requestPodcastChannel(const QUrl &rssUrl, const QMap<QStrin
     if (m_channelsModel->channelAlreadyExists(channel)) {
         qDebug() << "Channel is already in DB. Not doing anything.";
         delete channel;
-        emit showInfoBanner("Already subscribed to the channel.");
+        emit showInfoBanner("Already subscribed to '" + channel->title() + "'.");
         return;
     }
 
@@ -269,11 +270,12 @@ void PodcastManager::onPodcastChannelCompleted()
     channel->setXml(data);
     channelRequestMap.remove(reply->url().toString());
 
-    if (PodcastRSSParser::isValidPodcastFeed(data) == false) {
+/*    if (PodcastRSSParser::isValidPodcastFeed(data) == false) {
         qDebug() << "Podcast feed is not valid! Not adding data to DB...";
         emit showInfoBanner("Podcast feed is not valid. Cannot add subscription...");
         return;
     }
+*/
 
     bool rssOk;
     rssOk = PodcastRSSParser::populateChannelFromChannelXML(channel,
@@ -391,7 +393,7 @@ bool PodcastManager::savePodcastEpisodes(PodcastChannel *channel)
                                                              episodeXmlData);
 
     if (rssOk == false) {
-        emit showInfoBanner("Podcast feed invalid. Cannot add subscription.");
+        emit showInfoBanner("Podcast feed invalid. Cannot download episodes for '" + channel->title() + "'.");
         return false;
     }
 
@@ -483,7 +485,7 @@ void PodcastManager::onPodcastEpisodeDownloadFailed(PodcastEpisode *episode)
             this, SLOT(onPodcastEpisodeDownloadFailed(PodcastEpisode*)));
 
     if (m_isDownloading) {
-        emit showInfoBanner("Download failed.");
+        emit showInfoBanner("Podcast episode download failed.");
     }
 
     m_isDownloading = false;
