@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml_symbian/main.qml</file>
+        <file>qml_symbian/MainPage.qml</file>
+        <file>qml_symbian/PodcastEpisodes.qml</file>
+        <file>qml_symbian/PodcastEpisodesChannelInfo.qml</file>
+        <file>qml_symbian/PodcastEpisodesList.qml</file>
+        <file>qml_symbian/PodcastDownloadingProgress.qml</file>
+        <file>qml_symbian/EmptyChannelPage.qml</file>
+        <file>qml_symbian/BrowsePodcasts.qml</file>
+        <file>qml_symbian/SearchPodcasts.qml</file>
+        <file>qml_symbian/DPointerIntro.qml</file>
+        <file>qml_symbian/EpisodeDescriptionPage.qml</file>
+        <file>qml_symbian/QueueButton.qml</file>
+        <file>qml_symbian/ScrollBar.qml</file>
+        <file>qml_symbian/About.qml</file>
+        <file>qml_symbian/PodcastChannelLogo.qml</file>
+        <file>gfx/d-pointer-logo-small.png</file>
+        <file>gfx/refresh.png</file>
+        <file>gfx/scrollbar.png</file>
+        <file>gfx/Podcatcher_generic_podcast_cover.png</file>
+        <file>gfx/loading.gif</file>
+        <file>gfx/cancel-podcast-download.png</file>
+        <file>qml_symbian/constants.js</file>
+        <file>gfx/br_next.png</file>
+        <file>gfx/d-pointer-logo-symbian.png</file>
+        <file>qml_symbian/Sheet.qml</file>
+        <file>gfx/download.png</file>
+        <file>qml_symbian/AudioStreamer.qml</file>
+        <file>gfx/playback_ff.png</file>
+        <file>gfx/playback_pause.png</file>
+        <file>gfx/playback_play.png</file>
+        <file>gfx/playback_rew.png</file>
+        <file>gfx/playback_stop.png</file>
+    </qresource>
+</RCC>
