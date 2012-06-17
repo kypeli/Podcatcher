@@ -13,8 +13,8 @@ QT+= declarative network xml sql
 CONFIG += link_pkgconfig
 PKGCONFIG += gq-gconf
 
-# DEFINES += LITE
-DEFINES += PODCATCHER_VERSION=103
+#DEFINES += LITE
+DEFINES += PODCATCHER_VERSION=119
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     podcastepisode.cpp \
     podcastepisodesmodel.cpp \
     podcastepisodesmodelfactory.cpp \
-    podcastchannelsmodel.cpp
+    podcastchannelsmodel.cpp \
+    dbhelper.cpp
 
 OTHER_FILES += \
     qml/MainPage.qml \
@@ -58,7 +59,9 @@ OTHER_FILES += \
     podcatcher.schema \
     qml/PodcastChannelLogo.qml \
     qml/PodcatcherInfoBanner.qml \
-    qtc_packaging/debian_harmattan/postinst
+    qtc_packaging/debian_harmattan/postinst \
+    qml/AudioStreamer.qml \
+    qml/ImportFromGPodderSheet.qml
 
 RESOURCES += \
     res.qrc
@@ -85,7 +88,8 @@ HEADERS += \
     podcastepisode.h \
     podcastepisodesmodel.h \
     podcastepisodesmodelfactory.h \
-    podcastchannelsmodel.h
+    podcastchannelsmodel.h \
+    dbhelper.h
 
 qml.files = qml/MainPage.qml qml/main.qml qml/PodcastEpisodes.qml qml/PodcastEpisodesChannelInfo.qml qml/PodcastEpisodesList.qml qml/PodcastDownloadingProgress.qml qml/EmptyChannelPage.qml qml/BrowsePodcasts.qml qml/SearchPodcasts.qml qml/DPointerIntro.qml qml/EpisodeDescriptionPage.qml qml/ScrollBar.qml qml/QueueButton.qml
 qml.path = /opt/$${TARGET}/bin/qml
@@ -107,3 +111,9 @@ contains(DEFINES, LITE) {
 }
 
 # INSTALLS += qml
+
+
+
+
+
+
