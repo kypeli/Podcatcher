@@ -300,7 +300,7 @@ void PodcastEpisodesModel::cleanOldEpisodes(int keepNumEpisodes, bool keepUnplay
             // and that the last played is not set, then we know we have an unplayed and
             // downloaded episode that we want to keep.
             if (!episode->playFilename().isEmpty() &&
-                episode->lastPlayed().isValid()) {
+                !episode->lastPlayed().isValid()) {
                 continue;
             }
         }
