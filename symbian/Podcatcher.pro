@@ -171,8 +171,6 @@ symbian: {
     DEPLOYMENT += my_deployment
 
     vendorinfo += "%{\"\"}" ":\"\""
-
-    TARGET.UID3 += 0x20034a6f
 }
 
 # Please do not modify the following two lines. Required for deployment.
