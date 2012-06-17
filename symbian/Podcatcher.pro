@@ -137,7 +137,6 @@ symbian: {
     folder_01.target = qml
     DEPLOYMENTFOLDERS = folder_01
 
-    symbian:TARGET.UID3 = 0x2005ffdc   # OVI Store UID!
 #    symbian:TARGET.UID3 = 0x80000042     # Self-signed!
 
     SOURCES += podcastmanagersymbian.cpp \
