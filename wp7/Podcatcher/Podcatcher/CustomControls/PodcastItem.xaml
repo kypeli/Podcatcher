@@ -1,0 +1,14 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Podcatcher.PodcastItem"
+	d:DesignWidth="480" d:DesignHeight="800">
+
+	<StackPanel Orientation="Horizontal" >
+        <Image Height="100" Width="100" Source="http://twit.tv/files/imagecache/coverart-feed/coverart/twit300.jpg" VerticalAlignment="Center" Margin="0,0,10,0"/> 
+		<TextBlock TextWrapping="Wrap" Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="374" Text="this Week in Tech" VerticalAlignment="Center"/>
+	</StackPanel>
+</UserControl>

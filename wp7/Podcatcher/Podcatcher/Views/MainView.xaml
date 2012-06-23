@@ -1,0 +1,100 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="Podcatcher.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pc="clr-namespace:Podcatcher"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
+    d:DataContext="{d:DesignData SampleData/MainViewModelSampleData.xaml}"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="True"
+    Style="{StaticResource TurnstilePage}"
+    >
+    
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <!--Pivot Control-->
+        <controls:Pivot >
+            <!--Pivot item one-->
+            <controls:PivotItem>
+                <controls:PivotItem.Header>
+                  <pc:PodcastPivotItemHeader
+                      HeaderText="podcast subscriptions"
+                      />                  
+                </controls:PivotItem.Header>
+                <!--Double line list with text wrapping-->
+                <ListBox x:Name="FirstListBox" Margin="0,0,-12,0" ItemsSource="{Binding Items}" SelectionChanged="FirstListBox_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                          <StackPanel Margin="0,0,0,17" Width="432" Height="100">
+                                <pc:PodcastItem/> 
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </controls:PivotItem>
+
+            <!-- New podcast episodes -->
+            <controls:PivotItem>
+                <controls:PivotItem.Header>
+                    <pc:PodcastPivotItemHeader
+                      HeaderText="new podcast episodes"
+                      AltText="2 downloading"
+                      />
+                </controls:PivotItem.Header>
+                <!--Double line list with text wrapping-->
+                <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Items}" SelectionChanged="FirstListBox_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,17" Width="432" Height="100">
+                                <pc:PodcastItem/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </controls:PivotItem>
+
+            <!-- Popular podcasts -->
+            <controls:PivotItem>
+                <controls:PivotItem.Header>
+                    <pc:PodcastPivotItemHeader                       
+                        HeaderText="popular podcasts"
+                        AltText="Barbar"
+                     />
+                </controls:PivotItem.Header>
+                <!--Triple line list no text wrapping-->
+                    <ListBox Margin="0,0,-12,0" ItemsSource="{Binding Items}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,17">
+                                    <TextBlock Text="{Binding LineOne}" TextWrapping="NoWrap" Margin="12,0,0,0" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                    <TextBlock Text="{Binding LineThree}" TextWrapping="NoWrap" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+            </controls:PivotItem>
+
+
+        </controls:Pivot>
+    </Grid>
+ 
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar.add.rest.png" Text="Add" Click="AddSubscriptionIconButton_Click" />
+<!--            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
+                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+            </shell:ApplicationBar.MenuItems> -->
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
+</phone:PhoneApplicationPage>
