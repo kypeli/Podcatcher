@@ -20,10 +20,24 @@ namespace Podcatcher
     {
         public PodcastSubscriptionsModel()
         {
-            this.PodcastSubscriptions = new ObservableCollection<PodcastModel>();
+            m_podcastsModel = new ObservableCollection<PodcastModel>();
         }
 
-        public ObservableCollection<PodcastModel> PodcastSubscriptions { get; private set; }
+        private ObservableCollection<PodcastModel> m_podcastsModel;
+        public ObservableCollection<PodcastModel> PodcastSubscriptions {
+            get
+            {
+                return m_podcastsModel;
+            }
+
+            private set
+            {
+                if (m_podcastsModel != value)
+                {
+                    m_podcastsModel = value;
+                }
+            }
+        }
 
         private string _sampleProperty = "Sample Runtime Property Value";
         /// <summary>
@@ -45,13 +59,6 @@ namespace Podcatcher
                 }
             }
         }
-
-        public bool IsDataLoaded
-        {
-            get;
-            private set;
-        }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(String propertyName)

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using System.Collections.ObjectModel;
 
 namespace Podcatcher
 {
@@ -28,7 +29,7 @@ namespace Podcatcher
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
-        public PodcastSubscriptionsModel PodcastSubscriptions
+        public ObservableCollection<PodcastModel> PodcastSubscriptions
         {
             get { return m_subscriptionsManager.PodcastSubscriptions; }
             private set { }

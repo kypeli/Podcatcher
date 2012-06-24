@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Net;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
+using System.Windows.Navigation;
+using System.Windows;
+using Microsoft.Phone.Controls;
+using System.Windows.Controls;
 
 namespace Podcatcher
 {
     public class PodcastSubscriptionsManager
     {
         private static PodcastSubscriptionsManager m_instance = null;
-        private PodcastSubscriptionsModel m_subscriptions = new PodcastSubscriptionsModel();
 
         private PodcastSubscriptionsManager()
         {
+            m_podcastsModel = new ObservableCollection<PodcastModel>();
         }
 
         public static PodcastSubscriptionsManager getInstance()
@@ -22,11 +27,22 @@ namespace Podcatcher
             return m_instance;
         }
 
-        public PodcastSubscriptionsModel PodcastSubscriptions {
-            get { return m_subscriptions; }
-            private set { } 
-        }
+        private ObservableCollection<PodcastModel> m_podcastsModel;
+        public ObservableCollection<PodcastModel> PodcastSubscriptions
+        {
+            get
+            {
+                return m_podcastsModel;
+            }
 
+            private set
+            {
+                if (m_podcastsModel != value)
+                {
+                    m_podcastsModel = value;
+                }
+            }
+        }
         public void addSubscriptionFromURL(string podcastRss)
         {
             if (podcastRss.StartsWith("http://") == false)
@@ -45,7 +61,12 @@ namespace Podcatcher
 
         void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            Debug.WriteLine("Got XML: " + e.Result.ToString());
+            PodcastModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);            
+            Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
+
+            PodcastSubscriptions.Add(podcastModel);
+            NavigationService navi = (((App)Application.Current).RootFrame.Content as PhoneApplicationPage).NavigationService;
+            navi.GoBack();
         }
     }
 }

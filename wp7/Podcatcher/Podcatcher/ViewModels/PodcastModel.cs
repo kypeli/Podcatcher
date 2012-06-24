@@ -22,12 +22,49 @@ namespace Podcatcher
             {
                 return m_PodcastName;
             }
+            
             set
             {
                 if (value != m_PodcastName)
                 {
                     m_PodcastName = value;
                     NotifyPropertyChanged("PodcastName");
+                }
+            }
+        }
+
+        private string m_PodcastDescription;
+        public string PodcastDescription
+        {
+            get
+            {
+                return m_PodcastDescription;
+            }
+
+            set
+            {
+                if (value != m_PodcastDescription)
+                {
+                    m_PodcastDescription = value;
+                    NotifyPropertyChanged("PodcastDescription");
+                }
+            }
+        }
+
+        private string m_PodcastLogoUrl;
+        public String PodcastLogoUrl
+        {
+            get
+            {
+                return m_PodcastLogoUrl;
+            }
+
+            set
+            {
+                if (value != m_PodcastLogoUrl)
+                {
+                    m_PodcastLogoUrl = value;
+                    // TODO: Get the Image from the URL
                 }
             }
         }
@@ -39,7 +76,8 @@ namespace Podcatcher
             {
                 return m_PodcastLogoImage;
             }
-            set
+
+            private set
             {
                 if (value != m_PodcastLogoImage)
                 {
