@@ -20,5 +20,11 @@ namespace Podcatcher.Views
             InitializeComponent();
         }
 
+        private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastSubscriptionsManager subscriptionManager = PodcastSubscriptionsManager.getInstance();
+            subscriptionManager.addSubscriptionFromURL(addFromUrlInput.Text);
+        }
+
     }
 }

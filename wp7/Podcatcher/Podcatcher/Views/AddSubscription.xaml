@@ -30,11 +30,11 @@
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel Height="661" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="450">
                 <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Podcast RSS URL" TextWrapping="Wrap" />
-                <TextBox Height="71" InputScope="url" Name="addFromUrl" Text="" Width="460" />
-                <Button Content="Add" Height="71" Name="addFromUrlButton" Width="160" HorizontalAlignment="Right" />
+                <TextBox Height="71" InputScope="url" Name="addFromUrlInput" Text="" Width="460" />
+                <Button Content="Add" Height="71" Name="addFromUrlButton" Width="160" HorizontalAlignment="Right" Click="addFromUrlButton_Click" />
                 <TextBlock Height="Auto" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Search podcast by keyword" Margin="0,30,0,0" TextWrapping="Wrap" />
-                <TextBox Height="71" Name="textBox2" Text="" Width="460" />
-                <Button Content="Search" Height="71" Name="searchByKeywordButton" Width="160" HorizontalAlignment="Right" />
+                <TextBox Height="71" Name="searchByKeywordInput" Text="" Width="460" />
+                <Button Content="Search" Height="71" Width="160" HorizontalAlignment="Right" />
             </StackPanel>
         </Grid>
     </Grid>

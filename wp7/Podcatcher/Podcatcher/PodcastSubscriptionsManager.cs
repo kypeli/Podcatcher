@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace Podcatcher
 {
@@ -31,7 +24,28 @@ namespace Podcatcher
 
         public PodcastSubscriptionsModel PodcastSubscriptions {
             get { return m_subscriptions; }
-            private set; 
+            private set { } 
+        }
+
+        public void addSubscriptionFromURL(string podcastRss)
+        {
+            if (podcastRss.StartsWith("http://") == false)
+            {
+                podcastRss = podcastRss.Insert(0, "http://");
+            }
+
+            Uri podcastRssUri = new Uri(podcastRss);
+            
+            WebClient wc = new WebClient();
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
+            wc.DownloadStringAsync(podcastRssUri);
+
+            Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
+        }
+
+        void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            Debug.WriteLine("Got XML: " + e.Result.ToString());
         }
     }
 }
