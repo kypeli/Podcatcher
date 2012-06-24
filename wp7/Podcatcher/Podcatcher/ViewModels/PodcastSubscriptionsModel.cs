@@ -18,26 +18,7 @@ namespace Podcatcher
 {
     public class PodcastSubscriptionsModel : INotifyPropertyChanged
     {
-
-        private static PodcastSubscriptionsModel podcastSubscriptionsModel = null;
-
-        /// <summary>
-        /// A static ViewModel used by the views to bind against.
-        /// </summary>
-        /// <returns>The MainViewModel object.</returns>
-        public static PodcastSubscriptionsModel Instance
-        {
-            get
-            {
-                // Delay creation of the view model until necessary
-                if (podcastSubscriptionsModel == null)
-                    podcastSubscriptionsModel = new PodcastSubscriptionsModel();
-
-                return podcastSubscriptionsModel;
-            }
-        }
-
-        private PodcastSubscriptionsModel()
+        public PodcastSubscriptionsModel()
         {
             this.PodcastSubscriptions = new ObservableCollection<PodcastModel>();
         }

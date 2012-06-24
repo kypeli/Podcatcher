@@ -15,15 +15,25 @@ namespace Podcatcher
 {
     public partial class MainView : PhoneApplicationPage
     {
-        // Constructor
+        private PodcastSubscriptionsManager m_subscriptionsManager;
+
         public MainView()
         {
             InitializeComponent();
 
-            DataContext = PodcastSubscriptionsModel.Instance;
+            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+
+            DataContext = this;
+
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
+        public PodcastSubscriptionsModel PodcastSubscriptions
+        {
+            get { return m_subscriptionsManager.PodcastSubscriptions; }
+            private set { }
+        }
+        
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
         }
