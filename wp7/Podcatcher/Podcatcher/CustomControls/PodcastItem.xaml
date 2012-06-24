@@ -8,7 +8,7 @@
 	d:DesignWidth="480" d:DesignHeight="800">
 
 	<StackPanel Orientation="Horizontal" >
-        <Image Height="100" Width="100" Source="http://twit.tv/files/imagecache/coverart-feed/coverart/twit300.jpg" VerticalAlignment="Center" Margin="0,0,10,0"/> 
-		<TextBlock TextWrapping="Wrap" Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="374" Text="this Week in Tech" VerticalAlignment="Center"/>
+        <Image Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,0,10,0"/> 
+		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="374" VerticalAlignment="Center"/>
 	</StackPanel>
 </UserControl>
