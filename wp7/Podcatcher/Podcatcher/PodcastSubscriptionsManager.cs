@@ -50,7 +50,16 @@ namespace Podcatcher
                 podcastRss = podcastRss.Insert(0, "http://");
             }
 
-            Uri podcastRssUri = new Uri(podcastRss);
+            Uri podcastRssUri;
+            try
+            {
+                podcastRssUri = new Uri(podcastRss);
+            }
+            catch (UriFormatException)
+            {
+                Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
+                return;
+            }
             
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
