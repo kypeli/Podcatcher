@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace Podcatcher
 {
@@ -64,27 +66,40 @@ namespace Podcatcher
                 if (value != m_PodcastLogoUrl)
                 {
                     m_PodcastLogoUrl = value;
-                    // TODO: Get the Image from the URL
+                    NotifyPropertyChanged("PodcastLogoUrl");
+
+                    Debug.WriteLine("Getting twitter icon: " + m_PodcastLogoUrl);
+
+                    WebClient wc = new WebClient();
+                    wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
+                    wc.OpenReadAsync(new Uri(m_PodcastLogoUrl, UriKind.Absolute));
                 }
             }
         }
 
-        private Image m_PodcastLogoImage;
-        public Image PodcastLogo
+        private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)
         {
-            get
+            if (e.Cancelled || e.Error != null)
             {
-                return m_PodcastLogoImage;
             }
 
-            private set
+            Debug.WriteLine("Setting image icon.");
+
+/*            Stream logoInStream = null;
+            try
             {
-                if (value != m_PodcastLogoImage)
+                logoInStream = (Stream)e.Result;
+            }
+            catch (WebException webEx)
+            {
+                if (webEx.Status != WebExceptionStatus.Success)
                 {
-                    m_PodcastLogoImage = value;
-                    NotifyPropertyChanged("PodcastLogo");
+                    Debug.WriteLine("Web error occured. Cannot load image!");
+                    return;
                 }
             }
+
+            Image logoImage = new Image();*/
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

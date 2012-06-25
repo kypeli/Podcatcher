@@ -50,7 +50,10 @@ namespace Podcatcher.Views
         private void subscriptionManager_OnPodcastChannelFinished(object source, SubscriptionManagerArgs e)
         {
             progressOverlay.Hide();
-            NavigationService.GoBack();
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
         }
 
     }

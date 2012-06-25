@@ -8,7 +8,7 @@
 	d:DesignWidth="480" d:DesignHeight="800">
 
 	<StackPanel Orientation="Horizontal" >
-        <Image Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,0,10,0"/> 
+        <Image Source="{Binding PodcastLogoUrl}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,0,10,0"/> 
 		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="374" VerticalAlignment="Center"/>
 	</StackPanel>
 </UserControl>

@@ -71,6 +71,7 @@ namespace Podcatcher
             catch (UriFormatException)
             {
                 Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
+                OnPodcastChannelFinishedWithError(this, null);
                 return;
             }
 
