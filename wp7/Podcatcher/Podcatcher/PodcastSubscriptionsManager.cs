@@ -6,28 +6,34 @@ using System.Windows.Navigation;
 using System.Windows;
 using Microsoft.Phone.Controls;
 using System.Windows.Controls;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher
 {
+    public delegate void SubscriptionManagerHandler(object source, SubscriptionManagerArgs e);
+
+    public class SubscriptionManagerArgs
+    {
+
+    }
+
     public class PodcastSubscriptionsManager
     {
-        private static PodcastSubscriptionsManager m_instance = null;
+        // ***************** Public implementation ******************* //
 
-        private PodcastSubscriptionsManager()
-        {
-            m_podcastsModel = new ObservableCollection<PodcastModel>();
-        }
+        public event SubscriptionManagerHandler OnPodcastChannelFinished;
+        public event SubscriptionManagerHandler OnPodcastChannelFinishedWithError;
 
         public static PodcastSubscriptionsManager getInstance()
         {
-            if (m_instance == null) {
+            if (m_instance == null)
+            {
                 m_instance = new PodcastSubscriptionsManager();
             }
 
             return m_instance;
         }
 
-        private ObservableCollection<PodcastModel> m_podcastsModel;
         public ObservableCollection<PodcastModel> PodcastSubscriptions
         {
             get
@@ -43,8 +49,15 @@ namespace Podcatcher
                 }
             }
         }
+
         public void addSubscriptionFromURL(string podcastRss)
         {
+            // DEBUG
+            if (String.IsNullOrEmpty(podcastRss))
+            {
+                podcastRss = "http://leo.am/podcasts/twit";
+            }
+
             if (podcastRss.StartsWith("http://") == false)
             {
                 podcastRss = podcastRss.Insert(0, "http://");
@@ -60,7 +73,7 @@ namespace Podcatcher
                 Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
                 return;
             }
-            
+
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
             wc.DownloadStringAsync(podcastRssUri);
@@ -68,14 +81,34 @@ namespace Podcatcher
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
 
-        void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        
+        // ***************** Private implementation ******************* //
+
+        private static PodcastSubscriptionsManager m_instance = null;
+
+        private PodcastSubscriptionsManager()
         {
+            m_podcastsModel = new ObservableCollection<PodcastModel>();
+        }
+
+        private ObservableCollection<PodcastModel> m_podcastsModel;
+
+        private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (e.Error != null
+                || e.Cancelled)
+            {
+                Debug.WriteLine("ERROR: Web request failed. Message: " + e.Error.Message);
+                OnPodcastChannelFinishedWithError(this, null);
+                return;
+            }
+                
             PodcastModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);            
             Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
 
+            OnPodcastChannelFinished(this, null);
+
             PodcastSubscriptions.Add(podcastModel);
-            NavigationService navi = (((App)Application.Current).RootFrame.Content as PhoneApplicationPage).NavigationService;
-            navi.GoBack();
         }
     }
 }
