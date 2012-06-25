@@ -81,7 +81,7 @@ namespace Podcatcher
 
                     Debug.WriteLine("Getting twitter icon: " + m_PodcastLogoUrl);
 
-                    // Fetch the remote podcast logo to store the image locally.
+                    // Fetch the remote podcast logo to store locally in the IsolatedStorage.
                     Uri podcastLogoUri = new Uri(m_PodcastLogoUrl, UriKind.Absolute);
                     WebClient wc = new WebClient();
                     wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
@@ -124,7 +124,7 @@ namespace Podcatcher
             // Store the downloaded podcast logo to isolated storage for local cache.
             MemoryStream logoMemory = new MemoryStream();
             logoInStream.CopyTo(logoMemory);
-            using (var isoFileStream = new IsolatedStorageFileStream(, 
+            using (var isoFileStream = new IsolatedStorageFileStream(localPodcastLogoFilename, 
                                                                      FileMode.OpenOrCreate, 
                                                                      m_localPodcastIconCache))
             {
