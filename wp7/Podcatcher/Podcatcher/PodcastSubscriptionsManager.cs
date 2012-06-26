@@ -7,6 +7,7 @@ using System.Windows;
 using Microsoft.Phone.Controls;
 using System.Windows.Controls;
 using Coding4Fun.Phone.Controls;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {
@@ -24,6 +25,8 @@ namespace Podcatcher
         public event SubscriptionManagerHandler OnPodcastChannelFinished;
         public event SubscriptionManagerHandler OnPodcastChannelFinishedWithError;
 
+        private PodcastSqlModel m_podcastsModel = null;
+
         public static PodcastSubscriptionsManager getInstance()
         {
             if (m_instance == null)
@@ -32,22 +35,6 @@ namespace Podcatcher
             }
 
             return m_instance;
-        }
-
-        public ObservableCollection<PodcastModel> PodcastSubscriptions
-        {
-            get
-            {
-                return m_podcastsModel;
-            }
-
-            private set
-            {
-                if (m_podcastsModel != value)
-                {
-                    m_podcastsModel = value;
-                }
-            }
         }
 
         public void addSubscriptionFromURL(string podcastRss)
@@ -89,10 +76,8 @@ namespace Podcatcher
 
         private PodcastSubscriptionsManager()
         {
-            m_podcastsModel = new ObservableCollection<PodcastModel>();
+            m_podcastsModel = PodcastSqlModel.getInstance();
         }
-
-        private ObservableCollection<PodcastModel> m_podcastsModel;
 
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
@@ -104,12 +89,26 @@ namespace Podcatcher
                 return;
             }
                 
-            PodcastModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);            
+            PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);            
             Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
+
+            podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
 
             OnPodcastChannelFinished(this, null);
 
-            PodcastSubscriptions.Add(podcastModel);
+            m_podcastsModel.addSubscription(podcastModel);
+        }
+
+        private string localLogoFileName(PodcastSubscriptionModel podcastModel)
+        {
+            // Parse the filename of the logo from the remote URL.
+            string localPath = podcastModel.PodcastLogoUrl.LocalPath;
+            string podcastLogoFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
+            string localPodcastLogoFilename = App.PODCAST_ICON_DIR + @"/" + podcastLogoFilename;
+
+            Debug.WriteLine("Found icon filename: " + localPodcastLogoFilename);
+
+            return localPodcastLogoFilename;
         }
     }
 }

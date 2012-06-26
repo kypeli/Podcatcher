@@ -16,7 +16,7 @@ namespace Podcatcher
 {
     public class PodcastFactory
     {
-        public static PodcastModel podcastModelFromRSS(string podcastRss)
+        public static PodcastSubscriptionModel podcastModelFromRSS(string podcastRss)
         {
             XDocument rssXmlDoc;
             try
@@ -43,10 +43,10 @@ namespace Podcatcher
                 return null;
             }
 
-            PodcastModel podcastModel = new PodcastModel();
+            PodcastSubscriptionModel podcastModel = new PodcastSubscriptionModel();
             podcastModel.PodcastName        = query.Title;
             podcastModel.PodcastDescription = query.Description;
-            podcastModel.PodcastLogoUrl     = query.ImageUrl;
+            podcastModel.PodcastLogoUrl     = new Uri(query.ImageUrl, UriKind.Absolute);
 
             return podcastModel;                
         }

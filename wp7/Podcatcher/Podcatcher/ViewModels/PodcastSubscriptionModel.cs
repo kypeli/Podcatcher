@@ -13,22 +13,32 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.IO.IsolatedStorage;
+using System.Data.Linq.Mapping;
+using System.Data.Linq;
 
 namespace Podcatcher
 {
-    public class PodcastModel : INotifyPropertyChanged
-    {
-        private const string PODCAST_ICON_DIR = "PodcastIcons";
-        
+    [Table(Name="PodcastSubscription")]
+    public class PodcastSubscriptionModel : INotifyPropertyChanged
+    {        
         private IsolatedStorageFile m_localPodcastIconCache;
 
-        public PodcastModel()
+        public PodcastSubscriptionModel()
         {
             m_localPodcastIconCache = IsolatedStorageFile.GetUserStoreForApplication();
-            m_localPodcastIconCache.CreateDirectory(PODCAST_ICON_DIR);
+            m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
         }
 
+        [Column(IsPrimaryKey=true, 
+                IsDbGenerated=true, 
+                DbType = "INT NOT NULL Identity", 
+                CanBeNull = false, 
+                AutoSync = AutoSync.OnInsert)]
+        private int id;
+
+#region properties
         private string m_PodcastName;
+        [Column]
         public string PodcastName
         {
             get
@@ -47,6 +57,7 @@ namespace Podcatcher
         }
 
         private string m_PodcastDescription;
+        [Column]
         public string PodcastDescription
         {
             get
@@ -65,8 +76,23 @@ namespace Podcatcher
         }
 
         private string m_PodcastLogoLocalLocation;
-        private string m_PodcastLogoUrl;
-        public String PodcastLogoUrl
+        [Column]
+        public string PodcastLogoLocalLocation
+        {
+            get
+            {
+                return m_PodcastLogoLocalLocation;
+            }
+
+            set
+            {
+                m_PodcastLogoLocalLocation = value;
+                NotifyPropertyChanged("PodcastLogoLocalLocation");
+            }
+        }
+
+        private Uri m_PodcastLogoUrl = null;
+        public Uri PodcastLogoUrl
         {
             get
             {
@@ -82,13 +108,50 @@ namespace Podcatcher
                     Debug.WriteLine("Getting twitter icon: " + m_PodcastLogoUrl);
 
                     // Fetch the remote podcast logo to store locally in the IsolatedStorage.
-                    Uri podcastLogoUri = new Uri(m_PodcastLogoUrl, UriKind.Absolute);
                     WebClient wc = new WebClient();
                     wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
-                    wc.OpenReadAsync(podcastLogoUri, podcastLogoUri);
+                    wc.OpenReadAsync(m_PodcastLogoUrl);
                 }
             }
         }
+
+        // Version column aids update performance.
+        [Column(IsVersion = true)]
+        private Binary version;
+
+        public BitmapImage PodcastLogo
+        {
+            get
+            {
+                if (m_PodcastLogoLocalLocation == null)
+                {
+                    return null;
+                }
+
+                // This method can be called when we still don't have a local
+                // image stored, so the file name can be empty.
+                string isoFilename = m_PodcastLogoLocalLocation;
+
+                // When we request for the podcast logo we will in fact fetch
+                // the image from the local cache, create the BitmapImage object
+                // and return that. 
+                IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+                if (isoStore.FileExists(isoFilename) == false)
+                {
+                    return null;
+                }
+
+                BitmapImage image = new BitmapImage();
+                using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
+                {
+                    image.SetSource(stream);
+                }
+                return image;
+            }
+
+            private set { }
+        }
+#endregion
 
         private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)
         {
@@ -114,47 +177,21 @@ namespace Podcatcher
                 }
             }
 
-            // Parse the filename of the logo.
-            string localPath = (e.UserState as Uri).LocalPath;
-            string podcastLogoFilename      = localPath.Substring(localPath.LastIndexOf('/') + 1);
-            string localPodcastLogoFilename = PODCAST_ICON_DIR + @"/" + podcastLogoFilename;
-
-            Debug.WriteLine("Found icon filename: " + podcastLogoFilename);
-
             // Store the downloaded podcast logo to isolated storage for local cache.
             MemoryStream logoMemory = new MemoryStream();
             logoInStream.CopyTo(logoMemory);
-            using (var isoFileStream = new IsolatedStorageFileStream(localPodcastLogoFilename, 
+            using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation, 
                                                                      FileMode.OpenOrCreate, 
                                                                      m_localPodcastIconCache))
             {
                 isoFileStream.Write(logoMemory.ToArray(), 0, (int)logoMemory.Length);
             }
 
-            m_PodcastLogoLocalLocation = localPodcastLogoFilename;
-            Debug.WriteLine("Stored local podcast icon as: " + m_PodcastLogoLocalLocation);
+            Debug.WriteLine("Stored local podcast icon as: " + PodcastLogoLocalLocation);
             
             // Local cache has been updated - notify the UI that the logo property has changed.
             // and the new logo can be fetched to the UI. 
             NotifyPropertyChanged("PodcastLogo");
-        }
-
-        public BitmapImage PodcastLogo
-        {
-            get
-            {
-                // When we request for the podcast logo we will in fact fetch
-                // the image from the local cache, create the BitmapImage object
-                // and return that. 
-                BitmapImage image = new BitmapImage();
-                IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-                string isoFilename = m_PodcastLogoLocalLocation;
-                var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.Open);
-                image.SetSource(stream);
-                return image;
-            }
-
-            private set { }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

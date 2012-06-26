@@ -7,6 +7,8 @@ namespace Podcatcher
 {
     public partial class App : Application
     {
+        public const string PODCAST_ICON_DIR = "PodcastIcons";
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>

@@ -11,30 +11,21 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.Collections.ObjectModel;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {
     public partial class MainView : PhoneApplicationPage
     {
-        private PodcastSubscriptionsManager m_subscriptionsManager;
+        private PodcastSqlModel m_podcastsModel = PodcastSqlModel.getInstance();
 
         public MainView()
         {
             InitializeComponent();
-
-            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
-
-            DataContext = this;
-
+            DataContext = m_podcastsModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
-        public ObservableCollection<PodcastModel> PodcastSubscriptions
-        {
-            get { return m_subscriptionsManager.PodcastSubscriptions; }
-            private set { }
-        }
-        
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
         }
