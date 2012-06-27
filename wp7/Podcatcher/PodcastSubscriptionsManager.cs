@@ -91,17 +91,28 @@ namespace Podcatcher
             if (e.Error != null
                 || e.Cancelled)
             {
-                Debug.WriteLine("ERROR: Web request failed. Message: " + e.Error.Message);
-                OnPodcastChannelFinishedWithError(this, null);
+                PodcastSubscriptionFailedWithMessage("ERROR: Web request failed. Message: " + e.Error.Message);
                 return;
             }
                 
-            PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);            
+            PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);
+            if (podcastModel == null)
+            {
+                PodcastSubscriptionFailedWithMessage("ERROR: Could not parse podcast subscription from that location.");
+                return;
+            }
+            
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
             m_podcastsSqlModel.addSubscription(podcastModel);
 
             Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
             OnPodcastChannelFinished(this, null);
+        }
+
+        private void PodcastSubscriptionFailedWithMessage(string message)
+        {
+            Debug.WriteLine(message);
+            OnPodcastChannelFinishedWithError(this, null);
         }
 
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)

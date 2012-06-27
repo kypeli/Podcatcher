@@ -23,7 +23,7 @@ namespace Podcatcher
             {
                 rssXmlDoc = XDocument.Parse(podcastRss);
             }
-            catch (System.Xml.XmlException e)
+            catch (System.Exception e) 
             {
                 Debug.WriteLine("ERROR: Cannot parse podcast RSS feed. Status: " + e.ToString());
                 return null;
