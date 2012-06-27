@@ -69,19 +69,19 @@ namespace Podcatcher
 
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
-            m_podcastsModel.deleteSubscription(podcastModel);
+            m_podcastsSqlModel.deleteSubscription(podcastModel);
         }
 
 
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_instance = null;
-        private PodcastSqlModel m_podcastsModel               = null;
+        private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
 
         private PodcastSubscriptionsManager()
         {
-            m_podcastsModel = PodcastSqlModel.getInstance();
+            m_podcastsSqlModel = PodcastSqlModel.getInstance();
             m_random = new Random();
         }
 
@@ -102,7 +102,7 @@ namespace Podcatcher
 
             OnPodcastChannelFinished(this, null);
 
-            m_podcastsModel.addSubscription(podcastModel);
+            m_podcastsSqlModel.addSubscription(podcastModel);
         }
 
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
