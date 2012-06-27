@@ -64,15 +64,10 @@ namespace Podcatcher.ViewModels
             subscriptionModelChanged();
         }
 
-        public void deleteSubscriptionWithIndex(int index)
+        public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
-            if (isValidSubscriptionModelIndex(index) == false)
-            {
-                return;
-            }
 
-            PodcastSubscriptionModel modelToDelete = subscriptionModelForIndex(index);
-            m_podcastSubscriptionsSql.DeleteOnSubmit(modelToDelete);
+            m_podcastSubscriptionsSql.DeleteOnSubmit(podcastModel);
             subscriptionModelChanged();
         }
 

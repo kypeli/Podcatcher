@@ -23,7 +23,10 @@ namespace Podcatcher
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             PodcastSubscriptionModel subscriptionToDelete = (sender as MenuItem).DataContext as PodcastSubscriptionModel;
-            Debug.WriteLine("Delete index.");
+            Debug.WriteLine("Delete podcast subscription. Name: " + subscriptionToDelete.PodcastName);
+
+            PodcastSubscriptionsManager subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+            subscriptionsManager.deleteSubscription(subscriptionToDelete);
         }
 	}
 }
