@@ -67,9 +67,10 @@ namespace Podcatcher
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
 
-        public void deleteSubscription(PodcastSubscriptionModel podcastModel)
+        public void deleteSubscription(PodcastSubscriptionModel podcastSubscriptionModel)
         {
-            m_podcastsSqlModel.deleteSubscription(podcastModel);
+            podcastSubscriptionModel.cleanupForDeletion();
+            m_podcastsSqlModel.deleteSubscription(podcastSubscriptionModel);
         }
 
 

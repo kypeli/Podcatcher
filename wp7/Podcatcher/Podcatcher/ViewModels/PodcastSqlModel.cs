@@ -67,6 +67,7 @@ namespace Podcatcher.ViewModels
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
 
+            Debug.WriteLine("Deleting podcast subscription from SQL. Name: " + podcastModel.PodcastName);
             m_podcastSubscriptionsSql.DeleteOnSubmit(podcastModel);
             subscriptionModelChanged();
         }

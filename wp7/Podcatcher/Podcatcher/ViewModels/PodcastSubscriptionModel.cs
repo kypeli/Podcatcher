@@ -154,6 +154,22 @@ namespace Podcatcher
             m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
         }
 
+        public void cleanupForDeletion()
+        {
+            // TODO: Extract methods.
+                        
+            // Delete logo from local image cache.
+            if (m_localPodcastIconCache.FileExists(m_PodcastLogoLocalLocation) == false) 
+            {
+                Debug.WriteLine("ERROR: Logo local cache file not found! Subscription: " + m_PodcastName 
+                                + ", logo file: " + m_PodcastLogoLocalLocation);
+                return;
+            }
+
+            Debug.WriteLine("Deleting local cache of logo: " + m_PodcastLogoLocalLocation);
+            m_localPodcastIconCache.DeleteFile(m_PodcastLogoLocalLocation);
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations        
         private IsolatedStorageFile m_localPodcastIconCache;
