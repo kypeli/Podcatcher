@@ -8,6 +8,7 @@ using Microsoft.Phone.Controls;
 using System.Windows.Controls;
 using Coding4Fun.Phone.Controls;
 using Podcatcher.ViewModels;
+using System.Text;
 
 namespace Podcatcher
 {
@@ -70,11 +71,13 @@ namespace Podcatcher
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_instance = null;
-        private PodcastSqlModel m_podcastsModel = null;
+        private PodcastSqlModel m_podcastsModel               = null;
+        private Random m_random                               = null;
 
         private PodcastSubscriptionsManager()
         {
             m_podcastsModel = PodcastSqlModel.getInstance();
+            m_random = new Random();
         }
 
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -102,8 +105,14 @@ namespace Podcatcher
             // Parse the filename of the logo from the remote URL.
             string localPath = podcastModel.PodcastLogoUrl.LocalPath;
             string podcastLogoFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
-            string localPodcastLogoFilename = App.PODCAST_ICON_DIR + @"/" + podcastLogoFilename;
 
+            // Make podcast logo name random.
+            // This is because, if for some reason, two podcasts have the same logo name and we delete
+            // one of them, we don't want the other one to be affected. Just to be sure. 
+            StringBuilder podcastLogoFilename_sb = new StringBuilder(podcastLogoFilename);
+            podcastLogoFilename_sb.Insert(0, m_random.Next().ToString());
+
+            string localPodcastLogoFilename = App.PODCAST_ICON_DIR + @"/" + podcastLogoFilename_sb.ToString();
             Debug.WriteLine("Found icon filename: " + localPodcastLogoFilename);
 
             return localPodcastLogoFilename;
