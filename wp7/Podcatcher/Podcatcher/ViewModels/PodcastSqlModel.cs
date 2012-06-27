@@ -13,6 +13,7 @@ using System.Data.Linq.Mapping;
 using System.Data.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Podcatcher.ViewModels
 {
@@ -47,11 +48,33 @@ namespace Podcatcher.ViewModels
             return m_instance;
         }
 
+        public PodcastSubscriptionModel subscriptionModelForIndex(int index)
+        {
+            if (isValidSubscriptionModelIndex(index) == false)
+            {
+                return null;
+            }
+
+            return m_podcastSubscriptions.ElementAt(index);
+        }
+
+
         public void addSubscription(PodcastSubscriptionModel podcastModel)
         {
             m_podcastSubscriptionsSql.InsertOnSubmit(podcastModel);
-            SubmitChanges();
-            NotifyPropertyChanged("PodcastSubscriptions");
+            subscriptionModelChanged();
+        }
+
+        public void deleteSubscriptionWithIndex(int index)
+        {
+            if (isValidSubscriptionModelIndex(index) == false)
+            {
+                return;
+            }
+
+            PodcastSubscriptionModel modelToDelete = subscriptionModelForIndex(index);
+            m_podcastSubscriptionsSql.DeleteOnSubmit(modelToDelete);
+            subscriptionModelChanged();
         }
 
         /************************************* Private implementation *******************************/
@@ -60,7 +83,6 @@ namespace Podcatcher.ViewModels
 
         private static PodcastSqlModel m_instance = null;
         private Table<PodcastSubscriptionModel> m_podcastSubscriptionsSql;
-        
 
         private PodcastSqlModel()
             : base(m_connectionString)
@@ -69,6 +91,31 @@ namespace Podcatcher.ViewModels
             {
                 CreateDatabase();
             }
+
+            m_podcastSubscriptionsSql = GetTable<PodcastSubscriptionModel>();
+        }
+
+        private bool isValidSubscriptionModelIndex(int index)
+        {
+            if (index > m_podcastSubscriptions.Count)
+            {
+                Debug.WriteLine("ERROR: Cannot fetch podcast subscription with index " + index + ". Model size: " + m_podcastSubscriptions.Count);
+                return false;
+            }
+
+            if (index < 0)
+            {
+                Debug.WriteLine("ERROR: Cannot fetch podcast subscription with index " + index);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void subscriptionModelChanged()
+        {
+            SubmitChanges();
+            NotifyPropertyChanged("PodcastSubscriptions");
         }
 
         #region propertyChanged
