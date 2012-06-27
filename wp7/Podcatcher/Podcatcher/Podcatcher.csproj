@@ -75,6 +75,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\Converters.cs" />
     <Compile Include="PodcastFactory.cs" />
     <Compile Include="PodcastSubscriptionsManager.cs" />
     <Compile Include="CustomControls\PodcastSubscriptionItem.xaml.cs">

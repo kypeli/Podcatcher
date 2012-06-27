@@ -9,6 +9,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pc="clr-namespace:Podcatcher"
+    xmlns:c="clr-namespace:Podcatcher.Converters"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -17,6 +18,11 @@
     shell:SystemTray.IsVisible="True"
     Style="{StaticResource TurnstilePage}"
     >
+    
+    <phone:PhoneApplicationPage.Resources>
+        <c:NoSubscriptionsVisibilityConverter x:Name="emptyListNotificationVisibility"/>
+    </phone:PhoneApplicationPage.Resources>
+
     
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -30,15 +36,27 @@
                       />                  
                 </controls:PivotItem.Header>
                 <!--Double line list with text wrapping-->
-                <ListBox x:Name="FirstListBox" Margin="0,0,-12,0" ItemsSource="{Binding PodcastSubscriptions}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                          <StackPanel Margin="0,0,0,17" Width="432" Height="100">
-                                <pc:PodcastSubscriptionItem/> 
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Grid x:Name="SubscriptionsRoot" Background="Transparent">
+                    <ListBox x:Name="FirstListBox" Grid.Row="0" Margin="0,0,-12,0" ItemsSource="{Binding PodcastSubscriptions}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,17" Width="432" Height="100">
+                                    <pc:PodcastSubscriptionItem/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Text="You have no podcast subscriptions.&#xd;&#xa;&#xd;&#xa;Why don't you add some..."
+                             Visibility="{Binding PodcastSubscriptions, 
+                                Converter={StaticResource emptyListNotificationVisibility}}" 
+                             VerticalAlignment="Center" 
+                             HorizontalAlignment="Center" 
+                             TextWrapping="Wrap" 
+                             TextAlignment="Center" 
+                             Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                             Margin="34,96,32,278" />
+                </Grid>
             </controls:PivotItem>
 
             <!-- New podcast episodes -->
