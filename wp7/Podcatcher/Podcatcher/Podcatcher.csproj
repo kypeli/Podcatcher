@@ -81,7 +81,7 @@
     <Compile Include="CustomControls\PodcastSubscriptionItem.xaml.cs">
       <DependentUpon>PodcastSubscriptionItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\PodcastSqlModel.cs" />
+    <Compile Include="PodcastSqlModel.cs" />
     <Compile Include="Views\AddSubscription.xaml.cs">
       <DependentUpon>AddSubscription.xaml</DependentUpon>
     </Compile>

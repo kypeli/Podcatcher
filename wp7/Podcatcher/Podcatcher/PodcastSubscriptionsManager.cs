@@ -97,13 +97,11 @@ namespace Podcatcher
             }
                 
             PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);            
-            Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
-
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
-
-            OnPodcastChannelFinished(this, null);
-
             m_podcastsSqlModel.addSubscription(podcastModel);
+
+            Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
+            OnPodcastChannelFinished(this, null);
         }
 
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
