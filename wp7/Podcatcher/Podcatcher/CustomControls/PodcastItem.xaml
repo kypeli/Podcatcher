@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"    
 	mc:Ignorable="d"
 	x:Class="Podcatcher.PodcastItem"
 	d:DesignWidth="480" d:DesignHeight="800">
@@ -10,5 +11,11 @@
 	<StackPanel Orientation="Horizontal" >
         <Image CacheMode="BitmapCache" Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,0,10,0"/> 
 		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="374" VerticalAlignment="Center"/>
-	</StackPanel>
+        <toolkit:ContextMenuService.ContextMenu>
+            <toolkit:ContextMenu>
+                <toolkit:MenuItem Header="Delete" Click="MenuItem_Click" />
+            </toolkit:ContextMenu>
+        </toolkit:ContextMenuService.ContextMenu>
+
+    </StackPanel>
 </UserControl>
