@@ -58,7 +58,6 @@ namespace Podcatcher.ViewModels
             return m_podcastSubscriptions.ElementAt(index);
         }
 
-
         public void addSubscription(PodcastSubscriptionModel podcastModel)
         {
             m_podcastSubscriptionsSql.InsertOnSubmit(podcastModel);

@@ -77,8 +77,8 @@
     </Compile>
     <Compile Include="PodcastFactory.cs" />
     <Compile Include="PodcastSubscriptionsManager.cs" />
-    <Compile Include="CustomControls\PodcastItem.xaml.cs">
-      <DependentUpon>PodcastItem.xaml</DependentUpon>
+    <Compile Include="CustomControls\PodcastSubscriptionItem.xaml.cs">
+      <DependentUpon>PodcastSubscriptionItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\PodcastSqlModel.cs" />
     <Compile Include="Views\AddSubscription.xaml.cs">
@@ -98,7 +98,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="CustomControls\PodcastItem.xaml">
+    <Page Include="CustomControls\PodcastSubscriptionItem.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
