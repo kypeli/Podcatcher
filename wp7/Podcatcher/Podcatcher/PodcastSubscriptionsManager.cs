@@ -15,17 +15,14 @@ namespace Podcatcher
 
     public class SubscriptionManagerArgs
     {
-
     }
 
     public class PodcastSubscriptionsManager
     {
-        // ***************** Public implementation ******************* //
+        /************************************* Public implementations *******************************/
 
         public event SubscriptionManagerHandler OnPodcastChannelFinished;
         public event SubscriptionManagerHandler OnPodcastChannelFinishedWithError;
-
-        private PodcastSqlModel m_podcastsModel = null;
 
         public static PodcastSubscriptionsManager getInstance()
         {
@@ -69,10 +66,11 @@ namespace Podcatcher
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
 
-        
-        // ***************** Private implementation ******************* //
 
+        /************************************* Private implementation *******************************/
+        #region privateImplementations
         private static PodcastSubscriptionsManager m_instance = null;
+        private PodcastSqlModel m_podcastsModel = null;
 
         private PodcastSubscriptionsManager()
         {
@@ -110,5 +108,6 @@ namespace Podcatcher
 
             return localPodcastLogoFilename;
         }
+        #endregion
     }
 }

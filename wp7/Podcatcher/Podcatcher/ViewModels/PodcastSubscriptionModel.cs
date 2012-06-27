@@ -21,14 +21,8 @@ namespace Podcatcher
     [Table(Name="PodcastSubscription")]
     public class PodcastSubscriptionModel : INotifyPropertyChanged
     {        
-        private IsolatedStorageFile m_localPodcastIconCache;
-
-        public PodcastSubscriptionModel()
-        {
-            m_localPodcastIconCache = IsolatedStorageFile.GetUserStoreForApplication();
-            m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
-        }
-
+        /************************************* Public properties *******************************/
+        #region properties
         [Column(IsPrimaryKey=true, 
                 IsDbGenerated=true, 
                 DbType = "INT NOT NULL Identity", 
@@ -36,7 +30,6 @@ namespace Podcatcher
                 AutoSync = AutoSync.OnInsert)]
         private int id;
 
-#region properties
         private string m_PodcastName;
         [Column]
         public string PodcastName
@@ -151,7 +144,19 @@ namespace Podcatcher
 
             private set { }
         }
-#endregion
+        #endregion
+
+        /************************************* Public implementations *******************************/
+        
+        public PodcastSubscriptionModel()
+        {
+            m_localPodcastIconCache = IsolatedStorageFile.GetUserStoreForApplication();
+            m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
+        }
+
+        /************************************* Private implementation *******************************/
+        #region privateImplementations        
+        private IsolatedStorageFile m_localPodcastIconCache;
 
         private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)
         {
@@ -194,6 +199,7 @@ namespace Podcatcher
             NotifyPropertyChanged("PodcastLogo");
         }
 
+        #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(String propertyName)
         {
@@ -203,5 +209,7 @@ namespace Podcatcher
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+        #endregion
+        #endregion
     }
 }

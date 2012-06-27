@@ -18,9 +18,25 @@ namespace Podcatcher.ViewModels
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
-        private static PodcastSqlModel m_instance = null;
+        /************************************* Public properties *******************************/
+
+        private ObservableCollection<PodcastSubscriptionModel> m_podcastSubscriptions;
+        public ObservableCollection<PodcastSubscriptionModel> PodcastSubscriptions
+        {         
+            get 
+            {
+                var query = from PodcastSubscriptionModel podcastSubscription in m_podcastSubscriptionsSql
+                            orderby podcastSubscription.PodcastName 
+                            select podcastSubscription;
+
+                m_podcastSubscriptions = new ObservableCollection<PodcastSubscriptionModel>(query);
+                return m_podcastSubscriptions;
+            }
+        }
+
+        /************************************* Public implementations *******************************/
+
         public static PodcastSqlModel getInstance()
         {
             if (m_instance == null)
@@ -31,6 +47,21 @@ namespace Podcatcher.ViewModels
             return m_instance;
         }
 
+        public void addSubscription(PodcastSubscriptionModel podcastModel)
+        {
+            m_podcastSubscriptionsSql.InsertOnSubmit(podcastModel);
+            SubmitChanges();
+            NotifyPropertyChanged("PodcastSubscriptions");
+        }
+
+        /************************************* Private implementation *******************************/
+        #region privateImplementations
+        private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
+
+        private static PodcastSqlModel m_instance = null;
+        private Table<PodcastSubscriptionModel> m_podcastSubscriptionsSql;
+        
+
         private PodcastSqlModel()
             : base(m_connectionString)
         {
@@ -40,28 +71,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        public Table<PodcastSubscriptionModel> m_podcastSubscriptionsSql;
-        private ObservableCollection<PodcastSubscriptionModel> m_podcastSubscriptions;
-        public ObservableCollection<PodcastSubscriptionModel> PodcastSubscriptions
-        {
-         
-            get 
-            {
-                var query = from PodcastSubscriptionModel podcastSubscription in m_podcastSubscriptionsSql
-                            select podcastSubscription;
-
-                m_podcastSubscriptions = new ObservableCollection<PodcastSubscriptionModel>(query);
-                return m_podcastSubscriptions;
-            }
-        }
-
-        internal void addSubscription(PodcastSubscriptionModel podcastModel)
-        {
-            m_podcastSubscriptionsSql.InsertOnSubmit(podcastModel);
-            SubmitChanges();
-            NotifyPropertyChanged("PodcastSubscriptions");
-        }
-
+        #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(String propertyName)
         {
@@ -71,5 +81,7 @@ namespace Podcatcher.ViewModels
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+        #endregion
+        #endregion
     }
 }
