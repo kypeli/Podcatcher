@@ -108,10 +108,6 @@ namespace Podcatcher
             }
         }
 
-        // Version column aids update performance.
-        [Column(IsVersion = true)]
-        private Binary version;
-
         public BitmapImage PodcastLogo
         {
             get
@@ -144,6 +140,17 @@ namespace Podcatcher
 
             private set { }
         }
+
+        public DateTime LastUpdateTimestamp
+        {
+            get;
+            set;
+        }
+
+        // Version column aids update performance.
+        [Column(IsVersion = true)]
+        private Binary version;
+
         #endregion
 
         /************************************* Public implementations *******************************/

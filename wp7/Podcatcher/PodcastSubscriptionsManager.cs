@@ -104,8 +104,6 @@ namespace Podcatcher
             
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
             m_podcastsSqlModel.addSubscription(podcastModel);
-
-            Debug.WriteLine("Got new podcast, name: " + podcastModel.PodcastName);
             OnPodcastChannelFinished(this, null);
         }
 
