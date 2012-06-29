@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using Coding4Fun.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Text;
+using System.ComponentModel;
 
 namespace Podcatcher
 {
@@ -79,11 +80,17 @@ namespace Podcatcher
         private static PodcastSubscriptionsManager m_instance = null;
         private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
+        private BackgroundWorker m_worker                     = new BackgroundWorker();
 
         private PodcastSubscriptionsManager()
         {
             m_podcastsSqlModel = PodcastSqlModel.getInstance();
             m_random = new Random();
+        }
+
+        void m_worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -94,17 +101,29 @@ namespace Podcatcher
                 PodcastSubscriptionFailedWithMessage("ERROR: Web request failed. Message: " + e.Error.Message);
                 return;
             }
-                
-            PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(e.Result);
+
+            string podcastRss = e.Result;
+            PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(podcastRss);
             if (podcastModel == null)
             {
                 PodcastSubscriptionFailedWithMessage("ERROR: Could not parse podcast subscription from that location.");
                 return;
             }
-            
+                        
+            m_worker.DoWork += new DoWorkEventHandler(m_worker_DoWorkUpdateEpisodes);
+            m_worker.RunWorkerAsync(podcastRss);
+
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
             m_podcastsSqlModel.addSubscription(podcastModel);
             OnPodcastChannelFinished(this, null);
+        }
+
+        private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
+        {
+            string podcastRss = (string)args.Argument;
+            Debug.WriteLine("Update podcast episodes");
+
+            // m_podcastsSqlModel.PodcastSubscriptions
         }
 
         private void PodcastSubscriptionFailedWithMessage(string message)
