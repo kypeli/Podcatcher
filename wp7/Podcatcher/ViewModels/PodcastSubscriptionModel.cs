@@ -141,6 +141,7 @@ namespace Podcatcher
             private set { }
         }
 
+        [Column]
         public DateTime LastUpdateTimestamp
         {
             get;
