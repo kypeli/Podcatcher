@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Linq;
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace Podcatcher
 {
@@ -62,9 +63,50 @@ namespace Podcatcher
             return podcastModel;                
         }
 
+        public static List<PodcastEpisodeModel> newPodcastEpisodes(string podcastRss, DateTime latestLocalEpisodeTimestamp)
+        {
+            XDocument podcastRssXmlDoc;
+            try
+            {
+                podcastRssXmlDoc = XDocument.Parse(podcastRss);
+            } catch(System.Xml.XmlException e) {
+                Debug.WriteLine("ERROR: Parse error when parsing podcast episodes. Message: " + e.Message);
+                return null;
+            }
+
+            var episodesQuery = from episode in podcastRssXmlDoc.Descendants("item")
+                                select episode;
+
+            List<PodcastEpisodeModel> episodes = new List<PodcastEpisodeModel>();
+            foreach (var episode in episodesQuery)
+            {
+                // Only return newer than given timestamp episodes.
+                DateTime pubDate = parsePubDate(episode.Element("pubDate").Value);
+                if (pubDate > latestLocalEpisodeTimestamp)
+                {
+                    PodcastEpisodeModel episodeModel = new PodcastEpisodeModel();
+                    episodeModel.EpisodeName = episode.Element("title").Value;
+                    episodeModel.EpisodeDescription = episode.Element("description").Value;
+                    episodeModel.EpisodePublished = pubDate;
+                    episodeModel.EpisodeDownloadUri = episode.Element("enclosure").Attribute("url").Value;
+                    episodeModel.EpisodeDownloadSize = Int64.Parse(episode.Element("enclosure").Attribute("length").Value);
+
+                    episodes.Add(episodeModel);
+                }
+            }
+
+            return episodes;
+        }
+
         private static DateTime parsePubDate(string pubDateString)
         {
             DateTime resultDateTime = new DateTime();
+            
+            if (String.IsNullOrEmpty(pubDateString))
+            {
+                Debug.WriteLine("WARNING: Empty pubDate string given. Cannot parse it...");
+                return resultDateTime;
+            }
             
             // pubDateString is e.g. 'Mon, 25 Jun 2012 11:53:25 -0700'
             int indexOfComma = pubDateString.IndexOf(',');

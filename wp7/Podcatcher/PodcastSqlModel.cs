@@ -69,15 +69,22 @@ namespace Podcatcher.ViewModels
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
 
-            Debug.WriteLine("Deleting podcast subscription from SQL. Name: " + podcastModel.PodcastName);
             m_podcastSubscriptionsSql.DeleteOnSubmit(podcastModel);
             subscriptionModelChanged();
+        }
+
+        public void addPodcastEpisodes(List<PodcastEpisodeModel> podcastEpisodeModels)
+        {
+            m_podcastEpisodesSql.InsertAllOnSubmit<PodcastEpisodeModel>(podcastEpisodeModels);
+            episodesModelChanged();
+            Debug.WriteLine("Foo");
         }
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscription)
         {
             var query = from PodcastEpisodeModel episode in m_podcastEpisodesSql
                         where episode.PodcastId == subscription.PodcastId
+                        orderby episode.EpisodePublished descending
                         select episode;
 
             return new List<PodcastEpisodeModel>(query);
@@ -124,6 +131,12 @@ namespace Podcatcher.ViewModels
         {
             SubmitChanges();
             NotifyPropertyChanged("PodcastSubscriptions");
+        }
+
+        private void episodesModelChanged()
+        {
+            SubmitChanges();
+            NotifyPropertyChanged("PodcastEpisodes");
         }
 
         #region propertyChanged
