@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 using System.Windows.Data;
 using Podcatcher.ViewModels;
 using System.Globalization;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Podcatcher.Converters
 {
@@ -19,7 +19,7 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            ObservableCollection<PodcastSubscriptionModel> model = value as ObservableCollection<PodcastSubscriptionModel>;
+            List<PodcastSubscriptionModel> model = value as List<PodcastSubscriptionModel>;
             if (model == null
                 || model.Count < 1)
             {

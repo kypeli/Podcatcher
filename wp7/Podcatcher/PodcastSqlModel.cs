@@ -24,8 +24,8 @@ namespace Podcatcher.ViewModels
 
         /************************************* Public properties *******************************/
 
-        private ObservableCollection<PodcastSubscriptionModel> m_podcastSubscriptions;
-        public ObservableCollection<PodcastSubscriptionModel> PodcastSubscriptions
+        private List<PodcastSubscriptionModel> m_podcastSubscriptions;
+        public List<PodcastSubscriptionModel> PodcastSubscriptions
         {         
             get 
             {
@@ -33,7 +33,7 @@ namespace Podcatcher.ViewModels
                             orderby podcastSubscription.PodcastName 
                             select podcastSubscription;
 
-                m_podcastSubscriptions = new ObservableCollection<PodcastSubscriptionModel>(query);
+                m_podcastSubscriptions = new List<PodcastSubscriptionModel>(query);
                 return m_podcastSubscriptions;
             }
         }
@@ -82,12 +82,12 @@ namespace Podcatcher.ViewModels
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscription)
         {
-            var query = from PodcastEpisodeModel episode in m_podcastEpisodesSql
+/*            var query = from PodcastEpisodeModel episode in m_podcastEpisodesSql
                         where episode.PodcastId == subscription.PodcastId
                         orderby episode.EpisodePublished descending
                         select episode;
-
-            return new List<PodcastEpisodeModel>(query);
+            */
+            return subscription.Episodes.ToList();
         }
 
         /************************************* Private implementation *******************************/
