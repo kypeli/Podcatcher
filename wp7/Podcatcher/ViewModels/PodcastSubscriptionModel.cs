@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.IO.IsolatedStorage;
 using System.Data.Linq.Mapping;
 using System.Data.Linq;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {
@@ -23,12 +24,17 @@ namespace Podcatcher
     {        
         /************************************* Public properties *******************************/
         #region properties
+        private int m_podcastId = 0;
         [Column(IsPrimaryKey=true, 
                 IsDbGenerated=true, 
                 DbType = "INT NOT NULL Identity", 
                 CanBeNull = false, 
                 AutoSync = AutoSync.OnInsert)]
-        private int id;
+        public int PodcastId 
+        {
+            get { return m_podcastId; }
+            set { m_podcastId = value; }
+        }
 
         private string m_PodcastName;
         [Column]
@@ -148,6 +154,28 @@ namespace Podcatcher
             set;
         }
 
+        private EntitySet<PodcastEpisodeModel> m_podcastEpisodes;
+        [Association(Storage="m_podcastEpisodes", OtherKey="PodcastId")]
+        public EntitySet<PodcastEpisodeModel> Episodes
+        {
+            get { return m_podcastEpisodes; }
+            set { m_podcastEpisodes.Assign(value); }
+        }
+
+        public string CachedPodcastRSSFeed
+        {
+            get;
+            set;
+        }
+
+        public PodcastEpisodesManager EpisodesManager
+        {
+            get
+            {
+                return m_podcastEpisodesManager;
+            }
+        }
+
         // Version column aids update performance.
         [Column(IsVersion = true)]
         private Binary version;
@@ -158,8 +186,12 @@ namespace Podcatcher
         
         public PodcastSubscriptionModel()
         {
+            m_podcastEpisodesManager = new PodcastEpisodesManager(this);
+
             m_localPodcastIconCache = IsolatedStorageFile.GetUserStoreForApplication();
             m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
+
+            m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
         }
 
         public void cleanupForDeletion()
@@ -180,6 +212,7 @@ namespace Podcatcher
 
         /************************************* Private implementation *******************************/
         #region privateImplementations        
+        private PodcastEpisodesManager m_podcastEpisodesManager;
         private IsolatedStorageFile m_localPodcastIconCache;
 
         private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)

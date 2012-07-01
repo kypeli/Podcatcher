@@ -17,6 +17,7 @@ namespace Podcatcher
 
     public class SubscriptionManagerArgs
     {
+        public PodcastSubscriptionModel addedSubscription;
     }
 
     public class PodcastSubscriptionsManager
@@ -80,12 +81,15 @@ namespace Podcatcher
         private static PodcastSubscriptionsManager m_instance = null;
         private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
-        private BackgroundWorker m_worker                     = new BackgroundWorker();
 
         private PodcastSubscriptionsManager()
         {
             m_podcastsSqlModel = PodcastSqlModel.getInstance();
             m_random = new Random();
+
+            // Hook a callback method to the signal that we emit when the subscription has been added.
+            // This way we can continue the synchronous execution.
+            this.OnPodcastChannelFinished += new SubscriptionManagerHandler(PodcastSubscriptionsManager_OnPodcastAddedFinished);
         }
 
         void m_worker_DoWork(object sender, DoWorkEventArgs e)
@@ -109,21 +113,23 @@ namespace Podcatcher
                 PodcastSubscriptionFailedWithMessage("ERROR: Could not parse podcast subscription from that location.");
                 return;
             }
-                        
-            m_worker.DoWork += new DoWorkEventHandler(m_worker_DoWorkUpdateEpisodes);
-            m_worker.RunWorkerAsync(podcastRss);
 
+            podcastModel.CachedPodcastRSSFeed = podcastRss;                        
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
             m_podcastsSqlModel.addSubscription(podcastModel);
-            OnPodcastChannelFinished(this, null);
+
+            SubscriptionManagerArgs addArgs = new SubscriptionManagerArgs();
+            addArgs.addedSubscription = podcastModel;
+
+            OnPodcastChannelFinished(this, addArgs);
         }
 
-        private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
+        private void PodcastSubscriptionsManager_OnPodcastAddedFinished(object source, SubscriptionManagerArgs e)
         {
-            string podcastRss = (string)args.Argument;
-            Debug.WriteLine("Update podcast episodes");
+            PodcastSubscriptionModel subscriptionModel = e.addedSubscription;
+            Debug.WriteLine("Podcast added successfully. Name: " + subscriptionModel.PodcastName);
 
-            // m_podcastsSqlModel.PodcastSubscriptions
+            subscriptionModel.EpisodesManager.updatePodcastEpisodes();
         }
 
         private void PodcastSubscriptionFailedWithMessage(string message)

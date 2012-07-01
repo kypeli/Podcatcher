@@ -75,12 +75,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\Converters.cs" />
+    <Compile Include="ViewModels\PodcastEpisodeModel.cs" />
     <Compile Include="PodcastFactory.cs" />
     <Compile Include="PodcastSubscriptionsManager.cs" />
     <Compile Include="CustomControls\PodcastSubscriptionItem.xaml.cs">
       <DependentUpon>PodcastSubscriptionItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="PodcastSqlModel.cs" />
+    <Compile Include="PodcastEpisodesManager.cs" />
     <Compile Include="Views\AddSubscription.xaml.cs">
       <DependentUpon>AddSubscription.xaml</DependentUpon>
     </Compile>

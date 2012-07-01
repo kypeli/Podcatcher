@@ -14,6 +14,8 @@ using System.Data.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using Podcatcher;
+using System.Collections.Generic;
 
 namespace Podcatcher.ViewModels
 {
@@ -72,12 +74,22 @@ namespace Podcatcher.ViewModels
             subscriptionModelChanged();
         }
 
+        public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscription)
+        {
+            var query = from PodcastEpisodeModel episode in m_podcastEpisodesSql
+                        where episode.PodcastId == subscription.PodcastId
+                        select episode;
+
+            return new List<PodcastEpisodeModel>(query);
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
         private static PodcastSqlModel m_instance = null;
         private Table<PodcastSubscriptionModel> m_podcastSubscriptionsSql;
+        private Table<PodcastEpisodeModel> m_podcastEpisodesSql;
 
         private PodcastSqlModel()
             : base(m_connectionString)
@@ -88,6 +100,7 @@ namespace Podcatcher.ViewModels
             }
 
             m_podcastSubscriptionsSql = GetTable<PodcastSubscriptionModel>();
+            m_podcastEpisodesSql = GetTable<PodcastEpisodeModel>();
         }
 
         private bool isValidSubscriptionModelIndex(int index)
@@ -125,5 +138,6 @@ namespace Podcatcher.ViewModels
         }
         #endregion
         #endregion
+
     }
 }
