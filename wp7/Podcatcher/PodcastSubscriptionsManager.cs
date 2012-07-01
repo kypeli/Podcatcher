@@ -10,6 +10,7 @@ using Coding4Fun.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Text;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace Podcatcher
 {
@@ -65,7 +66,7 @@ namespace Podcatcher
 
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
-            wc.DownloadStringAsync(podcastRssUri);
+            wc.DownloadStringAsync(podcastRssUri, podcastRss);
 
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
@@ -74,6 +75,25 @@ namespace Podcatcher
         {
             podcastSubscriptionModel.cleanupForDeletion();
             m_podcastsSqlModel.deleteSubscription(podcastSubscriptionModel);
+        }
+
+        public void refreshSubscriptions()
+        {
+            List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+            foreach (PodcastSubscriptionModel s in subscriptions)
+            {
+                Debug.WriteLine("Refreshing subscriptions for '{0}'.", s.PodcastName);
+                WebClient wc = new WebClient();
+                wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
+                wc.DownloadStringAsync(new Uri(s.PodcastRSSUrl), s);
+            }
+        }
+
+        void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
+            subscription.CachedPodcastRSSFeed = e.Result as string;
+            subscription.EpisodesManager.updatePodcastEpisodes();
         }
 
 
@@ -118,6 +138,7 @@ namespace Podcatcher
 
             podcastModel.CachedPodcastRSSFeed = podcastRss;                        
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
+            podcastModel.PodcastRSSUrl = e.UserState as string;
             m_podcastsSqlModel.addSubscription(podcastModel);
 
             podcastModel.fetchChannelLogo();

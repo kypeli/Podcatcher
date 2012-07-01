@@ -38,6 +38,12 @@ namespace Podcatcher.ViewModels
             }
 
             List<PodcastEpisodeModel> newPodcastEpisodes = PodcastFactory.newPodcastEpisodes(m_subscriptionModel.CachedPodcastRSSFeed, latestEpisodePublishDate);
+            if (newPodcastEpisodes == null)
+            {
+                Debug.WriteLine("WARNING: Got null list of new episodes.");
+                return;
+            }
+
             Debug.WriteLine("Got {0} new episodes. Writing to SQL...", newPodcastEpisodes.Count);
 
             foreach (PodcastEpisodeModel episode in newPodcastEpisodes)

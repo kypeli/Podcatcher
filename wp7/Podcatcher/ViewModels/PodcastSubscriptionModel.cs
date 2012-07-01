@@ -148,7 +148,14 @@ namespace Podcatcher
         }
 
         [Column]
-        public String PodcastUrl
+        public String PodcastRSSUrl
+        {
+            get;
+            set;
+        }
+
+        [Column]
+        public String PodcastShowLink
         {
             get;
             set;

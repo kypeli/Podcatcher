@@ -17,13 +17,16 @@ namespace Podcatcher
 {
     public partial class MainView : PhoneApplicationPage
     {
-        private PodcastSqlModel m_podcastsModel = PodcastSqlModel.getInstance();
+        private PodcastSqlModel m_podcastsModel                     = PodcastSqlModel.getInstance();
+        private PodcastSubscriptionsManager m_subscriptionsManager;
 
         public MainView()
         {
             InitializeComponent();
             DataContext = m_podcastsModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+            m_subscriptionsManager.refreshSubscriptions();
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)

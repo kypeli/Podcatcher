@@ -52,7 +52,7 @@ namespace Podcatcher
             podcastModel.PodcastDescription     = query.Description;
             podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.Absolute);
             podcastModel.LastUpdateTimestamp    = parsePubDate(query.PubDate);
-            podcastModel.PodcastUrl             = query.Link;
+            podcastModel.PodcastShowLink             = query.Link;
 
             Debug.WriteLine("Got podcast subscription:"
                             + "\n\t* Name:\t\t\t\t\t"       + podcastModel.PodcastName
@@ -67,6 +67,12 @@ namespace Podcatcher
 
         public static List<PodcastEpisodeModel> newPodcastEpisodes(string podcastRss, DateTime latestLocalEpisodeTimestamp)
         {
+            if (String.IsNullOrEmpty(podcastRss))
+            {
+                Debug.WriteLine("ERROR: Given RSS to parse episodes from is empty or null. Cannot continue...");
+                return null;
+            }
+
             XDocument podcastRssXmlDoc;
             try
             {

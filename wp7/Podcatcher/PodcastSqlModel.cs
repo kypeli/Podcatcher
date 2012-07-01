@@ -82,10 +82,10 @@ namespace Podcatcher.ViewModels
         public bool isPodcastInDB(PodcastSubscriptionModel subscription)
         {
             var query = (from PodcastSubscriptionModel s in m_podcastSubscriptionsSql
-                         where s.PodcastUrl.Equals(subscription.PodcastUrl)
+                         where s.PodcastShowLink.Equals(subscription.PodcastShowLink)
                          select new
                          {
-                             url = s.PodcastUrl
+                             url = s.PodcastShowLink
                          }).FirstOrDefault();
 
             if (query == null)
