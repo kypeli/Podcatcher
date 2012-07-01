@@ -37,7 +37,8 @@ namespace Podcatcher
                              Title          = channel.Element("title").Value,
                              Description    = channel.Element("description").Value,
                              ImageUrl       = channel.Element("image").Element("url").Value,
-                             PubDate        = channel.Element("lastBuildDate").Value
+                             PubDate        = channel.Element("lastBuildDate").Value,
+                             Link           = channel.Element("link").Value
                          }).FirstOrDefault();
 
             if (query == null)
@@ -51,6 +52,7 @@ namespace Podcatcher
             podcastModel.PodcastDescription     = query.Description;
             podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.Absolute);
             podcastModel.LastUpdateTimestamp    = parsePubDate(query.PubDate);
+            podcastModel.PodcastUrl             = query.Link;
 
             Debug.WriteLine("Got podcast subscription:"
                             + "\n\t* Name:\t\t\t\t\t"       + podcastModel.PodcastName

@@ -103,13 +103,6 @@ namespace Podcatcher
                 if (value != m_PodcastLogoUrl)
                 {
                     m_PodcastLogoUrl = value;
-
-                    Debug.WriteLine("Getting twitter icon: " + m_PodcastLogoUrl);
-
-                    // Fetch the remote podcast logo to store locally in the IsolatedStorage.
-                    WebClient wc = new WebClient();
-                    wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
-                    wc.OpenReadAsync(m_PodcastLogoUrl);
                 }
             }
         }
@@ -149,6 +142,13 @@ namespace Podcatcher
 
         [Column]
         public DateTime LastUpdateTimestamp
+        {
+            get;
+            set;
+        }
+
+        [Column]
+        public String PodcastUrl
         {
             get;
             set;
@@ -210,10 +210,20 @@ namespace Podcatcher
             m_localPodcastIconCache.DeleteFile(m_PodcastLogoLocalLocation);
         }
 
+        public void fetchChannelLogo()
+        {
+            Debug.WriteLine("Getting podcast icon: " + m_PodcastLogoUrl);
+
+            // Fetch the remote podcast logo to store locally in the IsolatedStorage.
+            WebClient wc = new WebClient();
+            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
+            wc.OpenReadAsync(m_PodcastLogoUrl);
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations        
-        private PodcastEpisodesManager m_podcastEpisodesManager;
-        private IsolatedStorageFile m_localPodcastIconCache;
+        private PodcastEpisodesManager  m_podcastEpisodesManager;
+        private IsolatedStorageFile     m_localPodcastIconCache;
 
         private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)
         {

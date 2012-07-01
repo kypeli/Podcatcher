@@ -17,6 +17,7 @@ namespace Podcatcher
 
     public class SubscriptionManagerArgs
     {
+        public String message;
         public PodcastSubscriptionModel addedSubscription;
     }
 
@@ -92,11 +93,6 @@ namespace Podcatcher
             this.OnPodcastChannelFinished += new SubscriptionManagerHandler(PodcastSubscriptionsManager_OnPodcastAddedFinished);
         }
 
-        void m_worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             if (e.Error != null
@@ -114,9 +110,17 @@ namespace Podcatcher
                 return;
             }
 
+            if (m_podcastsSqlModel.isPodcastInDB(podcastModel))
+            {
+                PodcastSubscriptionFailedWithMessage("Already subscribed to the podcast.");
+                return;
+            }
+
             podcastModel.CachedPodcastRSSFeed = podcastRss;                        
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
             m_podcastsSqlModel.addSubscription(podcastModel);
+
+            podcastModel.fetchChannelLogo();
 
             SubscriptionManagerArgs addArgs = new SubscriptionManagerArgs();
             addArgs.addedSubscription = podcastModel;
@@ -135,7 +139,10 @@ namespace Podcatcher
         private void PodcastSubscriptionFailedWithMessage(string message)
         {
             Debug.WriteLine(message);
-            OnPodcastChannelFinishedWithError(this, null);
+            SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+            args.message = message;
+
+            OnPodcastChannelFinishedWithError(this, args);
         }
 
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)

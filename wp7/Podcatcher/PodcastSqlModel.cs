@@ -77,7 +77,23 @@ namespace Podcatcher.ViewModels
         {
             m_podcastEpisodesSql.InsertAllOnSubmit<PodcastEpisodeModel>(podcastEpisodeModels);
             episodesModelChanged();
-            Debug.WriteLine("Foo");
+        }
+
+        public bool isPodcastInDB(PodcastSubscriptionModel subscription)
+        {
+            var query = (from PodcastSubscriptionModel s in m_podcastSubscriptionsSql
+                         where s.PodcastUrl.Equals(subscription.PodcastUrl)
+                         select new
+                         {
+                             url = s.PodcastUrl
+                         }).FirstOrDefault();
+
+            if (query == null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscription)
