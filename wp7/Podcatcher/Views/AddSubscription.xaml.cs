@@ -42,7 +42,7 @@ namespace Podcatcher.Views
 
             ToastPrompt toast = new ToastPrompt();
             toast.Title = "Error";
-            toast.Message = "Cannot add podcast from that location.";
+            toast.Message = e.message;
 
             toast.Show();
         }
