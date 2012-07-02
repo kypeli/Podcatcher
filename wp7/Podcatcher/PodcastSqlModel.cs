@@ -109,6 +109,17 @@ namespace Podcatcher.ViewModels
             return new List<PodcastEpisodeModel>(query);
         }
 
+
+        public List<PodcastEpisodeModel> episodesForSubscriptionId(int podcastId)
+        {
+            var query = from PodcastEpisodeModel episode in Episodes
+                        where episode.PodcastId == podcastId
+                        orderby episode.EpisodePublished descending
+                        select episode;
+
+            return new List<PodcastEpisodeModel>(query);
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";

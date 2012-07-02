@@ -28,5 +28,6 @@ namespace Podcatcher
             PodcastSubscriptionsManager subscriptionsManager = PodcastSubscriptionsManager.getInstance();
             subscriptionsManager.deleteSubscription(subscriptionToDelete);
         }
+
 	}
 }

@@ -86,6 +86,7 @@ namespace Podcatcher
                                 select episode;
 
             List<PodcastEpisodeModel> episodes = new List<PodcastEpisodeModel>();
+            XNamespace itunes = "http://www.itunes.com/dtds/podcast-1.0.dtd";
             foreach (var episode in episodesQuery)
             {
                 // Only return newer than given timestamp episodes.
@@ -98,6 +99,7 @@ namespace Podcatcher
                     episodeModel.EpisodePublished = pubDate;
                     episodeModel.EpisodeDownloadUri = episode.Element("enclosure").Attribute("url").Value;
                     episodeModel.EpisodeDownloadSize = Int64.Parse(episode.Element("enclosure").Attribute("length").Value);
+                    episodeModel.EpisodeRunningTime = episode.Element(itunes +"duration").Value;
 
                     episodes.Add(episodeModel);
                 }

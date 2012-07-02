@@ -37,7 +37,7 @@
                 </controls:PivotItem.Header>
                 <!--Double line list with text wrapping-->
                 <Grid x:Name="SubscriptionsRoot" Background="Transparent">
-                    <ListBox x:Name="FirstListBox" Grid.Row="0" Margin="0,0,-12,0" ItemsSource="{Binding PodcastSubscriptions}">
+                    <ListBox x:Name="SubscriptionsList" Grid.Row="0" Margin="0,0,-12,0" ItemsSource="{Binding PodcastSubscriptions}" SelectionChanged="ListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,0,0,17" Width="432" Height="100">

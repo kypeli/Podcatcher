@@ -59,6 +59,15 @@ namespace Podcatcher
             set { m_published = value; }
         }
 
+        public String EpisodePublishedString
+        {
+            get 
+            {
+                string format = "dd MMM yyyy";
+                return m_published.ToString(format); 
+            }
+        }
+        
         private string m_episodeDownloadUrl;
         [Column]
         public string EpisodeDownloadUri
@@ -75,6 +84,14 @@ namespace Podcatcher
             set { m_episodeDownloadSize = value; }
         }
 
+        private String m_episodeRunningTime;
+        [Column]
+        public String EpisodeRunningTime
+        {
+            get { return @"Running time: " + m_episodeRunningTime; }
+            set { m_episodeRunningTime = value; }
+        }
+        
         #endregion
 
         public PodcastEpisodeModel()
