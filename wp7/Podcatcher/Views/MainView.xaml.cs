@@ -17,7 +17,7 @@ namespace Podcatcher
 {
     public partial class MainView : PhoneApplicationPage
     {
-        private PodcastSqlModel m_podcastsModel                     = PodcastSqlModel.getInstance();
+        private PodcastSqlModel m_podcastsModel  = PodcastSqlModel.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
 
         public MainView()

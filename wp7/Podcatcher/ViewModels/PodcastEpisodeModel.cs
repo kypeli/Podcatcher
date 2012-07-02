@@ -11,20 +11,16 @@ namespace Podcatcher
     public class PodcastEpisodeModel
     {
         #region properties
-        private int m_episodeId = 0;
-        [Column(IsPrimaryKey = true,
-                IsDbGenerated = true,
-                DbType = "INT NOT NULL Identity",
-                CanBeNull = false,
-                AutoSync = AutoSync.OnInsert)]
+        private int m_episodeId;
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, AutoSync = AutoSync.OnInsert)]
         private int EpisodeId
         {
             get { return m_episodeId; }
             set { m_episodeId = value; }
         }
 
-        private EntityRef<PodcastSubscriptionModel> m_podcast;
-        [Association(Storage="m_podcast", ThisKey="PodcastId")]
+        private EntityRef<PodcastSubscriptionModel> m_podcast = new EntityRef<PodcastSubscriptionModel>();
+        [Association(Storage = "m_podcast", OtherKey = "PodcastId", IsForeignKey = true)]
         public PodcastSubscriptionModel PodcastSubscription
         {
             get { return m_podcast.Entity; }
@@ -83,7 +79,6 @@ namespace Podcatcher
 
         public PodcastEpisodeModel()
         {
-            m_podcast = new EntityRef<PodcastSubscriptionModel>();
         }
     }
 }

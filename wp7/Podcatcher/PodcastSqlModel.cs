@@ -29,11 +29,12 @@ namespace Podcatcher.ViewModels
         {         
             get 
             {
-                var query = from PodcastSubscriptionModel podcastSubscription in m_podcastSubscriptionsSql
+                var query = from PodcastSubscriptionModel podcastSubscription in this.Subscriptions
                             orderby podcastSubscription.PodcastName 
                             select podcastSubscription;
 
                 m_podcastSubscriptions = new List<PodcastSubscriptionModel>(query);
+          //      Debug.WriteLine("Episodes: " + m_podcastSubscriptions.ElementAt(0).Episodes.Count);
                 return m_podcastSubscriptions;
             }
         }
@@ -62,26 +63,26 @@ namespace Podcatcher.ViewModels
 
         public void addSubscription(PodcastSubscriptionModel podcastModel)
         {
-            m_podcastSubscriptionsSql.InsertOnSubmit(podcastModel);
+            Subscriptions.InsertOnSubmit(podcastModel);
             subscriptionModelChanged();
         }
 
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
 
-            m_podcastSubscriptionsSql.DeleteOnSubmit(podcastModel);
+            Subscriptions.DeleteOnSubmit(podcastModel);
             subscriptionModelChanged();
         }
 
-        public void addPodcastEpisodes(List<PodcastEpisodeModel> podcastEpisodeModels)
+/*        public void addPodcastEpisodes(List<PodcastEpisodeModel> podcastEpisodeModels)
         {
             m_podcastEpisodesSql.InsertAllOnSubmit<PodcastEpisodeModel>(podcastEpisodeModels);
             episodesModelChanged();
         }
-
+        */
         public bool isPodcastInDB(PodcastSubscriptionModel subscription)
         {
-            var query = (from PodcastSubscriptionModel s in m_podcastSubscriptionsSql
+            var query = (from PodcastSubscriptionModel s in Subscriptions
                          where s.PodcastShowLink.Equals(subscription.PodcastShowLink)
                          select new
                          {
@@ -96,14 +97,28 @@ namespace Podcatcher.ViewModels
             return true;
         }
 
-        public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscription)
+        public void insertEpisodesForSubscription(PodcastSubscriptionModel subscriptionModel, List<PodcastEpisodeModel> newPodcastEpisodes)
         {
-/*            var query = from PodcastEpisodeModel episode in m_podcastEpisodesSql
-                        where episode.PodcastId == subscription.PodcastId
+            // var subscription = this.Subscriptions.Single(s => s.PodcastId == subscriptionModel.PodcastId);
+
+            foreach (PodcastEpisodeModel episode in newPodcastEpisodes)
+            {
+                subscriptionModel.Episodes.Add(episode);
+//                episode.PodcastSubscription = subscription;
+            }
+            this.SubmitChanges();
+        }
+
+        public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscriptionModel)
+        {
+/*            var query = from PodcastEpisodeModel episode in Subscriptions
+                        where episode.PodcastId == subscriptionModel.PodcastId
                         orderby episode.EpisodePublished descending
                         select episode;
+             var subscription = m_podcastSubscriptionsSql.Single(s => s.PodcastId == m_subscriptionModel.PodcastId);
             */
-            return subscription.Episodes.ToList();
+            var subscription = Subscriptions.Single(s => s.PodcastId == subscriptionModel.PodcastId);
+            return subscriptionModel.Episodes.ToList();
         }
 
         /************************************* Private implementation *******************************/
@@ -111,8 +126,8 @@ namespace Podcatcher.ViewModels
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
         private static PodcastSqlModel m_instance = null;
-        private Table<PodcastSubscriptionModel> m_podcastSubscriptionsSql;
-        private Table<PodcastEpisodeModel> m_podcastEpisodesSql;
+        public Table<PodcastSubscriptionModel> Subscriptions;
+        public Table<PodcastEpisodeModel> Episodes;
 
         private PodcastSqlModel()
             : base(m_connectionString)
@@ -122,8 +137,8 @@ namespace Podcatcher.ViewModels
                 CreateDatabase();
             }
 
-            m_podcastSubscriptionsSql = GetTable<PodcastSubscriptionModel>();
-            m_podcastEpisodesSql = GetTable<PodcastEpisodeModel>();
+            Subscriptions = GetTable<PodcastSubscriptionModel>();
+            Episodes = GetTable<PodcastEpisodeModel>();
         }
 
         private bool isValidSubscriptionModelIndex(int index)

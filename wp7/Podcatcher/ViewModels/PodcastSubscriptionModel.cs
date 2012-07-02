@@ -24,12 +24,8 @@ namespace Podcatcher
     {        
         /************************************* Public properties *******************************/
         #region properties
-        private int m_podcastId = 0;
-        [Column(IsPrimaryKey=true, 
-                IsDbGenerated=true, 
-                DbType = "INT NOT NULL Identity", 
-                CanBeNull = false, 
-                AutoSync = AutoSync.OnInsert)]
+        private int m_podcastId;
+        [Column(IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true, AutoSync = AutoSync.OnInsert)]
         public int PodcastId 
         {
             get { return m_podcastId; }
@@ -161,12 +157,16 @@ namespace Podcatcher
             set;
         }
 
-        private EntitySet<PodcastEpisodeModel> m_podcastEpisodes;
-        [Association(Storage="m_podcastEpisodes", OtherKey="PodcastId")]
+        private EntitySet<PodcastEpisodeModel> m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
+        [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId")]
         public EntitySet<PodcastEpisodeModel> Episodes
         {
             get { return m_podcastEpisodes; }
-            set { m_podcastEpisodes.Assign(value); }
+            set {
+                NotifyPropertyChanging();
+                m_podcastEpisodes.Assign(value);
+                NotifyPropertyChanged("Episodes");
+            }
         }
 
         public string CachedPodcastRSSFeed
@@ -197,8 +197,6 @@ namespace Podcatcher
 
             m_localPodcastIconCache = IsolatedStorageFile.GetUserStoreForApplication();
             m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
-
-            m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
         }
 
         public void cleanupForDeletion()
@@ -275,6 +273,16 @@ namespace Podcatcher
 
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangingEventHandler PropertyChanging;
+		
+		private void NotifyPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, null);
+			}
+		}
+
         private void NotifyPropertyChanged(String propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
