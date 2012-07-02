@@ -17,5 +17,10 @@ namespace Podcatcher
 			// Required to initialize variables
 			InitializeComponent();
 		}
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
 	}
 }

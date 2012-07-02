@@ -13,12 +13,12 @@
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="351" />
-            <ColumnDefinition Width="129*" />
+            <ColumnDefinition Width="315" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="{Binding EpisodeName}" Width="331" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Margin="12,0,0,0"/>
-        <Button Width="Auto" Grid.Row="0" Grid.Column="1" Content="Button" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" />
+        <TextBlock Text="{Binding EpisodeName}" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Margin="12,0,0,0" HorizontalAlignment="Left" Width="298"/>
+        <Button Width="Auto" Grid.Row="0" Grid.Column="1" Content="Download" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" Click="DownloadButton_Click" />
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
             <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
             <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="214" Style="{StaticResource PhoneTextSubtleStyle}" />

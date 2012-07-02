@@ -52,12 +52,11 @@ namespace Podcatcher.ViewModels
 
         public PodcastSubscriptionModel subscriptionModelForIndex(int index)
         {
-            if (isValidSubscriptionModelIndex(index) == false)
-            {
-                return null;
-            }
+            PodcastSubscriptionModel model = (from s in Subscriptions
+                                              where s.PodcastId.Equals(index)
+                                              select s).Single();
 
-            return m_podcastSubscriptions.ElementAt(index);
+            return model;
         }
 
         public void addSubscription(PodcastSubscriptionModel podcastModel)

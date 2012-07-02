@@ -21,10 +21,32 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <ListBox x:Name="EpisodeList" Grid.Row="0" Margin="0,0,0,0">
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="300"  Width="480">
+        	<Grid.RowDefinitions>
+        		<RowDefinition Height="Auto"/>
+        		<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="160" />			
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			
+			<TextBlock x:Name="PodcastName" Text="This week in tech" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}">
+				<TextBlock.Foreground>
+					<SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
+				</TextBlock.Foreground>
+			</TextBlock>
+			
+			<Image x:Name="PodcastIcon" Width="150" Height="150" Grid.Row="1" Grid.Column="0"/>
+			<TextBlock x:Name="PodcastDescription" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" 
+			    Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed sapien erat, et convallis ante. Suspendisse egestas sollicitudin nisl. Pellentesque nec sapien nibh, sit amet dictum dui. Nam vitae ultricies odio. Curabitur aliquet, lacus a mollis pellentesque, sem lacus pretium leo, a consequat augue lacus ultricies ante. Fusce volutpat tellus ac ipsum consequat et sagittis nisl dictum. Etiam sollicitudin mauris et eros feugiat et tempus lorem tempus." Margin="17,6,0,6" />
+		</Grid>
+        
+        <ListBox x:Name="EpisodeList" Margin="0,306,0,0">
             <ListBox.ItemTemplate>
             <DataTemplate>
-                <StackPanel Margin="0,0,0,17" Width="Auto" Height="Auto">
+                <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
                     <pc:PodcastEpisodeItem/>
                 </StackPanel>
             </DataTemplate>

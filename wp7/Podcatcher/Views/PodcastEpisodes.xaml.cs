@@ -27,9 +27,12 @@ namespace Podcatcher.Views
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
-            List<PodcastEpisodeModel> episodes = m_podcastSqlModel.episodesForSubscriptionId(podcastId);
+            PodcastSubscriptionModel subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
+            List<PodcastEpisodeModel> episodes = subscription.Episodes.ToList();
 
-            this.EpisodeList.ItemsSource = episodes;
+            this.PodcastName.Text           = subscription.PodcastName;
+            this.EpisodeList.ItemsSource    = episodes;
+            this.PodcastIcon.Source         = subscription.PodcastLogo;
         }
     }
 }
