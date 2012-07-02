@@ -1,0 +1,27 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Podcatcher.PodcastEpisodeItem"
+    d:DesignWidth="480" d:DesignHeight="800">
+	<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />    
+            <RowDefinition Height="50" />    
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="351" />
+            <ColumnDefinition Width="129*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="{Binding EpisodeName}" Width="331" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Margin="12,0,0,0"/>
+        <Button Width="Auto" Grid.Row="0" Grid.Column="1" Content="Button" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" />
+		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
+            <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
+            <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="214" Style="{StaticResource PhoneTextSubtleStyle}" />
+		</StackPanel>
+	</Grid>
+</UserControl>
