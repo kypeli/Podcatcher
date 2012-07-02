@@ -31,6 +31,7 @@ namespace Podcatcher.Views
             List<PodcastEpisodeModel> episodes = subscription.Episodes.ToList();
 
             this.PodcastName.Text           = subscription.PodcastName;
+            this.PodcastDescription.Text    = subscription.PodcastDescription;
             this.EpisodeList.ItemsSource    = episodes;
             this.PodcastIcon.Source         = subscription.PodcastLogo;
         }

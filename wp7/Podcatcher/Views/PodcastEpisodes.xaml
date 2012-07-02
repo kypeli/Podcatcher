@@ -37,10 +37,9 @@
 					<SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
 				</TextBlock.Foreground>
 			</TextBlock>
-			
-			<Image x:Name="PodcastIcon" Width="150" Height="150" Grid.Row="1" Grid.Column="0"/>
-			<TextBlock x:Name="PodcastDescription" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" 
-			    Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed sapien erat, et convallis ante. Suspendisse egestas sollicitudin nisl. Pellentesque nec sapien nibh, sit amet dictum dui. Nam vitae ultricies odio. Curabitur aliquet, lacus a mollis pellentesque, sem lacus pretium leo, a consequat augue lacus ultricies ante. Fusce volutpat tellus ac ipsum consequat et sagittis nisl dictum. Etiam sollicitudin mauris et eros feugiat et tempus lorem tempus." Margin="17,6,0,6" />
+
+            <Image Grid.Row="1" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" />
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="PodcastDescription" TextWrapping="Wrap" Height="Auto" Margin="17,6,0,6" />
 		</Grid>
         
         <ListBox x:Name="EpisodeList" Margin="0,306,0,0">
