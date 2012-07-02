@@ -29,7 +29,6 @@ namespace Podcatcher.ViewModels
         private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
         {
             List<PodcastEpisodeModel> episodes = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel);
-//            List<PodcastEpisodeModel> episodes = m_subscriptionModel.Episodes.ToList();
             DateTime latestEpisodePublishDate = new DateTime();
             if (episodes.Count > 0)
             {
@@ -45,10 +44,9 @@ namespace Podcatcher.ViewModels
                 return;
             }
 
-            Debug.WriteLine("Got {0} new episodes. Writing to SQL...", newPodcastEpisodes.Count);
+            Debug.WriteLine("Got {0} new episodes. Writing any new episode to SQL...", newPodcastEpisodes.Count);
 
             m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
-//            m_podcastsSqlModel.addPodcastEpisodes(newPodcastEpisodes);
         }
 
     }

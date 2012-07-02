@@ -158,7 +158,7 @@ namespace Podcatcher
         }
 
         private EntitySet<PodcastEpisodeModel> m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
-        [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId")]
+        [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId", OtherKey="PodcastId")]
         public EntitySet<PodcastEpisodeModel> Episodes
         {
             get { return m_podcastEpisodes; }

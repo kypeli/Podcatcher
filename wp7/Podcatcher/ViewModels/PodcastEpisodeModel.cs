@@ -20,7 +20,7 @@ namespace Podcatcher
         }
 
         private EntityRef<PodcastSubscriptionModel> m_podcast = new EntityRef<PodcastSubscriptionModel>();
-        [Association(Storage = "m_podcast", OtherKey = "PodcastId", IsForeignKey = true)]
+        [Association(Storage = "m_podcast", ThisKey="PodcastId", OtherKey = "PodcastId", IsForeignKey = true)]
         public PodcastSubscriptionModel PodcastSubscription
         {
             get { return m_podcast.Entity; }

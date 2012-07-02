@@ -34,7 +34,6 @@ namespace Podcatcher.ViewModels
                             select podcastSubscription;
 
                 m_podcastSubscriptions = new List<PodcastSubscriptionModel>(query);
-          //      Debug.WriteLine("Episodes: " + m_podcastSubscriptions.ElementAt(0).Episodes.Count);
                 return m_podcastSubscriptions;
             }
         }
@@ -74,12 +73,6 @@ namespace Podcatcher.ViewModels
             subscriptionModelChanged();
         }
 
-/*        public void addPodcastEpisodes(List<PodcastEpisodeModel> podcastEpisodeModels)
-        {
-            m_podcastEpisodesSql.InsertAllOnSubmit<PodcastEpisodeModel>(podcastEpisodeModels);
-            episodesModelChanged();
-        }
-        */
         public bool isPodcastInDB(PodcastSubscriptionModel subscription)
         {
             var query = (from PodcastSubscriptionModel s in Subscriptions
@@ -99,26 +92,21 @@ namespace Podcatcher.ViewModels
 
         public void insertEpisodesForSubscription(PodcastSubscriptionModel subscriptionModel, List<PodcastEpisodeModel> newPodcastEpisodes)
         {
-            // var subscription = this.Subscriptions.Single(s => s.PodcastId == subscriptionModel.PodcastId);
-
             foreach (PodcastEpisodeModel episode in newPodcastEpisodes)
             {
+                episode.PodcastId = subscriptionModel.PodcastId;
                 subscriptionModel.Episodes.Add(episode);
-//                episode.PodcastSubscription = subscription;
             }
             this.SubmitChanges();
         }
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscriptionModel)
         {
-/*            var query = from PodcastEpisodeModel episode in Subscriptions
-                        where episode.PodcastId == subscriptionModel.PodcastId
+            var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
                         orderby episode.EpisodePublished descending
                         select episode;
-             var subscription = m_podcastSubscriptionsSql.Single(s => s.PodcastId == m_subscriptionModel.PodcastId);
-            */
-            var subscription = Subscriptions.Single(s => s.PodcastId == subscriptionModel.PodcastId);
-            return subscriptionModel.Episodes.ToList();
+
+            return new List<PodcastEpisodeModel>(query);
         }
 
         /************************************* Private implementation *******************************/
