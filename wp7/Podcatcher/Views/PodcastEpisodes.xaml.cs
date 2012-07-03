@@ -11,12 +11,14 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace Podcatcher.Views
 {
     public partial class PodcastEpisodes : PhoneApplicationPage
     {
         private PodcastSqlModel m_podcastSqlModel;
+        ObservableCollection<PodcastEpisodeModel> episodes;
 
         public PodcastEpisodes()
         {
@@ -28,7 +30,7 @@ namespace Podcatcher.Views
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             PodcastSubscriptionModel subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
-            List<PodcastEpisodeModel> episodes = subscription.Episodes.ToList();
+            episodes = new ObservableCollection<PodcastEpisodeModel>(subscription.Episodes.ToList());
 
             this.PodcastName.Text           = subscription.PodcastName;
             this.PodcastDescription.Text    = subscription.PodcastDescription;

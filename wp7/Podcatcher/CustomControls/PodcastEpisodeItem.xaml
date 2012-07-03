@@ -3,10 +3,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:c="clr-namespace:Podcatcher.Converters"
     mc:Ignorable="d"
     x:Class="Podcatcher.PodcastEpisodeItem"
     d:DesignWidth="480" d:DesignHeight="800">
-	<Grid>
+
+    <UserControl.Resources>
+        <c:DownloadButtonActiveConverter x:Name="downloadButtonActive"/>
+    </UserControl.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />    
             <RowDefinition Height="50" />    
@@ -18,7 +24,8 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="{Binding EpisodeName}" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Margin="12,0,0,0" HorizontalAlignment="Left" Width="298"/>
-        <Button Width="Auto" Grid.Row="0" Grid.Column="1" Content="Download" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" Click="DownloadButton_Click" />
+        <Button IsEnabled="{Binding EpisodeState, 
+                                Converter={StaticResource downloadButtonActive}}" Width="Auto" Grid.Row="0" Grid.Column="1" Content="Download" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" Click="DownloadButton_Click" />
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
             <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
             <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="214" Style="{StaticResource PhoneTextSubtleStyle}" />

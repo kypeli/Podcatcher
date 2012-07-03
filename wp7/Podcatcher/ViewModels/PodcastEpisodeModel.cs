@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Data.Linq.Mapping;
 using System.Data.Linq;
+using System.ComponentModel;
 
 namespace Podcatcher
 {
     [Table(Name="Episodes")]
-    public class PodcastEpisodeModel
+    public class PodcastEpisodeModel : INotifyPropertyChanged
     {
         #region properties
+
         private int m_episodeId;
         [Column(Storage = "m_episodeId", IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true)]
         private int EpisodeId
@@ -91,11 +93,45 @@ namespace Podcatcher
             get { return @"Running time: " + m_episodeRunningTime; }
             set { m_episodeRunningTime = value; }
         }
+
+        public enum EpisodeStateVal
+        {
+            Idle,
+            Downloading
+        };
+
+        private EpisodeStateVal m_episodeState;
+        public EpisodeStateVal EpisodeState
+        {
+            get 
+            { 
+                return m_episodeState; 
+            }
+
+            set
+            {
+                m_episodeState = value;
+                NotifyPropertyChanged("EpisodeState");
+            }
+        }
         
         #endregion
 
         public PodcastEpisodeModel()
         {
+            EpisodeState = EpisodeStateVal.Idle;
         }
+
+        #region propertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(String propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (null != handler)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion
     }
 }

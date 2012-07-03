@@ -34,4 +34,18 @@ namespace Podcatcher.Converters
             throw new NotSupportedException();
         }
     }
+
+    public class DownloadButtonActiveConverter : IValueConverter 
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
+            return (episodeState != PodcastEpisodeModel.EpisodeStateVal.Downloading);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
 }
