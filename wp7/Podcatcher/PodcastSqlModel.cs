@@ -68,8 +68,23 @@ namespace Podcatcher.ViewModels
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
 
-            Subscriptions.DeleteOnSubmit(podcastModel);
-            subscriptionModelChanged();
+            var queryDelEpisodes = from episode in Episodes
+                                   where episode.PodcastId.Equals(podcastModel.PodcastId)
+                                   select episode;
+
+            foreach (var episode in queryDelEpisodes)
+            {
+                Episodes.DeleteOnSubmit(episode);
+            }
+
+            var queryDelSubscription = (from subscription in Subscriptions
+                                        where subscription.PodcastId.Equals(podcastModel.PodcastId)
+                                        select subscription).First();
+            
+            Subscriptions.DeleteOnSubmit(queryDelSubscription);
+
+            SubmitChanges();
+            NotifyPropertyChanged("PodcastSubscriptions");
         }
 
         public bool isPodcastInDB(PodcastSubscriptionModel subscription)

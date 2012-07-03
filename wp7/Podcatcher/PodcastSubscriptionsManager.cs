@@ -89,14 +89,6 @@ namespace Podcatcher
             }
         }
 
-        void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
-            subscription.CachedPodcastRSSFeed = e.Result as string;
-            subscription.EpisodesManager.updatePodcastEpisodes();
-        }
-
-
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_instance = null;
@@ -112,6 +104,7 @@ namespace Podcatcher
             // This way we can continue the synchronous execution.
             this.OnPodcastChannelFinished += new SubscriptionManagerHandler(PodcastSubscriptionsManager_OnPodcastAddedFinished);
         }
+
 
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
@@ -148,6 +141,13 @@ namespace Podcatcher
 
             OnPodcastChannelFinished(this, addArgs);
         }
+
+        void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
+            subscription.CachedPodcastRSSFeed = e.Result as string;
+            subscription.EpisodesManager.updatePodcastEpisodes();
+        } 
 
         private void PodcastSubscriptionsManager_OnPodcastAddedFinished(object source, SubscriptionManagerArgs e)
         {
