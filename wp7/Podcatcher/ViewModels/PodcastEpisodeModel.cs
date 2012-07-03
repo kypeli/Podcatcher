@@ -12,7 +12,7 @@ namespace Podcatcher
     {
         #region properties
         private int m_episodeId;
-        [Column(IsPrimaryKey = true, IsDbGenerated = true, AutoSync = AutoSync.OnInsert)]
+        [Column(Storage = "m_episodeId", IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true)]
         private int EpisodeId
         {
             get { return m_episodeId; }
@@ -28,7 +28,7 @@ namespace Podcatcher
         }
 
         private int m_podcastId;
-        [Column(Storage="m_podcastId")]
+        [Column(Storage = "m_podcastId", UpdateCheck = UpdateCheck.Never)]
         public int PodcastId
         {
             get { return m_podcastId; }
@@ -36,7 +36,7 @@ namespace Podcatcher
         }
 
         private string m_name;
-        [Column]
+        [Column(UpdateCheck=UpdateCheck.Never)]
         public String EpisodeName
         {
             get { return m_name; }
@@ -44,7 +44,7 @@ namespace Podcatcher
         }
 
         private string m_description;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public String EpisodeDescription
         {
             get { return m_description; }
@@ -52,7 +52,7 @@ namespace Podcatcher
         }
 
         private DateTime m_published;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public DateTime EpisodePublished 
         {
             get { return m_published; }
@@ -69,7 +69,7 @@ namespace Podcatcher
         }
         
         private string m_episodeDownloadUrl;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public string EpisodeDownloadUri
         {
             get { return m_episodeDownloadUrl; }
@@ -77,7 +77,7 @@ namespace Podcatcher
         }
 
         private long m_episodeDownloadSize;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public long EpisodeDownloadSize
         {
             get { return m_episodeDownloadSize; }
@@ -85,7 +85,7 @@ namespace Podcatcher
         }
 
         private String m_episodeRunningTime;
-        [Column]
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public String EpisodeRunningTime
         {
             get { return @"Running time: " + m_episodeRunningTime; }

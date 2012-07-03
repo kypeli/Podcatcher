@@ -25,7 +25,7 @@ namespace Podcatcher
         /************************************* Public properties *******************************/
         #region properties
         private int m_podcastId;
-        [Column(IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true, AutoSync = AutoSync.OnInsert)]
+        [Column(IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true)]
         public int PodcastId 
         {
             get { return m_podcastId; }
@@ -158,7 +158,7 @@ namespace Podcatcher
         }
 
         private EntitySet<PodcastEpisodeModel> m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
-        [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId", OtherKey="PodcastId")]
+        [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId", OtherKey = "PodcastId")]
         public EntitySet<PodcastEpisodeModel> Episodes
         {
             get { return m_podcastEpisodes; }
