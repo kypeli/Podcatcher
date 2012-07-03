@@ -44,7 +44,7 @@ namespace Podcatcher.ViewModels
                 return;
             }
 
-            Debug.WriteLine("Got {0} new episodes. Writing any new episode to SQL...", newPodcastEpisodes.Count);
+            Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes.Count);
 
             m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
         }

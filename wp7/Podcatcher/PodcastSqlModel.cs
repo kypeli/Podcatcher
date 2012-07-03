@@ -91,11 +91,19 @@ namespace Podcatcher.ViewModels
 
         public void insertEpisodesForSubscription(PodcastSubscriptionModel subscriptionModel, List<PodcastEpisodeModel> newPodcastEpisodes)
         {
+            if (newPodcastEpisodes.Count < 1)
+            {
+                return;
+            }
+
+            Debug.WriteLine("Writing {0} new episodes to SQL.", newPodcastEpisodes.Count);
+
             foreach (PodcastEpisodeModel episode in newPodcastEpisodes)
             {
                 episode.PodcastId = subscriptionModel.PodcastId;
                 subscriptionModel.Episodes.Add(episode);
             }
+
             this.SubmitChanges();
         }
 
