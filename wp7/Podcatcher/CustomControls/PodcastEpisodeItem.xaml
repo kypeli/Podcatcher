@@ -10,6 +10,7 @@
 
     <UserControl.Resources>
         <c:DownloadButtonActiveConverter x:Name="downloadButtonActive"/>
+        <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
     </UserControl.Resources>
 
     <Grid>
@@ -19,16 +20,19 @@
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="315" />
+            <ColumnDefinition Width="263" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="{Binding EpisodeName}" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Margin="12,0,0,0" HorizontalAlignment="Left" Width="298"/>
+        <TextBlock Text="{Binding EpisodeName}" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource PhoneTextTitle3Style}" Margin="12,0,0,0" HorizontalAlignment="Left" Width="251" FontWeight="Bold"/>
         <Button IsEnabled="{Binding EpisodeState, 
-                                Converter={StaticResource downloadButtonActive}}" Width="Auto" Grid.Row="0" Grid.Column="1" Content="Download" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" Click="DownloadButton_Click" />
+                                Converter={StaticResource downloadButtonActive}}" Width="Auto" Grid.Row="0" Grid.Column="1" 
+                Content="{Binding EpisodeState, 
+                                Converter={StaticResource downloadButtonText}}" 
+                HorizontalAlignment="Center" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Click="DownloadButton_Click" />
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
             <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
-            <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="214" Style="{StaticResource PhoneTextSubtleStyle}" />
+            <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="241" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
 		</StackPanel>
 	</Grid>
 </UserControl>

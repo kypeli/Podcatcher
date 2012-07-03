@@ -48,4 +48,29 @@ namespace Podcatcher.Converters
             throw new NotSupportedException();
         }
     }
+
+    public class DownloadButtonTextConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
+            String buttonText;
+            if (episodeState == PodcastEpisodeModel.EpisodeStateVal.Downloading)
+            {
+                buttonText = @"Downloading...";
+            }
+            else
+            {
+                buttonText = @"Download";
+            }
+
+            return buttonText;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
 }
