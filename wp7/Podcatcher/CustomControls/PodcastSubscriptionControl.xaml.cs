@@ -12,9 +12,9 @@ using Microsoft.Phone.Controls;
 
 namespace Podcatcher
 {
-	public partial class PodcastSubscriptionItem : UserControl
+	public partial class PodcastSubscriptionControl : UserControl
 	{
-		public PodcastSubscriptionItem()
+		public PodcastSubscriptionControl()
 		{
 			// Required to initialize variables
 			InitializeComponent();

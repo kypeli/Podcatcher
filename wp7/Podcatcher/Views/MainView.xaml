@@ -41,7 +41,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Width="Auto" Height="100">
-                                    <pc:PodcastSubscriptionItem/>
+                                    <pc:PodcastSubscriptionControl/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -72,7 +72,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,17" Width="432" Height="100">
-                                <pc:PodcastSubscriptionItem/>
+                                <pc:PodcastSubscriptionControl/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

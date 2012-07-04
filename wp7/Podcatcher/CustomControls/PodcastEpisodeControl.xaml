@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:c="clr-namespace:Podcatcher.Converters"
     mc:Ignorable="d"
-    x:Class="Podcatcher.PodcastEpisodeItem"
+    x:Class="Podcatcher.PodcastEpisodeControl"
     d:DesignWidth="480" d:DesignHeight="800">
 
     <UserControl.Resources>

@@ -10,9 +10,9 @@ using System.Windows.Shapes;
 
 namespace Podcatcher
 {
-	public partial class PodcastEpisodeItem : UserControl
+	public partial class PodcastEpisodeControl : UserControl
 	{
-		public PodcastEpisodeItem()
+		public PodcastEpisodeControl()
 		{
 			// Required to initialize variables
 			InitializeComponent();
@@ -20,7 +20,7 @@ namespace Podcatcher
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-
+            // PodcastEpisodeModel
         }
 	}
 }

@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"    
 	mc:Ignorable="d"
-	x:Class="Podcatcher.PodcastSubscriptionItem"
+	x:Class="Podcatcher.PodcastSubscriptionControl"
 	d:DesignWidth="480" d:DesignHeight="800">
 
 	<StackPanel Orientation="Horizontal" >
