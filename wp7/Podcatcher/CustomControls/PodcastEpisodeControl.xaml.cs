@@ -29,7 +29,8 @@ namespace Podcatcher
             PodcastEpisodeModel podcastEpisode = (episodeList.ItemContainerGenerator.ContainerFromItem(downloadButton.DataContext) as ListBoxItem)
                                                  .DataContext as PodcastEpisodeModel;
 
-            podcastEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Downloading;
+            PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
+            downloadManager.addEpisodeToDownloadQueue(podcastEpisode);
         }
 	}
 }
