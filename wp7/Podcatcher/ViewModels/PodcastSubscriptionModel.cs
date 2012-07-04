@@ -2,20 +2,13 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.IO.IsolatedStorage;
 using System.Data.Linq.Mapping;
 using System.Data.Linq;
 using Podcatcher.ViewModels;
+using System.Collections.Generic;
 
 namespace Podcatcher
 {
@@ -292,6 +285,51 @@ namespace Podcatcher
             }
         }
         #endregion
+        #endregion
+
+        #region PodcastEpisodesManager
+        public class PodcastEpisodesManager
+        {
+            private PodcastSubscriptionModel m_subscriptionModel;
+            private BackgroundWorker m_worker = new BackgroundWorker();
+            private PodcastSqlModel m_podcastsSqlModel;
+
+            public PodcastEpisodesManager(PodcastSubscriptionModel subscriptionModel)
+            {
+                m_subscriptionModel = subscriptionModel;
+                m_podcastsSqlModel = PodcastSqlModel.getInstance();
+            }
+
+            public void updatePodcastEpisodes()
+            {
+                Debug.WriteLine("Updating episodes for podcast: " + m_subscriptionModel.PodcastName);
+                m_worker.DoWork += new DoWorkEventHandler(m_worker_DoWorkUpdateEpisodes);
+                m_worker.RunWorkerAsync();
+            }
+
+            private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
+            {
+                List<PodcastEpisodeModel> episodes = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel);
+                DateTime latestEpisodePublishDate = new DateTime();
+                if (episodes.Count > 0)
+                {
+                    // The episodes are in descending order as per publish date. 
+                    // So take the first episode and we have the latest known publish date.
+                    latestEpisodePublishDate = episodes[0].EpisodePublished;
+                }
+
+                List<PodcastEpisodeModel> newPodcastEpisodes = PodcastFactory.newPodcastEpisodes(m_subscriptionModel.CachedPodcastRSSFeed, latestEpisodePublishDate);
+                if (newPodcastEpisodes == null)
+                {
+                    Debug.WriteLine("WARNING: Got null list of new episodes.");
+                    return;
+                }
+
+                Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes.Count);
+
+                m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
+            }
+        }
         #endregion
     }
 }
