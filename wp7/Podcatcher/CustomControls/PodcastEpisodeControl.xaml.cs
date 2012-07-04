@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Microsoft.Phone.Controls;
+using System.Diagnostics;
 
 namespace Podcatcher
 {
@@ -20,7 +22,14 @@ namespace Podcatcher
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            // PodcastEpisodeModel
+            PhoneApplicationPage p = (Application.Current as App).RootFrame.Content as PhoneApplicationPage;
+            ListBox episodeList = p.FindName("EpisodeList") as ListBox;
+
+            Button downloadButton = sender as Button;
+            PodcastEpisodeModel podcastEpisode = (episodeList.ItemContainerGenerator.ContainerFromItem(downloadButton.DataContext) as ListBoxItem)
+                                                 .DataContext as PodcastEpisodeModel;
+
+            podcastEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Downloading;
         }
 	}
 }

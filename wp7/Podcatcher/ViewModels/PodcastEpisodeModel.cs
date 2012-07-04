@@ -119,7 +119,7 @@ namespace Podcatcher
 
         public PodcastEpisodeModel()
         {
-            EpisodeState = EpisodeStateVal.Downloading;
+            EpisodeState = EpisodeStateVal.Idle;
         }
 
         #region propertyChanged
