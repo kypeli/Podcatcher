@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:c="clr-namespace:Podcatcher.Converters"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     mc:Ignorable="d"
     x:Class="Podcatcher.PodcastEpisodeControl"
     d:DesignWidth="480" d:DesignHeight="800">
@@ -11,9 +12,10 @@
     <UserControl.Resources>
         <c:DownloadButtonActiveConverter x:Name="downloadButtonActive"/>
         <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
+        <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid x:Name="EpisodeMainLayout">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />    
             <RowDefinition Height="50" />    
@@ -34,5 +36,13 @@
             <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
             <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="241" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
 		</StackPanel>
-	</Grid>
+
+        <toolkit:ContextMenuService.ContextMenu>
+            <toolkit:ContextMenu Visibility="{Binding EpisodeState, 
+                                Converter={StaticResource contextMenuEnabled}}">
+                <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" />
+            </toolkit:ContextMenu>
+        </toolkit:ContextMenuService.ContextMenu>
+        
+    </Grid>
 </UserControl>

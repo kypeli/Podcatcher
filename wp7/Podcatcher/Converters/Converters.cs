@@ -93,4 +93,26 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class ContextMenuEnabledConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Visibility episodeContextMenuVisible = Visibility.Collapsed;
+
+            PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
+            if (episodeState == PodcastEpisodeModel.EpisodeStateVal.Playable)
+            {
+                episodeContextMenuVisible = Visibility.Visible;
+            }
+
+            return episodeContextMenuVisible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+
 }

@@ -32,5 +32,12 @@ namespace Podcatcher
             PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
             downloadManager.addEpisodeToDownloadQueue(podcastEpisode);
         }
+
+        private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
+//            podcastEpisode.deleteDownloadedEpisode();
+        }
+
 	}
 }
