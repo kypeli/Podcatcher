@@ -29,7 +29,7 @@ namespace Podcatcher
             episode.OnPodcastEpisodeStartedDownloading += new PodcastEpisodeModel.PodcastEpisodesHandler(podcastEpisode_OnPodcastEpisodeStartedDownloading);
             episode.OnPodcastEpisodeFinishedDownloading += new PodcastEpisodeModel.PodcastEpisodesHandler(podcastEpisode_OnPodcastEpisodeFinishedDownloading);
 
-            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Downloading;
+            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Queued;
             m_episodeDownloadQueue.Enqueue(episode);
         }
 

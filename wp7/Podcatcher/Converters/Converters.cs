@@ -40,7 +40,7 @@ namespace Podcatcher.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
-            return (episodeState != PodcastEpisodeModel.EpisodeStateVal.Downloading);
+            return (episodeState == PodcastEpisodeModel.EpisodeStateVal.Idle);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -54,14 +54,19 @@ namespace Podcatcher.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
-            String buttonText;
-            if (episodeState == PodcastEpisodeModel.EpisodeStateVal.Downloading)
+
+            String buttonText = @"Error!";
+            switch (episodeState)
             {
-                buttonText = @"Downloading...";
-            }
-            else
-            {
-                buttonText = @"Download";
+                case PodcastEpisodeModel.EpisodeStateVal.Idle:
+                    buttonText = @"Download";
+                    break;
+                case PodcastEpisodeModel.EpisodeStateVal.Queued:
+                    buttonText = @"Queued";
+                    break;
+                case PodcastEpisodeModel.EpisodeStateVal.Downloading:
+                    buttonText = @"Downloading...";
+                    break;
             }
 
             return buttonText;

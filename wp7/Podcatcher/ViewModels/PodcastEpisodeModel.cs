@@ -103,6 +103,7 @@ namespace Podcatcher
         public enum EpisodeStateVal
         {
             Idle,
+            Queued,
             Downloading
         };
 
