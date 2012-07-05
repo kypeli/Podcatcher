@@ -11,6 +11,12 @@ namespace Podcatcher
     [Table(Name="Episodes")]
     public class PodcastEpisodeModel : INotifyPropertyChanged
     {
+        public delegate void PodcastEpisodesHandler(object source, PodcastEpisodesArgs e);
+
+        public class PodcastEpisodesArgs
+        {
+        }
+
         #region properties
 
         private int m_episodeId;
@@ -117,9 +123,17 @@ namespace Podcatcher
         
         #endregion
 
+        public event PodcastEpisodesHandler OnPodcastEpisodeStartedDownloading;
+        public event PodcastEpisodesHandler OnPodcastEpisodeFinishedDownloading;
+        
         public PodcastEpisodeModel()
         {
             EpisodeState = EpisodeStateVal.Idle;
+        }
+
+        public void downloadEpisode()
+        {
+            EpisodeState = EpisodeStateVal.Downloading;
         }
 
         #region propertyChanged
