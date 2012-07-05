@@ -166,15 +166,34 @@ namespace Podcatcher
             wc.OpenReadAsync(new Uri(m_episodeDownloadUrl));
         }
 
-        void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        public void deleteDownloadedEpisode()
+        {
+            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                if (episodeStore.FileExists(EpisodeFile) == false)
+                {
+                    Debug.WriteLine("WARNING: Could not find downloaded episode to download. Name: " + EpisodeFile);
+                    return;
+                }
+
+                Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
+                episodeStore.DeleteFile(EpisodeFile);                
+            }
+            
+            EpisodeFile = null;
+            EpisodeState = EpisodeStateVal.Idle;
+        }
+
+
+        #region private
+        private void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             // Debug.WriteLine("Downloading: Bytes: {0} / {1} = {2}%.", e.BytesReceived, e.TotalBytesToReceive, e.ProgressPercentage);
         }
 
-        void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
+        private void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
         {
             Debug.WriteLine("Finished downloading episode ({0}): {1}", PodcastSubscription.PodcastName, EpisodeName);
-
 
             Stream downloadStream = e.Result;
             string episodeFileName = localEpisodeFileName();
@@ -211,6 +230,7 @@ namespace Podcatcher
         }
 
         private PodcastEpisodesArgs m_eventArgs = new PodcastEpisodesArgs();
+        #endregion
 
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -223,5 +243,6 @@ namespace Podcatcher
             }
         }
         #endregion
+
     }
 }

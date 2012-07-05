@@ -36,7 +36,7 @@ namespace Podcatcher
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
-//            podcastEpisode.deleteDownloadedEpisode();
+            podcastEpisode.deleteDownloadedEpisode();
         }
 
 	}
