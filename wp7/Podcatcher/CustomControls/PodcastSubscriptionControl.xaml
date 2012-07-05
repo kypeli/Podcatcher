@@ -13,7 +13,7 @@
 		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="361" VerticalAlignment="Center"/>
         <toolkit:ContextMenuService.ContextMenu>
             <toolkit:ContextMenu>
-                <toolkit:MenuItem Header="Delete" Click="MenuItem_Click" />
+                <toolkit:MenuItem Header="Delete" Click="MenuItemDelete_Click" />
             </toolkit:ContextMenu>
         </toolkit:ContextMenuService.ContextMenu>
 

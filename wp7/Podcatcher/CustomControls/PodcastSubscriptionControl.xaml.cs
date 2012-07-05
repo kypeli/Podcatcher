@@ -20,7 +20,7 @@ namespace Podcatcher
 			InitializeComponent();
 		}
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
         {
             PodcastSubscriptionModel subscriptionToDelete = (sender as MenuItem).DataContext as PodcastSubscriptionModel;
             Debug.WriteLine("Delete podcast subscription. Name: " + subscriptionToDelete.PodcastName);
