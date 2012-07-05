@@ -5,6 +5,10 @@ using System.Text;
 using System.Data.Linq.Mapping;
 using System.Data.Linq;
 using System.ComponentModel;
+using System.Net;
+using System.Diagnostics;
+using System.IO;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -100,11 +104,28 @@ namespace Podcatcher
             set { m_episodeRunningTime = value; }
         }
 
+        private String m_episodeFile;
+        [Column(UpdateCheck = UpdateCheck.Never)]
+        public String EpisodeFile
+        {
+            get { return m_episodeFile; }
+            set { m_episodeFile = value; }
+        }
+
+        private long m_episodePlayBookmark;
+        [Column(UpdateCheck = UpdateCheck.Never)]
+        public long EpisodePlayBookmark
+        {
+            get { return m_episodePlayBookmark; }
+            set { m_episodePlayBookmark = value; }
+        }
+
         public enum EpisodeStateVal
         {
             Idle,
             Queued,
-            Downloading
+            Downloading,
+            Playable
         };
 
         private EpisodeStateVal m_episodeState;
@@ -130,12 +151,66 @@ namespace Podcatcher
         public PodcastEpisodeModel()
         {
             EpisodeState = EpisodeStateVal.Idle;
+
         }
 
         public void downloadEpisode()
         {
-            EpisodeState = EpisodeStateVal.Downloading;
+            OnPodcastEpisodeStartedDownloading(this, m_eventArgs);
+
+            Debug.WriteLine("Starting download episode ({0}): {1}...", PodcastSubscription.PodcastName, EpisodeName);
+
+            WebClient wc = new WebClient();
+            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_OpenReadCompleted);
+            wc.OpenReadAsync(new Uri(m_episodeDownloadUrl));
         }
+
+        void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            // Debug.WriteLine("Downloading: Bytes: {0} / {1} = {2}%.", e.BytesReceived, e.TotalBytesToReceive, e.ProgressPercentage);
+        }
+
+        void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
+        {
+            Debug.WriteLine("Finished downloading episode ({0}): {1}", PodcastSubscription.PodcastName, EpisodeName);
+
+
+            Stream downloadStream = e.Result;
+            string episodeFileName = localEpisodeFileName();
+
+            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                byte[] buffer = new byte[1024];
+                using(IsolatedStorageFileStream fileStream = episodeStore.OpenFile(episodeFileName, FileMode.CreateNew)) 
+                {
+                    int bytesRead = 0;
+                    while ((bytesRead = downloadStream.Read(buffer, 0, 1024)) > 0)
+                    {
+                        fileStream.Write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+
+            EpisodeFile = episodeFileName;
+
+            Debug.WriteLine("Episode written to disk. Filename: {0}", episodeFileName);
+            OnPodcastEpisodeFinishedDownloading(this, m_eventArgs);
+        }
+
+        private string localEpisodeFileName()
+        {
+            // Parse the filename of the logo from the remote URL.
+            string localPath = new Uri(m_episodeDownloadUrl).LocalPath;
+            string podcastEpisodeFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
+
+            string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + @"/" + podcastEpisodeFilename;
+            Debug.WriteLine("Found episode filename: " + localPodcastEpisodeFilename);
+
+            return localPodcastEpisodeFilename;
+        }
+
+        private PodcastEpisodesArgs m_eventArgs = new PodcastEpisodesArgs();
 
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

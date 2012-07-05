@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -31,14 +32,32 @@ namespace Podcatcher
 
             episode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Queued;
             m_episodeDownloadQueue.Enqueue(episode);
+
+            if (m_currentEpisodeDownload == null)
+            {
+                startNextEpisodeDownload();
+            }
         }
 
         #region private
-        private static PodcastEpisodesDownloadManager m_instance = null;
-        private Queue<PodcastEpisodeModel> m_episodeDownloadQueue = new Queue<PodcastEpisodeModel>();
+        private static PodcastEpisodesDownloadManager m_instance    = null;
+        private Queue<PodcastEpisodeModel> m_episodeDownloadQueue   = new Queue<PodcastEpisodeModel>();
+        private PodcastEpisodeModel m_currentEpisodeDownload        = null;
+        private IsolatedStorageFile m_localPodcastDownloadDir       = null;
 
         private PodcastEpisodesDownloadManager()
         {
+            m_localPodcastDownloadDir = IsolatedStorageFile.GetUserStoreForApplication();
+            m_localPodcastDownloadDir.CreateDirectory(App.PODCAST_DL_DIR);
+        }
+
+        private void startNextEpisodeDownload()
+        {
+            if (m_episodeDownloadQueue.Count > 0)
+            {
+                m_currentEpisodeDownload = m_episodeDownloadQueue.Dequeue();
+                m_currentEpisodeDownload.downloadEpisode();
+            }
         }
 
         private void podcastEpisode_OnPodcastEpisodeStartedDownloading(object sender, PodcastEpisodeModel.PodcastEpisodesArgs e)
@@ -50,13 +69,16 @@ namespace Podcatcher
         private void podcastEpisode_OnPodcastEpisodeFinishedDownloading(object sender, PodcastEpisodeModel.PodcastEpisodesArgs e)
         {
             PodcastEpisodeModel episode = sender as PodcastEpisodeModel;
+            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
 
             // Disconnect model event handlers just in case.
             episode.OnPodcastEpisodeFinishedDownloading -= new PodcastEpisodeModel.PodcastEpisodesHandler(podcastEpisode_OnPodcastEpisodeFinishedDownloading);
             episode.OnPodcastEpisodeStartedDownloading -= new PodcastEpisodeModel.PodcastEpisodesHandler(podcastEpisode_OnPodcastEpisodeStartedDownloading);
+
+            m_currentEpisodeDownload = null;
+
+            startNextEpisodeDownload();
         }
-
-
         #endregion
     }
 }
