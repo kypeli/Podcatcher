@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="263" />
+            <ColumnDefinition Width="266" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -31,10 +31,10 @@
                                 Converter={StaticResource downloadButtonActive}}" Width="Auto" Grid.Row="0" Grid.Column="1" 
                 Content="{Binding EpisodeState, 
                                 Converter={StaticResource downloadButtonText}}" 
-                HorizontalAlignment="Center" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Click="DownloadButton_Click" />
+                                VerticalAlignment="Top" HorizontalContentAlignment="Center" Click="DownloadButton_Click" Margin="8,0,0,0" />
 		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
             <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
-            <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="241" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
+            <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="247" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
 		</StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>

@@ -77,7 +77,7 @@ namespace Podcatcher.Converters
                     buttonText = @"Queued";
                     break;
                 case PodcastEpisodeModel.EpisodeStateVal.Downloading:
-                    buttonText = @"Downloading...";
+                    buttonText = @"Downloading";
                     break;
                 case PodcastEpisodeModel.EpisodeStateVal.Playable:
                     buttonText = @"Play";
