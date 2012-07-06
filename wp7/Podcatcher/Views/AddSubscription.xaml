@@ -10,6 +10,7 @@
     xmlns:c4f="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:Converters="clr-namespace:Coding4Fun.Phone.Controls.Converters;assembly=Coding4Fun.Phone.Controls"
+    xmlns:pc="clr-namespace:Podcatcher.CustomControls"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -30,7 +31,7 @@
                 <controls:Pivot>
                     <!-- Popular podcasts pivot item -->
                     <controls:PivotItem Header="popular podcasts">
-                        <TextBlock Text="Popular podcasts."/>
+                        <pc:PopularPodcastsControl/>
                     </controls:PivotItem>
 
                     <!-- Search podcasts pivot item -->

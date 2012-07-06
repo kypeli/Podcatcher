@@ -75,6 +75,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\Converters.cs" />
+    <Compile Include="CustomControls\PopularPodcastsControl.xaml.cs">
+      <DependentUpon>PopularPodcastsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="ViewModels\PodcastEpisodeModel.cs" />
     <Compile Include="PodcastFactory.cs" />
@@ -109,6 +112,10 @@
     <Page Include="CustomControls\PodcastSubscriptionControl.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CustomControls\PopularPodcastsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AddSubscription.xaml">
       <SubType>Designer</SubType>
