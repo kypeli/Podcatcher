@@ -27,11 +27,15 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <!--Pivot Control-->
-            <controls:Pivot>
-                <controls:PivotItem Header="Add podcast">
-                    <!--Pivot item one-->
-                    <StackPanel Height="661" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
+                <controls:Pivot>
+                    <!-- Popular podcasts pivot item -->
+                    <controls:PivotItem Header="Popular podcasts">
+                        <TextBlock Text="Popular podcasts."/>
+                    </controls:PivotItem>
+
+                    <!-- Add podcasts pivot item -->
+                    <controls:PivotItem Header="Add podcast">
+                        <StackPanel Height="661" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
                         <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Podcast RSS URL" TextWrapping="Wrap" />
                         <TextBox Height="71" InputScope="url" Name="addFromUrlInput" Text="" d:LayoutOverrides="HorizontalMargin" />
                         <Button Content="Add" Height="71" Name="addFromUrlButton" Width="152" HorizontalAlignment="Right" Click="addFromUrlButton_Click" Margin="0,0,8,0" />
@@ -39,8 +43,8 @@
                         <TextBox Height="71" Name="searchByKeywordInput" Text="" d:LayoutOverrides="HorizontalMargin" />
                         <Button Content="Search" Height="71" Width="152" HorizontalAlignment="Right" Margin="0,0,8,0" />
                     </StackPanel>
-                </controls:PivotItem>
-            </controls:Pivot>
+                    </controls:PivotItem>
+                </controls:Pivot>
 
             <c4f:ProgressOverlay Name="progressOverlay" Visibility="Collapsed">
                 <StackPanel>

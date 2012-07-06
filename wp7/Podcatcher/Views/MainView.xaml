@@ -79,28 +79,6 @@
                 </ListBox>
             </controls:PivotItem>
 
-            <!-- Popular podcasts -->
-            <controls:PivotItem>
-                <controls:PivotItem.Header>
-                    <pc:PodcastPivotItemHeader                       
-                        HeaderText="popular podcasts"
-                        AltText="Barbar"
-                     />
-                </controls:PivotItem.Header>
-                <!--Triple line list no text wrapping-->
-                    <ListBox Margin="0,0,-12,0" Width="439">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,0,0,0">
-                                    <TextBlock Text="{Binding LineOne}" TextWrapping="NoWrap" Margin="12,0,0,0" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                    <TextBlock Text="{Binding LineThree}" TextWrapping="NoWrap" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-            </controls:PivotItem>
-
-
         </controls:Pivot>
     </Grid>
  
