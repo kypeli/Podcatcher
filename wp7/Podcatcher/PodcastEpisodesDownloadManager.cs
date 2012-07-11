@@ -10,11 +10,20 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
+using Podcatcher.CustomControls;
 
 namespace Podcatcher
 {
     public class PodcastEpisodesDownloadManager
     {
+        public ObservableQueue<PodcastEpisodeModel> EpisodeDownloadQueue
+        {
+            get
+            {
+                return m_episodeDownloadQueue;
+            }
+        }
+
         public static PodcastEpisodesDownloadManager getInstance()
         {
             if (m_instance == null)
@@ -40,10 +49,10 @@ namespace Podcatcher
         }
 
         #region private
-        private static PodcastEpisodesDownloadManager m_instance    = null;
-        private Queue<PodcastEpisodeModel> m_episodeDownloadQueue   = new Queue<PodcastEpisodeModel>();
-        private PodcastEpisodeModel m_currentEpisodeDownload        = null;
-        private IsolatedStorageFile m_localPodcastDownloadDir       = null;
+        private static PodcastEpisodesDownloadManager m_instance                = null;
+        private ObservableQueue<PodcastEpisodeModel> m_episodeDownloadQueue     = new ObservableQueue<PodcastEpisodeModel>();
+        private PodcastEpisodeModel m_currentEpisodeDownload                    = null;
+        private IsolatedStorageFile m_localPodcastDownloadDir                   = null;
 
         private PodcastEpisodesDownloadManager()
         {
