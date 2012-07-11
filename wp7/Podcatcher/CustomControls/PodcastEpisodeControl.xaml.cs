@@ -12,13 +12,13 @@ using System.Diagnostics;
 
 namespace Podcatcher
 {
-	public partial class PodcastEpisodeControl : UserControl
-	{
-		public PodcastEpisodeControl()
-		{
-			// Required to initialize variables
-			InitializeComponent();
-		}
+    public partial class PodcastEpisodeControl : UserControl
+    {
+        public PodcastEpisodeControl()
+        {
+            // Required to initialize variables
+            InitializeComponent();
+        }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
@@ -39,5 +39,5 @@ namespace Podcatcher
             podcastEpisode.deleteDownloadedEpisode();
         }
 
-	}
+    }
 }

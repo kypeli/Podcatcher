@@ -267,14 +267,14 @@ namespace Podcatcher
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
-		
-		private void NotifyPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, null);
-			}
-		}
+        
+        private void NotifyPropertyChanging()
+        {
+            if ((this.PropertyChanging != null))
+            {
+                this.PropertyChanging(this, null);
+            }
+        }
 
         private void NotifyPropertyChanged(String propertyName)
         {

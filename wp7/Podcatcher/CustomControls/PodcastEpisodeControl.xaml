@@ -32,10 +32,10 @@
                 Content="{Binding EpisodeState, 
                                 Converter={StaticResource downloadButtonText}}" 
                                 VerticalAlignment="Top" HorizontalContentAlignment="Center" Click="DownloadButton_Click" Margin="8,0,0,0" />
-		<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
             <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
             <TextBlock Text="{Binding EpisodeRunningTime}" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="247" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
-		</StackPanel>
+        </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>
             <toolkit:ContextMenu Visibility="{Binding EpisodeState, 

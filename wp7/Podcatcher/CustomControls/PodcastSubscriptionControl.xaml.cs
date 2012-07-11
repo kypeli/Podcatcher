@@ -12,13 +12,13 @@ using Microsoft.Phone.Controls;
 
 namespace Podcatcher
 {
-	public partial class PodcastSubscriptionControl : UserControl
-	{
-		public PodcastSubscriptionControl()
-		{
-			// Required to initialize variables
-			InitializeComponent();
-		}
+    public partial class PodcastSubscriptionControl : UserControl
+    {
+        public PodcastSubscriptionControl()
+        {
+            // Required to initialize variables
+            InitializeComponent();
+        }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
         {
@@ -29,5 +29,5 @@ namespace Podcatcher
             subscriptionsManager.deleteSubscription(subscriptionToDelete);
         }
 
-	}
+    }
 }
