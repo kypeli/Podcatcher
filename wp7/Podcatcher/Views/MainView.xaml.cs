@@ -13,22 +13,53 @@ using Microsoft.Phone.Controls;
 using System.Collections.ObjectModel;
 using Podcatcher.ViewModels;
 using System.Diagnostics;
+using System.Collections.Specialized;
 
 namespace Podcatcher
 {
     public partial class MainView : PhoneApplicationPage
     {
-        private PodcastSqlModel m_podcastsModel  = PodcastSqlModel.getInstance();
+        private PodcastSqlModel m_podcastsModel                         = PodcastSqlModel.getInstance();
+        private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
 
         public MainView()
         {
             InitializeComponent();
+
             DataContext = m_podcastsModel;
+            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
+
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+            ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
+            
             m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
             m_subscriptionsManager.refreshSubscriptions();
         }
+
+        private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            int episodeDownloads = EpisodeDownloadList.Items.Count;
+            string downloadText = "";
+            switch (episodeDownloads)
+            {
+                case 0:
+                    downloadText = "";
+                    EpisodesDownloadingText.Visibility = Visibility.Visible;
+                    break;
+                case 1:
+                    downloadText = @"1 episode downloading";
+                    EpisodesDownloadingText.Visibility = Visibility.Collapsed;
+                    break;
+                default:
+                    downloadText = String.Format("{0} episodes downloading", EpisodeDownloadList.Items.Count);
+                    EpisodesDownloadingText.Visibility = Visibility.Collapsed;
+                    break;
+            }
+
+            this.DownloadPivotHeader.AltText = downloadText;
+        }
+
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {

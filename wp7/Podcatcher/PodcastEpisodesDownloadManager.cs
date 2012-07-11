@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using Podcatcher.CustomControls;
+using System.Collections.Specialized;
 
 namespace Podcatcher
 {
@@ -49,10 +50,10 @@ namespace Podcatcher
         }
 
         #region private
-        private static PodcastEpisodesDownloadManager m_instance                = null;
-        private ObservableQueue<PodcastEpisodeModel> m_episodeDownloadQueue     = new ObservableQueue<PodcastEpisodeModel>();
-        private PodcastEpisodeModel m_currentEpisodeDownload                    = null;
-        private IsolatedStorageFile m_localPodcastDownloadDir                   = null;
+        private static PodcastEpisodesDownloadManager m_instance            = null;
+        private ObservableQueue<PodcastEpisodeModel> m_episodeDownloadQueue = new ObservableQueue<PodcastEpisodeModel>();
+        private PodcastEpisodeModel m_currentEpisodeDownload                = null;
+        private IsolatedStorageFile m_localPodcastDownloadDir               = null;
 
         private PodcastEpisodesDownloadManager()
         {
@@ -64,7 +65,7 @@ namespace Podcatcher
         {
             if (m_episodeDownloadQueue.Count > 0)
             {
-                m_currentEpisodeDownload = m_episodeDownloadQueue.Dequeue();
+                m_currentEpisodeDownload = m_episodeDownloadQueue.Peek();
                 m_currentEpisodeDownload.downloadEpisode();
             }
         }
@@ -85,6 +86,7 @@ namespace Podcatcher
             episode.OnPodcastEpisodeStartedDownloading -= new PodcastEpisodeModel.PodcastEpisodesHandler(podcastEpisode_OnPodcastEpisodeStartedDownloading);
 
             m_currentEpisodeDownload = null;
+            m_episodeDownloadQueue.Dequeue();
 
             startNextEpisodeDownload();
         }

@@ -140,6 +140,50 @@ namespace Podcatcher
             {
                 m_episodeState = value;
                 NotifyPropertyChanged("EpisodeState");
+                NotifyPropertyChanged("EpisodeStatusText");
+            }
+        }
+
+        public String EpisodeStatusText
+        {
+            get 
+            {
+                String statusText = "";
+                switch (m_episodeState)
+                {
+                    case EpisodeStateVal.Downloading:
+                        statusText = "Downloading...";
+                        break;
+                    case EpisodeStateVal.Idle:
+                        statusText = "";
+                        break;
+                    case EpisodeStateVal.Playable:
+                        statusText = "Play";
+                        break;
+                    case EpisodeStateVal.Queued:
+                        statusText = "Queued";
+                        break;
+                }
+
+                return statusText;
+            }
+        }
+
+        private int m_downloadPercentage;
+        public int DownloadPercentage 
+        { 
+            get 
+            {
+                return m_downloadPercentage;
+            }
+
+            set
+            {
+                if (m_downloadPercentage != value)
+                {
+                    m_downloadPercentage = value;
+                    NotifyPropertyChanged("DownloadPercentage");
+                }
             }
         }
         
@@ -189,11 +233,19 @@ namespace Podcatcher
         private void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             // Debug.WriteLine("Downloading: Bytes: {0} / {1} = {2}%.", e.BytesReceived, e.TotalBytesToReceive, e.ProgressPercentage);
+            DownloadPercentage = e.ProgressPercentage;
         }
 
         private void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
         {
             Debug.WriteLine("Finished downloading episode ({0}): {1}", PodcastSubscription.PodcastName, EpisodeName);
+
+            if (e.Error != null)
+            {
+                Debug.WriteLine("ERROR: Web error: " + e.ToString());
+                OnPodcastEpisodeFinishedDownloading(this, m_eventArgs);
+                return;
+            }
 
             Stream downloadStream = e.Result;
             string episodeFileName = localEpisodeFileName();
@@ -243,6 +295,5 @@ namespace Podcatcher
             }
         }
         #endregion
-
     }
 }
