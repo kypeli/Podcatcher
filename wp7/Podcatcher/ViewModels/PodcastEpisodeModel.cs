@@ -103,7 +103,7 @@ namespace Podcatcher.ViewModels
         [Column(UpdateCheck = UpdateCheck.Never)]
         public String EpisodeRunningTime
         {
-            get { return @"Running time: " + m_episodeRunningTime; }
+            get { return m_episodeRunningTime; }
             set { m_episodeRunningTime = value; }
         }
 

@@ -20,21 +20,24 @@ namespace Podcatcher
         {
             // Required to initialize variables
             InitializeComponent();
+
+            this.Loaded += new RoutedEventHandler(Page_Loaded);
         }
 
         /************************************* Private implementations *******************************/
         #region private
+        private PodcastEpisodeModel m_episodeModel;
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            m_episodeModel = this.DataContext as PodcastEpisodeModel;
+            this.EpisodeRunningTime.Text = String.Format("Running time: {0}", m_episodeModel.EpisodeRunningTime);
+        }
+
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            PhoneApplicationPage p = (Application.Current as App).RootFrame.Content as PhoneApplicationPage;
-            ListBox episodeList = p.FindName("EpisodeList") as ListBox;
-
-            Button downloadButton = sender as Button;
-            PodcastEpisodeModel podcastEpisode = (episodeList.ItemContainerGenerator.ContainerFromItem(downloadButton.DataContext) as ListBoxItem)
-                                                 .DataContext as PodcastEpisodeModel;
-
             PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
-            downloadManager.addEpisodeToDownloadQueue(podcastEpisode);
+            downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
