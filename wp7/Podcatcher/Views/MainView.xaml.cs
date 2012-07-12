@@ -41,6 +41,7 @@ namespace Podcatcher
         {
             int episodeDownloads = EpisodeDownloadList.Items.Count;
             string downloadText = "";
+
             switch (episodeDownloads)
             {
                 case 0:
@@ -59,7 +60,6 @@ namespace Podcatcher
 
             this.DownloadPivotHeader.AltText = downloadText;
         }
-
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {

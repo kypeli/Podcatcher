@@ -128,7 +128,8 @@ namespace Podcatcher.ViewModels
             Idle,
             Queued,
             Downloading,
-            Playable
+            Playable,
+            Playing
         };
 
         private EpisodeStateVal m_episodeState;
@@ -166,6 +167,9 @@ namespace Podcatcher.ViewModels
                         break;
                     case EpisodeStateVal.Queued:
                         statusText = "Queued";
+                        break;
+                    case EpisodeStateVal.Playing:
+                        statusText = "Playing";
                         break;
                 }
 

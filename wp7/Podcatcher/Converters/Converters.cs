@@ -35,7 +35,7 @@ namespace Podcatcher.Converters
         }
     }
 
-    public class DownloadButtonActiveConverter : IValueConverter 
+    public class EpisodeButtonActiveConverter : IValueConverter 
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -48,6 +48,9 @@ namespace Podcatcher.Converters
                     buttonEnabled = false;
                     break;
                 case PodcastEpisodeModel.EpisodeStateVal.Downloading:
+                    buttonEnabled = false;
+                    break;
+                case PodcastEpisodeModel.EpisodeStateVal.Playing:
                     buttonEnabled = false;
                     break;
             }
@@ -81,6 +84,9 @@ namespace Podcatcher.Converters
                     break;
                 case PodcastEpisodeModel.EpisodeStateVal.Playable:
                     buttonText = @"Play";
+                    break;
+                case PodcastEpisodeModel.EpisodeStateVal.Playing:
+                    buttonText = @"Playing";
                     break;
             }
 

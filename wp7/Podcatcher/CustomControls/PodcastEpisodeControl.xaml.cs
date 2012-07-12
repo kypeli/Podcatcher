@@ -34,10 +34,22 @@ namespace Podcatcher
             this.EpisodeRunningTime.Text = String.Format("Running time: {0}", m_episodeModel.EpisodeRunningTime);
         }
 
-        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        private void EpisodeButton_Click(object sender, RoutedEventArgs e)
         {
-            PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
-            downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
+            switch (m_episodeModel.EpisodeState)
+            {
+                // Episode is idle => start downloading. 
+                case PodcastEpisodeModel.EpisodeStateVal.Idle:
+                    PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
+                    downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
+                    break;
+
+                case PodcastEpisodeModel.EpisodeStateVal.Playable:
+                    PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+                    m_episodeModel.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
+                    player.play(m_episodeModel);
+                    break;
+            }
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)

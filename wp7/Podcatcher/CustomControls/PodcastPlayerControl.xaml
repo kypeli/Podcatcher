@@ -10,13 +10,18 @@
     d:DesignHeight="480" d:DesignWidth="480">
     
     <Grid x:Name="LayoutRoot">
-    	<Image x:Name="PodcastLogo" Margin="0,40,0,0" HorizontalAlignment="Center" Width="200" Height="200" VerticalAlignment="Top"/>
-    	<TextBlock x:Name="PodcastEpisodeName" Margin="27,0,27,104" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108"/>
-    	<StackPanel Height="92" Margin="110,0,110,8" VerticalAlignment="Bottom" Orientation="Horizontal">
-    		<Image Width="50" Source="/Podcatcher;component/Images/rew.png" Margin="0,0,55,0"/>
-    		<Image Width="50" Source="/Podcatcher;component/Images/play.png" Margin="0,0,55,0"/>
-    		<Image Width="50" Source="/Podcatcher;component/Images/ff.png"/>
-    	</StackPanel>
+    	<Grid x:Name="PlayingLayout" Margin="0,0,8,8">
+    		<Image x:Name="PodcastLogo" Margin="0,45,0,0" HorizontalAlignment="Center" Width="300" Height="300" VerticalAlignment="Top"/>
+    		<TextBlock x:Name="PodcastEpisodeName" Margin="0,0,0,96" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108" HorizontalAlignment="Center" Width="425"/>
+    		<StackPanel Height="92" Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Width="260">
+    			<Image Width="50" Source="/Podcatcher;component/Images/rew.png" Margin="0,0,55,0"/>
+    			<Image Width="50" Source="/Podcatcher;component/Images/play.png" Margin="0,0,55,0"/>
+    			<Image Width="50" Source="/Podcatcher;component/Images/ff.png"/>
+    		</StackPanel>
+    	</Grid>
+    	<Grid x:Name="NoPlayingLayout" Margin="0,0,8,8" d:IsHidden="True">
+            <TextBlock Style="{StaticResource PhoneTextGroupHeaderStyle}" TextWrapping="Wrap" Text="You have no podcast playing." Margin="90,147,82,227" Width="300" TextAlignment="Center"/>
+    	</Grid>
 
     </Grid>
 </UserControl>
