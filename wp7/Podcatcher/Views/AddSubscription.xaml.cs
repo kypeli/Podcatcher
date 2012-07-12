@@ -17,11 +17,14 @@ namespace Podcatcher.Views
 {
     public partial class AddSubscription : PhoneApplicationPage
     {
+        /************************************* Public implementations *******************************/
         public AddSubscription()
         {
             InitializeComponent();
         }
 
+        /************************************* Private implementations *******************************/
+        #region private
         private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
         {
             progressOverlay.Show();
@@ -55,6 +58,6 @@ namespace Podcatcher.Views
                 NavigationService.GoBack();
             }
         }
-
+        #endregion
     }
 }

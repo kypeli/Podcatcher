@@ -15,12 +15,15 @@ namespace Podcatcher
     [Table(Name="Episodes")]
     public class PodcastEpisodeModel : INotifyPropertyChanged
     {
+        /****************************** PodcastEpisodeHandler definitions ***************************/
+
         public delegate void PodcastEpisodesHandler(object source, PodcastEpisodesArgs e);
 
         public class PodcastEpisodesArgs
         {
         }
 
+        /************************************* Public properties *******************************/
         #region properties
 
         private int m_episodeId;
@@ -191,7 +194,8 @@ namespace Podcatcher
 
         public event PodcastEpisodesHandler OnPodcastEpisodeStartedDownloading;
         public event PodcastEpisodesHandler OnPodcastEpisodeFinishedDownloading;
-        
+
+        /************************************* Public implementations *******************************/
         public PodcastEpisodeModel()
         {
             EpisodeState = EpisodeStateVal.Idle;
@@ -206,7 +210,7 @@ namespace Podcatcher
 
             WebClient wc = new WebClient();
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_OpenReadCompleted);
+            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_PodcastDownloadCompleted);
             wc.OpenReadAsync(new Uri(m_episodeDownloadUrl));
         }
 
@@ -229,14 +233,14 @@ namespace Podcatcher
         }
 
 
+        /************************************* Private implementations *******************************/
         #region private
         private void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            // Debug.WriteLine("Downloading: Bytes: {0} / {1} = {2}%.", e.BytesReceived, e.TotalBytesToReceive, e.ProgressPercentage);
             DownloadPercentage = e.ProgressPercentage;
         }
 
-        private void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
+        private void wc_PodcastDownloadCompleted(object sender, OpenReadCompletedEventArgs e)
         {
             Debug.WriteLine("Finished downloading episode ({0}): {1}", PodcastSubscription.PodcastName, EpisodeName);
 
@@ -250,6 +254,7 @@ namespace Podcatcher
             Stream downloadStream = e.Result;
             string episodeFileName = localEpisodeFileName();
 
+            // TODO: Do this in a thread.
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 byte[] buffer = new byte[1024];

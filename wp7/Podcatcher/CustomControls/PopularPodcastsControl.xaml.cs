@@ -25,11 +25,11 @@ namespace Podcatcher.CustomControls
         void PageLoaded(object sender, RoutedEventArgs e)
         {
             WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadTopPodcastsXMLCompleted);
             wc.DownloadStringAsync(new Uri("http://gpodder.net/toplist/15.xml"));
         }
 
-        void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        void wc_DownloadTopPodcastsXMLCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             XDocument xmlResult = XDocument.Parse(e.Result);
         }

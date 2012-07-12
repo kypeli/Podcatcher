@@ -14,6 +14,7 @@ namespace Podcatcher
 {
     public partial class PodcastDownloadControl : UserControl
     {
+        /************************************* Public implementations *******************************/
         public PodcastDownloadControl()
         {
             InitializeComponent();

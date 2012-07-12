@@ -14,12 +14,15 @@ namespace Podcatcher
 {
     public partial class PodcastEpisodeControl : UserControl
     {
+        /************************************* Private implementations *******************************/
         public PodcastEpisodeControl()
         {
             // Required to initialize variables
             InitializeComponent();
         }
 
+        /************************************* Private implementations *******************************/
+        #region private
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             PhoneApplicationPage p = (Application.Current as App).RootFrame.Content as PhoneApplicationPage;
@@ -38,6 +41,6 @@ namespace Podcatcher
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
             podcastEpisode.deleteDownloadedEpisode();
         }
-
+        #endregion
     }
 }

@@ -17,9 +17,8 @@ namespace Podcatcher.Views
 {
     public partial class PodcastEpisodes : PhoneApplicationPage
     {
-        private PodcastSqlModel m_podcastSqlModel;
-        ObservableCollection<PodcastEpisodeModel> episodes;
 
+        /************************************* Public implementations *******************************/
         public PodcastEpisodes()
         {
             InitializeComponent();
@@ -37,5 +36,13 @@ namespace Podcatcher.Views
             this.EpisodeList.ItemsSource    = episodes;
             this.PodcastIcon.Source         = subscription.PodcastLogo;
         }
+
+        /************************************* Priovate implementations *******************************/
+        #region private
+
+        private PodcastSqlModel m_podcastSqlModel;
+        ObservableCollection<PodcastEpisodeModel> episodes;
+        
+        #endregion
     }
 }
