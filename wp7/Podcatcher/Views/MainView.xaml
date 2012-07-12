@@ -88,6 +88,27 @@
                                  Margin="34,96,32,278" />
                 </Grid>
             </controls:PivotItem>
+
+            <!-- Podcast player -->
+            <controls:PivotItem>
+                <controls:PivotItem.Header>
+                    <pc:PodcastPivotItemHeader 
+                      HeaderText="podcast player"
+                      />
+                </controls:PivotItem.Header>
+
+                <Grid Background="Transparent">
+
+                    <TextBlock Text="You have no podcast playing."                                  
+                                 VerticalAlignment="Center" 
+                                 HorizontalAlignment="Center" 
+                                 TextWrapping="Wrap" 
+                                 TextAlignment="Center" 
+                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                                 Margin="34,96,32,278" />
+                </Grid>
+            </controls:PivotItem>
+
         </controls:Pivot>
     </Grid>
  
