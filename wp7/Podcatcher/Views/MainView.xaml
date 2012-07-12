@@ -97,15 +97,16 @@
                       />
                 </controls:PivotItem.Header>
 
-                <Grid Background="Transparent">
-                    <pc:PodcastPlayerControl/>
-                    <TextBlock Text="You have no podcast playing."                                  
-                                 VerticalAlignment="Center" 
-                                 HorizontalAlignment="Center" 
-                                 TextWrapping="Wrap" 
-                                 TextAlignment="Center" 
-                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
-                                 Margin="34,96,32,278" />
+                <Grid Background="Transparent" Width="480">
+                    <pc:PodcastPlayerControl />
+                    <TextBlock Text="You have no podcast playing." 
+                                Width="300"
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Center" 
+                                TextWrapping="Wrap" 
+                                TextAlignment="Center" 
+                                Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                                Margin="34,96,32,278" />
                 </Grid>
             </controls:PivotItem>
 

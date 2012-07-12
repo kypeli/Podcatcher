@@ -79,5 +79,6 @@ namespace Podcatcher
                 this.SubscriptionsList.SelectedIndex = -1;  // Aaargh... stupid Silverlight.
             }
         }
+
     }
 }

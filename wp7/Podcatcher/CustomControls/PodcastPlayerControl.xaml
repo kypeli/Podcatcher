@@ -10,6 +10,13 @@
     d:DesignHeight="480" d:DesignWidth="480">
     
     <Grid x:Name="LayoutRoot">
+    	<Image x:Name="PodcastLogo" Margin="0,40,0,0" HorizontalAlignment="Center" Width="200" Height="200" VerticalAlignment="Top"/>
+    	<TextBlock x:Name="PodcastEpisodeName" Margin="27,0,27,104" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108"/>
+    	<StackPanel Height="92" Margin="110,0,110,8" VerticalAlignment="Bottom" Orientation="Horizontal">
+    		<Image Width="50" Source="/Podcatcher;component/Images/rew.png" Margin="0,0,55,0"/>
+    		<Image Width="50" Source="/Podcatcher;component/Images/play.png" Margin="0,0,55,0"/>
+    		<Image Width="50" Source="/Podcatcher;component/Images/ff.png"/>
+    	</StackPanel>
 
     </Grid>
 </UserControl>
