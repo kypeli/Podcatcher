@@ -10,7 +10,7 @@ using System.Data.Linq;
 using Podcatcher.ViewModels;
 using System.Collections.Generic;
 
-namespace Podcatcher
+namespace Podcatcher.ViewModels
 {
     [Table(Name="PodcastSubscription")]
     public class PodcastSubscriptionModel : INotifyPropertyChanged

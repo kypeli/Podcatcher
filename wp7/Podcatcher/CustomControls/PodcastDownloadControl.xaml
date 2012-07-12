@@ -20,8 +20,9 @@
             <TextBlock TextWrapping="Wrap" Text="{Binding EpisodeName}" Width="365" Height="100" Style="{StaticResource PhoneTextTitle2Style}" Margin="10,0,0,0" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <TextBlock TextWrapping="Wrap" Text="{Binding EpisodeStatusText}"  Style="{StaticResource PhoneTextTitle3Style}" Width="157" VerticalAlignment="Center" Height="Auto"/>
-            <ProgressBar Width="256" Value="{Binding DownloadPercentage}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto"/>
+            <TextBlock Text="{Binding EpisodeStatusText}"  Style="{StaticResource PhoneTextTitle3Style}" Width="147" VerticalAlignment="Center" Height="Auto"/>
+            <TextBlock Text="{Binding DownloadPercentage}"  Width="30" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto"/>
+            <ProgressBar Width="236" Value="{Binding DownloadPercentage}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto"/>
         </StackPanel>
     </Grid>
 </UserControl>

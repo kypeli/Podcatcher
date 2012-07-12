@@ -9,6 +9,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using Microsoft.Phone.Controls;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {

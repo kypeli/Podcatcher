@@ -16,8 +16,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Podcatcher;
 using System.Collections.Generic;
+using Podcatcher.ViewModels;
 
-namespace Podcatcher.ViewModels
+namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
@@ -140,6 +141,12 @@ namespace Podcatcher.ViewModels
                         select episode;
 
             return new List<PodcastEpisodeModel>(query);
+        }
+
+        public void setEpisodeState(PodcastEpisodeModel episode, PodcastEpisodeModel.EpisodeStateVal episodeState)
+        {
+            episode.EpisodeState = episodeState;
+            this.SubmitChanges();
         }
 
         /************************************* Private implementation *******************************/

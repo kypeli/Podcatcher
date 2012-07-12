@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 
-namespace Podcatcher
+namespace Podcatcher.ViewModels
 {
     [Table(Name="Episodes")]
     public class PodcastEpisodeModel : INotifyPropertyChanged
@@ -132,6 +132,7 @@ namespace Podcatcher
         };
 
         private EpisodeStateVal m_episodeState;
+        [Column(Storage = "m_episodeState", DbType = "int", CanBeNull = true)]
         public EpisodeStateVal EpisodeState
         {
             get 
@@ -198,7 +199,7 @@ namespace Podcatcher
         /************************************* Public implementations *******************************/
         public PodcastEpisodeModel()
         {
-            EpisodeState = EpisodeStateVal.Idle;
+//            EpisodeState = EpisodeStateVal.Idle;
 
         }
 
@@ -229,7 +230,7 @@ namespace Podcatcher
             }
             
             EpisodeFile = null;
-            EpisodeState = EpisodeStateVal.Idle;
+            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateVal.Idle);
         }
 
 
@@ -269,6 +270,7 @@ namespace Podcatcher
             }
 
             EpisodeFile = episodeFileName;
+            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateVal.Playable);
 
             Debug.WriteLine("Episode written to disk. Filename: {0}", episodeFileName);
             OnPodcastEpisodeFinishedDownloading(this, m_eventArgs);

@@ -113,6 +113,4 @@ namespace Podcatcher.Converters
             throw new NotSupportedException();
         }
     }
-
-
 }

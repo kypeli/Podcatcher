@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using Podcatcher.CustomControls;
 using System.Collections.Specialized;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {
@@ -79,7 +80,6 @@ namespace Podcatcher
         private void podcastEpisode_OnPodcastEpisodeFinishedDownloading(object sender, PodcastEpisodeModel.PodcastEpisodesArgs e)
         {
             PodcastEpisodeModel episode = sender as PodcastEpisodeModel;
-            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
 
             // Disconnect model event handlers just in case.
             episode.OnPodcastEpisodeFinishedDownloading -= new PodcastEpisodeModel.PodcastEpisodesHandler(podcastEpisode_OnPodcastEpisodeFinishedDownloading);

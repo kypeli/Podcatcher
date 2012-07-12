@@ -13,6 +13,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {

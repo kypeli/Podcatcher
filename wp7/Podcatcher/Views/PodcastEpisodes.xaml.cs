@@ -33,8 +33,8 @@ namespace Podcatcher.Views
 
             this.PodcastName.Text           = subscription.PodcastName;
             this.PodcastDescription.Text    = subscription.PodcastDescription;
-            this.EpisodeList.ItemsSource    = episodes;
             this.PodcastIcon.Source         = subscription.PodcastLogo;
+            this.EpisodeList.ItemsSource    = episodes;
         }
 
         /************************************* Priovate implementations *******************************/
