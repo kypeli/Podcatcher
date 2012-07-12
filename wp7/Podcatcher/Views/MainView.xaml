@@ -98,7 +98,7 @@
                 </controls:PivotItem.Header>
 
                 <Grid Background="Transparent">
-
+                    <pc:PodcastPlayerControl/>
                     <TextBlock Text="You have no podcast playing."                                  
                                  VerticalAlignment="Center" 
                                  HorizontalAlignment="Center" 
