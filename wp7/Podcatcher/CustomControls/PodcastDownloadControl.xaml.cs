@@ -18,6 +18,12 @@ namespace Podcatcher
         public PodcastDownloadControl()
         {
             InitializeComponent();
+            this.DownloadProgressText.Text = "";
+        }
+
+        private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            this.DownloadProgressText.Text = String.Format("{0} %", (sender as ProgressBar).Value);
         }
     }
 }
