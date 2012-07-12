@@ -19,7 +19,9 @@ namespace Podcatcher
 {
     public partial class MainView : PhoneApplicationPage
     {
-        private PodcastSqlModel m_podcastsModel                         = PodcastSqlModel.getInstance();
+        private const int PODCAST_PLAYER_PIVOR_INDEX = 2;
+        
+        private PodcastSqlModel m_podcastsModel = PodcastSqlModel.getInstance();
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
 
@@ -27,14 +29,33 @@ namespace Podcatcher
         {
             InitializeComponent();
 
+            // Hook data contextes.
             DataContext = m_podcastsModel;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
-            this.Loaded += new RoutedEventHandler(MainPage_Loaded);
-            ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
-            
+            // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
             m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
             m_subscriptionsManager.refreshSubscriptions();
+
+            // Post-pageinitialization event call hookup.
+            this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+
+            // Hook to the event when the download list changes, so we can update the pivot header text for the 
+            // download page. 
+            ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
+
+            // Hook to the event when the podcast player starts playing. 
+            this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+        }
+
+        void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
+        {
+            // Got event that the podcast player started playing. We now
+            //  - Pop the navigation back to the main page (yes, we know that the subscription page is open).
+            //  - Set the pivot index to show the player. 
+            // ...I don't really like this, but seems this is the way to work with the pivot control.
+            NavigationService.GoBack();
+            this.NavigationPivot.SelectedIndex = PODCAST_PLAYER_PIVOR_INDEX;
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)

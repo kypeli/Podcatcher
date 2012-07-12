@@ -10,11 +10,15 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Podcatcher.ViewModels;
+using Microsoft.Phone.Controls;
+using System.Diagnostics;
 
 namespace Podcatcher
 {
     public partial class PodcastPlayerControl : UserControl
     {
+        public event EventHandler PodcastPlayerStarted;
+
         private static PodcastPlayerControl m_instance;
 
         public PodcastPlayerControl()
@@ -34,10 +38,14 @@ namespace Podcatcher
 
         internal void play(PodcastEpisodeModel m_episodeModel)
         {
+            Debug.WriteLine("Starting to play podcast episode: " + m_episodeModel.EpisodeName);
+
             this.NoPlayingLayout.Visibility = Visibility.Collapsed;
             this.PlayingLayout.Visibility = Visibility.Visible;
             this.PodcastLogo.Source = m_episodeModel.PodcastSubscription.PodcastLogo;
             this.PodcastEpisodeName.Text = m_episodeModel.EpisodeName;
+
+            PodcastPlayerStarted(this, new EventArgs());
         }
     }
 }

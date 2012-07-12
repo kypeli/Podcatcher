@@ -44,6 +44,7 @@ namespace Podcatcher
                     downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
                     break;
 
+                // Episode is playable -> Play episode.
                 case PodcastEpisodeModel.EpisodeStateVal.Playable:
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                     m_episodeModel.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
