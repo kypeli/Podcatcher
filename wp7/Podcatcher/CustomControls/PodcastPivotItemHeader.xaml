@@ -11,8 +11,8 @@
 	</UserControl.Resources>
 
 	<Grid x:Name="LayoutRoot" Background="Transparent">
-			<StackPanel HorizontalAlignment="Left" Height="Auto" VerticalAlignment="Top" Width="448">
-				<TextBlock x:Name="PivotHeader" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" HorizontalAlignment="Left" Height="Auto" Margin="0" Width="448"/>
+			<StackPanel HorizontalAlignment="Left" Height="Auto" VerticalAlignment="Top">
+				<TextBlock x:Name="PivotHeader" Style="{StaticResource PhoneTextExtraLargeStyle}" HorizontalAlignment="Left" Height="Auto" Margin="0" Width="448"/>
 				<TextBlock x:Name="PivotAltLine" TextWrapping="Wrap" Style="{StaticResource PhoneTextSubtleStyle}" HorizontalAlignment="Left" Height="Auto" Width="448" Margin="0" />
 			</StackPanel>
 	</Grid>
