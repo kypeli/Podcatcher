@@ -47,5 +47,20 @@ namespace Podcatcher
 
             PodcastPlayerStarted(this, new EventArgs());
         }
+
+        private void rewButtonClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void playButtonClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ffButtonClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
