@@ -48,7 +48,7 @@ namespace Podcatcher
                 case PodcastEpisodeModel.EpisodeStateVal.Playable:
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                     m_episodeModel.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
-                    player.play(m_episodeModel);
+                    player.playEpisode(m_episodeModel);
                     break;
             }
         }
