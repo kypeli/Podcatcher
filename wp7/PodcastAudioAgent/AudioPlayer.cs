@@ -123,12 +123,10 @@ namespace PodcastAudioAgent
                 case UserAction.FastForward:
                     player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 10);
                     Debug.WriteLine("Player fast forward. New position: " + player.Position);
-//                    player.FastForward();
                     break;
                 case UserAction.Rewind:
                     player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 10);
                     Debug.WriteLine("Player rewind. New position: " + player.Position);
-//                    player.Rewind();
                     break;
                 case UserAction.Seek:
                     player.Position = (TimeSpan)param;
