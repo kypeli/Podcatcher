@@ -73,6 +73,7 @@ namespace Podcatcher
             }
             
             m_currentEpisode = episodeModel;
+            m_appSettings.Remove("episodeId");
             m_appSettings.Add("episodeId", m_currentEpisode.PodcastId);
 
             setupPlayerUIContent(m_currentEpisode);
@@ -113,7 +114,6 @@ namespace Podcatcher
                     break;
 
                 case PlayState.Paused:
-                case PlayState.Stopped:
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Paused;
@@ -121,6 +121,11 @@ namespace Podcatcher
                     // Clear CompositionTarget.Rendering 
                     CompositionTarget.Rendering -= OnCompositionTargetRendering;
                     break;
+                case PlayState.Stopped:
+                case PlayState.Shutdown:
+                    m_appSettings.Remove("episodeId");
+                    break;
+
             }
         }
 
@@ -184,6 +189,11 @@ namespace Podcatcher
         {
             if (!settingSliderFromPlay)
             {
+                if (e.NewValue <= 0.1)
+                {
+                    return;
+                }
+
                 AudioTrack audioTrack = null;
                 TimeSpan duration = TimeSpan.Zero;
 
