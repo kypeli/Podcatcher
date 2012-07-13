@@ -22,14 +22,14 @@
     			</Button>
 
                 <!-- Play button-->
-    			<Button HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" >
+    			<Button HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Click="playButtonClicked">
     				<StackPanel>
-    					<Image Source="..\Images\play.png" Stretch="Fill" />
+    					<Image x:Name="PlayButtonImage" Source="..\Images\play.png" Stretch="Fill" />
     				</StackPanel>
     			</Button>
 
                 <!-- Next button-->
-    			<Button HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" >
+    			<Button HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Transparent" Click="ffButtonClicked">
     				<StackPanel>
     					<Image Source="..\Images\ff.png" Stretch="Fill" />
     				</StackPanel>
