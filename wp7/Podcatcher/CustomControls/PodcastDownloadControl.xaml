@@ -21,8 +21,8 @@
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock Text="{Binding EpisodeStatusText}"  Style="{StaticResource PhoneTextTitle3Style}" Width="147" VerticalAlignment="Center" Height="Auto" Margin="12,0,5,0"/>
-            <TextBlock x:Name="DownloadProgressText" Text="{Binding DownloadPercentage}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto"/>
-            <ProgressBar Width="220" Value="{Binding DownloadPercentage}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto" ValueChanged="ProgressBar_ValueChanged" />
+            <TextBlock x:Name="DownloadProgressText" Text="{Binding DownloadPercentage}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto" Width="61"/>
+            <ProgressBar Width="205" Value="{Binding DownloadPercentage}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto" ValueChanged="ProgressBar_ValueChanged" />
         </StackPanel>
     </Grid>
 </UserControl>

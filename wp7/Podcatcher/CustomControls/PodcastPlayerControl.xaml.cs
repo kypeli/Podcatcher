@@ -34,6 +34,7 @@ namespace Podcatcher
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
+            
         }
 
         public static PodcastPlayerControl getIntance()
@@ -69,12 +70,20 @@ namespace Podcatcher
             {
                 case PlayState.Playing:
                     // Player is playing
+                    Debug.WriteLine("Podcast player is playing...");
                     this.PlayButtonImage.Source = m_pauseButtonBitmap;
+                    this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("mm\\:ss");
+
+                    // Set CompositionTarget.Rendering handler to update player position
+                    CompositionTarget.Rendering += OnCompositionTargetRendering;
                     break;
 
                 case PlayState.Paused:
                 case PlayState.Stopped:
                     // Player is on pause
+                    Debug.WriteLine("Podcast player is paused...");
+                    // Clear CompositionTarget.Rendering 
+                    CompositionTarget.Rendering -= OnCompositionTargetRendering;
                     this.PlayButtonImage.Source = m_playButtonBitmap;
                     break;
             }
@@ -83,16 +92,24 @@ namespace Podcatcher
 
         private void rewButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-
+            BackgroundAudioPlayer.Instance.Rewind();
         }
 
         private void playButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                BackgroundAudioPlayer.Instance.Pause();
+            }
+            else
+            {
+                BackgroundAudioPlayer.Instance.Play();
+            }
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-
+            BackgroundAudioPlayer.Instance.FastForward();
         }
 
         private AudioTrack getAudioTrackForEpisode(PodcastEpisodeModel m_currentEpisode)
@@ -102,6 +119,26 @@ namespace Podcatcher
                         m_currentEpisode.PodcastSubscription.PodcastName,
                         "",
                         new Uri(m_currentEpisode.PodcastSubscription.PodcastLogoLocalLocation, UriKind.Relative));
+        }
+
+        void OnCompositionTargetRendering(object sender, EventArgs args)
+        {
+            TimeSpan position = TimeSpan.Zero;
+            TimeSpan duration = TimeSpan.Zero;
+
+            duration = BackgroundAudioPlayer.Instance.Track.Duration;
+            position = BackgroundAudioPlayer.Instance.Position;
+
+            this.CurrentPositionText.Text = position.ToString("mm\\:ss");
+
+            if (duration.Ticks > 0)
+            {
+                this.PositionSlider.Value = (double)position.Ticks / duration.Ticks;
+            }
+            else
+            {
+                this.PositionSlider.Value = 0;
+            }
         }
     }
 }

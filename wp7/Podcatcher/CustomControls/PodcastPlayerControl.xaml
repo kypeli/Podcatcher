@@ -12,7 +12,7 @@
     <Grid x:Name="LayoutRoot">
     	<Grid x:Name="PlayingLayout" Margin="0,0,8,8">
     		<Image x:Name="PodcastLogo" Margin="0,45,0,0" HorizontalAlignment="Center" Width="300" Height="300" VerticalAlignment="Top"/>
-    		<TextBlock x:Name="PodcastEpisodeName" Margin="0,0,0,96" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108" HorizontalAlignment="Center" Width="425"/>
+    		<TextBlock x:Name="PodcastEpisodeName" Margin="23,0,24,111" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108" VerticalAlignment="Bottom"/>
     		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48">
                 <!-- Rew button-->
                 <Image Margin="0,0,40,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" />
@@ -20,6 +20,11 @@
                 <Image Margin="0,0,40,0" x:Name="PlayButtonImage" Source="/Images/play.png" Tap="playButtonClicked"/>
                 <!-- Next button-->
                 <Image Source="/Images/ff.png" Tap="ffButtonClicked"/>                
+    		</StackPanel>
+    		<StackPanel Height="100" Margin="33,0,24,52" VerticalAlignment="Bottom" Orientation="Horizontal">
+    			<TextBlock x:Name="CurrentPositionText" TextWrapping="Wrap" VerticalAlignment="Center" Width="80" Margin="0,0,10,0"/>
+    			<Slider x:Name="PositionSlider" Width="247" VerticalAlignment="Center" RenderTransformOrigin="0.498,0.607"/>
+    			<TextBlock x:Name="TotalDurationText" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" Width="80" Margin="10,0,0,0"/>
     		</StackPanel>
     	</Grid>
     	<Grid x:Name="NoPlayingLayout" Margin="0,0,8,8" d:IsHidden="True">

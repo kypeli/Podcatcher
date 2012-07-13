@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
+using System.Diagnostics;
 
 namespace PodcastAudioAgent
 {
@@ -70,6 +71,7 @@ namespace PodcastAudioAgent
                 case PlayState.Stopped:
                     break;
                 case PlayState.Paused:
+                    player.Pause();
                     break;
                 case PlayState.Playing:
                     break;
@@ -119,10 +121,14 @@ namespace PodcastAudioAgent
                     player.Pause();
                     break;
                 case UserAction.FastForward:
-                    player.FastForward();
+                    player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 10);
+                    Debug.WriteLine("Player fast forward. New position: " + player.Position);
+//                    player.FastForward();
                     break;
                 case UserAction.Rewind:
-                    player.Rewind();
+                    player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 10);
+                    Debug.WriteLine("Player rewind. New position: " + player.Position);
+//                    player.Rewind();
                     break;
                 case UserAction.Seek:
                     player.Position = (TimeSpan)param;
