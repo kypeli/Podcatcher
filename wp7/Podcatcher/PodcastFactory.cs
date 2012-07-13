@@ -95,12 +95,20 @@ namespace Podcatcher
                 if (pubDate > latestLocalEpisodeTimestamp)
                 {
                     PodcastEpisodeModel episodeModel = new PodcastEpisodeModel();
+
+                    // Get the RSS mandatory fields. 
                     episodeModel.EpisodeName = episode.Element("title").Value;
                     episodeModel.EpisodeDescription = episode.Element("description").Value;
                     episodeModel.EpisodePublished = pubDate;
                     episodeModel.EpisodeDownloadUri = episode.Element("enclosure").Attribute("url").Value;
                     episodeModel.EpisodeDownloadSize = Int64.Parse(episode.Element("enclosure").Attribute("length").Value);
-                    episodeModel.EpisodeRunningTime = episode.Element(itunes +"duration").Value;
+
+                    // Get the optional fields.
+                    XElement runningTimeElement = episode.Element(itunes + "duration");
+                    if (runningTimeElement != null)
+                    {
+                        episodeModel.EpisodeRunningTime = runningTimeElement.Value;
+                    }
 
                     episodes.Add(episodeModel);
                 }
