@@ -143,6 +143,20 @@ namespace Podcatcher
             return new List<PodcastEpisodeModel>(query);
         }
 
+        public PodcastEpisodeModel episodeForEpisodeId(int episodeId)
+        {
+            PodcastEpisodeModel model = (from PodcastEpisodeModel episode in Episodes
+                         where episode.EpisodeId == episodeId
+                         select episode).FirstOrDefault();
+
+            if (model == null)
+            {
+                Debug.WriteLine("Warning: Podcast episode with id {0} returned null!", episodeId);
+            }
+
+            return model;
+        }
+
         public void setEpisodeState(PodcastEpisodeModel episode, PodcastEpisodeModel.EpisodeStateVal episodeState)
         {
             episode.EpisodeState = episodeState;

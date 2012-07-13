@@ -14,6 +14,7 @@ using Microsoft.Phone.Controls;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
 using Microsoft.Phone.BackgroundAudio;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -34,7 +35,21 @@ namespace Podcatcher
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
-            
+
+            if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                showPlayerLayout();
+            }
+
+            m_appSettings = IsolatedStorageSettings.ApplicationSettings;
+            if (m_appSettings.Contains("episodeId"))
+            {
+                int episodeId = (int)m_appSettings["episodeId"];
+                m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+                
+                setupPlayerUIContent(m_currentEpisode);
+            }
+
         }
 
         public static PodcastPlayerControl getIntance()
@@ -49,24 +64,38 @@ namespace Podcatcher
         private BitmapImage m_pauseButtonBitmap;
         private static PodcastEpisodeModel m_currentEpisode = null;
         private bool settingSliderFromPlay;
+        private IsolatedStorageSettings m_appSettings;
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
             if (m_currentEpisode != null) { 
                 m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
             }
+            
             m_currentEpisode = episodeModel;
+            m_appSettings.Add("episodeId", m_currentEpisode.PodcastId);
 
-            this.NoPlayingLayout.Visibility = Visibility.Collapsed;
-            this.PlayingLayout.Visibility = Visibility.Visible;
-            this.PodcastLogo.Source = m_currentEpisode.PodcastSubscription.PodcastLogo;
-            this.PodcastEpisodeName.Text = m_currentEpisode.EpisodeName;
+            setupPlayerUIContent(m_currentEpisode);
+            showPlayerLayout();
+
 
             BackgroundAudioPlayer.Instance.Track = getAudioTrackForEpisode(m_currentEpisode);
             BackgroundAudioPlayer.Instance.Play();
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
 
             PodcastPlayerStarted(this, new EventArgs());
+        }
+
+        private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
+        {
+            this.PodcastLogo.Source = currentEpisode.PodcastSubscription.PodcastLogo;
+            this.PodcastEpisodeName.Text = currentEpisode.EpisodeName;
+        }
+
+        private void showPlayerLayout()
+        {
+            this.NoPlayingLayout.Visibility = Visibility.Collapsed;
+            this.PlayingLayout.Visibility = Visibility.Visible;
         }
 
         void PlayStateChanged(object sender, EventArgs e)

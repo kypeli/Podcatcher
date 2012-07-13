@@ -28,7 +28,7 @@ namespace Podcatcher.ViewModels
 
         private int m_episodeId;
         [Column(Storage = "m_episodeId", IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true)]
-        private int EpisodeId
+        public int EpisodeId
         {
             get { return m_episodeId; }
             set { m_episodeId = value; }
@@ -300,6 +300,12 @@ namespace Podcatcher.ViewModels
                 byte[] buffer = new byte[4096];
                 using (IsolatedStorageFileStream fileStream = episodeStore.OpenFile(EpisodeFile, FileMode.CreateNew))
                 {
+                    if (fileStream == null)
+                    {
+                        Debug.WriteLine("ERROR: Isolated storage file stream is NULL!");
+                        return;
+                    }
+
                     int bytesRead = 0;
                     while ((bytesRead = m_downloadStream.Read(buffer, 0, 4096)) > 0)
                     {
