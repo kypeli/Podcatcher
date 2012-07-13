@@ -128,8 +128,10 @@ namespace Podcatcher.ViewModels
             Idle,
             Queued,
             Downloading,
+            Saving,
             Playable,
-            Playing
+            Playing,
+            Paused
         };
 
         private EpisodeStateVal m_episodeState;
@@ -159,6 +161,9 @@ namespace Podcatcher.ViewModels
                     case EpisodeStateVal.Downloading:
                         statusText = "Downloading...";
                         break;
+                    case EpisodeStateVal.Saving:
+                        statusText = "Saving...";
+                        break;
                     case EpisodeStateVal.Idle:
                         statusText = "";
                         break;
@@ -170,6 +175,9 @@ namespace Podcatcher.ViewModels
                         break;
                     case EpisodeStateVal.Playing:
                         statusText = "Playing";
+                        break;
+                    case EpisodeStateVal.Paused:
+                        statusText = "Paused";
                         break;
                 }
 
@@ -203,8 +211,7 @@ namespace Podcatcher.ViewModels
         /************************************* Public implementations *******************************/
         public PodcastEpisodeModel()
         {
-//            EpisodeState = EpisodeStateVal.Idle;
-
+            this.OnPodcastEpisodeFinishedDownloading += new PodcastEpisodesHandler(PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading);
         }
 
         public void downloadEpisode()
@@ -256,27 +263,10 @@ namespace Podcatcher.ViewModels
                 return;
             }
 
-            Stream downloadStream = e.Result;
-            string episodeFileName = localEpisodeFileName();
+            m_downloadStream = e.Result;
 
-            // TODO: Do this in a thread.
-            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
-            {
-                byte[] buffer = new byte[1024];
-                using(IsolatedStorageFileStream fileStream = episodeStore.OpenFile(episodeFileName, FileMode.CreateNew)) 
-                {
-                    int bytesRead = 0;
-                    while ((bytesRead = downloadStream.Read(buffer, 0, 1024)) > 0)
-                    {
-                        fileStream.Write(buffer, 0, bytesRead);
-                    }
-                }
-            }
+            EpisodeFile = localEpisodeFileName();
 
-            EpisodeFile = episodeFileName;
-            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateVal.Playable);
-
-            Debug.WriteLine("Episode written to disk. Filename: {0}", episodeFileName);
             OnPodcastEpisodeFinishedDownloading(this, m_eventArgs);
         }
 
@@ -292,11 +282,46 @@ namespace Podcatcher.ViewModels
             return localPodcastEpisodeFilename;
         }
 
+        private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
+        {
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.DoWork += new DoWorkEventHandler(savePodcastAsync);
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(SavePodcastEpisodeCompleted);
+            bw.RunWorkerAsync();
+            EpisodeState = EpisodeStateVal.Saving;
+        }
+
+        void savePodcastAsync(object sender, DoWorkEventArgs e)
+        {
+            Debug.WriteLine("Writing episode to disk.");
+
+            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                byte[] buffer = new byte[4096];
+                using (IsolatedStorageFileStream fileStream = episodeStore.OpenFile(EpisodeFile, FileMode.CreateNew))
+                {
+                    int bytesRead = 0;
+                    while ((bytesRead = m_downloadStream.Read(buffer, 0, 1024)) > 0)
+                    {
+                        fileStream.Write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+        }
+
+        void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Debug.WriteLine("Episode written to disk. Filename: {0}", EpisodeFile);
+            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateVal.Playable);
+            m_downloadStream = null;
+        }
+
         private PodcastEpisodesArgs m_eventArgs = new PodcastEpisodesArgs();
         #endregion
 
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
+        private Stream m_downloadStream;
         private void NotifyPropertyChanged(String propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
