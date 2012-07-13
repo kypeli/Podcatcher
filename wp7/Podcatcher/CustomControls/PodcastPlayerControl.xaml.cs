@@ -48,6 +48,7 @@ namespace Podcatcher
         private BitmapImage m_playButtonBitmap;
         private BitmapImage m_pauseButtonBitmap;
         private static PodcastEpisodeModel m_currentEpisode;
+        private bool settingSliderFromPlay;
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
@@ -131,6 +132,7 @@ namespace Podcatcher
 
             this.CurrentPositionText.Text = position.ToString("mm\\:ss");
 
+            settingSliderFromPlay = true;
             if (duration.Ticks > 0)
             {
                 this.PositionSlider.Value = (double)position.Ticks / duration.Ticks;
@@ -138,6 +140,34 @@ namespace Podcatcher
             else
             {
                 this.PositionSlider.Value = 0;
+            }
+            settingSliderFromPlay = false;
+        }
+
+        private void PositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!settingSliderFromPlay)
+            {
+                AudioTrack audioTrack = null;
+                TimeSpan duration = TimeSpan.Zero;
+
+                try
+                {
+                    // Sometimes these property accesses will raise exceptions
+                    audioTrack = BackgroundAudioPlayer.Instance.Track;
+
+                    if (audioTrack != null)
+                        duration = audioTrack.Duration;
+                }
+                catch
+                {
+                }
+
+                if (audioTrack == null)
+                    return;
+
+                long ticks = (long)(e.NewValue * duration.Ticks);
+                BackgroundAudioPlayer.Instance.Position = new TimeSpan(ticks);
             }
         }
     }

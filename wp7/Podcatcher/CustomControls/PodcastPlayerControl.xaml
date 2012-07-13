@@ -15,15 +15,22 @@
     		<TextBlock x:Name="PodcastEpisodeName" Margin="23,0,24,111" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108" VerticalAlignment="Bottom"/>
     		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48">
                 <!-- Rew button-->
-                <Image Margin="0,0,40,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" />
+                <Image Margin="0,0,20,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" Width="73" />
                 <!-- Play button-->
-                <Image Margin="0,0,40,0" x:Name="PlayButtonImage" Source="/Images/play.png" Tap="playButtonClicked"/>
+                <Image Margin="0,0,20,0" x:Name="PlayButtonImage" Source="/Images/play.png" Tap="playButtonClicked" Width="73"/>
                 <!-- Next button-->
-                <Image Source="/Images/ff.png" Tap="ffButtonClicked"/>                
+                <Image Source="/Images/ff.png" Tap="ffButtonClicked" Width="78"/>                
     		</StackPanel>
     		<StackPanel Height="100" Margin="33,0,24,52" VerticalAlignment="Bottom" Orientation="Horizontal">
     			<TextBlock x:Name="CurrentPositionText" TextWrapping="Wrap" VerticalAlignment="Center" Width="80" Margin="0,0,10,0"/>
-    			<Slider x:Name="PositionSlider" Width="247" VerticalAlignment="Center" RenderTransformOrigin="0.498,0.607"/>
+                <Slider Minimum="0" Maximum="1"
+                        SmallChange="0.1"
+                        LargeChange="0.1"
+                        x:Name="PositionSlider" 
+                        Width="247" 
+                        VerticalAlignment="Center" 
+                        RenderTransformOrigin="0.498,0.607" 
+                        ValueChanged="PositionSlider_ValueChanged" />
     			<TextBlock x:Name="TotalDurationText" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" Width="80" Margin="10,0,0,0"/>
     		</StackPanel>
     	</Grid>
