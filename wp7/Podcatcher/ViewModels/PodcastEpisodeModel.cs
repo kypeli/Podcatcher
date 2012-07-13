@@ -301,7 +301,7 @@ namespace Podcatcher.ViewModels
                 using (IsolatedStorageFileStream fileStream = episodeStore.OpenFile(EpisodeFile, FileMode.CreateNew))
                 {
                     int bytesRead = 0;
-                    while ((bytesRead = m_downloadStream.Read(buffer, 0, 1024)) > 0)
+                    while ((bytesRead = m_downloadStream.Read(buffer, 0, 4096)) > 0)
                     {
                         fileStream.Write(buffer, 0, bytesRead);
                     }

@@ -47,11 +47,14 @@ namespace Podcatcher
         private static PodcastPlayerControl m_instance;
         private BitmapImage m_playButtonBitmap;
         private BitmapImage m_pauseButtonBitmap;
-        private static PodcastEpisodeModel m_currentEpisode;
+        private static PodcastEpisodeModel m_currentEpisode = null;
         private bool settingSliderFromPlay;
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
+            if (m_currentEpisode != null) { 
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
+            }
             m_currentEpisode = episodeModel;
 
             this.NoPlayingLayout.Visibility = Visibility.Collapsed;

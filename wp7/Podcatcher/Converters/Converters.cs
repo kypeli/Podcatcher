@@ -56,6 +56,9 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodeStateVal.Playing:
                     buttonEnabled = false;
                     break;
+                case PodcastEpisodeModel.EpisodeStateVal.Paused:
+                    buttonEnabled = false;
+                    break;
             }
 
             return buttonEnabled;

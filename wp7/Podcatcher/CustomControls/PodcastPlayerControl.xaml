@@ -30,7 +30,7 @@
                         Width="247" 
                         VerticalAlignment="Center" 
                         RenderTransformOrigin="0.498,0.607" 
-                        ValueChanged="PositionSlider_ValueChanged" />
+                        ValueChanged="PositionSlider_ValueChanged" IsTabStop="False" />
     			<TextBlock x:Name="TotalDurationText" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" Width="80" Margin="5,0,0,0" Text="00:00:00"/>
     		</StackPanel>
     	</Grid>
