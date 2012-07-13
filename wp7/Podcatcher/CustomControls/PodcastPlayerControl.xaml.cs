@@ -71,7 +71,6 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    this.PlayButtonImage.Source = m_pauseButtonBitmap;
                     this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("mm\\:ss");
 
                     // Set CompositionTarget.Rendering handler to update player position
@@ -84,7 +83,6 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is paused...");
                     // Clear CompositionTarget.Rendering 
                     CompositionTarget.Rendering -= OnCompositionTargetRendering;
-                    this.PlayButtonImage.Source = m_playButtonBitmap;
                     break;
             }
         }
@@ -100,10 +98,12 @@ namespace Podcatcher
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
                 BackgroundAudioPlayer.Instance.Pause();
+                this.PlayButtonImage.Source = m_playButtonBitmap;
             }
             else
             {
                 BackgroundAudioPlayer.Instance.Play();
+                this.PlayButtonImage.Source = m_pauseButtonBitmap;
             }
         }
 
