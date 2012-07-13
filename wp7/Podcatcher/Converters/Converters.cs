@@ -50,6 +50,9 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodeStateVal.Downloading:
                     buttonEnabled = false;
                     break;
+                case PodcastEpisodeModel.EpisodeStateVal.Saving:
+                    buttonEnabled = false;
+                    break;
                 case PodcastEpisodeModel.EpisodeStateVal.Playing:
                     buttonEnabled = false;
                     break;
@@ -82,11 +85,17 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodeStateVal.Downloading:
                     buttonText = @"Downloading";
                     break;
+                case PodcastEpisodeModel.EpisodeStateVal.Saving:
+                    buttonText = @"Saving...";
+                    break;
                 case PodcastEpisodeModel.EpisodeStateVal.Playable:
                     buttonText = @"Play";
                     break;
                 case PodcastEpisodeModel.EpisodeStateVal.Playing:
                     buttonText = @"Playing";
+                    break;
+                case PodcastEpisodeModel.EpisodeStateVal.Paused:
+                    buttonText = @"Paused";
                     break;
             }
 
@@ -106,9 +115,17 @@ namespace Podcatcher.Converters
             Visibility episodeContextMenuVisible = Visibility.Collapsed;
 
             PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
-            if (episodeState == PodcastEpisodeModel.EpisodeStateVal.Playable)
+            switch (episodeState)
             {
-                episodeContextMenuVisible = Visibility.Visible;
+                case PodcastEpisodeModel.EpisodeStateVal.Playable:
+                    episodeContextMenuVisible = Visibility.Visible;
+                    break;
+
+// TODO: We need to handle player "Stop" so we can release the episode and delete it. 
+/*                case PodcastEpisodeModel.EpisodeStateVal.Paused:
+                    episodeContextMenuVisible = Visibility.Visible;
+                    break;
+ */ 
             }
 
             return episodeContextMenuVisible;

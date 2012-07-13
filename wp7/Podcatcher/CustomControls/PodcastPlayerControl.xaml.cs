@@ -20,7 +20,7 @@ namespace Podcatcher
     public partial class PodcastPlayerControl : UserControl
     {
         public event EventHandler PodcastPlayerStarted;
-
+        
         public PodcastPlayerControl()
         {
             InitializeComponent();
@@ -61,6 +61,7 @@ namespace Podcatcher
 
             BackgroundAudioPlayer.Instance.Track = getAudioTrackForEpisode(m_currentEpisode);
             BackgroundAudioPlayer.Instance.Play();
+            this.PlayButtonImage.Source = m_pauseButtonBitmap;
 
             PodcastPlayerStarted(this, new EventArgs());
         }
@@ -72,7 +73,8 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("mm\\:ss");
+                    this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
+                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
 
                     // Set CompositionTarget.Rendering handler to update player position
                     CompositionTarget.Rendering += OnCompositionTargetRendering;
@@ -82,6 +84,8 @@ namespace Podcatcher
                 case PlayState.Stopped:
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused...");
+                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Paused;
+
                     // Clear CompositionTarget.Rendering 
                     CompositionTarget.Rendering -= OnCompositionTargetRendering;
                     break;
@@ -130,7 +134,7 @@ namespace Podcatcher
             duration = BackgroundAudioPlayer.Instance.Track.Duration;
             position = BackgroundAudioPlayer.Instance.Position;
 
-            this.CurrentPositionText.Text = position.ToString("mm\\:ss");
+            this.CurrentPositionText.Text = position.ToString("hh\\:mm\\:ss");
 
             settingSliderFromPlay = true;
             if (duration.Ticks > 0)

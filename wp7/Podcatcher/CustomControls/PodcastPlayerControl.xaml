@@ -22,7 +22,7 @@
                 <Image Source="/Images/ff.png" Tap="ffButtonClicked" Width="78"/>                
     		</StackPanel>
     		<StackPanel Height="100" Margin="33,0,24,52" VerticalAlignment="Bottom" Orientation="Horizontal">
-    			<TextBlock x:Name="CurrentPositionText" TextWrapping="Wrap" VerticalAlignment="Center" Width="80" Margin="0,0,10,0"/>
+    			<TextBlock x:Name="CurrentPositionText" TextWrapping="Wrap" VerticalAlignment="Center" Width="80" Margin="0,0,4,0" Text="00:00:00"/>
                 <Slider Minimum="0" Maximum="1"
                         SmallChange="0.1"
                         LargeChange="0.1"
@@ -31,7 +31,7 @@
                         VerticalAlignment="Center" 
                         RenderTransformOrigin="0.498,0.607" 
                         ValueChanged="PositionSlider_ValueChanged" />
-    			<TextBlock x:Name="TotalDurationText" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" Width="80" Margin="10,0,0,0"/>
+    			<TextBlock x:Name="TotalDurationText" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" Width="80" Margin="5,0,0,0" Text="00:00:00"/>
     		</StackPanel>
     	</Grid>
     	<Grid x:Name="NoPlayingLayout" Margin="0,0,8,8" d:IsHidden="True">
