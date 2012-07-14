@@ -6,14 +6,13 @@
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    d:DesignHeight="480" Height="150" Width="421">
+    Foreground="{StaticResource PhoneForegroundBrush}" Width="421">
     
     <Grid x:Name="LayoutRoot" Margin="15,0,8,0">
     	<StackPanel Margin="8" Orientation="Horizontal">
-    		<Image Source="{Binding PodcastLogoUrl}" Height="80" Width="80" VerticalAlignment="Top"/>
-    		<StackPanel Width="293" Margin="9,0,0,0">
-    			<TextBlock Text="{Binding PodcastName}"  TextWrapping="Wrap" Width="273" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="68" HorizontalAlignment="Left" Margin="12,0,0,0" FontWeight="Bold"/>
+    		<Image Source="{Binding PodcastLogoUrl}" Height="100" Width="100" VerticalAlignment="Top"/>
+    		<StackPanel Width="273" Margin="9,0,0,0">
+    			<TextBlock Text="{Binding PodcastName}"  TextWrapping="Wrap" Width="253" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,0,0,0" FontWeight="Bold"/>
     			<Button Content="Subscribe" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Click" />
     		</StackPanel>
     	</StackPanel>
