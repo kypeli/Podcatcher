@@ -82,6 +82,12 @@
     <Compile Include="CustomControls\PodcastPlayerControl.xaml.cs">
       <DependentUpon>PodcastPlayerControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\PodcastSearchControl.xaml.cs">
+      <DependentUpon>PodcastSearchControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\PodcastSearchResultControl.xaml.cs">
+      <DependentUpon>PodcastSearchResultControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\PopularPodcastsControl.xaml.cs">
       <DependentUpon>PopularPodcastsControl.xaml</DependentUpon>
     </Compile>
@@ -121,6 +127,14 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
     </Page>
     <Page Include="CustomControls\PodcastPlayerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CustomControls\PodcastSearchControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CustomControls\PodcastSearchResultControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

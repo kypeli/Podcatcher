@@ -36,11 +36,7 @@
 
                     <!-- Search podcasts pivot item -->
                     <controls:PivotItem Header="search podcast">
-                        <StackPanel>
-                            <TextBlock Height="Auto" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Search podcast by keyword" Margin="0,30,8,0" TextWrapping="Wrap" />
-                            <TextBox Height="71" Name="searchByKeywordInput" Text="" d:LayoutOverrides="HorizontalMargin" />
-                            <Button Content="Search" Height="71" Width="152" HorizontalAlignment="Right" Margin="0,0,8,0" />
-                        </StackPanel>
+                        <pc:PodcastSearchControl/>
                     </controls:PivotItem>
                 
                     <!-- Add podcasts manually pivot item -->
