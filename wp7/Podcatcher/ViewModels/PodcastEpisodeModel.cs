@@ -135,7 +135,7 @@ namespace Podcatcher.ViewModels
         };
 
         private EpisodeStateVal m_episodeState;
-        [Column(Storage = "m_episodeState", DbType = "int", CanBeNull = true)]
+        [Column(Storage = "m_episodeState", DbType = "int", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
         public EpisodeStateVal EpisodeState
         {
             get 

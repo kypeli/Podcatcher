@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Windows.Media.Imaging;
 using Microsoft.Phone.BackgroundAudio;
 using System.IO.IsolatedStorage;
+using System.Windows.Threading;
 
 namespace Podcatcher
 {
@@ -25,9 +26,8 @@ namespace Podcatcher
         public PodcastPlayerControl()
         {
             InitializeComponent();
-   
-            this.NoPlayingLayout.Visibility = Visibility.Visible;
-            this.PlayingLayout.Visibility = Visibility.Collapsed;
+
+            showNoPlayerLayout();
 
             m_instance = this;
 
@@ -35,18 +35,29 @@ namespace Podcatcher
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer half a every second.
+            m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
 
             if (BackgroundAudioPlayer.Instance.Track != null)
             {
                 showPlayerLayout();
             }
 
+            // If we have an episodeId stored in local cache, this means we have that episode playing.
+            // Hence, here we need to reload the episode data from the SQL. 
             m_appSettings = IsolatedStorageSettings.ApplicationSettings;
             if (m_appSettings.Contains("episodeId"))
             {
                 int episodeId = (int)m_appSettings["episodeId"];
                 m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-                
+
+                if (m_currentEpisode == null)
+                {
+                    // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
+                    m_appSettings.Remove("episodeId");
+                    return;
+                }
+
                 setupPlayerUIContent(m_currentEpisode);
             }
 
@@ -65,6 +76,7 @@ namespace Podcatcher
         private static PodcastEpisodeModel m_currentEpisode = null;
         private bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
+        private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
@@ -93,6 +105,12 @@ namespace Podcatcher
             this.PodcastEpisodeName.Text = currentEpisode.EpisodeName;
         }
 
+        private void showNoPlayerLayout()
+        {
+            this.NoPlayingLayout.Visibility = Visibility.Visible;
+            this.PlayingLayout.Visibility = Visibility.Collapsed;
+        }
+
         private void showPlayerLayout()
         {
             this.NoPlayingLayout.Visibility = Visibility.Collapsed;
@@ -109,8 +127,7 @@ namespace Podcatcher
                     this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
 
-                    // Set CompositionTarget.Rendering handler to update player position
-                    CompositionTarget.Rendering += OnCompositionTargetRendering;
+                    m_screenUpdateTimer.Start();
                     break;
 
                 case PlayState.Paused:
@@ -119,10 +136,12 @@ namespace Podcatcher
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Paused;
 
                     // Clear CompositionTarget.Rendering 
-                    CompositionTarget.Rendering -= OnCompositionTargetRendering;
+                    m_screenUpdateTimer.Stop();
                     break;
+
                 case PlayState.Stopped:
                 case PlayState.Shutdown:
+                    m_screenUpdateTimer.Stop();
                     m_appSettings.Remove("episodeId");
                     break;
 
@@ -163,7 +182,7 @@ namespace Podcatcher
                         new Uri(m_currentEpisode.PodcastSubscription.PodcastLogoLocalLocation, UriKind.Relative));
         }
 
-        void OnCompositionTargetRendering(object sender, EventArgs args)
+        void m_screenUpdateTimer_Tick(object sender, EventArgs e)
         {
             TimeSpan position = TimeSpan.Zero;
             TimeSpan duration = TimeSpan.Zero;
