@@ -103,7 +103,6 @@ namespace Podcatcher
                     episodeModel.EpisodeDownloadUri = episode.Element("enclosure").Attribute("url").Value;
                     episodeModel.EpisodeDownloadSize = Int64.Parse(episode.Element("enclosure").Attribute("length").Value);
 
-                    // Get the optional fields.
                     XElement runningTimeElement = episode.Element(itunes + "duration");
                     if (runningTimeElement != null)
                     {

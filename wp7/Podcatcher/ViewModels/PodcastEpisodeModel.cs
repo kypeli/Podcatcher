@@ -205,25 +205,9 @@ namespace Podcatcher.ViewModels
         
         #endregion
 
-        public event PodcastEpisodesHandler OnPodcastEpisodeStartedDownloading;
-        public event PodcastEpisodesHandler OnPodcastEpisodeFinishedDownloading;
-
         /************************************* Public implementations *******************************/
         public PodcastEpisodeModel()
         {
-            this.OnPodcastEpisodeFinishedDownloading += new PodcastEpisodesHandler(PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading);
-        }
-
-        public void downloadEpisode()
-        {
-            OnPodcastEpisodeStartedDownloading(this, m_eventArgs);
-
-            Debug.WriteLine("Starting download episode ({0}): {1}...", PodcastSubscription.PodcastName, EpisodeName);
-
-            WebClient wc = new WebClient();
-            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_PodcastDownloadCompleted);
-            wc.OpenReadAsync(new Uri(m_episodeDownloadUrl));
         }
 
         public void deleteDownloadedEpisode()
@@ -247,41 +231,6 @@ namespace Podcatcher.ViewModels
 
         /************************************* Private implementations *******************************/
         #region private
-        private void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            DownloadPercentage = e.ProgressPercentage;
-        }
-
-        private void wc_PodcastDownloadCompleted(object sender, OpenReadCompletedEventArgs e)
-        {
-            Debug.WriteLine("Finished downloading episode ({0}): {1}", PodcastSubscription.PodcastName, EpisodeName);
-
-            if (e.Error != null)
-            {
-                Debug.WriteLine("ERROR: Web error: " + e.ToString());
-                OnPodcastEpisodeFinishedDownloading(this, m_eventArgs);
-                return;
-            }
-
-            m_downloadStream = e.Result;
-
-            EpisodeFile = localEpisodeFileName();
-
-            OnPodcastEpisodeFinishedDownloading(this, m_eventArgs);
-        }
-
-        private string localEpisodeFileName()
-        {
-            // Parse the filename of the logo from the remote URL.
-            string localPath = new Uri(m_episodeDownloadUrl).LocalPath;
-            string podcastEpisodeFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
-
-            string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + @"/" + podcastEpisodeFilename;
-            Debug.WriteLine("Found episode filename: " + localPodcastEpisodeFilename);
-
-            return localPodcastEpisodeFilename;
-        }
-
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
         {
             BackgroundWorker bw = new BackgroundWorker();
@@ -322,7 +271,6 @@ namespace Podcatcher.ViewModels
             m_downloadStream = null;
         }
 
-        private PodcastEpisodesArgs m_eventArgs = new PodcastEpisodesArgs();
         #endregion
 
         #region propertyChanged

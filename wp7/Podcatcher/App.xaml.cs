@@ -8,7 +8,7 @@ namespace Podcatcher
     public partial class App : Application
     {
         public const string PODCAST_ICON_DIR = "PodcastIcons";
-        public const string PODCAST_DL_DIR   = "PodcastEpisodes";
+        public const string PODCAST_DL_DIR   = "shared/transfers/";
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
@@ -49,6 +49,7 @@ namespace Podcatcher
                 // and consume battery power when the user is not using the phone.
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
+
         }
 
         // Code to execute when the application is launching (eg, from Start)
