@@ -80,7 +80,8 @@ namespace Podcatcher
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
-            if (m_currentEpisode != null) { 
+            if (m_currentEpisode != null) {
+                saveEpisodePlayPosition(m_currentEpisode);
                 m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
             }
             
@@ -91,12 +92,57 @@ namespace Podcatcher
             setupPlayerUIContent(m_currentEpisode);
             showPlayerLayout();
 
+            if (m_currentEpisode.SavedPlayPos > 0)
+            {
+                askForContinueEpisodePlaying();
+            }
+            else
+            {
+                startPlayback();
+            }
 
+        }
+
+        private void startPlayback()
+        {
+            startPlayback(TimeSpan.Zero);
+        }
+
+        private void startPlayback(TimeSpan position)
+        {
             BackgroundAudioPlayer.Instance.Track = getAudioTrackForEpisode(m_currentEpisode);
+
+            if (position.Ticks > 0) 
+            {
+                BackgroundAudioPlayer.Instance.Position = new TimeSpan(position.Ticks);
+            }
+
             BackgroundAudioPlayer.Instance.Play();
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
 
             PodcastPlayerStarted(this, new EventArgs());
+        }
+
+        private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
+        {
+            m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+        }
+
+        private void askForContinueEpisodePlaying()
+        {
+            MessageBoxButton messageButtons = MessageBoxButton.OKCancel;
+            MessageBoxResult messageBoxResult = MessageBox.Show("You have previously played this episode. Do you wish to continue from the previous position?",
+                                                                    "Continue?",
+                                                                    messageButtons);
+            // Blah, message box is not 
+            if (messageBoxResult == MessageBoxResult.OK)
+            {
+                startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos));
+            }
+            else
+            {
+                startPlayback(new TimeSpan(0));
+            }
         }
 
         private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
@@ -134,6 +180,7 @@ namespace Podcatcher
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Paused;
+                    saveEpisodePlayPosition(m_currentEpisode);
 
                     // Clear CompositionTarget.Rendering 
                     m_screenUpdateTimer.Stop();

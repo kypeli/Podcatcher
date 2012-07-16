@@ -123,6 +123,33 @@ namespace Podcatcher.ViewModels
             set { m_episodePlayBookmark = value; }
         }
 
+        private int m_downloadPercentage;
+        public int DownloadPercentage
+        {
+            get
+            {
+                return m_downloadPercentage;
+            }
+
+            set
+            {
+                if (m_downloadPercentage != value)
+                {
+                    m_downloadPercentage = value;
+                    NotifyPropertyChanged("DownloadPercentage");
+                }
+            }
+        }
+
+        private long m_savedPlayPos = 0;
+        [Column(UpdateCheck = UpdateCheck.Never)]
+        public long SavedPlayPos
+        {
+            get { return m_savedPlayPos; }
+
+            set { m_savedPlayPos = value; }
+        }
+        
         public enum EpisodeStateVal
         {
             Idle,
@@ -185,24 +212,6 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_downloadPercentage;
-        public int DownloadPercentage 
-        { 
-            get 
-            {
-                return m_downloadPercentage;
-            }
-
-            set
-            {
-                if (m_downloadPercentage != value)
-                {
-                    m_downloadPercentage = value;
-                    NotifyPropertyChanged("DownloadPercentage");
-                }
-            }
-        }
-        
         #endregion
 
         /************************************* Public implementations *******************************/
