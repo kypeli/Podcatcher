@@ -4,6 +4,7 @@ using Podcatcher.CustomControls;
 using Podcatcher.ViewModels;
 using Microsoft.Phone.BackgroundTransfer;
 using System.Diagnostics;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher
 {
@@ -116,12 +117,26 @@ namespace Podcatcher
 
         private void completePodcastDownload(BackgroundTransferRequest transferRequest)
         {
+            // If the status code of a completed transfer is 200 or 206, the
+            // transfer was successful
+            if (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206)
+            {
+                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateVal.Playable);
+            }
+            else
+            {
+                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateVal.Idle);
+
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Podcast download occured an error. Please try again.";
+                toast.Show();
+            }
+
             // Remove the transfer request in order to make room in the 
             // queue for more transfers. Transfers are not automatically
             // removed by the system.
             RemoveTransferRequest(transferRequest.RequestId);
-
-            PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateVal.Playable);
 
             m_currentEpisodeDownload = null;
             m_episodeDownloadQueue.Dequeue();
@@ -149,19 +164,19 @@ namespace Podcatcher
         {
             if (WaitingForExternalPower)
             {
-                MessageBox.Show("You have one or more file transfers waiting for external power. Connect your device to external power to continue transferring.");
+                MessageBox.Show("Podcast transfer is waiting for external power. Please connect your device to external power to continue transferring.");
             }
             if (WaitingForExternalPowerDueToBatterySaverMode)
             {
-                MessageBox.Show("You have one or more file transfers waiting for external power. Connect your device to external power or disable Battery Saver Mode to continue transferring.");
+                MessageBox.Show("Podcast transfer is waiting for external power. Connect your device to external power or disable Battery Saver Mode to continue transferring.");
             }
             if (WaitingForNonVoiceBlockingNetwork)
             {
-                MessageBox.Show("You have one or more file transfers waiting for a network that supports simultaneous voice and data.");
+                MessageBox.Show("Podcast transfer is waiting for a mobile network that supports simultaneous voice and data.");
             }
             if (WaitingForWiFi)
             {
-                MessageBox.Show("You have one or more file transfers waiting for a WiFi connection. Connect your device to a WiFi network to continue transferring.");
+                MessageBox.Show("Podcast transfer is waiting for a WiFi connection. Connect your device to a WiFi network to continue transferring.");
             }
         }
 
