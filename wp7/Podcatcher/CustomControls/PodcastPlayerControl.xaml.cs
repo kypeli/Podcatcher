@@ -26,41 +26,20 @@ namespace Podcatcher
         public PodcastPlayerControl()
         {
             InitializeComponent();
-
-            showNoPlayerLayout();
-
+            m_appSettings = IsolatedStorageSettings.ApplicationSettings;
             m_instance = this;
 
-            m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
-            m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
-
-            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
-            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer half a every second.
-            m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
+            setupPlayerUI();
 
             if (BackgroundAudioPlayer.Instance.Track != null)
             {
                 showPlayerLayout();
+                restoreEpisodeToPlayerUI();
             }
-
-            // If we have an episodeId stored in local cache, this means we have that episode playing.
-            // Hence, here we need to reload the episode data from the SQL. 
-            m_appSettings = IsolatedStorageSettings.ApplicationSettings;
-            if (m_appSettings.Contains("episodeId"))
+            else
             {
-                int episodeId = (int)m_appSettings["episodeId"];
-                m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-
-                if (m_currentEpisode == null)
-                {
-                    // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
-                    m_appSettings.Remove("episodeId");
-                    return;
-                }
-
-                setupPlayerUIContent(m_currentEpisode);
+                showNoPlayerLayout();
             }
-
         }
 
         public static PodcastPlayerControl getIntance()
@@ -68,23 +47,14 @@ namespace Podcatcher
             return m_instance;
         }
 
-        /************************************* Private implementation *******************************/
-
-        private static PodcastPlayerControl m_instance;
-        private BitmapImage m_playButtonBitmap;
-        private BitmapImage m_pauseButtonBitmap;
-        private static PodcastEpisodeModel m_currentEpisode = null;
-        private bool settingSliderFromPlay;
-        private IsolatedStorageSettings m_appSettings;
-        private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
-
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
-            if (m_currentEpisode != null) {
+            if (m_currentEpisode != null)
+            {
                 saveEpisodePlayPosition(m_currentEpisode);
                 m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
             }
-            
+
             m_currentEpisode = episodeModel;
             m_appSettings.Remove("episodeId");
             m_appSettings.Add("episodeId", m_currentEpisode.PodcastId);
@@ -101,6 +71,64 @@ namespace Podcatcher
                 startPlayback();
             }
 
+        }
+
+        /************************************* Private implementation *******************************/
+
+        private static PodcastPlayerControl m_instance;
+        private BitmapImage m_playButtonBitmap;
+        private BitmapImage m_pauseButtonBitmap;
+        private static PodcastEpisodeModel m_currentEpisode = null;
+        private bool settingSliderFromPlay;
+        private IsolatedStorageSettings m_appSettings;
+        private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
+
+        private void setupPlayerUI()
+        {
+            m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
+            m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
+
+            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer half a every second.
+            m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
+        }
+
+        private void restoreEpisodeToPlayerUI()
+        {
+            // If we have an episodeId stored in local cache, this means we have that episode playing.
+            // Hence, here we need to reload the episode data from the SQL. 
+            if (m_appSettings.Contains("episodeId"))
+            {
+                int episodeId = (int)m_appSettings["episodeId"];
+                m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+
+                if (m_currentEpisode == null)
+                {
+                    // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
+                    m_appSettings.Remove("episodeId");
+                    return;
+                }
+
+                setupPlayerUIContent(m_currentEpisode);
+            }
+        }
+
+        private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
+        {
+            this.PodcastLogo.Source = currentEpisode.PodcastSubscription.PodcastLogo;
+            this.PodcastEpisodeName.Text = currentEpisode.EpisodeName;
+        }
+
+        private void showNoPlayerLayout()
+        {
+            this.NoPlayingLayout.Visibility = Visibility.Visible;
+            this.PlayingLayout.Visibility = Visibility.Collapsed;
+        }
+
+        private void showPlayerLayout()
+        {
+            this.NoPlayingLayout.Visibility = Visibility.Collapsed;
+            this.PlayingLayout.Visibility = Visibility.Visible;
         }
 
         private void startPlayback()
@@ -132,8 +160,8 @@ namespace Podcatcher
         {
             MessageBoxButton messageButtons = MessageBoxButton.OKCancel;
             MessageBoxResult messageBoxResult = MessageBox.Show("You have previously played this episode. Do you wish to continue from the previous position?",
-                                                                    "Continue?",
-                                                                    messageButtons);
+                                                                "Continue?",
+                                                                messageButtons);
             // Blah, message box is not 
             if (messageBoxResult == MessageBoxResult.OK)
             {
@@ -143,24 +171,6 @@ namespace Podcatcher
             {
                 startPlayback(new TimeSpan(0));
             }
-        }
-
-        private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
-        {
-            this.PodcastLogo.Source = currentEpisode.PodcastSubscription.PodcastLogo;
-            this.PodcastEpisodeName.Text = currentEpisode.EpisodeName;
-        }
-
-        private void showNoPlayerLayout()
-        {
-            this.NoPlayingLayout.Visibility = Visibility.Visible;
-            this.PlayingLayout.Visibility = Visibility.Collapsed;
-        }
-
-        private void showPlayerLayout()
-        {
-            this.NoPlayingLayout.Visibility = Visibility.Collapsed;
-            this.PlayingLayout.Visibility = Visibility.Visible;
         }
 
         void PlayStateChanged(object sender, EventArgs e)
