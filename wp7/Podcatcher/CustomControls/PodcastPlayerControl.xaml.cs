@@ -110,6 +110,7 @@ namespace Podcatcher
                 }
 
                 setupPlayerUIContent(m_currentEpisode);
+                UIForEpisodePlaying();
             }
         }
 
@@ -147,6 +148,8 @@ namespace Podcatcher
 
             BackgroundAudioPlayer.Instance.Play();
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
+            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
 
             PodcastPlayerStarted(this, new EventArgs());
         }
@@ -180,10 +183,7 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
-                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
-
-                    m_screenUpdateTimer.Start();
+                    UIForEpisodePlaying();
                     break;
 
                 case PlayState.Paused:
@@ -203,6 +203,22 @@ namespace Podcatcher
                     break;
 
             }
+        }
+
+        private void UIForEpisodePlaying()
+        {
+            this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                this.PlayButtonImage.Source = m_pauseButtonBitmap;
+            }
+            else
+            {
+                this.PlayButtonImage.Source = m_playButtonBitmap;
+            }
+
+            m_screenUpdateTimer.Start();
         }
 
 
