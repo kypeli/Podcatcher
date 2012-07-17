@@ -32,17 +32,28 @@ namespace Podcatcher
                 return null;
             }
 
+            bool validFeed = true;
             var query = (from channel in rssXmlDoc.Descendants("channel")
                          select new
                          {
-                             Title          = channel.Element("title").Value,
-                             Description    = channel.Element("description").Value,
-                             ImageUrl       = channel.Element("image").Element("url").Value,
-                             PubDate        = channel.Element("lastBuildDate").Value,
-                             Link           = channel.Element("link").Value
+                             Title          = (string)channel.Element("title"),
+                             Description    = (string)channel.Element("description"),
+                             ImageUrl       = (channel.Element("image") != null ? channel.Element("image").Element("url").Value : @""),
+                             PubDate        = (string)channel.Element("lastBuildDate"),
+                             Link           = (string)channel.Element("link")
                          }).FirstOrDefault();
 
             if (query == null)
+            {
+                validFeed = false;
+            }
+
+            if (String.IsNullOrEmpty(query.PubDate))
+            {
+                validFeed = false;
+            }
+
+            if (validFeed == false)
             {
                 Debug.WriteLine("ERROR: Cannot get all necessary fields from the podcast RSS.");
                 return null;
@@ -51,9 +62,9 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = new PodcastSubscriptionModel();
             podcastModel.PodcastName            = query.Title;
             podcastModel.PodcastDescription     = query.Description;
-            podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.Absolute);
+            podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.RelativeOrAbsolute);
             podcastModel.LastUpdateTimestamp    = parsePubDate(query.PubDate);
-            podcastModel.PodcastShowLink             = query.Link;
+            podcastModel.PodcastShowLink        = query.Link;
 
             Debug.WriteLine("Got podcast subscription:"
                             + "\n\t* Name:\t\t\t\t\t"       + podcastModel.PodcastName

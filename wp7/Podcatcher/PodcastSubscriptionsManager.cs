@@ -119,7 +119,7 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(podcastRss);
             if (podcastModel == null)
             {
-                PodcastSubscriptionFailedWithMessage("Could not parse podcast subscription from that location.");
+                PodcastSubscriptionFailedWithMessage("Could not parse podcast subscription.");
                 return;
             }
 
@@ -168,9 +168,18 @@ namespace Podcatcher
 
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
         {
-            // Parse the filename of the logo from the remote URL.
-            string localPath = podcastModel.PodcastLogoUrl.LocalPath;
-            string podcastLogoFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
+            string podcastLogoFilename;
+            if (String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
+            {
+                // Podcast logo URL is empty - use default placeholder logo.
+                podcastLogoFilename = @"Podcatcher_generic_podcast_cover.png";
+            }
+            else
+            {
+                // Parse the filename of the logo from the remote URL.
+                string localPath = podcastModel.PodcastLogoUrl.LocalPath;
+                podcastLogoFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
+            }
 
             // Make podcast logo name random.
             // This is because, if for some reason, two podcasts have the same logo name and we delete
