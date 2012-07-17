@@ -56,8 +56,8 @@ namespace Podcatcher
             }
 
             m_currentEpisode = episodeModel;
-            m_appSettings.Remove("episodeId");
-            m_appSettings.Add("episodeId", m_currentEpisode.PodcastId);
+            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
 
             setupPlayerUIContent(m_currentEpisode);
             showPlayerLayout();
@@ -97,15 +97,15 @@ namespace Podcatcher
         {
             // If we have an episodeId stored in local cache, this means we have that episode playing.
             // Hence, here we need to reload the episode data from the SQL. 
-            if (m_appSettings.Contains("episodeId"))
+            if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
-                int episodeId = (int)m_appSettings["episodeId"];
+                int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
                 m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
 
                 if (m_currentEpisode == null)
                 {
                     // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
-                    m_appSettings.Remove("episodeId");
+                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     return;
                 }
 
@@ -199,7 +199,7 @@ namespace Podcatcher
                 case PlayState.Stopped:
                 case PlayState.Shutdown:
                     m_screenUpdateTimer.Stop();
-                    m_appSettings.Remove("episodeId");
+                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     break;
 
             }

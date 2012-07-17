@@ -10,6 +10,12 @@ namespace Podcatcher
         public const string PODCAST_ICON_DIR = "PodcastIcons";
         public const string PODCAST_DL_DIR   = "shared/transfers/";
 
+        /** IsolatedSettings keys.  **/
+        // Key for storing the episode ID of the currently playing episode.
+        public const string LSKEY_PODCAST_EPISODE_PLAYING_ID        = "playing_episodeId";
+        // Key for storing the episode ID of the currently downloading episode.
+        public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
