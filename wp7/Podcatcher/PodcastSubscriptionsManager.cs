@@ -111,7 +111,7 @@ namespace Podcatcher
             if (e.Error != null
                 || e.Cancelled)
             {
-                PodcastSubscriptionFailedWithMessage("ERROR: Web request failed. Message: " + e.Error.Message);
+                PodcastSubscriptionFailedWithMessage("Web request failed. Message: " + e.Error.Message);
                 return;
             }
 
@@ -119,13 +119,13 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(podcastRss);
             if (podcastModel == null)
             {
-                PodcastSubscriptionFailedWithMessage("ERROR: Could not parse podcast subscription from that location.");
+                PodcastSubscriptionFailedWithMessage("Could not parse podcast subscription from that location.");
                 return;
             }
 
             if (m_podcastsSqlModel.isPodcastInDB(podcastModel))
             {
-                PodcastSubscriptionFailedWithMessage("Already subscribed to the podcast.");
+                PodcastSubscriptionFailedWithMessage("You have already subscribed to that podcast.");
                 return;
             }
 
