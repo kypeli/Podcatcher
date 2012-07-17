@@ -5,6 +5,8 @@ using Podcatcher.ViewModels;
 using Microsoft.Phone.BackgroundTransfer;
 using System.Diagnostics;
 using Coding4Fun.Phone.Controls;
+using System.IO.IsolatedStorage;
+using System.Collections.Generic;
 
 namespace Podcatcher
 {
@@ -44,6 +46,7 @@ namespace Podcatcher
         private ObservableQueue<PodcastEpisodeModel> m_episodeDownloadQueue = new ObservableQueue<PodcastEpisodeModel>();
         private PodcastEpisodeModel m_currentEpisodeDownload                = null;
         private BackgroundTransferRequest m_currentBackgroundTransfer       = null;
+        private IsolatedStorageSettings m_applicationSettings               = null;
 
         // Booleans for tracking if any transfers are waiting for user action. 
         bool WaitingForExternalPower;
@@ -53,6 +56,45 @@ namespace Podcatcher
 
         private PodcastEpisodesDownloadManager()
         {
+         
+            m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
+
+            findCurrentTransfer();
+            if (m_currentBackgroundTransfer != null) { 
+                processOngoingTransfer();
+            }
+        }
+
+        private void processOngoingTransfer()
+        {
+            if (m_currentBackgroundTransfer != null
+                && m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID))
+            {
+                Debug.WriteLine("Found ongoing episode download...");
+
+                m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
+                m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+
+                int downloadingEpisodeId = (int)m_applicationSettings[App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID];
+                m_currentEpisodeDownload = PodcastSqlModel.getInstance().episodeForEpisodeId(downloadingEpisodeId);
+                m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
+
+                ProcessTransfer(m_currentBackgroundTransfer);
+            }
+        }
+
+        private void findCurrentTransfer()
+        {
+            IEnumerable<BackgroundTransferRequest> requests = BackgroundTransferService.Requests;
+            foreach (BackgroundTransferRequest transfer in requests)
+            {
+                if (transfer.TransferStatus == TransferStatus.Transferring)
+                {
+                    m_currentBackgroundTransfer = transfer;
+                    break;
+                }
+            }
+
         }
 
         private void startNextEpisodeDownload()
@@ -67,7 +109,9 @@ namespace Podcatcher
                 m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                 m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
-            
+
+                m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
+                m_applicationSettings.Add(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID, m_currentEpisodeDownload.EpisodeId);
                 BackgroundTransferService.Add(m_currentBackgroundTransfer);
             }
         }
@@ -138,9 +182,15 @@ namespace Podcatcher
             // removed by the system.
             RemoveTransferRequest(transferRequest.RequestId);
 
+            // Update state of the finished episode.
+            //  - Remove the settings key that denoted that this episode is download (in case the app is restarted while this downloads). 
+            //  - Set currently downloading episode to NULL.
+            //  - Remove this episode from the download queue. 
+            m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
             m_currentEpisodeDownload = null;
             m_episodeDownloadQueue.Dequeue();
 
+            // And start a next round of downloading.
             startNextEpisodeDownload();
         }
 

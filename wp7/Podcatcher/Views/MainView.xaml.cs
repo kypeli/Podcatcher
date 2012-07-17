@@ -31,7 +31,6 @@ namespace Podcatcher
 
             // Hook data contextes.
             DataContext = m_podcastsModel;
-            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
             m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
@@ -43,6 +42,7 @@ namespace Podcatcher
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
             ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
+            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             // Hook to the event when the podcast player starts playing. 
             this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
