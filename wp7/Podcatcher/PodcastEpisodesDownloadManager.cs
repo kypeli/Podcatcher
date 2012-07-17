@@ -118,9 +118,7 @@ namespace Podcatcher
 
         void backgroundTransferProgressChanged(object sender, BackgroundTransferEventArgs e)
         {
-            float foo = ((float)e.Request.BytesReceived / (float)e.Request.TotalBytesToReceive);
-            m_currentEpisodeDownload.DownloadPercentage = (int)(foo * 100);
-            Debug.WriteLine("Download progress: " + m_currentEpisodeDownload.DownloadPercentage);
+            m_currentEpisodeDownload.DownloadPercentage = (int)(((float)e.Request.BytesReceived / (float)e.Request.TotalBytesToReceive) * 100);
         }
 
         void backgroundTransferStatusChanged(object sender, BackgroundTransferEventArgs e)
