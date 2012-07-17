@@ -33,6 +33,7 @@ namespace Podcatcher
 
             if (BackgroundAudioPlayer.Instance.Track != null)
             {
+                Debug.WriteLine("Restoring UI for currently playing episode.");
                 showPlayerLayout();
                 restoreEpisodeToPlayerUI();
             }
@@ -110,7 +111,7 @@ namespace Podcatcher
                 }
 
                 setupPlayerUIContent(m_currentEpisode);
-                UIForEpisodePlaying();
+                setupUIForEpisodePlaying();
             }
         }
 
@@ -183,7 +184,7 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    UIForEpisodePlaying();
+                    setupUIForEpisodePlaying();
                     break;
 
                 case PlayState.Paused:
@@ -205,7 +206,7 @@ namespace Podcatcher
             }
         }
 
-        private void UIForEpisodePlaying()
+        private void setupUIForEpisodePlaying()
         {
             this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
             m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
