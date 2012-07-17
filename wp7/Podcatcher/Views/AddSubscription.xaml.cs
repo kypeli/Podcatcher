@@ -21,22 +21,25 @@ namespace Podcatcher.Views
         public AddSubscription()
         {
             InitializeComponent();
+
+            m_subscriptionManager = PodcastSubscriptionsManager.getInstance();
+
+            m_subscriptionManager.OnPodcastChannelFinished
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinished);
+            m_subscriptionManager.OnPodcastChannelFinishedWithError
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinishedWithError);
+
         }
 
         /************************************* Private implementations *******************************/
         #region private
+        private PodcastSubscriptionsManager m_subscriptionManager;
+
         private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
         {
             progressOverlay.Show();
 
-            PodcastSubscriptionsManager subscriptionManager = PodcastSubscriptionsManager.getInstance();
-            
-            subscriptionManager.OnPodcastChannelFinished            
-                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinished);
-            subscriptionManager.OnPodcastChannelFinishedWithError   
-                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinishedWithError);
-
-            subscriptionManager.addSubscriptionFromURL(addFromUrlInput.Text);
+            m_subscriptionManager.addSubscriptionFromURL(addFromUrlInput.Text);
         }
 
         private void subscriptionManager_OnPodcastChannelFinishedWithError(object source, SubscriptionManagerArgs e)

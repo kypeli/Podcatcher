@@ -29,7 +29,7 @@ namespace Podcatcher.CustomControls
                 return;
             }
 
-            this.progressOverlay.Show();
+            progressOverlay.Show();
 
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);

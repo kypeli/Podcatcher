@@ -25,12 +25,12 @@ namespace Podcatcher.Views
             m_podcastSqlModel = PodcastSqlModel.getInstance();
         }
 
+        
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             PodcastSubscriptionModel subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
             episodes = new ObservableCollection<PodcastEpisodeModel>(subscription.Episodes.ToList());
-
             this.PodcastName.Text           = subscription.PodcastName;
             this.PodcastDescription.Text    = subscription.PodcastDescription;
             this.PodcastIcon.Source         = subscription.PodcastLogo;

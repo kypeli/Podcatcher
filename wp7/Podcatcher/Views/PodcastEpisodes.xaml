@@ -46,7 +46,7 @@
             <ListBox.ItemTemplate>
             <DataTemplate>
                 <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
-                    <pc:PodcastEpisodeControl />
+                    <pc:PodcastEpisodeControl x:Name="EpisodeControl"/>
                 </StackPanel>
             </DataTemplate>
             </ListBox.ItemTemplate>
