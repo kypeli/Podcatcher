@@ -15,6 +15,8 @@ namespace Podcatcher.ViewModels
     [Table(Name="Episodes")]
     public class PodcastEpisodeModel : INotifyPropertyChanged
     {
+        private const int NVARCHAR_MAX = 4000;
+
         /****************************** PodcastEpisodeHandler definitions ***************************/
 
         public delegate void PodcastEpisodesHandler(object source, PodcastEpisodesArgs e);
@@ -63,7 +65,16 @@ namespace Podcatcher.ViewModels
         public String EpisodeDescription
         {
             get { return m_description; }
-            set { m_description = value; }
+            set 
+            {
+                // Stupid MSQL!!
+                if (value.Length > NVARCHAR_MAX)
+                {
+                    value = value.Substring(0, NVARCHAR_MAX);
+                }
+
+                m_description = value; 
+            }
         }
 
         private DateTime m_published;
