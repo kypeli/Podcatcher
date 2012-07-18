@@ -2,6 +2,7 @@
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Marketplace;
 
 namespace Podcatcher
 {
@@ -15,6 +16,17 @@ namespace Podcatcher
         public const string LSKEY_PODCAST_EPISODE_PLAYING_ID        = "playing_episodeId";
         // Key for storing the episode ID of the currently downloading episode.
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
+
+        private static LicenseInformation m_licenseInfo = new LicenseInformation();
+        private static bool m_isTrial = true;
+
+        public bool IsTrial
+        {
+            get
+            {
+                return m_isTrial;
+            }
+        }
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
@@ -63,6 +75,7 @@ namespace Podcatcher
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
           //  IsolatedStorageExplorer.Explorer.Start("localhost");
+            CheckLicense();
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -70,6 +83,7 @@ namespace Podcatcher
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             //IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
+            CheckLicense();
         }
 
         // Code to execute when the application is deactivated (sent to background)
@@ -142,6 +156,30 @@ namespace Podcatcher
             RootFrame.Navigated -= CompleteInitializePhoneApplication;
         }
 
+        /// <summary>
+        /// Check the current license information for this application
+        /// </summary>
+        private void CheckLicense()
+        {
+            // When debugging, we want to simulate a trial mode experience. The following conditional allows us to set the _isTrial 
+            // property to simulate trial mode being on or off. 
+#if DEBUG
+            string message = "This sample demonstrates the implementation of a trial mode in an application." +
+                               "Press 'OK' to simulate trial mode. Press 'Cancel' to run the application in normal mode.";
+            if (MessageBox.Show(message, "Debug Trial",
+                 MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                m_isTrial = true;
+            }
+            else
+            {
+                m_isTrial = false;
+            }
+#else
+            m_isTrial = m_licenseInfo.IsTrial();
+#endif
+        }
         #endregion
+
     }
 }

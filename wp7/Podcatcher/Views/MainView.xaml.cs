@@ -20,6 +20,7 @@ namespace Podcatcher
     public partial class MainView : PhoneApplicationPage
     {
         private const int PODCAST_PLAYER_PIVOR_INDEX = 2;
+        private const int TRIAL_SUBSCRIPTION_LIMIT   = 2;
         
         private PodcastSqlModel m_podcastsModel = PodcastSqlModel.getInstance();
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
@@ -91,7 +92,24 @@ namespace Podcatcher
 
         private void AddSubscriptionIconButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Views/AddSubscription.xaml", UriKind.Relative));
+            bool allowAddSubscription = true;
+            if ((Application.Current as App).IsTrial)
+            {
+                if (m_podcastsModel.PodcastSubscriptions.Count >= TRIAL_SUBSCRIPTION_LIMIT)
+                {
+                    allowAddSubscription = false;
+                }
+            }
+
+
+            if (allowAddSubscription)
+            {
+                NavigationService.Navigate(new Uri("/Views/AddSubscription.xaml", UriKind.Relative));
+            }
+            else
+            {
+                MessageBox.Show("You have reached the limit of the trial version for Podcatcher. Please purchase the full version from Marketplace.");
+            }
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
