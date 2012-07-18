@@ -20,6 +20,7 @@ namespace Podcatcher.Views
         {
             InitializeComponent();
             setUIIfPurchased();
+            this.AnimatedTitleText.Begin();
         }
 
         private void setUIIfPurchased()
