@@ -53,8 +53,20 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
         	<StackPanel>
-        		<TextBlock TextWrapping="Wrap" Text="by Johan Paul (johan@paul.fi)" Margin="0,0,0,532" TextAlignment="Center"/>
-        		<Button x:Name="PurchaseButton" Content="Purchase full version" VerticalAlignment="Bottom" Click="PurchaseButton_Click" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" TextAlignment="Center" Height="86">
+                <Run Text="by Johan Paul"/>
+                <LineBreak/>
+                <Run Text="johan@paul.fi"/>
+                <LineBreak/>
+                <Run Text="Twitter: @kypeli"/>
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Height="458">
+                <Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with, please feel free to contact me! I am more than delighted to receive bug reports."/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="This application is licensed under the BSD license. The source code is available at https://github.com/kypeli/Podcatcher/. "/>
+                </TextBlock>
+                <Button x:Name="PurchaseButton" Content="Purchase full version" Click="PurchaseButton_Click" VerticalAlignment="Bottom" />
         	</StackPanel>
         	<TextBlock x:Name="PurchasedText" TextWrapping="Wrap" Text="Thank you for purchasing Podcatcher!" Margin="8,0,-8,25" VerticalAlignment="Bottom" Style="{StaticResource PhoneTextLargeStyle}" TextAlignment="Center" Visibility="Collapsed"/></Grid>
     </Grid>
