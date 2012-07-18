@@ -29,7 +29,7 @@
                         SmallChange="0.1"
                         LargeChange="0.1"
                         x:Name="PositionSlider" 
-                        Width="247" 
+                        Width="221" 
                         VerticalAlignment="Center" 
                         RenderTransformOrigin="0.498,0.607" 
                         ValueChanged="PositionSlider_ValueChanged" IsTabStop="False" />
