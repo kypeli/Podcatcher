@@ -22,7 +22,20 @@ namespace Podcatcher
     public partial class PodcastPlayerControl : UserControl
     {
         public event EventHandler PodcastPlayerStarted;
-        
+
+        public PodcastEpisodeModel PlayingEpisode
+        {
+            get
+            {
+                return m_currentEpisode;
+            }
+
+            private set
+            {
+
+            }
+        }
+
         public PodcastPlayerControl()
         {
             InitializeComponent();
@@ -73,7 +86,6 @@ namespace Podcatcher
             {
                 startPlayback();
             }
-
         }
 
         /************************************* Private implementation *******************************/
@@ -200,6 +212,7 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is paused...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
+                    setupUIForEpisodePaused();
 
                     // Clear CompositionTarget.Rendering 
                     m_screenUpdateTimer.Stop();
@@ -212,6 +225,18 @@ namespace Podcatcher
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
                     break;
 
+            }
+        }
+
+        private void setupUIForEpisodePaused()
+        {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                this.PlayButtonImage.Source = m_pauseButtonBitmap;
+            }
+            else
+            {
+                this.PlayButtonImage.Source = m_playButtonBitmap;
             }
         }
 

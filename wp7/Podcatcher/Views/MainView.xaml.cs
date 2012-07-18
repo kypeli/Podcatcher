@@ -50,12 +50,15 @@ namespace Podcatcher
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
         {
+            PodcastPlayerControl player = sender as PodcastPlayerControl;
+
             // Got event that the podcast player started playing. We now
             //  - Pop the navigation back to the main page (yes, we know that the subscription page is open).
             //  - Set the pivot index to show the player. 
             // ...I don't really like this, but seems this is the way to work with the pivot control.
             NavigationService.GoBack();
             this.NavigationPivot.SelectedIndex = PODCAST_PLAYER_PIVOR_INDEX;
+            this.PodcastPlayerHeader.AltText = player.PlayingEpisode.PodcastSubscription.PodcastName;
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)

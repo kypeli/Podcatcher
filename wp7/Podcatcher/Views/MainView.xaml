@@ -92,7 +92,7 @@
             <!-- Podcast player -->
             <controls:PivotItem>
                 <controls:PivotItem.Header>
-                    <pc:PodcastPivotItemHeader 
+                    <pc:PodcastPivotItemHeader x:Name="PodcastPlayerHeader"
                       HeaderText="podcast player"
                       />
                 </controls:PivotItem.Header>
