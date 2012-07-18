@@ -6,11 +6,11 @@
 	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"    
 	mc:Ignorable="d"
 	x:Class="Podcatcher.PodcastSubscriptionControl"
-	d:DesignWidth="480" d:DesignHeight="800" Height="120" Margin="0">
+	d:DesignWidth="480" Height="130" Margin="0">
 
-	<StackPanel Orientation="Horizontal" Margin="0,0,0,20" >
-		<Image CacheMode="BitmapCache" Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Top" Margin="0,0,10,20"/> 
-		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0,0,0,20" Width="361" VerticalAlignment="Top" Height="100"/>
+	<StackPanel Orientation="Horizontal" Margin="0,0,0,20" Height="130" >
+		<Image CacheMode="BitmapCache" Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,0,10,0"/> 
+		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="361" VerticalAlignment="Center" Height="100"/>
 		<toolkit:ContextMenuService.ContextMenu>
 			<toolkit:ContextMenu>
 				<toolkit:MenuItem Header="Delete" Click="MenuItemDelete_Click" />
