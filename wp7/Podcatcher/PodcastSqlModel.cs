@@ -125,11 +125,13 @@ namespace Podcatcher
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscriptionModel)
         {
-            var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
-                        orderby episode.EpisodePublished descending
-                        select episode;
+            lock (this) { 
+                var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
+                            orderby episode.EpisodePublished descending
+                            select episode;
 
-            return new List<PodcastEpisodeModel>(query);
+                return new List<PodcastEpisodeModel>(query);
+            }
         }
 
 
@@ -157,7 +159,7 @@ namespace Podcatcher
             return model;
         }
 
-        public void setEpisodeState(PodcastEpisodeModel episode, PodcastEpisodeModel.EpisodeStateVal episodeState)
+        public void setEpisodeState(PodcastEpisodeModel episode, PodcastEpisodeModel.EpisodeStateEnum episodeState)
         {
             episode.EpisodeState = episodeState;
             this.SubmitChanges();
