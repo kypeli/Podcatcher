@@ -11,12 +11,13 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using Microsoft.Phone.Controls;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher.CustomControls
 {
     public partial class PodcastSearchResultControl : UserControl
     {
-        PodcastSearchResultModel m_searchResultModel;
+        GPodderResultModel m_searchResultModel;
         PodcastSubscriptionsManager m_subscriptionManager;
 
         public PodcastSearchResultControl()
@@ -29,7 +30,7 @@ namespace Podcatcher.CustomControls
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            m_searchResultModel = this.DataContext as PodcastSearchResultModel;
+            m_searchResultModel = this.DataContext as GPodderResultModel;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

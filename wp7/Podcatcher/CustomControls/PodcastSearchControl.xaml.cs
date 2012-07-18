@@ -11,6 +11,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Xml.Linq;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher.CustomControls
 {
@@ -52,10 +53,10 @@ namespace Podcatcher.CustomControls
             var query = from podcast in searchXml.Descendants("podcast")
                         select podcast;
 
-            List<PodcastSearchResultModel> results = new List<PodcastSearchResultModel>();
+            List<GPodderResultModel> results = new List<GPodderResultModel>();
             foreach (var result in query)
             {
-                PodcastSearchResultModel resultModel = new PodcastSearchResultModel();
+                GPodderResultModel resultModel = new GPodderResultModel();
                 
                 XElement logoElement = result.Element("logo_url");
 
@@ -80,27 +81,6 @@ namespace Podcatcher.CustomControls
             Debug.WriteLine("Found {0} results.", results.Count);
             this.SearchResultList.ItemsSource = results;
             this.progressOverlay.Hide();
-        }
-    }
-
-    public class PodcastSearchResultModel
-    {
-        public Uri PodcastLogoUrl
-        {
-            get;
-            set;
-        }
-
-        public String PodcastName
-        {
-            get;
-            set;
-        }
-
-        public String PodcastUrl
-        {
-            get;
-            set;
         }
     }
 }
