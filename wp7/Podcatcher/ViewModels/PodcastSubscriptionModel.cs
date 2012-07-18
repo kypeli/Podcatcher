@@ -130,13 +130,6 @@ namespace Podcatcher.ViewModels
         }
 
         [Column]
-        public DateTime LastUpdateTimestamp
-        {
-            get;
-            set;
-        }
-
-        [Column]
         public String PodcastRSSUrl
         {
             get;
