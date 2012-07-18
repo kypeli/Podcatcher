@@ -77,6 +77,7 @@ namespace Podcatcher
 
                 int downloadingEpisodeId = (int)m_applicationSettings[App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID];
                 m_currentEpisodeDownload = PodcastSqlModel.getInstance().episodeForEpisodeId(downloadingEpisodeId);
+                m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
                 m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
 
                 ProcessTransfer(m_currentBackgroundTransfer);
@@ -94,7 +95,6 @@ namespace Podcatcher
                     break;
                 }
             }
-
         }
 
         private void startNextEpisodeDownload()
@@ -163,11 +163,11 @@ namespace Podcatcher
             // transfer was successful
             if (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206)
             {
-                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateEnum.Playable);
+                m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
             }
             else
             {
-                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateEnum.Idle);
+                m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
 
                 ToastPrompt toast = new ToastPrompt();
                 toast.Title = "Error";

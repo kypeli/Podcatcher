@@ -53,11 +53,14 @@ namespace Podcatcher
 
         public PodcastSubscriptionModel subscriptionModelForIndex(int index)
         {
-            PodcastSubscriptionModel model = (from s in Subscriptions
-                                              where s.PodcastId.Equals(index)
-                                              select s).Single();
+            lock (this)
+            {
+                PodcastSubscriptionModel model = (from s in Subscriptions
+                                                  where s.PodcastId.Equals(index)
+                                                  select s).Single();
 
-            return model;
+                return model;
+            }
         }
 
         public void addSubscription(PodcastSubscriptionModel podcastModel)
@@ -157,12 +160,6 @@ namespace Podcatcher
             }
 
             return model;
-        }
-
-        public void setEpisodeState(PodcastEpisodeModel episode, PodcastEpisodeModel.EpisodeStateEnum episodeState)
-        {
-            episode.EpisodeState = episodeState;
-            this.SubmitChanges();
         }
 
         /************************************* Private implementation *******************************/

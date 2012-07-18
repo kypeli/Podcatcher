@@ -112,7 +112,13 @@ namespace Podcatcher.ViewModels
         public String EpisodeFile
         {
             get { return m_episodeFile; }
-            set { m_episodeFile = value; }
+            set { 
+                m_episodeFile = value;
+                if (m_episodeFile != null)
+                {
+                    EpisodeState = EpisodeStateEnum.Playable;
+                }
+            }
         }
 
         private long m_episodePlayBookmark;
@@ -233,7 +239,6 @@ namespace Podcatcher.ViewModels
             }
             
             EpisodeFile = null;
-            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateEnum.Idle);
         }
 
 
@@ -275,7 +280,7 @@ namespace Podcatcher.ViewModels
         void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.WriteLine("Episode written to disk. Filename: {0}", EpisodeFile);
-            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateEnum.Playable);
+            EpisodeState =  EpisodeStateEnum.Playable;
             m_downloadStream = null;
         }
 

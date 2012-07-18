@@ -51,7 +51,6 @@ namespace Podcatcher
                 // Episode is playable -> Play episode.
                 case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                    m_episodeModel.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
                     player.playEpisode(m_episodeModel);
                     break;
             }
