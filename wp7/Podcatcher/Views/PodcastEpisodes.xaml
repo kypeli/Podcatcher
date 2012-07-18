@@ -38,8 +38,8 @@
 				</TextBlock.Foreground>
 			</TextBlock>
 
-            <Image Grid.Row="1" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" />
-            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="PodcastDescription" TextWrapping="Wrap" Height="Auto" Margin="17,6,0,6" />
+            <Image Grid.Row="1" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" VerticalAlignment="Top" />
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="PodcastDescription" TextWrapping="Wrap" Height="Auto" Margin="17,0,0,0" VerticalAlignment="Top" />
 		</Grid>
         
         <ListBox x:Name="EpisodeList" Margin="0,306,0,0">
