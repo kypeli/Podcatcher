@@ -150,7 +150,7 @@ namespace Podcatcher.ViewModels
             set { m_savedPlayPos = value; }
         }
         
-        public enum EpisodeStateVal
+        public enum EpisodeStateEnum
         {
             Idle,
             Queued,
@@ -161,9 +161,8 @@ namespace Podcatcher.ViewModels
             Paused
         };
 
-        private EpisodeStateVal m_episodeState;
-        [Column(Storage = "m_episodeState", DbType = "int", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
-        public EpisodeStateVal EpisodeState
+        private EpisodeStateEnum m_episodeState;
+        public EpisodeStateEnum EpisodeState
         {
             get 
             { 
@@ -185,25 +184,25 @@ namespace Podcatcher.ViewModels
                 String statusText = "";
                 switch (m_episodeState)
                 {
-                    case EpisodeStateVal.Downloading:
+                    case EpisodeStateEnum.Downloading:
                         statusText = "Downloading...";
                         break;
-                    case EpisodeStateVal.Saving:
+                    case EpisodeStateEnum.Saving:
                         statusText = "Saving...";
                         break;
-                    case EpisodeStateVal.Idle:
+                    case EpisodeStateEnum.Idle:
                         statusText = "";
                         break;
-                    case EpisodeStateVal.Playable:
+                    case EpisodeStateEnum.Playable:
                         statusText = "Play";
                         break;
-                    case EpisodeStateVal.Queued:
+                    case EpisodeStateEnum.Queued:
                         statusText = "Queued";
                         break;
-                    case EpisodeStateVal.Playing:
+                    case EpisodeStateEnum.Playing:
                         statusText = "Playing";
                         break;
-                    case EpisodeStateVal.Paused:
+                    case EpisodeStateEnum.Paused:
                         statusText = "Paused";
                         break;
                 }
@@ -234,7 +233,7 @@ namespace Podcatcher.ViewModels
             }
             
             EpisodeFile = null;
-            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateVal.Idle);
+            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateEnum.Idle);
         }
 
 
@@ -246,7 +245,7 @@ namespace Podcatcher.ViewModels
             bw.DoWork += new DoWorkEventHandler(savePodcastAsync);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(SavePodcastEpisodeCompleted);
             bw.RunWorkerAsync();
-            EpisodeState = EpisodeStateVal.Saving;
+            EpisodeState = EpisodeStateEnum.Saving;
         }
 
         void savePodcastAsync(object sender, DoWorkEventArgs e)
@@ -276,7 +275,7 @@ namespace Podcatcher.ViewModels
         void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.WriteLine("Episode written to disk. Filename: {0}", EpisodeFile);
-            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateVal.Playable);
+            PodcastSqlModel.getInstance().setEpisodeState(this, EpisodeStateEnum.Playable);
             m_downloadStream = null;
         }
 

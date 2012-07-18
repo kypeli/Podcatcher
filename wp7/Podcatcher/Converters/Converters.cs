@@ -39,24 +39,24 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
             bool buttonEnabled = true;
 
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateVal.Queued:
+                case PodcastEpisodeModel.EpisodeStateEnum.Queued:
                     buttonEnabled = false;
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Downloading:
+                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
                     buttonEnabled = false;
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Saving:
+                case PodcastEpisodeModel.EpisodeStateEnum.Saving:
                     buttonEnabled = false;
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Playing:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
                     buttonEnabled = false;
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Paused:
+                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
                     buttonEnabled = false;
                     break;
             }
@@ -74,30 +74,30 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
 
             String buttonText = @"Error!";
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateVal.Idle:
+                case PodcastEpisodeModel.EpisodeStateEnum.Idle:
                     buttonText = @"Download";
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Queued:
+                case PodcastEpisodeModel.EpisodeStateEnum.Queued:
                     buttonText = @"Queued";
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Downloading:
+                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
                     buttonText = @"Downloading";
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Saving:
+                case PodcastEpisodeModel.EpisodeStateEnum.Saving:
                     buttonText = @"Saving...";
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Playable:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     buttonText = @"Play";
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Playing:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
                     buttonText = @"Playing";
                     break;
-                case PodcastEpisodeModel.EpisodeStateVal.Paused:
+                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
                     buttonText = @"Paused";
                     break;
             }
@@ -117,10 +117,10 @@ namespace Podcatcher.Converters
         {
             Visibility episodeContextMenuVisible = Visibility.Collapsed;
 
-            PodcastEpisodeModel.EpisodeStateVal episodeState = (PodcastEpisodeModel.EpisodeStateVal)value;
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateVal.Playable:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     episodeContextMenuVisible = Visibility.Visible;
                     break;
 

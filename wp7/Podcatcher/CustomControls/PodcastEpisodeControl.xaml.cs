@@ -43,15 +43,15 @@ namespace Podcatcher
             switch (m_episodeModel.EpisodeState)
             {
                 // Episode is idle => start downloading. 
-                case PodcastEpisodeModel.EpisodeStateVal.Idle:
+                case PodcastEpisodeModel.EpisodeStateEnum.Idle:
                     PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
                     downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
                     break;
 
                 // Episode is playable -> Play episode.
-                case PodcastEpisodeModel.EpisodeStateVal.Playable:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                    m_episodeModel.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
+                    m_episodeModel.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
                     player.playEpisode(m_episodeModel);
                     break;
             }

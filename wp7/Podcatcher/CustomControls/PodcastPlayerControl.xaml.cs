@@ -53,7 +53,7 @@ namespace Podcatcher
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
             }
 
             Debug.WriteLine("Starting playback for episode: " + episodeModel);
@@ -191,7 +191,7 @@ namespace Podcatcher
                 case PlayState.Paused:
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused...");
-                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Paused;
+                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
 
                     // Clear CompositionTarget.Rendering 
@@ -210,7 +210,7 @@ namespace Podcatcher
         private void setupUIForEpisodePlaying()
         {
             this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
-            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playing;
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;

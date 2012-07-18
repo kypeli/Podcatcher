@@ -32,7 +32,7 @@ namespace Podcatcher
 
         public void addEpisodeToDownloadQueue(PodcastEpisodeModel episode)
         {
-            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Queued;
+            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Queued;
             m_episodeDownloadQueue.Enqueue(episode);
 
             if (m_currentEpisodeDownload == null)
@@ -152,7 +152,7 @@ namespace Podcatcher
                     completePodcastDownload(backgroundTransferRequest);
                     break;
                 case TransferStatus.Transferring:
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Downloading;
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
                     break;
             }
         }
@@ -163,11 +163,11 @@ namespace Podcatcher
             // transfer was successful
             if (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206)
             {
-                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateVal.Playable);
+                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateEnum.Playable);
             }
             else
             {
-                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateVal.Idle);
+                PodcastSqlModel.getInstance().setEpisodeState(m_currentEpisodeDownload, PodcastEpisodeModel.EpisodeStateEnum.Idle);
 
                 ToastPrompt toast = new ToastPrompt();
                 toast.Title = "Error";
