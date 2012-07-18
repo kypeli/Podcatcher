@@ -115,6 +115,11 @@ namespace Podcatcher
                 setupPlayerUIContent(m_currentEpisode);
                 setupUIForEpisodePlaying();
             }
+            else
+            {
+                showNoPlayerLayout();
+                Debug.WriteLine("WARNING: Could not find episode ID from app settings, so cannot restore player UI with episode information!");
+            }
         }
 
         private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
