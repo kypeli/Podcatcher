@@ -30,11 +30,11 @@ namespace Podcatcher.CustomControls
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            m_searchResultModel = this.DataContext as GPodderResultModel;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            m_searchResultModel = this.DataContext as GPodderResultModel;
             m_subscriptionManager.addSubscriptionFromURL(m_searchResultModel.PodcastUrl);
         }
     }
