@@ -100,6 +100,9 @@
       <DependentUpon>PodcastSubscriptionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PodcastSqlModel.cs" />
+    <Compile Include="Views\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AddSubscription.xaml.cs">
       <DependentUpon>AddSubscription.xaml</DependentUpon>
     </Compile>
@@ -144,6 +147,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="CustomControls\PopularPodcastsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
