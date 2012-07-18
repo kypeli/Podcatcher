@@ -56,7 +56,7 @@ namespace Podcatcher
                 m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateVal.Playable;
             }
 
-            Debug.WriteLine("Starting playback for episode: " + m_currentEpisode.EpisodeName);
+            Debug.WriteLine("Starting playback for episode: " + episodeModel);
 
             m_currentEpisode = episodeModel;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
