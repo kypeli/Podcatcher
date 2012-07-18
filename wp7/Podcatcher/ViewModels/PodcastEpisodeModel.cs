@@ -114,6 +114,7 @@ namespace Podcatcher.ViewModels
             get { return m_episodeFile; }
             set { 
                 m_episodeFile = value;
+                EpisodeState = EpisodeStateEnum.Idle;
                 if (m_episodeFile != null)
                 {
                     EpisodeState = EpisodeStateEnum.Playable;
