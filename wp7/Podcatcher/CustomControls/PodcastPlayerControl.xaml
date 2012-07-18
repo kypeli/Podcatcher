@@ -7,12 +7,14 @@
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    d:DesignHeight="480" d:DesignWidth="480">
+    d:DesignHeight="480" d:DesignWidth="480" Height="600">
         
-    <Grid x:Name="LayoutRoot">
+    <Grid x:Name="LayoutRoot" Width="450" Height="550">
     	<Grid x:Name="PlayingLayout" Margin="0,0,8,8">
-    		<Image x:Name="PodcastLogo" Margin="0,45,0,0" HorizontalAlignment="Center" Width="300" Height="300" VerticalAlignment="Top"/>
-    		<TextBlock x:Name="PodcastEpisodeName" Margin="23,0,24,111" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="108" VerticalAlignment="Bottom"/>
+    		<StackPanel Margin="0,0,0,152">
+    			<Image x:Name="PodcastLogo" Margin="0" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" Width="300"/>
+    			<TextBlock x:Name="PodcastEpisodeName" Margin="1,10,1,0" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="137" Width="470"/>
+    		</StackPanel>
     		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48">
                 <!-- Rew button-->
                 <Image Margin="0,0,20,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" Width="73" />
