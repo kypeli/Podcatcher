@@ -63,17 +63,19 @@ namespace Podcatcher
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
+            Debug.WriteLine("Starting playback for episode: " + episodeModel);
+
+            // Save the state for the previously playing podcast episode. 
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
                 m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
             }
 
-            Debug.WriteLine("Starting playback for episode: " + episodeModel);
-
             m_currentEpisode = episodeModel;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
             m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
+            m_appSettings.Save();
 
             setupPlayerUIContent(m_currentEpisode);
             showPlayerLayout();
@@ -171,6 +173,7 @@ namespace Podcatcher
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
             m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
+            m_appSettings.Save();
 
             PodcastPlayerStarted(this, new EventArgs());
         }
