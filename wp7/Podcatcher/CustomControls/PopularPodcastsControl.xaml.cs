@@ -34,6 +34,13 @@ namespace Podcatcher.CustomControls
 
         void wc_DownloadTopPodcastsXMLCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
+            if (e.Error != null)
+            {
+                Debug.WriteLine("ERROR: 'http://gpodder.net/toplist/15.xml' did not respond.");
+                this.LoadingText.Text = "Error receiving top list. Sorry about that... Please try again in a few moments.";
+                return;
+            }
+
             XDocument xmlResult = XDocument.Parse(e.Result);
 
             try

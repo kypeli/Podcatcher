@@ -24,6 +24,6 @@
         	</ListBox>
         </StackPanel>
         
-        <TextBlock x:Name="LoadingText" HorizontalAlignment="Left" Margin="8,183,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top" Style="{StaticResource PhoneTextAccentStyle}" Width="472" TextAlignment="Center"/>
+        <TextBlock x:Name="LoadingText" HorizontalAlignment="Left" Margin="48,183,0,234" TextWrapping="Wrap" Text="Loading..." Style="{StaticResource PhoneTextAccentStyle}" Width="385" TextAlignment="Center"/>
     </Grid>
 </UserControl>
