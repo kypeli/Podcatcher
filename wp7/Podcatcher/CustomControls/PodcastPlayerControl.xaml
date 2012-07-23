@@ -36,8 +36,8 @@
     			<TextBlock x:Name="TotalDurationText" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right" Width="80" Margin="5,0,0,0" Text="00:00:00"/>
     		</StackPanel>
     	</Grid>
-    	<Grid x:Name="NoPlayingLayout" Margin="0,0,8,8" d:IsHidden="True">
-            <TextBlock Style="{StaticResource PhoneTextGroupHeaderStyle}" TextWrapping="Wrap" Text="You have no podcast playing." Margin="90,147,82,227" Width="300" TextAlignment="Center"/>
+    	<Grid x:Name="NoPlayingLayout" Margin="0,0,8,8">
+            <TextBlock Style="{StaticResource PhoneTextGroupHeaderStyle}" TextWrapping="Wrap" Text="You have no podcast playing." Margin="40,147,40,227" TextAlignment="Center"/>
     	</Grid>
 
     </Grid>
