@@ -17,6 +17,8 @@ namespace Podcatcher.CustomControls
 {
     public partial class PopularPodcastsControl : UserControl
     {
+        private static XDocument m_popularPodcastsXML = null;
+
         public PopularPodcastsControl()
         {
             InitializeComponent();
@@ -27,9 +29,18 @@ namespace Podcatcher.CustomControls
 
         void PageLoaded(object sender, RoutedEventArgs e)
         {
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadTopPodcastsXMLCompleted);
-            wc.DownloadStringAsync(new Uri("http://gpodder.net/toplist/15.xml"));
+            if (m_popularPodcastsXML == null)
+            {
+                Debug.WriteLine("Fetching popular podcasts XML from gPodder.net.");
+                WebClient wc = new WebClient();
+                wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadTopPodcastsXMLCompleted);
+                wc.DownloadStringAsync(new Uri("http://gpodder.net/toplist/15.xml"));
+            }
+            else
+            {
+                Debug.WriteLine("Using cached XML document for popular podcasts.");
+                populatePopularUI();
+            }
         }
 
         void wc_DownloadTopPodcastsXMLCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -41,11 +52,9 @@ namespace Podcatcher.CustomControls
                 return;
             }
 
-            XDocument xmlResult = XDocument.Parse(e.Result);
-
             try
             {
-                xmlResult = XDocument.Parse(e.Result);
+                m_popularPodcastsXML = XDocument.Parse(e.Result);
             }
             catch (System.Xml.XmlException ex)
             {
@@ -53,17 +62,23 @@ namespace Podcatcher.CustomControls
                 return;
             }
 
-            var query = from podcast in xmlResult.Descendants("podcast")
+
+            populatePopularUI();
+        }
+
+        private void populatePopularUI()
+        {
+            var query = from podcast in m_popularPodcastsXML.Descendants("podcast")
                         select podcast;
 
             List<GPodderResultModel> results = new List<GPodderResultModel>();
             foreach (var result in query)
             {
                 GPodderResultModel resultModel = new GPodderResultModel();
-                
+
                 XElement logoElement = result.Element("logo_url");
 
-                if (logoElement == null 
+                if (logoElement == null
                     || String.IsNullOrEmpty(logoElement.Value))
                 {
                     logoElement = result.Element("scaled_logo_url");
@@ -74,7 +89,7 @@ namespace Podcatcher.CustomControls
                 {
                     resultModel.PodcastLogoUrl = new Uri(logoElement.Value);
                 }
-                
+
                 resultModel.PodcastName = result.Element("title").Value;
                 resultModel.PodcastUrl = result.Element("url").Value;
 
