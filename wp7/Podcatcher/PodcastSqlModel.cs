@@ -123,7 +123,10 @@ namespace Podcatcher
                 subscriptionModel.Episodes.Add(episode);
             }
 
-            this.SubmitChanges();
+            lock (this)
+            {
+                this.SubmitChanges();
+            }
         }
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscriptionModel)
