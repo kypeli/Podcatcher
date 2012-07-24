@@ -124,6 +124,7 @@ namespace Podcatcher
                 Debug.WriteLine("Showing episodes for podcast. Name: " + tappedSubscription.PodcastName);
                 NavigationService.Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", tappedSubscription.PodcastId), UriKind.Relative));
                 this.SubscriptionsList.SelectedIndex = -1;  // Aaargh... stupid Silverlight.
+                tappedSubscription.NewEpisodesCount = "0";
             }
         }
 

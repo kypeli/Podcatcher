@@ -10,7 +10,8 @@
 
 	<StackPanel Orientation="Horizontal" Margin="0,0,0,20" Height="130" >
 		<Image CacheMode="BitmapCache" Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,0,10,0"/> 
-		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="361" VerticalAlignment="Center" Height="100"/>
+		<TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap"  Style="{StaticResource PhoneTextGroupHeaderStyle}" HorizontalAlignment="Center" Margin="0" Width="309" VerticalAlignment="Center" Height="100"/>
+		<TextBlock TextWrapping="Wrap" Text="{Binding NewEpisodesCount}" Width="60" TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource PhoneTextAccentStyle}"/>
 		<toolkit:ContextMenuService.ContextMenu>
 			<toolkit:ContextMenu>
 				<toolkit:MenuItem Header="Delete" Click="MenuItemDelete_Click" />

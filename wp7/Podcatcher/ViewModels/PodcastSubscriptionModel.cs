@@ -169,6 +169,27 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_newEpisodesCount;
+        public String NewEpisodesCount {
+            get
+            {
+                if (m_newEpisodesCount == 0)
+                {
+                    return "";
+                }
+
+                return m_newEpisodesCount.ToString();
+            } 
+
+            set 
+            {
+                if (m_newEpisodesCount.ToString() != value)
+                {
+                    m_newEpisodesCount = int.Parse(value);
+                }
+            } 
+        }
+
         // Version column aids update performance.
         [Column(IsVersion = true)]
         private Binary version;
@@ -311,6 +332,7 @@ namespace Podcatcher.ViewModels
                     latestEpisodePublishDate = episodes[0].EpisodePublished;
                 }
 
+                Debug.WriteLine("\nStarting to parse episodes for podcast: " + m_subscriptionModel.PodcastName);
                 List<PodcastEpisodeModel> newPodcastEpisodes = PodcastFactory.newPodcastEpisodes(m_subscriptionModel.CachedPodcastRSSFeed, latestEpisodePublishDate);
                 if (newPodcastEpisodes == null)
                 {
@@ -320,6 +342,7 @@ namespace Podcatcher.ViewModels
 
                 Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes.Count);
 
+                m_subscriptionModel.NewEpisodesCount = newPodcastEpisodes.Count.ToString();
                 m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
             }
         }
