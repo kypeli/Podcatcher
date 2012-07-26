@@ -344,6 +344,12 @@ namespace Podcatcher.ViewModels
 
             void m_worker_UpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
             {
+                if (e.Result == null)
+                {
+                    return;
+                }
+
+
                 int newPodcastEpisodes = (int)e.Result;
 
                 Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes);
@@ -352,13 +358,18 @@ namespace Podcatcher.ViewModels
 
             private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
             {
+                bool subscriptionAddedNow = true;
                 List<PodcastEpisodeModel> episodes = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel);
                 DateTime latestEpisodePublishDate = new DateTime();
+
                 if (episodes.Count > 0)
                 {
                     // The episodes are in descending order as per publish date. 
                     // So take the first episode and we have the latest known publish date.
                     latestEpisodePublishDate = episodes[0].EpisodePublished;
+
+                    // If we already have episodes, this subscription is not being added now.
+                    subscriptionAddedNow = false;
                 }
 
                 Debug.WriteLine("\nStarting to parse episodes for podcast: " + m_subscriptionModel.PodcastName);
@@ -369,7 +380,13 @@ namespace Podcatcher.ViewModels
                     return;
                 }
 
-                args.Result = newPodcastEpisodes.Count;
+                // Indicate new episodes to the UI only when we are not adding the feed. 
+                // I.e. we want to show new episodes only when we refresh the feed at restart.
+                if (subscriptionAddedNow == false)
+                {
+                    args.Result = newPodcastEpisodes.Count;
+                }
+
                 m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
             }
         }
