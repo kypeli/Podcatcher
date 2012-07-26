@@ -327,10 +327,6 @@ namespace Podcatcher.ViewModels
             {
                 int newPodcastEpisodes = (int)e.Result;
 
-                if (newPodcastEpisodes == 0)
-                {
-                    newPodcastEpisodes = 1;
-                }
                 Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes);
                 m_subscriptionModel.NewEpisodesCount = newPodcastEpisodes.ToString();
             }
