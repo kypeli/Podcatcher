@@ -186,6 +186,7 @@ namespace Podcatcher.ViewModels
                 if (m_newEpisodesCount.ToString() != value)
                 {
                     m_newEpisodesCount = int.Parse(value);
+                    NotifyPropertyChanged("NewEpisodesCount");
                 }
             } 
         }
@@ -319,6 +320,19 @@ namespace Podcatcher.ViewModels
                 Debug.WriteLine("Updating episodes for podcast: " + m_subscriptionModel.PodcastName);
                 m_worker.DoWork += new DoWorkEventHandler(m_worker_DoWorkUpdateEpisodes);
                 m_worker.RunWorkerAsync();
+                m_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(m_worker_UpdateEpisodesCompleted);
+            }
+
+            void m_worker_UpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
+            {
+                int newPodcastEpisodes = (int)e.Result;
+
+                if (newPodcastEpisodes == 0)
+                {
+                    newPodcastEpisodes = 1;
+                }
+                Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes);
+                m_subscriptionModel.NewEpisodesCount = newPodcastEpisodes.ToString();
             }
 
             private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
@@ -340,9 +354,7 @@ namespace Podcatcher.ViewModels
                     return;
                 }
 
-                Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes.Count);
-
-                m_subscriptionModel.NewEpisodesCount = newPodcastEpisodes.Count.ToString();
+                args.Result = newPodcastEpisodes.Count;
                 m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
             }
         }

@@ -19,6 +19,14 @@ namespace Podcatcher
         {
             // Required to initialize variables
             InitializeComponent();
+
+            Loaded += new RoutedEventHandler(PodcastSubscriptionControl_Loaded);
+        }
+
+        void PodcastSubscriptionControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            PodcastSubscriptionModel subscription = DataContext as PodcastSubscriptionModel;
+            this.NumberOfEpisodes.Text = string.Format("{0} episodes", subscription.Episodes.Count);
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
