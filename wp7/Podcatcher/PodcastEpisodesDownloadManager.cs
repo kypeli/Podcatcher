@@ -164,6 +164,7 @@ namespace Podcatcher
             if (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206)
             {
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                m_currentEpisodeDownload.PodcastSubscription.UnplayedEpisodes++;
             }
             else
             {

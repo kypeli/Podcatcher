@@ -190,6 +190,7 @@ namespace Podcatcher.ViewModels
             set
             {
                 m_episodeState = value;
+
                 NotifyPropertyChanged("EpisodeState");
                 NotifyPropertyChanged("EpisodeStatusText");
             }

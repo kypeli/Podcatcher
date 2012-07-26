@@ -9,6 +9,7 @@ using System.Data.Linq.Mapping;
 using System.Data.Linq;
 using Podcatcher.ViewModels;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Podcatcher.ViewModels
 {
@@ -189,6 +190,24 @@ namespace Podcatcher.ViewModels
                     NotifyPropertyChanged("NewEpisodesCount");
                 }
             } 
+        }
+
+        public int UnplayedEpisodes
+        {
+            get
+            {
+                var query = from episode in Episodes
+                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
+                                   && episode.SavedPlayPos == 0)
+                            select episode;
+
+                return query.Count();
+            }
+
+            set
+            {
+                NotifyPropertyChanged("UnplayedEpisodes");
+            }
         }
 
         // Version column aids update performance.

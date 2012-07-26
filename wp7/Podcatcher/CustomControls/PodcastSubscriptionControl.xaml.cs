@@ -15,6 +15,8 @@ namespace Podcatcher
 {
     public partial class PodcastSubscriptionControl : UserControl
     {
+        private PodcastSubscriptionModel m_subscription;
+
         public PodcastSubscriptionControl()
         {
             // Required to initialize variables
@@ -25,8 +27,31 @@ namespace Podcatcher
 
         void PodcastSubscriptionControl_Loaded(object sender, RoutedEventArgs e)
         {
-            PodcastSubscriptionModel subscription = DataContext as PodcastSubscriptionModel;
-            this.NumberOfEpisodes.Text = string.Format("{0} episodes", subscription.Episodes.Count);
+            m_subscription = DataContext as PodcastSubscriptionModel;
+            m_subscription.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(m_subscription_PropertyChanged);
+            updateUnplayedEpisodesText();
+        }
+
+        private void updateUnplayedEpisodesText()
+        {
+            int unplayedEpisodes = m_subscription.UnplayedEpisodes;
+
+            if (unplayedEpisodes > 0)
+            {
+                this.NumberOfEpisodes.Text = string.Format("{0} episodes, {1} unplayed.", m_subscription.Episodes.Count, unplayedEpisodes);
+            }
+            else
+            {
+                this.NumberOfEpisodes.Text = string.Format("{0} episodes.", m_subscription.Episodes.Count);
+            }
+        }
+
+        void m_subscription_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "UnplayedEpisodes")
+            {
+                updateUnplayedEpisodesText();
+            }
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)

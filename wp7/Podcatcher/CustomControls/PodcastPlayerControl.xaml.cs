@@ -88,6 +88,8 @@ namespace Podcatcher
             {
                 startPlayback();
             }
+
+            m_currentEpisode.SavedPlayPos = 1;  // To mark that the playback has started - we update UI correctly in podcast listing.
         }
 
         /************************************* Private implementation *******************************/
