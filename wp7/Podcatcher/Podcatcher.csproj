@@ -193,6 +193,7 @@
     <Content Include="Images\ff.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\minus.png" />
     <Content Include="Images\pause.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

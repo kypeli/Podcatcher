@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO.IsolatedStorage;
+using System.Linq;
 using System.Windows;
+using Coding4Fun.Phone.Controls;
+using Microsoft.Phone.BackgroundTransfer;
 using Podcatcher.CustomControls;
 using Podcatcher.ViewModels;
-using Microsoft.Phone.BackgroundTransfer;
-using System.Diagnostics;
-using Coding4Fun.Phone.Controls;
-using System.IO.IsolatedStorage;
-using System.Collections.Generic;
 
 namespace Podcatcher
 {
@@ -39,6 +40,24 @@ namespace Podcatcher
             {
                 startNextEpisodeDownload();
             }
+        }
+
+        public void cancelEpisodeDownload(PodcastEpisodeModel episode)
+        {
+            m_currentBackgroundTransfer.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
+            m_currentBackgroundTransfer.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+
+            // Update new episode state.
+            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+
+            // Get the transfer request that we should cancel. It's the first one in our app.
+            BackgroundTransferRequest thisRequest = BackgroundTransferService.Requests.First<BackgroundTransferRequest>();
+
+            // Cleanup cached data.
+            cleanupEpisodeDownload(thisRequest);
+
+            // Start a next round of downloading.
+            startNextEpisodeDownload();
         }
 
         #region private
@@ -168,7 +187,10 @@ namespace Podcatcher
             }
             else
             {
-                m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                if (m_currentEpisodeDownload != null)
+                {
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                }
 
                 ToastPrompt toast = new ToastPrompt();
                 toast.Title = "Error";
@@ -176,6 +198,14 @@ namespace Podcatcher
                 toast.Show();
             }
 
+            cleanupEpisodeDownload(transferRequest);
+
+            // And start a next round of downloading.
+            startNextEpisodeDownload();
+        }
+
+        private void cleanupEpisodeDownload(BackgroundTransferRequest transferRequest)
+        {
             // Remove the transfer request in order to make room in the 
             // queue for more transfers. Transfers are not automatically
             // removed by the system.
@@ -188,9 +218,6 @@ namespace Podcatcher
             m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
             m_currentEpisodeDownload = null;
             m_episodeDownloadQueue.Dequeue();
-
-            // And start a next round of downloading.
-            startNextEpisodeDownload();
         }
 
         private void RemoveTransferRequest(string transferID)
