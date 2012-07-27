@@ -224,13 +224,24 @@ namespace Podcatcher
                     break;
 
                 case PlayState.Stopped:
+                    // Player stopped
+                    Debug.WriteLine("Podcast player stopped.");
+                    playbackStopped();
+                    showNoPlayerLayout();
+                    break;
+
                 case PlayState.Shutdown:
-                    m_screenUpdateTimer.Stop();
-                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                    playbackStopped();
                     break;
 
             }
+        }
+
+        private void playbackStopped()
+        {
+            m_screenUpdateTimer.Stop();
+            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
         }
 
         private void setupUIForEpisodePaused()
@@ -278,6 +289,11 @@ namespace Podcatcher
                 BackgroundAudioPlayer.Instance.Play();
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;
             }
+        }
+
+        private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+            BackgroundAudioPlayer.Instance.Stop();
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)

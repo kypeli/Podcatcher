@@ -15,13 +15,14 @@
     			<Image x:Name="PodcastLogo" Margin="0" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" Width="300"/>
     			<TextBlock x:Name="PodcastEpisodeName" Margin="1,10,1,0" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="137" Width="470"/>
     		</StackPanel>
-    		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48">
+    		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48" Width="329">
                 <!-- Rew button-->
-                <Image Margin="0,0,20,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" Width="73" />
+                <Image Margin="0,0,10,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" Width="73" />
                 <!-- Play button-->
-                <Image Margin="0,0,20,0" x:Name="PlayButtonImage" Source="/Images/play.png" Tap="playButtonClicked" Width="73"/>
+                <Image Margin="0,0,10,0" x:Name="PlayButtonImage" Source="/Images/play.png" Tap="playButtonClicked" Width="73"/>
                 <!-- Next button-->
-                <Image Source="/Images/ff.png" Tap="ffButtonClicked" Width="78"/>                
+                <Image Source="/Images/ff.png" Tap="ffButtonClicked" Width="78"/>
+                <Image Width="100"  Source="/Podcatcher;component/Images/stop.png" Tap="stopButtonClicked"/>                
     		</StackPanel>
     		<StackPanel Height="100" Margin="33,0,24,52" VerticalAlignment="Bottom" Orientation="Horizontal">
     			<TextBlock x:Name="CurrentPositionText" TextWrapping="Wrap" VerticalAlignment="Center" Width="80" Margin="0,0,4,0" Text="00:00:00"/>

@@ -91,9 +91,6 @@
     <Compile Include="CustomControls\PopularPodcastsControl.xaml.cs">
       <DependentUpon>PopularPodcastsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\UserControl1.xaml.cs">
-      <DependentUpon>UserControl1.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="ViewModels\GPodderResultModel.cs" />
     <Compile Include="ViewModels\PodcastEpisodeModel.cs" />
@@ -153,10 +150,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CustomControls\UserControl1.xaml">
-      <Generator>MSBuild:MarkupCompilePass1</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,6 +203,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Podcatcher_generic_podcast_cover.png" />
+    <Resource Include="Images\stop.png" />
     <Content Include="SplashScreenImage.jpg" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
