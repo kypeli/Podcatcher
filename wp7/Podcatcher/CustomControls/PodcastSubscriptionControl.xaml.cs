@@ -34,7 +34,12 @@ namespace Podcatcher
 
         private void updateUnplayedEpisodesText()
         {
-            int unplayedEpisodes = m_subscription.UnplayedEpisodes;
+            int unplayedEpisodes;
+
+            lock (this)
+            {
+                unplayedEpisodes = m_subscription.UnplayedEpisodes;
+            }
 
             if (unplayedEpisodes > 0)
             {
