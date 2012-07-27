@@ -226,8 +226,6 @@ namespace Podcatcher
                 case PlayState.Stopped:
                     // Player stopped
                     Debug.WriteLine("Podcast player stopped.");
-                    playbackStopped();
-                    showNoPlayerLayout();
                     break;
 
                 case PlayState.Shutdown:
@@ -235,6 +233,12 @@ namespace Podcatcher
                     break;
 
             }
+        }
+
+        private void StopPlayback()
+        {
+            playbackStopped();
+            showNoPlayerLayout();
         }
 
         private void playbackStopped()
@@ -293,7 +297,11 @@ namespace Podcatcher
 
         private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            BackgroundAudioPlayer.Instance.Stop();
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing) { 
+                BackgroundAudioPlayer.Instance.Stop();
+            }
+
+            StopPlayback();
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
