@@ -64,6 +64,9 @@
                 <Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with, please feel free to contact me! I am more than delighted to receive bug reports."/>
                 <LineBreak/>
                 <LineBreak/>
+                <Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/>
+                <LineBreak/>
+                <LineBreak/>
                 <Run Text="This application is licensed under the BSD license. The source code is available at https://github.com/kypeli/Podcatcher/. "/>
                 </TextBlock>
                 <Button x:Name="PurchaseButton" Content="Purchase full version" Click="PurchaseButton_Click" VerticalAlignment="Bottom" />
