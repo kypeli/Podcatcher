@@ -43,11 +43,11 @@ namespace Podcatcher
 
             if (unplayedEpisodes > 0)
             {
-                this.NumberOfEpisodes.Text = string.Format("{0} episodes, {1} unplayed.", m_subscription.Episodes.Count, unplayedEpisodes);
+                this.NumberOfEpisodes.Text = string.Format("{0} episodes, {1} unplayed", m_subscription.Episodes.Count, unplayedEpisodes);
             }
             else
             {
-                this.NumberOfEpisodes.Text = string.Format("{0} episodes.", m_subscription.Episodes.Count);
+                this.NumberOfEpisodes.Text = string.Format("{0} episodes", m_subscription.Episodes.Count);
             }
         }
 
