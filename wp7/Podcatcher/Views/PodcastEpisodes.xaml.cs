@@ -29,11 +29,12 @@ namespace Podcatcher.Views
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
-            PodcastSubscriptionModel subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
-            episodes = new ObservableCollection<PodcastEpisodeModel>(subscription.Episodes.ToList());
-            this.PodcastName.Text           = subscription.PodcastName;
-            this.PodcastDescription.Text    = subscription.PodcastDescription;
-            this.PodcastIcon.Source         = subscription.PodcastLogo;
+            m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
+
+            episodes = new ObservableCollection<PodcastEpisodeModel>(m_subscription.Episodes.ToList());
+            this.PodcastName.Text           = m_subscription.PodcastName;
+            this.PodcastDescription.Text    = m_subscription.PodcastDescription;
+            this.PodcastIcon.Source         = m_subscription.PodcastLogo;
             this.EpisodeList.ItemsSource    = episodes;
         }
 
@@ -41,8 +42,14 @@ namespace Podcatcher.Views
         #region private
 
         private PodcastSqlModel m_podcastSqlModel;
+        private PodcastSubscriptionModel m_subscription;
         ObservableCollection<PodcastEpisodeModel> episodes;
         
         #endregion
+
+        private void ApplicationBarSettingsButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri(string.Format("/Views/SubscriptionSettings.xaml?podcastId={0}", m_subscription.PodcastId), UriKind.Relative));
+        }
     }
 }

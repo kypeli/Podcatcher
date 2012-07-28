@@ -82,6 +82,12 @@ namespace Podcatcher
             List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
             foreach (PodcastSubscriptionModel s in subscriptions)
             {
+                if (s.IsSubscribed == false)
+                {
+                    Debug.WriteLine("Not subscribed to {0}, no refresh.", s.PodcastName);
+                    return;
+                }
+
                 Debug.WriteLine("Refreshing subscriptions for '{0}'.", s.PodcastName);
                 WebClient wc = new WebClient();
                 wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);

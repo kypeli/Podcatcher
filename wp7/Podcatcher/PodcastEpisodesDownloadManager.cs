@@ -60,6 +60,14 @@ namespace Podcatcher
             startNextEpisodeDownload();
         }
 
+        public void addEpisodesToDownloadQueue(List<PodcastEpisodeModel> newPodcastEpisodes)
+        {
+            foreach (PodcastEpisodeModel episode in newPodcastEpisodes)
+            {
+                addEpisodeToDownloadQueue(episode);
+            }
+        }
+
         #region private
         private static PodcastEpisodesDownloadManager m_instance            = null;
         private ObservableQueue<PodcastEpisodeModel> m_episodeDownloadQueue = new ObservableQueue<PodcastEpisodeModel>();

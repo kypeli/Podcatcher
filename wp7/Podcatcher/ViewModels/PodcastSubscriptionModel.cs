@@ -144,6 +144,60 @@ namespace Podcatcher.ViewModels
             set;
         }
 
+        [Column]
+        private int m_newEpisodesCount;
+        public String NewEpisodesCount
+        {
+            get
+            {
+                if (m_newEpisodesCount == 0)
+                {
+                    return "";
+                }
+
+                return m_newEpisodesCount.ToString();
+            }
+
+            set
+            {
+                if (m_newEpisodesCount.ToString() != value)
+                {
+                    m_newEpisodesCount = int.Parse(value);
+                    NotifyPropertyChanged("NewEpisodesCount");
+                }
+            }
+        }
+
+        [Column]
+        private bool m_isSubscribed = true;
+        public Boolean IsSubscribed
+        {
+            get
+            {
+                return m_isSubscribed;
+            }
+
+            set
+            {
+                m_isSubscribed = value;
+            }
+        }
+
+        [Column]
+        private bool m_isAutoDL = false;
+        public Boolean IsAutoDownload
+        {
+            get
+            {
+                return m_isAutoDL;
+            }
+
+            set
+            {
+                m_isAutoDL = value;
+            }
+        }
+
         private EntitySet<PodcastEpisodeModel> m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
         [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId", OtherKey = "PodcastId")]
         public EntitySet<PodcastEpisodeModel> Episodes
@@ -168,28 +222,6 @@ namespace Podcatcher.ViewModels
             {
                 return m_podcastEpisodesManager;
             }
-        }
-
-        private int m_newEpisodesCount;
-        public String NewEpisodesCount {
-            get
-            {
-                if (m_newEpisodesCount == 0)
-                {
-                    return "";
-                }
-
-                return m_newEpisodesCount.ToString();
-            } 
-
-            set 
-            {
-                if (m_newEpisodesCount.ToString() != value)
-                {
-                    m_newEpisodesCount = int.Parse(value);
-                    NotifyPropertyChanged("NewEpisodesCount");
-                }
-            } 
         }
 
         public int UnplayedEpisodes
@@ -250,6 +282,11 @@ namespace Podcatcher.ViewModels
             WebClient wc = new WebClient();
             wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
             wc.OpenReadAsync(m_PodcastLogoUrl);
+        }
+
+        public void addNumOfNewEpisodes(int newPodcastEpisodes)
+        {
+            NewEpisodesCount = (m_newEpisodesCount + newPodcastEpisodes).ToString();
         }
 
         /************************************* Private implementation *******************************/
@@ -353,7 +390,7 @@ namespace Podcatcher.ViewModels
                 int newPodcastEpisodes = (int)e.Result;
 
                 Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes);
-                m_subscriptionModel.NewEpisodesCount = newPodcastEpisodes.ToString();
+                m_subscriptionModel.addNumOfNewEpisodes(newPodcastEpisodes);
             }
 
             private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
@@ -385,6 +422,12 @@ namespace Podcatcher.ViewModels
                 if (subscriptionAddedNow == false)
                 {
                     args.Result = newPodcastEpisodes.Count;
+
+                    if (m_subscriptionModel.IsAutoDownload)
+                    {
+                        PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
+                    }
+
                 }
 
                 m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
