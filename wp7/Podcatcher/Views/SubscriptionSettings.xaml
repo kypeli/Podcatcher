@@ -21,7 +21,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="221"  Width="480">
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="274"  Width="480">
             <Grid.RowDefinitions>
             	<RowDefinition Height="Auto"/>
             	<RowDefinition Height="*"/>
@@ -38,10 +38,10 @@
 				</TextBlock.Foreground>
             </TextBlock>
 
-            <Image Grid.Row="1" Source="{Binding PodcastLogo}" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" VerticalAlignment="Top" />
+            <Image Grid.Row="1" Source="{Binding PodcastLogo}" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" VerticalAlignment="Top" Stretch="Fill" Margin="5,0" />
             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PodcastDescription}" x:Name="PodcastDescription" TextWrapping="Wrap" Height="Auto" Margin="17,0,0,0" VerticalAlignment="Top" />
         </Grid>
-        <StackPanel Margin="0,225,8,8">
+        <StackPanel Margin="0,274,8,8">
         	<StackPanel Height="88" Orientation="Horizontal">
         		<TextBlock TextWrapping="Wrap" Text="Subscribe" Width="288" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
                 <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsSubscribed, Mode=TwoWay}" Content="ToggleSwitchButton" Margin="0" Width="180" d:LayoutOverrides="Height"/>
