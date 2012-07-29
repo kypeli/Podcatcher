@@ -386,11 +386,18 @@ namespace Podcatcher.ViewModels
                     return;
                 }
 
+                List<PodcastEpisodeModel> newPodcastEpisodes = e.Result as List<PodcastEpisodeModel>;
+                
+                int numOfNewPodcasts = newPodcastEpisodes.Count;
 
-                int newPodcastEpisodes = (int)e.Result;
+                Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);
+                m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
 
-                Debug.WriteLine("Got {0} new episodes.", newPodcastEpisodes);
-                m_subscriptionModel.addNumOfNewEpisodes(newPodcastEpisodes);
+                if (m_subscriptionModel.IsAutoDownload
+                    && newPodcastEpisodes.Count > 0)
+                {
+                    PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
+                }
             }
 
             private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
@@ -421,13 +428,7 @@ namespace Podcatcher.ViewModels
                 // I.e. we want to show new episodes only when we refresh the feed at restart.
                 if (subscriptionAddedNow == false)
                 {
-                    args.Result = newPodcastEpisodes.Count;
-
-                    if (m_subscriptionModel.IsAutoDownload)
-                    {
-                        PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
-                    }
-
+                    args.Result = newPodcastEpisodes;
                 }
 
                 m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
