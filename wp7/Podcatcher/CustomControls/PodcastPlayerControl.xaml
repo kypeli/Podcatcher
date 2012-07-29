@@ -13,7 +13,7 @@
     	<Grid x:Name="PlayingLayout" Margin="0,0,8,8">
     		<StackPanel Margin="0,0,0,152">
     			<Image x:Name="PodcastLogo" Margin="0" Height="300" VerticalAlignment="Top" HorizontalAlignment="Center" Width="300"/>
-    			<TextBlock x:Name="PodcastEpisodeName" Margin="1,10,1,0" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="137" Width="470"/>
+    			<TextBlock x:Name="PodcastEpisodeName" Margin="34,10,33,0" TextWrapping="Wrap" Text="TextBlock" TextAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Height="104"/>
     		</StackPanel>
     		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48" Width="329">
                 <!-- Rew button-->
