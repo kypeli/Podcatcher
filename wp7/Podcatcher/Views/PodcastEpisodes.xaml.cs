@@ -31,11 +31,11 @@ namespace Podcatcher.Views
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
 
-            episodes = new ObservableCollection<PodcastEpisodeModel>(m_subscription.Episodes.ToList());
+            m_episodes = new ObservableCollection<PodcastEpisodeModel>(m_podcastSqlModel.episodesForSubscription(m_subscription));
             this.PodcastName.Text           = m_subscription.PodcastName;
             this.PodcastDescription.Text    = m_subscription.PodcastDescription;
             this.PodcastIcon.Source         = m_subscription.PodcastLogo;
-            this.EpisodeList.ItemsSource    = episodes;
+            this.EpisodeList.ItemsSource    = m_episodes;
         }
 
         /************************************* Priovate implementations *******************************/
@@ -43,7 +43,7 @@ namespace Podcatcher.Views
 
         private PodcastSqlModel m_podcastSqlModel;
         private PodcastSubscriptionModel m_subscription;
-        ObservableCollection<PodcastEpisodeModel> episodes;
+        ObservableCollection<PodcastEpisodeModel> m_episodes;
         
         #endregion
 
