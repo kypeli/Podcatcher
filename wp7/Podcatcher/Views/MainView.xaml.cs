@@ -57,11 +57,9 @@ namespace Podcatcher
         {
             InitializeComponent();
 
-            // Hook data contextes.
-            DataContext = m_podcastsModel;
-
             // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
             m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+
             m_subscriptionsManager.refreshSubscriptions();
 
             // Post-pageinitialization event call hookup.
@@ -70,10 +68,17 @@ namespace Podcatcher
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
             ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
-            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             // Hook to the event when the podcast player starts playing. 
             this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+        }
+
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            // Hook data contextes.
+            DataContext = m_podcastsModel;
+
+            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
@@ -140,7 +145,7 @@ namespace Podcatcher
             }
             else
             {
-                MessageBox.Show("You have reached the limit of podcast subscriptions for this trial version of Podcatcher. Please purchase the full version from Marketplace.");
+                MessageBox.Show("You have reached the limit of podcast subscriptions for this free trial of Podcatcher. Please purchase the full version from Windows Phone Marketplace.");
             }
         }
 
