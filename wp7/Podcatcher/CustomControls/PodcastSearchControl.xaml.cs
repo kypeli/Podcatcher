@@ -39,6 +39,7 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Xml.Linq;
 using Podcatcher.ViewModels;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher.CustomControls
 {
@@ -60,12 +61,23 @@ namespace Podcatcher.CustomControls
             progressOverlay.Show();
 
             WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadSearchResultsCompleted);
             wc.DownloadStringAsync(new Uri(String.Format("https://gpodder.net/search.xml?q=%22{0}%22", this.searchTerm.Text)));
         }
 
-        void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        void wc_DownloadSearchResultsCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
+            if (e.Error != null)
+            {
+                Debug.WriteLine("ERROR: Web error happened. Error: " + e.Error.ToString());
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Could not get search results.";
+
+                toast.Show();
+                return;
+            }
+
             XDocument searchXml;
             try
             {
@@ -74,6 +86,11 @@ namespace Podcatcher.CustomControls
             catch (System.Xml.XmlException ex)
             {
                 Debug.WriteLine("ERROR: Cannot parse gPodder.net search result XML. Error: " + ex.Message);
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Could not get search results.";
+
+                toast.Show();
                 return;
             }
 
