@@ -115,10 +115,13 @@ namespace Podcatcher
                     return;
                 }
 
-                Debug.WriteLine("Refreshing subscriptions for '{0}'.", s.PodcastName);
+                
+                Uri refreshUri = createNonCachedRefreshUri(s.PodcastRSSUrl);
+                Debug.WriteLine("Refreshing subscriptions for '{0}', using URI: {1}", s.PodcastName, refreshUri);
+
                 WebClient wc = new WebClient();
                 wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
-                wc.DownloadStringAsync(new Uri(s.PodcastRSSUrl), s);
+                wc.DownloadStringAsync(refreshUri, s);
             }
         }
 
@@ -138,6 +141,20 @@ namespace Podcatcher
             this.OnPodcastChannelFinished += new SubscriptionManagerHandler(PodcastSubscriptionsManager_OnPodcastAddedFinished);
         }
 
+
+        private Uri createNonCachedRefreshUri(string refreshUri)
+        {
+            string delimitter = "&";
+            if (refreshUri.Contains("?") == false)
+            {
+                delimitter = "?";
+            }
+
+            return new Uri(string.Format("{0}{1}nocache={2}", refreshUri,
+                                                              delimitter,
+                                                              Environment.TickCount));
+
+        }
 
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
