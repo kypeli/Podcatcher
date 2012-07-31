@@ -36,6 +36,7 @@ using System.Net;
 using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
+using Microsoft.Phone.BackgroundTransfer;
 
 namespace Podcatcher.ViewModels
 {
@@ -254,6 +255,21 @@ namespace Podcatcher.ViewModels
                 }
 
                 return statusText;
+            }
+        }
+
+        private BackgroundTransferRequest m_transferRequest;
+        public BackgroundTransferRequest DownloadRequest
+        {
+            get
+            {
+                return m_transferRequest;
+            }
+
+            set
+            {
+                m_transferRequest = value;
+                DownloadPercentage = 0;
             }
         }
 

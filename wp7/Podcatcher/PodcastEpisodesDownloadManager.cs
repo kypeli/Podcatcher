@@ -77,8 +77,9 @@ namespace Podcatcher
             // Update new episode state.
             episode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
 
-            // Get the transfer request that we should cancel. It's the first one in our app.
-            BackgroundTransferRequest thisRequest = BackgroundTransferService.Requests.First<BackgroundTransferRequest>();
+            // Get the transfer request that we should cancel. 
+            BackgroundTransferRequest thisRequest = episode.DownloadRequest;
+            episode.DownloadRequest = null;
 
             // Cleanup cached data.
             cleanupEpisodeDownload(thisRequest);
@@ -163,6 +164,9 @@ namespace Podcatcher
                 m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                 m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+
+                // Store request to the episode.
+                m_currentEpisodeDownload.DownloadRequest = m_currentBackgroundTransfer;
 
                 m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
                 m_applicationSettings.Add(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID, m_currentEpisodeDownload.EpisodeId);
@@ -251,8 +255,12 @@ namespace Podcatcher
             //  - Set currently downloading episode to NULL.
             //  - Remove this episode from the download queue. 
             m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
-            m_currentEpisodeDownload = null;
             m_episodeDownloadQueue.Dequeue();
+
+            // Clean episode data.
+            m_currentEpisodeDownload.DownloadRequest = null;
+            m_currentEpisodeDownload = null;
+
         }
 
         private void RemoveTransferRequest(string transferID)
