@@ -42,7 +42,6 @@ namespace Podcatcher
         {
             InitializeComponent();
             this.DownloadProgressText.Text = "";
-            this.CancelDownloadButton.Visibility = Visibility.Collapsed;
 
             Loaded += new RoutedEventHandler(PodcastDownloadControl_Loaded);
         }
@@ -54,7 +53,6 @@ namespace Podcatcher
 
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            this.CancelDownloadButton.Visibility = Visibility.Visible; 
             this.DownloadProgressText.Text = String.Format("{0} %", (sender as ProgressBar).Value);
         }
 

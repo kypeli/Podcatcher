@@ -71,21 +71,25 @@ namespace Podcatcher
 
         public void cancelEpisodeDownload(PodcastEpisodeModel episode)
         {
-            m_currentBackgroundTransfer.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
-            m_currentBackgroundTransfer.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
-
             // Update new episode state.
             episode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
 
             // Get the transfer request that we should cancel. 
             BackgroundTransferRequest thisRequest = episode.DownloadRequest;
+
+            // We canceled a queued episode that wasn't downloading yet.
+            if (thisRequest == null)
+            {
+                removeEpisodeFromDownloadQueue(episode);
+                return;
+            }
+            else
+            {
+                // We canceled current download.
+                RemoveTransferRequest(thisRequest.RequestId);
+            }
+
             episode.DownloadRequest = null;
-
-            // Cleanup cached data.
-            cleanupEpisodeDownload(thisRequest);
-
-            // Start a next round of downloading.
-            startNextEpisodeDownload();
         }
 
         public void addEpisodesToDownloadQueue(List<PodcastEpisodeModel> newPodcastEpisodes)
@@ -150,6 +154,11 @@ namespace Podcatcher
                     break;
                 }
             }
+        }
+
+        private void removeEpisodeFromDownloadQueue(PodcastEpisodeModel episode)
+        {
+            m_episodeDownloadQueue.RemoveItem(episode);
         }
 
         private void startNextEpisodeDownload()
@@ -223,6 +232,7 @@ namespace Podcatcher
             {
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
                 m_currentEpisodeDownload.PodcastSubscription.UnplayedEpisodes++;
+
             }
             else
             {
@@ -230,11 +240,6 @@ namespace Podcatcher
                 {
                     m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
                 }
-
-                ToastPrompt toast = new ToastPrompt();
-                toast.Title = "Error";
-                toast.Message = "Podcast download occured an error. Please try again.";
-                toast.Show();
             }
 
             cleanupEpisodeDownload(transferRequest);
@@ -256,6 +261,10 @@ namespace Podcatcher
             //  - Remove this episode from the download queue. 
             m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
             m_episodeDownloadQueue.Dequeue();
+
+            m_currentBackgroundTransfer.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
+            m_currentBackgroundTransfer.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+            m_currentBackgroundTransfer = null;
 
             // Clean episode data.
             m_currentEpisodeDownload.DownloadRequest = null;

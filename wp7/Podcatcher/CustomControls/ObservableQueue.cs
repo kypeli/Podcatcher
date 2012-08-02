@@ -34,7 +34,7 @@ namespace Podcatcher.CustomControls
     public class ObservableQueue<T> : INotifyCollectionChanged, IEnumerable<T>
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
-        private readonly Queue<T> queue = new Queue<T>();
+        private Queue<T> queue = new Queue<T>();
 
         public void Enqueue(T item)
         {
@@ -66,6 +66,46 @@ namespace Podcatcher.CustomControls
             get
             {
                 return queue.Count;
+            }
+        }
+
+        public void Clear()
+        {
+            queue.Clear();
+            if (CollectionChanged != null)
+                CollectionChanged(this,
+                    new NotifyCollectionChangedEventArgs(
+                        NotifyCollectionChangedAction.Reset));
+        }
+
+        public void RemoveItem(T item)
+        {
+            bool found = false;
+            int i = 0;
+            int j = 0;
+            List<T> items = new List<T>();
+
+            foreach (T it in queue)
+            {
+                if (it.Equals(item))
+                {
+                    found = true;
+                    j = i;
+                    continue;
+                }
+
+                items.Insert(i, it);
+                i++;
+            }
+
+            queue = new Queue<T>(items);
+
+            if (found)
+            {
+                if (CollectionChanged != null)
+                    CollectionChanged(this,
+                        new NotifyCollectionChangedEventArgs(
+                            NotifyCollectionChangedAction.Remove, item, j));
             }
         }
 
