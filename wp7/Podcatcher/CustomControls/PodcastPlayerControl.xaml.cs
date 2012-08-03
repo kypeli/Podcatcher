@@ -134,7 +134,6 @@ namespace Podcatcher
             m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
-            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
         }
@@ -192,6 +191,7 @@ namespace Podcatcher
         private void startPlayback(TimeSpan position)
         {
             BackgroundAudioPlayer.Instance.Track = getAudioTrackForEpisode(m_currentEpisode);
+            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
 
             if (position.Ticks > 0) 
             {
@@ -205,6 +205,12 @@ namespace Podcatcher
             m_appSettings.Save();
 
             PodcastPlayerStarted(this, new EventArgs());
+        }
+
+        private void StopPlayback()
+        {
+            playbackStopped();
+            showNoPlayerLayout();
         }
 
         private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
@@ -262,17 +268,15 @@ namespace Podcatcher
             }
         }
 
-        private void StopPlayback()
-        {
-            playbackStopped();
-            showNoPlayerLayout();
-        }
-
         private void playbackStopped()
         {
+            BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
+            
+            saveEpisodePlayPosition(m_currentEpisode);
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+            m_currentEpisode = null;
             m_screenUpdateTimer.Stop();
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
         }
 
         private void setupUIForEpisodePaused()
