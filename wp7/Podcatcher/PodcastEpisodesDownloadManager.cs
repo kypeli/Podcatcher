@@ -238,7 +238,7 @@ namespace Podcatcher
             {
                 if (m_currentEpisodeDownload != null)
                 {
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
                 }
             }
 
