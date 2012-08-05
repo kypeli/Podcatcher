@@ -100,7 +100,7 @@ namespace Podcatcher
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(deleteEpisodesFromDB);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteEpisodesFromDBCompleted);
             worker.RunWorkerAsync(podcastModel);
         }
 
@@ -126,7 +126,7 @@ namespace Podcatcher
             SubmitChanges();
         }
 
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void deleteEpisodesFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             NotifyPropertyChanged("PodcastSubscriptions");
         }
