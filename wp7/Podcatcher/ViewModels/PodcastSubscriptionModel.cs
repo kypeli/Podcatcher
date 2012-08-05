@@ -287,12 +287,19 @@ namespace Podcatcher.ViewModels
 
         public void cleanupForDeletion()
         {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(backgroundCleanupWork);
+            worker.RunWorkerAsync();
+        }
+
+        void backgroundCleanupWork(object sender, DoWorkEventArgs e)
+        {
             // TODO: Extract methods.
-                        
+
             // Delete logo from local image cache.
-            if (m_localPodcastIconCache.FileExists(m_PodcastLogoLocalLocation) == false) 
+            if (m_localPodcastIconCache.FileExists(m_PodcastLogoLocalLocation) == false)
             {
-                Debug.WriteLine("ERROR: Logo local cache file not found! Subscription: " + m_PodcastName 
+                Debug.WriteLine("ERROR: Logo local cache file not found! Subscription: " + m_PodcastName
                                 + ", logo file: " + m_PodcastLogoLocalLocation);
                 return;
             }

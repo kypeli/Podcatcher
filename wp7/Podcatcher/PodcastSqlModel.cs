@@ -98,6 +98,15 @@ namespace Podcatcher
 
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(deleteEpisodesFromDB);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+            worker.RunWorkerAsync(podcastModel);
+        }
+
+        void deleteEpisodesFromDB(object sender, DoWorkEventArgs e)
+        {
+            PodcastSubscriptionModel podcastModel = e.Argument as PodcastSubscriptionModel;
 
             var queryDelEpisodes = from episode in Episodes
                                    where episode.PodcastId.Equals(podcastModel.PodcastId)
@@ -111,10 +120,14 @@ namespace Podcatcher
             var queryDelSubscription = (from subscription in Subscriptions
                                         where subscription.PodcastId.Equals(podcastModel.PodcastId)
                                         select subscription).First();
-            
+
             Subscriptions.DeleteOnSubmit(queryDelSubscription);
 
             SubmitChanges();
+        }
+
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
             NotifyPropertyChanged("PodcastSubscriptions");
         }
 
