@@ -107,7 +107,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private Uri m_PodcastLogoUrl = null;
+        private Uri m_PodcastLogoUrl = new Uri("Images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
         public Uri PodcastLogoUrl
         {
             get
@@ -455,6 +455,11 @@ namespace Podcatcher.ViewModels
                 // I.e. we want to show new episodes only when we refresh the feed at restart.
                 if (subscriptionAddedNow == false)
                 {
+                    // Set the visibility for new episodes.
+                    foreach (PodcastEpisodeModel e in newPodcastEpisodes)
+                    {
+                        e.NewEpisodeVisibility = System.Windows.Visibility.Visible;
+                    }
                     args.Result = newPodcastEpisodes;
                 }
 

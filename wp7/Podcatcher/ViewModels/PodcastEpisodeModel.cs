@@ -37,6 +37,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using Microsoft.Phone.BackgroundTransfer;
+using System.Windows;
 
 namespace Podcatcher.ViewModels
 {
@@ -270,6 +271,20 @@ namespace Podcatcher.ViewModels
             {
                 m_transferRequest = value;
                 DownloadPercentage = 0;
+            }
+        }
+
+        private Visibility m_newEpisodeVisibility = Visibility.Collapsed;
+        public Visibility NewEpisodeVisibility
+        {
+            get
+            {
+                return m_newEpisodeVisibility;
+            }
+
+            set
+            {
+                m_newEpisodeVisibility = value;
             }
         }
 
