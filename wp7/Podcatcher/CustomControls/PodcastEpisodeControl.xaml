@@ -21,20 +21,22 @@
             <RowDefinition Height="50" />    
         </Grid.RowDefinitions>
         
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="266" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="480">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="0.603*" />
+                <ColumnDefinition Width="0.397*" />
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Text="{Binding EpisodeName}" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource PhoneTextTitle3Style}" Margin="12,0,0,0" HorizontalAlignment="Left" Width="251" FontWeight="Bold"/>
-        <Button IsEnabled="{Binding EpisodeState, 
-                                Converter={StaticResource downloadButtonActive}}" Width="Auto" Grid.Row="0" Grid.Column="1" 
-                Content="{Binding EpisodeState, 
-                                Converter={StaticResource downloadButtonText}}" 
-                                VerticalAlignment="Top" HorizontalContentAlignment="Center" Click="EpisodeButton_Click" Margin="8,0,0,0" />
+            <Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
+        	<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
+        	<Button IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="193" 
+        		Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
+        		HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
+        </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
-            <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="15,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
-            <TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="247" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
+        	<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="12,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
+        	<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="247" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>
