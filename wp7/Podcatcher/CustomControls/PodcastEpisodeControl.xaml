@@ -24,13 +24,13 @@
         <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="480">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="0.603*" />
-                <ColumnDefinition Width="0.397*" />
+                <ColumnDefinition Width="0.571*" />
+                <ColumnDefinition Width="0.429*" />
             </Grid.ColumnDefinitions>
 
             <Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-        	<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
-        	<Button IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="193" 
+        	<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
+        	<Button IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
         		Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
         		HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
         </Grid>
