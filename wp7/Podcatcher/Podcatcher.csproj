@@ -211,9 +211,9 @@
     <Resource Include="Images\rew.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\Podcatcher_generic_podcast_cover.png">
+    <Content Include="Images\Podcatcher_generic_podcast_cover.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
     <Resource Include="Images\stop.png" />
     <Content Include="Images\settings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

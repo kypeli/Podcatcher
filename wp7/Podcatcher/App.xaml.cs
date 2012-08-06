@@ -44,7 +44,7 @@ namespace Podcatcher
         // Key for storing the episode ID of the currently downloading episode.
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
 
-        private static LicenseInformation m_licenseInfo = new LicenseInformation();
+        private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
 
         public bool IsTrial
@@ -94,7 +94,8 @@ namespace Podcatcher
                 // and consume battery power when the user is not using the phone.
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
-
+            
+            m_licenseInfo = new LicenseInformation();
         }
 
         // Code to execute when the application is launching (eg, from Start)
