@@ -71,6 +71,7 @@ namespace Podcatcher
 
             // Hook to the event when the podcast player starts playing. 
             this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+            this.PodcastPlayer.PodcastPlayerStopped += new EventHandler(PodcastPlayer_PodcastPlayerStopped);
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
@@ -79,6 +80,11 @@ namespace Podcatcher
             DataContext = m_podcastsModel;
 
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
+        }
+
+        void PodcastPlayer_PodcastPlayerStopped(object sender, EventArgs e)
+        {
+            this.PodcastPlayerHeader.AltText = "";
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)

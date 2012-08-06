@@ -49,6 +49,7 @@ namespace Podcatcher
     public partial class PodcastPlayerControl : UserControl
     {
         public event EventHandler PodcastPlayerStarted;
+        public event EventHandler PodcastPlayerStopped;
 
         public PodcastEpisodeModel PlayingEpisode
         {
@@ -211,6 +212,7 @@ namespace Podcatcher
         {
             playbackStopped();
             showNoPlayerLayout();
+            PodcastPlayerStopped(this, new EventArgs());
         }
 
         private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
