@@ -295,6 +295,7 @@ namespace Podcatcher
             try
             {
                 BackgroundTransferService.Remove(transfer);
+                transfer.Dispose();
             }
             catch (Exception e)
             {
