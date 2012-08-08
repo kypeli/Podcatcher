@@ -48,7 +48,6 @@ namespace Podcatcher
             // Required to initialize variables
             InitializeComponent();
 
-            this.Loaded += new RoutedEventHandler(Page_Loaded);
         }
 
         /************************************* Private implementations *******************************/
@@ -67,6 +66,8 @@ namespace Podcatcher
 
         private void EpisodeButton_Click(object sender, RoutedEventArgs e)
         {
+            m_episodeModel = this.DataContext as PodcastEpisodeModel;
+
             switch (m_episodeModel.EpisodeState)
             {
                 // Episode is idle => start downloading. 
