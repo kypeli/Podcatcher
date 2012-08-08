@@ -86,7 +86,7 @@ namespace Podcatcher
             else
             {
                 // We canceled current download.
-                RemoveTransferRequest(thisRequest.RequestId);
+                RemoveTransferRequest(thisRequest);
             }
 
             episode.DownloadRequest = null;
@@ -179,7 +179,21 @@ namespace Podcatcher
 
                 m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
                 m_applicationSettings.Add(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID, m_currentEpisodeDownload.EpisodeId);
-                BackgroundTransferService.Add(m_currentBackgroundTransfer);
+
+                try
+                {
+                    BackgroundTransferService.Add(m_currentBackgroundTransfer);
+                }
+                catch (InvalidOperationException)
+                {
+                    foreach (BackgroundTransferRequest r in BackgroundTransferService.Requests)
+                    {
+                        BackgroundTransferService.Remove(r);
+                    }
+
+                    BackgroundTransferService.Add(m_currentBackgroundTransfer);
+                }
+
             }
         }
 
@@ -230,12 +244,14 @@ namespace Podcatcher
             // transfer was successful
             if (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206)
             {
+                Debug.WriteLine("Transfer request completed succesfully.");
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
                 m_currentEpisodeDownload.PodcastSubscription.UnplayedEpisodes++;
 
             }
             else
             {
+                Debug.WriteLine("Transfer request completed with error code: " + transferRequest.StatusCode);
                 if (m_currentEpisodeDownload != null)
                 {
                     m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
@@ -253,7 +269,7 @@ namespace Podcatcher
             // Remove the transfer request in order to make room in the 
             // queue for more transfers. Transfers are not automatically
             // removed by the system.
-            RemoveTransferRequest(transferRequest.RequestId);
+            RemoveTransferRequest(transferRequest);
 
             // Update state of the finished episode.
             //  - Remove the settings key that denoted that this episode is download (in case the app is restarted while this downloads). 
@@ -272,19 +288,17 @@ namespace Podcatcher
 
         }
 
-        private void RemoveTransferRequest(string transferID)
+        private void RemoveTransferRequest(BackgroundTransferRequest transfer)
         {
-            // Use Find to retrieve the transfer request with the specified ID.
-            BackgroundTransferRequest transferToRemove = BackgroundTransferService.Find(transferID);
-
+            Debug.WriteLine("Removing transfer request with id: " + transfer.RequestId);
             // Try to remove the transfer from the background transfer service.
             try
             {
-                BackgroundTransferService.Remove(transferToRemove);
+                BackgroundTransferService.Remove(transfer);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // Handle the exception.
+                Debug.WriteLine("ERROR: Cannot remove transfer request. Error: " + e.Message);
             }
         }
 
