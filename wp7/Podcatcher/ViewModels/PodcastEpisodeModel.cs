@@ -38,6 +38,7 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using Microsoft.Phone.BackgroundTransfer;
 using System.Windows;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher.ViewModels
 {
@@ -301,15 +302,30 @@ namespace Podcatcher.ViewModels
             {
                 if (episodeStore.FileExists(EpisodeFile) == false)
                 {
-                    Debug.WriteLine("WARNING: Could not find downloaded episode to download. Name: " + EpisodeFile);
+                    // If we cannot find the episode file to delete, then we at least have to reset the episode state 
+                    // back to idle.
+                    Debug.WriteLine("WARNING: Could not find downloaded episode to delete. Name: " + EpisodeFile);
+                    EpisodeState = EpisodeStateEnum.Idle;
+                    EpisodeFile = null;
                     return;
                 }
 
                 Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
-                episodeStore.DeleteFile(EpisodeFile);                
+
+                try
+                {
+                    episodeStore.DeleteFile(EpisodeFile);
+                    EpisodeFile = null;
+                }
+                catch (IsolatedStorageException)
+                {
+                    ToastPrompt toast = new ToastPrompt();
+                    toast.Title = "Error";
+                    toast.Message = "Could not delete episode.";
+
+                    toast.Show();                    
+                }
             }
-            
-            EpisodeFile = null;
         }
 
 
