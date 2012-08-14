@@ -58,12 +58,12 @@ namespace Podcatcher
 
         public static PodcastSubscriptionsManager getInstance()
         {
-            if (m_instance == null)
+            if (m_subscriptionManagerInstance == null)
             {
-                m_instance = new PodcastSubscriptionsManager();
+                m_subscriptionManagerInstance = new PodcastSubscriptionsManager();
             }
 
-            return m_instance;
+            return m_subscriptionManagerInstance;
         }
 
         public void addSubscriptionFromURL(string podcastRss)
@@ -127,7 +127,7 @@ namespace Podcatcher
 
         /************************************* Private implementation *******************************/
         #region privateImplementations
-        private static PodcastSubscriptionsManager m_instance = null;
+        private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
         private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
 
@@ -161,7 +161,7 @@ namespace Podcatcher
             if (e.Error != null
                 || e.Cancelled)
             {
-                PodcastSubscriptionFailedWithMessage("Web request failed. Message: " + e.Error.Message);
+                PodcastSubscriptionFailedWithMessage("Error retrieving podcast feed.");
                 return;
             }
 
@@ -194,6 +194,17 @@ namespace Podcatcher
 
         void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
+            if (e.Error != null)
+            {
+                Debug.WriteLine("ERROR: Got web error when refreshing subscriptions: " + e.ToString());
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Cannot refresh subscriptions.";
+
+                toast.Show();
+                return;
+            }
+
             PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
             subscription.CachedPodcastRSSFeed = e.Result as string;
             subscription.EpisodesManager.updatePodcastEpisodes();
