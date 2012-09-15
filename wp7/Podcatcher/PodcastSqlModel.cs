@@ -52,7 +52,7 @@ namespace Podcatcher
 
         /************************************* Public properties *******************************/
 
-        private List<PodcastSubscriptionModel> m_podcastSubscriptions;
+        private List<PodcastSubscriptionModel> m_podcastSubscriptions = new List<PodcastSubscriptionModel>();
         public List<PodcastSubscriptionModel> PodcastSubscriptions
         {         
             get 
@@ -219,10 +219,28 @@ namespace Podcatcher
             if (DatabaseExists() == false)
             {
                 CreateDatabase();
+                SubmitChanges();
             }
 
             Subscriptions = GetTable<PodcastSubscriptionModel>();
             Episodes = GetTable<PodcastEpisodeModel>();
+
+            // Force to check if we have tables or not.
+            try
+            {
+                IEnumerator<PodcastSubscriptionModel> enumEntity = Subscriptions.GetEnumerator();
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("Got exception while asking for table enumerator. Table probably doesn't exist...");
+
+                DeleteDatabase();
+                CreateDatabase();
+                SubmitChanges();
+                
+                Debug.WriteLine("Recreated database.");
+            }
+
         }
 
         private bool isValidSubscriptionModelIndex(int index)
