@@ -115,7 +115,8 @@ namespace Podcatcher
 
         private PodcastEpisodesDownloadManager()
         {
-         
+            createEpisodeDownloadDir();
+
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
 
             findCurrentTransfer();
@@ -123,6 +124,17 @@ namespace Podcatcher
                 processOngoingTransfer();
             }
         }
+
+        private void createEpisodeDownloadDir()
+        {
+            IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication();
+            if (iso.DirectoryExists(App.PODCAST_DL_DIR) == false)
+            {
+                iso.CreateDirectory(App.PODCAST_DL_DIR);
+            }
+        }
+
+
 
         private void processOngoingTransfer()
         {

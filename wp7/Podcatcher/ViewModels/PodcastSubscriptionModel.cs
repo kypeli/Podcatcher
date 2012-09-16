@@ -280,8 +280,9 @@ namespace Podcatcher.ViewModels
         public PodcastSubscriptionModel()
         {
             m_podcastEpisodesManager = new PodcastEpisodesManager(this);
+            m_isolatedFileStorage = IsolatedStorageFile.GetUserStoreForApplication();
 
-            createAppDirs();
+            createLogoCacheDirs();
         }
 
         public void cleanupForDeletion()
@@ -327,18 +328,11 @@ namespace Podcatcher.ViewModels
         private PodcastEpisodesManager  m_podcastEpisodesManager;
         private IsolatedStorageFile     m_isolatedFileStorage;
 
-        private void createAppDirs()
+        private void createLogoCacheDirs()
         {
-            m_isolatedFileStorage = IsolatedStorageFile.GetUserStoreForApplication();
-
             if (m_isolatedFileStorage.DirectoryExists(App.PODCAST_ICON_DIR) == false)
             {
                 m_isolatedFileStorage.CreateDirectory(App.PODCAST_ICON_DIR);
-            }
-
-            if (m_isolatedFileStorage.DirectoryExists(App.PODCAST_DL_DIR) == false)
-            {
-                m_isolatedFileStorage.CreateDirectory(App.PODCAST_DL_DIR);
             }
         }
 
