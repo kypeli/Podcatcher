@@ -51,6 +51,8 @@ namespace Podcatcher.Views
 
             m_subscriptionManager = PodcastSubscriptionsManager.getInstance();
 
+            m_subscriptionManager.OnPodcastChannelStarted
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelStarted);
             m_subscriptionManager.OnPodcastChannelFinished
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinished);
             m_subscriptionManager.OnPodcastChannelFinishedWithError
@@ -64,9 +66,12 @@ namespace Podcatcher.Views
 
         private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
         {
-            progressOverlay.Show();
-
             m_subscriptionManager.addSubscriptionFromURL(addFromUrlInput.Text);
+        }
+
+        private void subscriptionManager_OnPodcastChannelStarted(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Show();
         }
 
         private void subscriptionManager_OnPodcastChannelFinishedWithError(object source, SubscriptionManagerArgs e)

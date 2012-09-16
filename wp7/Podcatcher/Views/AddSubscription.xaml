@@ -52,7 +52,7 @@
 
             <c4f:ProgressOverlay Name="progressOverlay" Visibility="Collapsed">
                 <StackPanel>
-                    <TextBlock HorizontalAlignment="Center">Loading</TextBlock>
+                    <TextBlock HorizontalAlignment="Center">Subscribing</TextBlock>
                     <toolkit:PerformanceProgressBar 
                         IsIndeterminate="True"
                         Foreground="Green"

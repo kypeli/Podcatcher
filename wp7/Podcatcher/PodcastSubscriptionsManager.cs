@@ -53,6 +53,7 @@ namespace Podcatcher
     {
         /************************************* Public implementations *******************************/
 
+        public event SubscriptionManagerHandler OnPodcastChannelStarted;
         public event SubscriptionManagerHandler OnPodcastChannelFinished;
         public event SubscriptionManagerHandler OnPodcastChannelFinishedWithError;
 
@@ -96,6 +97,8 @@ namespace Podcatcher
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
             wc.DownloadStringAsync(podcastRssUri, podcastRss);
+
+            OnPodcastChannelStarted(this, null);
 
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
