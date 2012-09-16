@@ -70,12 +70,16 @@ namespace Podcatcher
         public void addSubscriptionFromURL(string podcastRss)
         {
 
-#if DEBUG
             if (String.IsNullOrEmpty(podcastRss))
             {
+#if DEBUG
                 podcastRss = "http://leo.am/podcasts/twit";
-            }
+#else
+                Debug.WriteLine("ERROR: Empty URL.");
+                PodcastSubscriptionFailedWithMessage("Empty podcast address.");
+                return; 
 #endif
+            }
 
             if (podcastRss.StartsWith("http://") == false)
             {
