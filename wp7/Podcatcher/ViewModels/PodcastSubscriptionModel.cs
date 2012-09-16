@@ -332,6 +332,7 @@ namespace Podcatcher.ViewModels
         {
             if (m_isolatedFileStorage.DirectoryExists(App.PODCAST_ICON_DIR) == false)
             {
+                Debug.WriteLine("Icon cache dir does not exist. Creating dir: " + App.PODCAST_ICON_DIR);
                 m_isolatedFileStorage.CreateDirectory(App.PODCAST_ICON_DIR);
             }
         }

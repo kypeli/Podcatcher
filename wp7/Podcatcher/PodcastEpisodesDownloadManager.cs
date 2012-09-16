@@ -130,11 +130,10 @@ namespace Podcatcher
             IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication();
             if (iso.DirectoryExists(App.PODCAST_DL_DIR) == false)
             {
+                Debug.WriteLine("Download dir doesn't exist. Creating dir: " + App.PODCAST_DL_DIR);
                 iso.CreateDirectory(App.PODCAST_DL_DIR);
             }
         }
-
-
 
         private void processOngoingTransfer()
         {
