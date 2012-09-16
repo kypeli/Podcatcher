@@ -1,6 +1,6 @@
 /**
  * This file is part of Podcatcher for N9.
- * Author: Johan Paul (johan.paul@d-pointer.com)
+ * Author: Johan Paul (johan.paul@gmail.com)
  *
  * Podcatcher for N9 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,41 +67,28 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            Image{
-//                width: 100; height: 100
-                source: "qrc:///gfx/d-pointer-logo-small.png"
-
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-
-            Text {
-                text: "w w w . d - p o i n t e r . c o m"
-                font.pointSize: 18
-                anchors.horizontalCenter: parent.horizontalCenter
-                horizontalAlignment: Text.AlignHCenter;
-            }
-
             Flickable {
                 id: creditsScroll
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: 350; height: 400
+                width: 350; height: 500
                 contentWidth: creditText.width
                 contentHeight: creditText.height
                 clip: true
                 flickableDirection: Flickable.VerticalFlick
+                anchors.topMargin: 20
 
                 Text {
                     id: creditText
                     font.pointSize: 16
                     text: "<B>Johan Paul</B><br>" +
-                          "johan.paul@d-pointer.com<BR>" +
+                          "johan.paul@gmail.com<BR>" +
                           "Twitter: @kypeli<BR><br>" +
                           "UX and icon by<br><b>Niklas Gustafsson</B><br>" +
                           "niklas@nikui.net<BR><BR>" +
                           "Tested by<BR><b>Mats Sjöberg</B><BR>" +
                           "mats@sjoberg.fi<BR><BR>" +
                           "Special thanks to <B>gPodder.net</B> for<BR>providing an awesome<BR>backend for finding podcasts!<BR><BR><BR>" +
-                          "Greetings go to<BR><BR>@zchydem and @jan_ekholm<BR>of <B>D-Pointer</B>!<BR><BR>" +
+                          "Greetings go to<BR><BR>@zchydem and @jan_ekholm!<BR><BR>" +
                           "Team Qontactors and<BR>team CoCo of Harmattan<BR><BR><BR>" +
                           "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
                           "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
