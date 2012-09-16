@@ -183,7 +183,6 @@ namespace Podcatcher
                 try
                 {
                     BackgroundTransferService.Add(m_currentBackgroundTransfer);
-                    ProcessTransfer(m_currentBackgroundTransfer);
                 }
                 catch (InvalidOperationException)
                 {
@@ -195,6 +194,8 @@ namespace Podcatcher
                     BackgroundTransferService.Add(m_currentBackgroundTransfer);
                 }
 
+                ProcessTransfer(m_currentBackgroundTransfer);
+                UpdateUI(m_currentBackgroundTransfer);
             }
         }
 
