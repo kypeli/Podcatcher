@@ -108,10 +108,10 @@ namespace Podcatcher
         private IsolatedStorageSettings m_applicationSettings               = null;
 
         // Booleans for tracking if any transfers are waiting for user action. 
-        bool WaitingForExternalPower;
-        bool WaitingForExternalPowerDueToBatterySaverMode;
-        bool WaitingForNonVoiceBlockingNetwork;
-        bool WaitingForWiFi;
+        bool WaitingForExternalPower                        = false;
+        bool WaitingForExternalPowerDueToBatterySaverMode   = false;
+        bool WaitingForNonVoiceBlockingNetwork              = false;
+        bool WaitingForWiFi                                 = false;
 
         private PodcastEpisodesDownloadManager()
         {
@@ -183,6 +183,7 @@ namespace Podcatcher
                 try
                 {
                     BackgroundTransferService.Add(m_currentBackgroundTransfer);
+                    ProcessTransfer(m_currentBackgroundTransfer);
                 }
                 catch (InvalidOperationException)
                 {
@@ -204,8 +205,17 @@ namespace Podcatcher
 
         void backgroundTransferStatusChanged(object sender, BackgroundTransferEventArgs e)
         {
+            ResetStatusFlags();
             ProcessTransfer(e.Request);
             UpdateUI(e.Request);
+        }
+
+        private void ResetStatusFlags()
+        {
+            WaitingForExternalPower = false;
+            WaitingForExternalPowerDueToBatterySaverMode = false;
+            WaitingForNonVoiceBlockingNetwork = false;
+            WaitingForWiFi = false;
         }
 
         private void ProcessTransfer(BackgroundTransferRequest backgroundTransferRequest)
@@ -295,7 +305,6 @@ namespace Podcatcher
             try
             {
                 BackgroundTransferService.Remove(transfer);
-                transfer.Dispose();
             }
             catch (Exception e)
             {
