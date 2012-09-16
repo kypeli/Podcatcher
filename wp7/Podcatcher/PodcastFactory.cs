@@ -133,11 +133,73 @@ namespace Podcatcher
                     PodcastEpisodeModel episodeModel = new PodcastEpisodeModel();
 
                     // Get the RSS mandatory fields. 
-                    episodeModel.EpisodeName = episode.Element("title").Value;
+                    XElement currentElement;
+
+                    currentElement = getChildElementByName(episode, "title");
+                    if (currentElement != null)
+                    {
+                        episodeModel.EpisodeName = currentElement.Value;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("WARNING: Null element: title");
+                    }
+
+                    currentElement = getChildElementByName(episode, "description");
+                    if (currentElement != null)
+                    {
+                        episodeModel.EpisodeDescription = currentElement.Value;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("WARNING: Null element: description");
+                    }
+
+                    currentElement = getChildElementByName(episode, "enclosure");
+                    if (currentElement != null)
+                    {
+                        XAttribute urlAttribute = currentElement.Attribute("url");
+                        if (urlAttribute != null)
+                        {
+                            episodeModel.EpisodeDownloadUri = urlAttribute.Value;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("WARNING: Null element: enclosure - url");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("WARNING: Null element: enclosure");
+                    }
+
+                    currentElement = getChildElementByName(episode, "EpisodeDownloadSize");
+                    if (currentElement != null)
+                    {
+                        XAttribute downloadSizeAttribute = currentElement.Attribute("length");
+                        if (downloadSizeAttribute != null)
+                        {
+                            episodeModel.EpisodeDownloadSize = Int64.Parse(downloadSizeAttribute.Value);
+                        }
+                        else
+                        {
+                            Debug.WriteLine("WARNING: Null element: EpisodeDownloadSize - length");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("WARNING: Null element: EpisodeDownloadSize");
+                    }
+
+/*                    episodeModel.EpisodeName = episode.Element("title").Value;
                     episodeModel.EpisodeDescription = episode.Element("description").Value;
-                    episodeModel.EpisodePublished = pubDate;
+                    episodeModel.EpisodePublished = pubDate; 
                     episodeModel.EpisodeDownloadUri = episode.Element("enclosure").Attribute("url").Value;
                     episodeModel.EpisodeDownloadSize = Int64.Parse(episode.Element("enclosure").Attribute("length").Value);
+                    */
+
+                    episodeModel.EpisodePublished = pubDate; 
+
 
                     XElement runningTimeElement = episode.Element(itunes + "duration");
                     if (runningTimeElement != null)
@@ -150,6 +212,12 @@ namespace Podcatcher
             }
 
             return episodes;
+        }
+
+        private static XElement getChildElementByName(XElement episode, string name)
+        {
+            XElement element = episode.Element(name);
+            return element;
         }
 
         private static DateTime parsePubDate(string pubDateString)
