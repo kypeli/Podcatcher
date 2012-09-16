@@ -1,6 +1,6 @@
 /**
  * This file is part of Podcatcher for N9.
- * Author: Johan Paul (johan.paul@d-pointer.com)
+ * Author: Johan Paul (johan.paul@gmail.com)
  *
  * Podcatcher for N9 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +114,7 @@ void PodcastManager::requestPodcastChannel(const QUrl &rssUrl, const QMap<QStrin
     channelRequestMap.insert(rssUrl.toString(), channel);
 
     QNetworkRequest request;
+    request.setRawHeader("User-Agent", "Podcatcher Podcast client");
     request.setUrl(rssUrl);
 
     QNetworkReply *reply = m_networkManager->get(request);
@@ -165,6 +166,7 @@ void PodcastManager::refreshPodcastChannelEpisodes(PodcastChannel *channel, bool
     }
 
     QNetworkRequest request;
+    request.setRawHeader("User-Agent", "Podcatcher Podcast client");
     request.setUrl(rssUrl);
 
     QNetworkReply *reply = m_networkManager->get(request);

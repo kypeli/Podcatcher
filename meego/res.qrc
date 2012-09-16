@@ -9,7 +9,6 @@
         <file>qml/EmptyChannelPage.qml</file>
         <file>gfx/cancel-podcast-download.png</file>
         <file>qml/BrowsePodcasts.qml</file>
-        <file>gfx/loading.gif</file>
         <file>qml/SearchPodcasts.qml</file>
         <file>qml/DPointerIntro.qml</file>
         <file>gfx/d-pointer-logo.png</file>
@@ -22,5 +21,13 @@
         <file>gfx/scrollbar.png</file>
         <file>gfx/Podcatcher_generic_podcast_cover.png</file>
         <file>qml/PodcastChannelLogo.qml</file>
+        <file>qml/AudioStreamer.qml</file>
+        <file>qml/ImportFromGPodderSheet.qml</file>
+        <file>gfx/gpodder-logo.png</file>
+        <file>gfx/playback_ff.png</file>
+        <file>gfx/playback_pause.png</file>
+        <file>gfx/playback_play.png</file>
+        <file>gfx/playback_rew.png</file>
+        <file>gfx/playback_stop.png</file>
     </qresource>
 </RCC>
