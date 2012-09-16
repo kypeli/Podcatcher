@@ -68,11 +68,13 @@ namespace Podcatcher
 
         public void addSubscriptionFromURL(string podcastRss)
         {
-            // DEBUG
+
+#if DEBUG
             if (String.IsNullOrEmpty(podcastRss))
             {
                 podcastRss = "http://leo.am/podcasts/twit";
             }
+#endif
 
             if (podcastRss.StartsWith("http://") == false)
             {

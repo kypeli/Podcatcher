@@ -102,7 +102,7 @@ namespace Podcatcher
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-          //  IsolatedStorageExplorer.Explorer.Start("localhost");
+//            IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
             CheckLicense();
         }
 
@@ -110,7 +110,7 @@ namespace Podcatcher
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
-            //IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
+//            IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
             CheckLicense();
         }
 
@@ -118,14 +118,14 @@ namespace Podcatcher
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
-            PodcastSqlModel.getInstance().SubmitChanges();
+            //PodcastSqlModel.getInstance().SubmitChanges();
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-            PodcastSqlModel.getInstance().SubmitChanges();
+//            PodcastSqlModel.getInstance().SubmitChanges();
         }
 
         // Code to execute if a navigation fails
@@ -192,8 +192,7 @@ namespace Podcatcher
             // When debugging, we want to simulate a trial mode experience. The following conditional allows us to set the _isTrial 
             // property to simulate trial mode being on or off. 
 #if DEBUG
-            string message = "This sample demonstrates the implementation of a trial mode in an application." +
-                               "Press 'OK' to simulate trial mode. Press 'Cancel' to run the application in normal mode.";
+            string message = "Press 'OK' to simulate trial mode. Press 'Cancel' to run the application in normal mode.";
             if (MessageBox.Show(message, "Debug Trial",
                  MessageBoxButton.OKCancel) == MessageBoxResult.OK)
             {
