@@ -40,7 +40,7 @@ using System.Linq;
 
 namespace Podcatcher.ViewModels
 {
-    [Table(Name="PodcastSubscription")]
+    [Table]
     public class PodcastSubscriptionModel : INotifyPropertyChanged
     {        
         /************************************* Public properties *******************************/
@@ -281,8 +281,7 @@ namespace Podcatcher.ViewModels
         {
             m_podcastEpisodesManager = new PodcastEpisodesManager(this);
 
-            m_localPodcastIconCache = IsolatedStorageFile.GetUserStoreForApplication();
-            m_localPodcastIconCache.CreateDirectory(App.PODCAST_ICON_DIR);
+            createAppDirs();
         }
 
         public void cleanupForDeletion()
@@ -297,7 +296,7 @@ namespace Podcatcher.ViewModels
             // TODO: Extract methods.
 
             // Delete logo from local image cache.
-            if (m_localPodcastIconCache.FileExists(m_PodcastLogoLocalLocation) == false)
+            if (m_isolatedFileStorage.FileExists(m_PodcastLogoLocalLocation) == false)
             {
                 Debug.WriteLine("ERROR: Logo local cache file not found! Subscription: " + m_PodcastName
                                 + ", logo file: " + m_PodcastLogoLocalLocation);
@@ -305,7 +304,7 @@ namespace Podcatcher.ViewModels
             }
 
             Debug.WriteLine("Deleting local cache of logo: " + m_PodcastLogoLocalLocation);
-            m_localPodcastIconCache.DeleteFile(m_PodcastLogoLocalLocation);
+            m_isolatedFileStorage.DeleteFile(m_PodcastLogoLocalLocation);
         }
 
         public void fetchChannelLogo()
@@ -326,7 +325,22 @@ namespace Podcatcher.ViewModels
         /************************************* Private implementation *******************************/
         #region privateImplementations        
         private PodcastEpisodesManager  m_podcastEpisodesManager;
-        private IsolatedStorageFile     m_localPodcastIconCache;
+        private IsolatedStorageFile     m_isolatedFileStorage;
+
+        private void createAppDirs()
+        {
+            m_isolatedFileStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+            if (m_isolatedFileStorage.DirectoryExists(App.PODCAST_ICON_DIR) == false)
+            {
+                m_isolatedFileStorage.CreateDirectory(App.PODCAST_ICON_DIR);
+            }
+
+            if (m_isolatedFileStorage.DirectoryExists(App.PODCAST_DL_DIR) == false)
+            {
+                m_isolatedFileStorage.CreateDirectory(App.PODCAST_DL_DIR);
+            }
+        }
 
         private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)
         {
@@ -357,7 +371,7 @@ namespace Podcatcher.ViewModels
             logoInStream.CopyTo(logoMemory);
             using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation, 
                                                                      FileMode.OpenOrCreate, 
-                                                                     m_localPodcastIconCache))
+                                                                     m_isolatedFileStorage))
             {
                 isoFileStream.Write(logoMemory.ToArray(), 0, (int)logoMemory.Length);
             }
