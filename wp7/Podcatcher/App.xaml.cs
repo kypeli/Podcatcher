@@ -36,7 +36,7 @@ namespace Podcatcher
     public partial class App : Application
     {
         public const string PODCAST_ICON_DIR = "PodcastIcons";
-        public const string PODCAST_DL_DIR   = "shared/transfers/";
+        public const string PODCAST_DL_DIR   = "shared/transfers";
 
         /** IsolatedSettings keys.  **/
         // Key for storing the episode ID of the currently playing episode.
@@ -102,7 +102,7 @@ namespace Podcatcher
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-//            IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
+  //          IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
             CheckLicense();
         }
 
@@ -110,7 +110,7 @@ namespace Podcatcher
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
-//            IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
+    //          IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
             CheckLicense();
         }
 
