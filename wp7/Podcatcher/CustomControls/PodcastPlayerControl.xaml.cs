@@ -209,13 +209,22 @@ namespace Podcatcher
                 BackgroundAudioPlayer.Instance.Position = new TimeSpan(position.Ticks);
             }
 
-            BackgroundAudioPlayer.Instance.Play();
-            this.PlayButtonImage.Source = m_pauseButtonBitmap;
-            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
-            m_appSettings.Save();
+            try
+            {
+                BackgroundAudioPlayer.Instance.Play();
+                this.PlayButtonImage.Source = m_pauseButtonBitmap;
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
+                m_appSettings.Save();
 
-            PodcastPlayerStarted(this, new EventArgs());
+                PodcastPlayerStarted(this, new EventArgs());
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("I've read from Microsoft that something stupid can happen if you try to start " +
+                                "playing and there's a YouTube video playing. This this try-catch is really just " +
+                                "to guard against Microsoft's bug.");
+            }
         }
 
         private void StopPlayback()
