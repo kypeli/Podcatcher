@@ -30,6 +30,8 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Marketplace;
+using System.Diagnostics;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher
 {
@@ -146,6 +148,15 @@ namespace Podcatcher
                 // An unhandled exception has occurred; break into the debugger
                 System.Diagnostics.Debugger.Break();
             }
+        }
+
+        public static void showErrorToast(string message) 
+        {
+                Debug.WriteLine("ERROR Toast: " + message);
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = message;
+                toast.Show();        
         }
 
         #region Phone application initialization

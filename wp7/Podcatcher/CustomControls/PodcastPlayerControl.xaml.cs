@@ -43,6 +43,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Phone.BackgroundAudio;
 using System.IO.IsolatedStorage;
 using System.Windows.Threading;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher
 {
@@ -132,6 +133,8 @@ namespace Podcatcher
 
         private void setupPlayerUI()
         {
+            Microsoft.Xna.Framework.Media.MediaLibrary library = new Microsoft.Xna.Framework.Media.MediaLibrary();
+
             m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
@@ -191,7 +194,14 @@ namespace Podcatcher
 
         private void startPlayback(TimeSpan position)
         {
-            BackgroundAudioPlayer.Instance.Track = getAudioTrackForEpisode(m_currentEpisode);
+            AudioTrack playTrack = getAudioTrackForEpisode(m_currentEpisode);
+            if (playTrack == null)
+            {
+                App.showErrorToast("Cannot play the episode.");
+                return;
+            }
+
+            BackgroundAudioPlayer.Instance.Track = playTrack;
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
 
             if (position.Ticks > 0) 
@@ -344,7 +354,21 @@ namespace Podcatcher
 
         private AudioTrack getAudioTrackForEpisode(PodcastEpisodeModel m_currentEpisode)
         {
-            return new AudioTrack(new Uri(m_currentEpisode.EpisodeFile, UriKind.Relative),
+            if (m_currentEpisode == null ||
+                String.IsNullOrEmpty(m_currentEpisode.EpisodeFile))
+            {
+                return null;
+            }
+
+            Uri episodeLocation;
+            try 
+            {
+                episodeLocation = new Uri(m_currentEpisode.EpisodeFile, UriKind.Relative);
+            } catch(Exception) {
+                return null;
+            }
+
+            return new AudioTrack(episodeLocation,
                         m_currentEpisode.EpisodeName,
                         m_currentEpisode.PodcastSubscription.PodcastName,
                         "",
