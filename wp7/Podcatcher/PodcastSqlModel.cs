@@ -237,7 +237,7 @@ namespace Podcatcher
                 DeleteDatabase();
                 CreateDatabase();
                 SubmitChanges();
-                
+
                 Debug.WriteLine("Recreated database.");
             }
 

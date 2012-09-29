@@ -42,7 +42,7 @@ using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher.ViewModels
 {
-    [Table(Name="Episodes")]
+    [Table]
     public class PodcastEpisodeModel : INotifyPropertyChanged
     {
         private const int NVARCHAR_MAX = 4000;

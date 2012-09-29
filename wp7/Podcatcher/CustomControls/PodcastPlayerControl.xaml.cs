@@ -43,6 +43,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Phone.BackgroundAudio;
 using System.IO.IsolatedStorage;
 using System.Windows.Threading;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher
 {
@@ -132,6 +133,8 @@ namespace Podcatcher
 
         private void setupPlayerUI()
         {
+            Microsoft.Xna.Framework.Media.MediaLibrary library = new Microsoft.Xna.Framework.Media.MediaLibrary();
+
             m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
@@ -191,7 +194,14 @@ namespace Podcatcher
 
         private void startPlayback(TimeSpan position)
         {
-            BackgroundAudioPlayer.Instance.Track = getAudioTrackForEpisode(m_currentEpisode);
+            AudioTrack playTrack = getAudioTrackForEpisode(m_currentEpisode);
+            if (playTrack == null)
+            {
+                App.showErrorToast("Cannot play the episode.");
+                return;
+            }
+
+            BackgroundAudioPlayer.Instance.Track = playTrack;
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
 
             if (position.Ticks > 0) 
@@ -199,13 +209,22 @@ namespace Podcatcher
                 BackgroundAudioPlayer.Instance.Position = new TimeSpan(position.Ticks);
             }
 
-            BackgroundAudioPlayer.Instance.Play();
-            this.PlayButtonImage.Source = m_pauseButtonBitmap;
-            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
-            m_appSettings.Save();
+            try
+            {
+                BackgroundAudioPlayer.Instance.Play();
+                this.PlayButtonImage.Source = m_pauseButtonBitmap;
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
+                m_appSettings.Save();
 
-            PodcastPlayerStarted(this, new EventArgs());
+                PodcastPlayerStarted(this, new EventArgs());
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("I've read from Microsoft that something stupid can happen if you try to start " +
+                                "playing and there's a YouTube video playing. This this try-catch is really just " +
+                                "to guard against Microsoft's bug.");
+            }
         }
 
         private void StopPlayback()
@@ -344,7 +363,21 @@ namespace Podcatcher
 
         private AudioTrack getAudioTrackForEpisode(PodcastEpisodeModel m_currentEpisode)
         {
-            return new AudioTrack(new Uri(m_currentEpisode.EpisodeFile, UriKind.Relative),
+            if (m_currentEpisode == null ||
+                String.IsNullOrEmpty(m_currentEpisode.EpisodeFile))
+            {
+                return null;
+            }
+
+            Uri episodeLocation;
+            try 
+            {
+                episodeLocation = new Uri(m_currentEpisode.EpisodeFile, UriKind.Relative);
+            } catch(Exception) {
+                return null;
+            }
+
+            return new AudioTrack(episodeLocation,
                         m_currentEpisode.EpisodeName,
                         m_currentEpisode.PodcastSubscription.PodcastName,
                         "",

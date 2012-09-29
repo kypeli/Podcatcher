@@ -30,13 +30,15 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Marketplace;
+using System.Diagnostics;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher
 {
     public partial class App : Application
     {
         public const string PODCAST_ICON_DIR = "PodcastIcons";
-        public const string PODCAST_DL_DIR   = "shared/transfers/";
+        public const string PODCAST_DL_DIR   = "shared/transfers";
 
         /** IsolatedSettings keys.  **/
         // Key for storing the episode ID of the currently playing episode.
@@ -102,7 +104,7 @@ namespace Podcatcher
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-//            IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
+  //          IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
             CheckLicense();
         }
 
@@ -110,7 +112,7 @@ namespace Podcatcher
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
-//            IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
+    //          IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
             CheckLicense();
         }
 
@@ -146,6 +148,15 @@ namespace Podcatcher
                 // An unhandled exception has occurred; break into the debugger
                 System.Diagnostics.Debugger.Break();
             }
+        }
+
+        public static void showErrorToast(string message) 
+        {
+                Debug.WriteLine("ERROR Toast: " + message);
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = message;
+                toast.Show();        
         }
 
         #region Phone application initialization

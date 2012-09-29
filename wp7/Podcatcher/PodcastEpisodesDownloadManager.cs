@@ -115,12 +115,23 @@ namespace Podcatcher
 
         private PodcastEpisodesDownloadManager()
         {
-         
+            createEpisodeDownloadDir();
+
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
 
             findCurrentTransfer();
             if (m_currentBackgroundTransfer != null) { 
                 processOngoingTransfer();
+            }
+        }
+
+        private void createEpisodeDownloadDir()
+        {
+            IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication();
+            if (iso.DirectoryExists(App.PODCAST_DL_DIR) == false)
+            {
+                Debug.WriteLine("Download dir doesn't exist. Creating dir: " + App.PODCAST_DL_DIR);
+                iso.CreateDirectory(App.PODCAST_DL_DIR);
             }
         }
 
@@ -166,9 +177,27 @@ namespace Podcatcher
             if (m_episodeDownloadQueue.Count > 0)
             {
                 m_currentEpisodeDownload = m_episodeDownloadQueue.Peek();
-                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
+                Uri downloadUri;
+                try
+                {
+                    downloadUri = new Uri(m_currentEpisodeDownload.EpisodeDownloadUri, UriKind.Absolute);
+                }
+                catch (Exception)
+                {
+                    App.showErrorToast("Cannot download the episode.");
+                    return;
+                }
+
+                string episodeFile = localEpisodeFileName(m_currentEpisodeDownload);
+                if (string.IsNullOrEmpty(episodeFile))
+                {
+                    App.showErrorToast("Cannot download the episode.");
+                    return;
+                }
+
+                m_currentEpisodeDownload.EpisodeFile = episodeFile;
                 // Create a new background transfer request for the podcast episode download.
-                m_currentBackgroundTransfer = new BackgroundTransferRequest(new Uri(m_currentEpisodeDownload.EpisodeDownloadUri, UriKind.Absolute),
+                m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
                                                                             new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
                 m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
@@ -339,7 +368,7 @@ namespace Podcatcher
             string localPath = new Uri(podcastEpisode.EpisodeDownloadUri).LocalPath;
             string podcastEpisodeFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
 
-            string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + podcastEpisodeFilename;
+            string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + "/" + podcastEpisodeFilename;
             Debug.WriteLine("Found episode filename: " + localPodcastEpisodeFilename);
 
             return localPodcastEpisodeFilename;
