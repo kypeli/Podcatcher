@@ -97,6 +97,11 @@ namespace Podcatcher.ViewModels
             get { return m_description; }
             set 
             {
+                if (String.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+
                 // Stupid MSQL!!
                 if (value.Length > NVARCHAR_MAX)
                 {
