@@ -104,10 +104,10 @@ contains(DEFINES, LITE) {
     system(cp gfx/Podcatcher_lite.png gfx/Podcatcher.png)
 }
 
+contains(MEEGO_EDITION,harmattan) {
+    icon.files = Podcatcher.png
+    icon.path = /usr/share/icons/hicolor/80x80/apps
+    INSTALLS += icon
+}
+
 # INSTALLS += qml
-
-
-
-
-
-
