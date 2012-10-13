@@ -142,8 +142,6 @@ namespace PodcastAudioAgent
                     }
                     break;
                 case UserAction.Stop:
-//                    player.Stop();
-                    player.Close();
                     break;
                 case UserAction.Pause:
                     player.Pause();

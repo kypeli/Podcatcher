@@ -351,7 +351,7 @@ namespace Podcatcher
         {
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing) { 
                 BackgroundAudioPlayer.Instance.Stop();
-//                BackgroundAudioPlayer.Instance.Close();
+                BackgroundAudioPlayer.Instance.Track = null;
             }
 
             StopPlayback();
