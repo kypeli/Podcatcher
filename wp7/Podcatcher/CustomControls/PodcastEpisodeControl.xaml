@@ -40,9 +40,11 @@
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>
-            <toolkit:ContextMenu Visibility="{Binding EpisodeState, 
-                                Converter={StaticResource contextMenuEnabled}}">
-                <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" />
+            <toolkit:ContextMenu >
+                <toolkit:MenuItem Header="Stream episode" Click="MenuItemStream_Click" />
+                <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" 
+                                  Visibility="{Binding EpisodeState, 
+                                  Converter={StaticResource contextMenuEnabled}}"/>
             </toolkit:ContextMenu>
         </toolkit:ContextMenuService.ContextMenu>
         

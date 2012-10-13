@@ -85,6 +85,13 @@ namespace Podcatcher
             }
         }
 
+        private void MenuItemStream_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
+            PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+            player.streamEpisode(podcastEpisode);
+        }
+
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;

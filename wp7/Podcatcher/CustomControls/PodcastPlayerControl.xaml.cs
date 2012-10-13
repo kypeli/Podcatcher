@@ -98,9 +98,10 @@ namespace Podcatcher
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                m_currentEpisode.EpisodeState = m_originalEpisodeState;
             }
 
+            m_originalEpisodeState = episodeModel.EpisodeState;
             m_currentEpisode = episodeModel;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
             m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
@@ -121,6 +122,16 @@ namespace Podcatcher
             m_currentEpisode.SavedPlayPos = 1;  // To mark that the playback has started - we update UI correctly in podcast listing.
         }
 
+        public void streamEpisode(PodcastEpisodeModel episodeModel)
+        {
+            setupPlayerUIContent(episodeModel);
+            showPlayerLayout();
+
+            m_originalEpisodeState = episodeModel.EpisodeState;
+            m_currentEpisode = episodeModel;
+            startPlayback(TimeSpan.Zero, true);
+        }
+
         /************************************* Private implementation *******************************/
 
         private static PodcastPlayerControl m_instance;
@@ -130,6 +141,7 @@ namespace Podcatcher
         private bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
         private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
+        private PodcastEpisodeModel.EpisodeStateEnum m_originalEpisodeState;
 
         private void setupPlayerUI()
         {
@@ -150,7 +162,7 @@ namespace Podcatcher
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
                 m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+                m_originalEpisodeState = m_currentEpisode.EpisodeState;
 
                 if (m_currentEpisode == null)
                 {
@@ -192,9 +204,18 @@ namespace Podcatcher
             startPlayback(TimeSpan.Zero);
         }
 
-        private void startPlayback(TimeSpan position)
+        private void startPlayback(TimeSpan position, bool streamEpisode = false)
         {
-            AudioTrack playTrack = getAudioTrackForEpisode(m_currentEpisode);
+            AudioTrack playTrack = null;
+            if (streamEpisode)
+            {
+                playTrack = getAudioStreamForEpisode(m_currentEpisode);
+            }
+            else
+            {
+                playTrack = getAudioTrackForEpisode(m_currentEpisode);
+            }
+
             if (playTrack == null)
             {
                 App.showErrorToast("Cannot play the episode.");
@@ -225,6 +246,8 @@ namespace Podcatcher
                                 "playing and there's a YouTube video playing. This this try-catch is really just " +
                                 "to guard against Microsoft's bug.");
             }
+
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
         }
 
         private void StopPlayback()
@@ -294,7 +317,7 @@ namespace Podcatcher
             BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
             
             saveEpisodePlayPosition(m_currentEpisode);
-            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+            m_currentEpisode.EpisodeState = m_originalEpisodeState;
             m_currentEpisode = null;
             m_screenUpdateTimer.Stop();
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
@@ -375,6 +398,31 @@ namespace Podcatcher
             {
                 episodeLocation = new Uri(m_currentEpisode.EpisodeFile, UriKind.Relative);
             } catch(Exception) {
+                return null;
+            }
+
+            return new AudioTrack(episodeLocation,
+                        m_currentEpisode.EpisodeName,
+                        m_currentEpisode.PodcastSubscription.PodcastName,
+                        "",
+                        new Uri(m_currentEpisode.PodcastSubscription.PodcastLogoLocalLocation, UriKind.Relative));
+        }
+
+        private AudioTrack getAudioStreamForEpisode(PodcastEpisodeModel episode)
+        {
+            if (m_currentEpisode == null ||
+                String.IsNullOrEmpty(m_currentEpisode.EpisodeDownloadUri))
+            {
+                return null;
+            }
+
+            Uri episodeLocation;
+            try
+            {
+                episodeLocation = new Uri(m_currentEpisode.EpisodeDownloadUri, UriKind.Absolute);
+            }
+            catch (Exception)
+            {
                 return null;
             }
 
