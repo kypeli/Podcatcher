@@ -124,6 +124,11 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
+                if (m_published == null)
+                {
+                    return "";
+                }
+
                 string format = "dd MMM yyyy";
                 return m_published.ToString(format); 
             }
