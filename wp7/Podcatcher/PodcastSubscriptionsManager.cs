@@ -47,6 +47,7 @@ namespace Podcatcher
     {
         public String message;
         public PodcastSubscriptionModel addedSubscription;
+        public PodcastSubscriptionsManager.SubscriptionsState state;
     }
 
     public class PodcastSubscriptionsManager
@@ -56,6 +57,13 @@ namespace Podcatcher
         public event SubscriptionManagerHandler OnPodcastChannelStarted;
         public event SubscriptionManagerHandler OnPodcastChannelFinished;
         public event SubscriptionManagerHandler OnPodcastChannelFinishedWithError;
+        public event SubscriptionManagerHandler OnPodcastSubscriptionsChanged;
+
+        public enum SubscriptionsState
+        {
+            StartedRefreshing,
+            FinishedRefreshing
+        }
 
         public static PodcastSubscriptionsManager getInstance()
         {
@@ -115,6 +123,9 @@ namespace Podcatcher
 
         public void refreshSubscriptions()
         {
+            stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.StartedRefreshing;
+            OnPodcastSubscriptionsChanged(this, stateChangedArgs);
+
             List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
             foreach (PodcastSubscriptionModel s in subscriptions)
             {
@@ -124,13 +135,20 @@ namespace Podcatcher
                     return;
                 }
 
-                
+                m_refreshingChannels++;
                 Uri refreshUri = createNonCachedRefreshUri(s.PodcastRSSUrl);
                 Debug.WriteLine("Refreshing subscriptions for '{0}', using URI: {1}", s.PodcastName, refreshUri);
 
                 WebClient wc = new WebClient();
                 wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
                 wc.DownloadStringAsync(refreshUri, s);
+            }
+
+            if (m_refreshingChannels == 0)
+            {
+                // No channels were refreshed
+                stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);
             }
         }
 
@@ -139,6 +157,8 @@ namespace Podcatcher
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
         private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
+        private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
+        private int m_refreshingChannels                      = 0;
 
         private PodcastSubscriptionsManager()
         {
@@ -203,6 +223,13 @@ namespace Podcatcher
 
         void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
+            m_refreshingChannels--;
+            if (m_refreshingChannels <= 0)
+            {
+                stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);                
+            }
+
             if (e.Error != null)
             {
                 Debug.WriteLine("ERROR: Got web error when refreshing subscriptions: " + e.ToString());

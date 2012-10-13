@@ -59,6 +59,7 @@ namespace Podcatcher
 
             // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
             m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+            m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
 
             m_subscriptionsManager.refreshSubscriptions();
 
@@ -72,6 +73,19 @@ namespace Podcatcher
             // Hook to the event when the podcast player starts playing. 
             this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
             this.PodcastPlayer.PodcastPlayerStopped += new EventHandler(PodcastPlayer_PodcastPlayerStopped);
+        }
+
+        void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)
+        {
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.StartedRefreshing)
+            {
+                UpdatingIndicator.Visibility = Visibility.Visible;
+            }
+
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing)
+            {
+                UpdatingIndicator.Visibility = Visibility.Collapsed;
+            }
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
