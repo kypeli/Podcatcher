@@ -166,4 +166,31 @@ namespace Podcatcher.Converters
             throw new NotSupportedException();
         }
     }
+
+    public class DownloadEpisodeVisibleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Visibility episodeDLVisible = Visibility.Collapsed;
+
+            String episodeMimeType = (String)value;
+            if (playableMimeType(episodeMimeType))
+            {
+                episodeDLVisible = Visibility.Visible;
+            }
+
+            return episodeDLVisible;
+        }
+
+        private bool playableMimeType(string episodeMimeType)
+        {
+            // TODO: Expand
+            return episodeMimeType == "audio/mpeg";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
 }

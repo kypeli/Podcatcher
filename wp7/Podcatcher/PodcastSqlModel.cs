@@ -26,29 +26,19 @@
  */
 
 using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Linq;
-using System.Data.Linq.Mapping;
-using System.Data.Linq;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using Podcatcher;
+using System.Linq;
 using System.Collections.Generic;
 using Podcatcher.ViewModels;
+using System.Data.Linq;
+using Microsoft.Phone.Data.Linq;
 
 namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
+        private const int DB_VERSION = 2;
 
         /************************************* Public properties *******************************/
 
@@ -216,12 +206,25 @@ namespace Podcatcher
         private PodcastSqlModel()
             : base(m_connectionString)
         {
+            var updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
             if (DatabaseExists() == false)
             {
                 CreateDatabase();
+                updater.DatabaseSchemaVersion = DB_VERSION;
+                updater.Execute();
+
                 SubmitChanges();
             }
 
+            if (updater.DatabaseSchemaVersion < 2)
+            {
+                // Added in version 2 (release 1.1.0.0)
+                //  - PodcastEpisodeModel.EpisodeFileMimeType
+                updater.AddColumn<PodcastEpisodeModel>("EpisodeFileMimeType");
+                updater.DatabaseSchemaVersion = DB_VERSION;
+                updater.Execute();
+            }
+            
             Subscriptions = GetTable<PodcastSubscriptionModel>();
             Episodes = GetTable<PodcastEpisodeModel>();
 

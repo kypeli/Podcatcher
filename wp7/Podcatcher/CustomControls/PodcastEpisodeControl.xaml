@@ -13,6 +13,7 @@
         <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
         <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
         <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
+        <c:DownloadEpisodeVisibleConverter x:Name="downloadEpisodeVisible" />
     </UserControl.Resources>
 
     <Grid x:Name="EpisodeMainLayout">
@@ -30,7 +31,8 @@
 
             <Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
         	<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
-        	<Button IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
+            <Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
+                IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
         		Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
         		HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
         </Grid>

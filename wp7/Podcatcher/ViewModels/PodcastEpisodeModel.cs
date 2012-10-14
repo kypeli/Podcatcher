@@ -173,6 +173,14 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private String m_episodeFileMimeType;
+        [Column(UpdateCheck = UpdateCheck.Never)]
+        public String EpisodeFileMimeType
+        {
+            get { return m_episodeFileMimeType; }
+            set { m_episodeFileMimeType = value; }
+        }
+        
         private long m_episodePlayBookmark;
         [Column(UpdateCheck = UpdateCheck.Never)]
         public long EpisodePlayBookmark

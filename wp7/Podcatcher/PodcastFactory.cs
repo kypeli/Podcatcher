@@ -167,6 +167,16 @@ namespace Podcatcher
                         {
                             Debug.WriteLine("WARNING: Null element: enclosure - url");
                         }
+
+                        XAttribute mimeTypeAttribute = currentElement.Attribute("type");
+                        if (mimeTypeAttribute != null)
+                        {
+                            episodeModel.EpisodeFileMimeType = mimeTypeAttribute.Value;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("WARNING: Null element: enclosure - mime type");
+                        }
                     }
                     else
                     {
