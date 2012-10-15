@@ -1,0 +1,12 @@
+1.1.0.0
+----------
+ * Add podcast streaming.
+ * Show podcast description when tapping on subscription in top
+   or search lists.
+ * Add activity indicator to main screen when podcasts are being 
+   refreshed.
+ * Don't show download button for unsupported podcast types.
+
+1.0.1.0
+----------
+ * Fix crash if episode doesn't have description.
