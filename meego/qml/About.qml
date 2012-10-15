@@ -81,7 +81,7 @@ Page {
                     id: creditText
                     font.pointSize: 16
                     text: "<B>Johan Paul</B><br>" +
-                          "johan.paul@gmail.com<BR>" +
+                          "johan@paul.fi<BR>" +
                           "Twitter: @kypeli<BR><br>" +
                           "UX and icon by<br><b>Niklas Gustafsson</B><br>" +
                           "niklas@nikui.net<BR><BR>" +
@@ -92,8 +92,8 @@ Page {
                           "Team Qontactors and<BR>team CoCo of Harmattan<BR><BR><BR>" +
                           "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
                           "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
-                          "...also greets to Fopaman and BCG<BR>of Sorcerers!";
-
+                          "...also greets to Fopaman and BCG<BR>of Sorcerers!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
+                          "See you next time on a <B>Jolla</B> device!"
                     horizontalAlignment: Text.AlignHCenter;
                 }
 
