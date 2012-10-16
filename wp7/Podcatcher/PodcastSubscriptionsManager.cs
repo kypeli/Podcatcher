@@ -202,7 +202,8 @@ namespace Podcatcher
                 return;
             }
 
-            if (m_podcastsSqlModel.isPodcastInDB(podcastModel))
+            string rssUrl = e.UserState as string;
+            if (m_podcastsSqlModel.isPodcastInDB(rssUrl))
             {
                 PodcastSubscriptionFailedWithMessage("You have already subscribed to that podcast.");
                 return;
@@ -210,7 +211,7 @@ namespace Podcatcher
 
             podcastModel.CachedPodcastRSSFeed = podcastRss;                        
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
-            podcastModel.PodcastRSSUrl = e.UserState as string;
+            podcastModel.PodcastRSSUrl = rssUrl;
             m_podcastsSqlModel.addSubscription(podcastModel);
 
             podcastModel.fetchChannelLogo();

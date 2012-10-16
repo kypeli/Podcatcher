@@ -121,13 +121,13 @@ namespace Podcatcher
             NotifyPropertyChanged("PodcastSubscriptions");
         }
 
-        public bool isPodcastInDB(PodcastSubscriptionModel subscription)
+        public bool isPodcastInDB(string subscriptionRssUrl)
         {
             var query = (from PodcastSubscriptionModel s in Subscriptions
-                         where s.PodcastShowLink.Equals(subscription.PodcastShowLink)
+                         where s.PodcastRSSUrl.Equals(subscriptionRssUrl)
                          select new
                          {
-                             url = s.PodcastShowLink
+                             url = s.PodcastRSSUrl
                          }).FirstOrDefault();
 
             if (query == null)
