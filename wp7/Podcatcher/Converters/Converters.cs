@@ -184,6 +184,13 @@ namespace Podcatcher.Converters
 
         private bool playableMimeType(string episodeMimeType)
         {
+            // Since we added the MIME type in version 2 of DB, we have to assume that if the 
+            // value is empty, we show the button.
+            if (String.IsNullOrEmpty(episodeMimeType))
+            {
+                return true;
+            }
+
             bool playable = false;
             switch (episodeMimeType)
             {
