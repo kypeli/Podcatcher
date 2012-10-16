@@ -1,6 +1,7 @@
 1.1.0.0
 ----------
  * Add podcast streaming.
+ * Add support for video podcasts.
  * Show podcast description when tapping on subscription in top
    or search lists.
  * Add activity indicator to main screen when podcasts are being 
