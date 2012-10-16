@@ -88,6 +88,11 @@ namespace Podcatcher
 
         public static PodcastPlayerControl getIntance()
         {
+            if (m_instance == null)
+            {
+                m_instance = new PodcastPlayerControl();
+            }
+
             return m_instance;
         }
 
