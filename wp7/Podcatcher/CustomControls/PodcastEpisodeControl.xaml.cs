@@ -38,6 +38,7 @@ using Microsoft.Phone.Controls;
 using System.Diagnostics;
 using Podcatcher.ViewModels;
 using System.IO.IsolatedStorage;
+using Microsoft.Phone.Tasks;
 
 namespace Podcatcher
 {
@@ -119,6 +120,27 @@ namespace Podcatcher
         private void MenuItemStream_Click(object sender, RoutedEventArgs e)
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
+            if (podcastEpisode.EpisodeFileMimeType == "audio/mpeg")
+            {
+                audioStreaming(podcastEpisode);
+            }
+            else
+            {
+                videoStreaming(podcastEpisode);
+            }
+        }
+
+        private void videoStreaming(PodcastEpisodeModel podcastEpisode)
+        {
+            MediaPlayerLauncher mediaPlayerLauncher = new MediaPlayerLauncher();
+            mediaPlayerLauncher.Media = new Uri(podcastEpisode.EpisodeDownloadUri, UriKind.Absolute);
+            mediaPlayerLauncher.Controls = MediaPlaybackControls.All;
+            mediaPlayerLauncher.Location = MediaLocationType.Data;
+            mediaPlayerLauncher.Show();
+        }
+
+        private void audioStreaming(PodcastEpisodeModel podcastEpisode)
+        {
             PodcastPlayerControl player = PodcastPlayerControl.getIntance();
             player.streamEpisode(podcastEpisode);
         }
