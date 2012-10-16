@@ -41,7 +41,7 @@
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="0">
-            <TextBlock x:Name="PodcastDescription" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="480" FontSize="20"/>            
+            <TextBlock x:Name="PodcastDescription" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="480" FontSize="24"/>            
         </Grid>
     </Grid>
 
