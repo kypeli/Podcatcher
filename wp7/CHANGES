@@ -1,6 +1,6 @@
 1.1.0.0
 ----------
- * Add podcast streaming.
+ * Add support for podcast audio and video streaming.
  * Add support for video podcasts.
  * Show podcast description when tapping on subscription in top
    or search lists.
