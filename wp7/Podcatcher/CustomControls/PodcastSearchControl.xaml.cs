@@ -62,7 +62,9 @@ namespace Podcatcher.CustomControls
 
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadSearchResultsCompleted);
-            wc.DownloadStringAsync(new Uri(String.Format("https://gpodder.net/search.xml?q=%22{0}%22", this.searchTerm.Text)));
+            string searchQueryString = String.Format("https://gpodder.net/search.xml?q=\"{0}\"", this.searchTerm.Text);
+            Debug.WriteLine("Search string: " + searchQueryString);
+            wc.DownloadStringAsync(new Uri(searchQueryString));
         }
 
         void wc_DownloadSearchResultsCompleted(object sender, DownloadStringCompletedEventArgs e)
