@@ -206,16 +206,18 @@ namespace Podcatcher
         private PodcastSqlModel()
             : base(m_connectionString)
         {
-            var updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
+            DatabaseSchemaUpdater updater;
             if (DatabaseExists() == false)
             {
                 CreateDatabase();
+                updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
-
                 SubmitChanges();
             }
 
+
+            updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
             if (updater.DatabaseSchemaVersion < 2)
             {
                 // Added in version 2 (release 1.1.0.0)
