@@ -67,7 +67,9 @@ namespace Podcatcher.Views
         private void PurchaseButton_Click(object sender, RoutedEventArgs e)
         {
             // pop up the link to rate and review the app
-            MarketplaceReviewTask purchase = new MarketplaceReviewTask();
+            MarketplaceDetailTask purchase = new MarketplaceDetailTask();
+            purchase.ContentIdentifier = "5d5cebe9-420a-4566-a468-04c94aa34d93";
+            purchase.ContentType = MarketplaceContentType.Applications;
             purchase.Show();
         }
     }

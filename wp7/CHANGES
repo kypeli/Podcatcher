@@ -6,6 +6,7 @@
  * Add activity indicator to main screen when podcasts are being 
    refreshed.
  * Don't show download button for unsupported podcast types.
+ * Fix opening the details page in Marketplace when tapping "Purchase full version". 
 
 1.0.1.0
 ----------
