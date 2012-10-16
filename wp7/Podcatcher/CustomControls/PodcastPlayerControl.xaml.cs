@@ -44,6 +44,7 @@ using Microsoft.Phone.BackgroundAudio;
 using System.IO.IsolatedStorage;
 using System.Windows.Threading;
 using Coding4Fun.Phone.Controls;
+using Microsoft.Phone.Tasks;
 
 namespace Podcatcher
 {
@@ -94,32 +95,44 @@ namespace Podcatcher
         {
             Debug.WriteLine("Starting playback for episode: " + episodeModel);
 
-            // Save the state for the previously playing podcast episode. 
-            if (m_currentEpisode != null)
+            if (episodeModel.EpisodeFileMimeType == "video/mp4")
             {
-                saveEpisodePlayPosition(m_currentEpisode);
-                m_currentEpisode.EpisodeState = m_originalEpisodeState;
-            }
-
-            m_originalEpisodeState = episodeModel.EpisodeState;
-            m_currentEpisode = episodeModel;
-            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
-            m_appSettings.Save();
-
-            setupPlayerUIContent(m_currentEpisode);
-            showPlayerLayout();
-
-            if (m_currentEpisode.SavedPlayPos > 0)
-            {
-                askForContinueEpisodePlaying();
+                MediaPlayerLauncher mediaPlayerLauncher = new MediaPlayerLauncher();
+                mediaPlayerLauncher.Media = new Uri(episodeModel.EpisodeFile, UriKind.Relative);
+                mediaPlayerLauncher.Controls = MediaPlaybackControls.All;
+                mediaPlayerLauncher.Location = MediaLocationType.Data;
+                mediaPlayerLauncher.Show(); 
             }
             else
             {
-                startPlayback();
-            }
 
-            m_currentEpisode.SavedPlayPos = 1;  // To mark that the playback has started - we update UI correctly in podcast listing.
+                // Save the state for the previously playing podcast episode. 
+                if (m_currentEpisode != null)
+                {
+                    saveEpisodePlayPosition(m_currentEpisode);
+                    m_currentEpisode.EpisodeState = m_originalEpisodeState;
+                }
+
+                m_originalEpisodeState = episodeModel.EpisodeState;
+                m_currentEpisode = episodeModel;
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
+                m_appSettings.Save();
+
+                setupPlayerUIContent(m_currentEpisode);
+                showPlayerLayout();
+
+                if (m_currentEpisode.SavedPlayPos > 0)
+                {
+                    askForContinueEpisodePlaying();
+                }
+                else
+                {
+                    startPlayback();
+                }
+
+                m_currentEpisode.SavedPlayPos = 1;  // To mark that the playback has started - we update UI correctly in podcast listing.
+            }
         }
 
         public void streamEpisode(PodcastEpisodeModel episodeModel)

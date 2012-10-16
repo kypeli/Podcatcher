@@ -37,6 +37,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using System.Diagnostics;
 using Podcatcher.ViewModels;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -73,7 +74,16 @@ namespace Podcatcher
                 // Episode is idle => start downloading. 
                 case PodcastEpisodeModel.EpisodeStateEnum.Idle:
                     PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
-                    downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
+
+                    bool continueDl = true;
+                    if (m_episodeModel.EpisodeFileMimeType != "audio/mpeg")
+                    {
+                        continueDl = continueVideoDownload();                        
+                    }
+                    if (continueDl)
+                    {
+                        downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
+                    }
                     break;
 
                 // Episode is playable -> Play episode.
@@ -83,6 +93,27 @@ namespace Podcatcher
                     player.playEpisode(m_episodeModel);
                     break;
             }
+        }
+
+        private bool continueVideoDownload()
+        {
+            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
+            if (appSettings.Contains(App.LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID) == false)
+            {
+                if (MessageBox.Show("Video podcasts can only be downloaded when the device is connected to a WiFi network and to a power source.",
+                    "Attention",
+                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    appSettings.Add(App.LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID, true);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void MenuItemStream_Click(object sender, RoutedEventArgs e)

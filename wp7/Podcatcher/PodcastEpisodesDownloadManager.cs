@@ -199,7 +199,9 @@ namespace Podcatcher
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
                                                                             new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
-                m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
+                m_currentBackgroundTransfer.TransferPreferences = m_currentEpisodeDownload.EpisodeFileMimeType == "audio/mpeg" ? 
+                                                                  TransferPreferences.AllowCellularAndBattery : 
+                                                                  TransferPreferences.None;
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                 m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
 

@@ -184,8 +184,19 @@ namespace Podcatcher.Converters
 
         private bool playableMimeType(string episodeMimeType)
         {
-            // TODO: Expand
-            return episodeMimeType == "audio/mpeg";
+            bool playable = false;
+            switch (episodeMimeType)
+            {
+                case "audio/mpeg":
+                    playable = true;
+                    break;
+
+                case "video/mp4":
+                    playable = true;
+                    break;
+            }
+
+            return playable;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

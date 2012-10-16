@@ -45,6 +45,8 @@ namespace Podcatcher
         public const string LSKEY_PODCAST_EPISODE_PLAYING_ID        = "playing_episodeId";
         // Key for storing the episode ID of the currently downloading episode.
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
+        // Key for verifying user knows special requirements for D/L videos.
+        public const string LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID = "dl_videoEPisodesNeedWifi";
 
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
@@ -104,10 +106,9 @@ namespace Podcatcher
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-  //          IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
+            //          IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
             CheckLicense();
         }
-
         // Code to execute when the application is activated (brought to foreground)
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
