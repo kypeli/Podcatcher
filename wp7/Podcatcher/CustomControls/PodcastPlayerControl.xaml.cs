@@ -96,17 +96,31 @@ namespace Podcatcher
             return m_instance;
         }
 
+        public static bool isAudioPodcast(PodcastEpisodeModel episode)
+        {
+            bool audio = false;
+            switch (episode.EpisodeFileMimeType)
+            {
+                case "audio/mpeg":
+                case "audio/mp3":
+                    audio = true;
+                    break;
+            }
+
+            return audio;
+        }
+
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
             Debug.WriteLine("Starting playback for episode: " + episodeModel);
 
-            if (episodeModel.EpisodeFileMimeType == "video/mp4")
+            if (isAudioPodcast(episodeModel))
             {
-                videoPlayback(episodeModel);
+                audioPlayback(episodeModel);
             }
             else
             {
-                audioPlayback(episodeModel);
+                videoPlayback(episodeModel);
             }
         }
 

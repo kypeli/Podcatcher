@@ -77,10 +77,11 @@ namespace Podcatcher
                     PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
 
                     bool continueDl = true;
-                    if (m_episodeModel.EpisodeFileMimeType != "audio/mpeg")
+                    if (PodcastPlayerControl.isAudioPodcast(m_episodeModel) == false)
                     {
                         continueDl = continueVideoDownload();                        
                     }
+
                     if (continueDl)
                     {
                         downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
@@ -120,7 +121,7 @@ namespace Podcatcher
         private void MenuItemStream_Click(object sender, RoutedEventArgs e)
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
-            if (podcastEpisode.EpisodeFileMimeType == "audio/mpeg")
+            if (PodcastPlayerControl.isAudioPodcast(podcastEpisode)) 
             {
                 audioStreaming(podcastEpisode);
             }

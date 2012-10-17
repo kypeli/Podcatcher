@@ -198,6 +198,10 @@ namespace Podcatcher.Converters
                     playable = true;
                     break;
 
+                case "audio/mp3":
+                    playable = true;
+                    break;
+                
                 case "video/mp4":
                     playable = true;
                     break;
