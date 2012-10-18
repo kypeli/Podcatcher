@@ -127,6 +127,8 @@ namespace Podcatcher
             }
             else
             {
+                PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+                player.StopPlayback();
                 videoStreaming(podcastEpisode);
             }
         }

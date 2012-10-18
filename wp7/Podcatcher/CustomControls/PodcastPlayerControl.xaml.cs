@@ -99,12 +99,18 @@ namespace Podcatcher
         public static bool isAudioPodcast(PodcastEpisodeModel episode)
         {
             bool audio = false;
+
+             // We have to treat empty as an audio, because that was what the previous 
+             // version had for mime type and we don't want to break the functionality.
+            if (String.IsNullOrEmpty(episode.EpisodeFileMimeType))
+            {
+                return true;
+            }
+
             switch (episode.EpisodeFileMimeType)
             {   
                 case "audio/mpeg":
                 case "audio/mp3":
-                case "":            // We have to treat empty as an audio, because that was what the previous 
-                                    // version had for mime type and we don't want to break the functionality.
                     audio = true;
                     break;
             }
@@ -122,6 +128,7 @@ namespace Podcatcher
             }
             else
             {
+                StopPlayback();
                 videoPlayback(episodeModel);
             }
         }
@@ -173,6 +180,21 @@ namespace Podcatcher
             m_originalEpisodeState = episodeModel.EpisodeState;
             m_currentEpisode = episodeModel;
             startPlayback(TimeSpan.Zero, true);
+        }
+
+        public void StopPlayback()
+        {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
+                || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
+            {
+
+                playbackStopped();
+                showNoPlayerLayout();
+                PodcastPlayerStopped(this, new EventArgs());
+
+                BackgroundAudioPlayer.Instance.Stop();
+                BackgroundAudioPlayer.Instance.Track = null;
+            }
         }
 
         /************************************* Private implementation *******************************/
@@ -293,13 +315,6 @@ namespace Podcatcher
             m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
         }
 
-        private void StopPlayback()
-        {
-            playbackStopped();
-            showNoPlayerLayout();
-            PodcastPlayerStopped(this, new EventArgs());
-        }
-
         private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
         {
             m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
@@ -415,11 +430,6 @@ namespace Podcatcher
 
         private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing) { 
-                BackgroundAudioPlayer.Instance.Stop();
-                BackgroundAudioPlayer.Instance.Track = null;
-            }
-
             StopPlayback();
         }
 
