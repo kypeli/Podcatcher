@@ -174,6 +174,8 @@ namespace Podcatcher
 
         public void streamEpisode(PodcastEpisodeModel episodeModel)
         {
+            StopPlayback();
+
             setupPlayerUIContent(episodeModel);
             showPlayerLayout();
 
@@ -375,7 +377,10 @@ namespace Podcatcher
             BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
             
             saveEpisodePlayPosition(m_currentEpisode);
-            m_currentEpisode.EpisodeState = m_originalEpisodeState;
+            m_currentEpisode.EpisodeState = (m_currentEpisode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Paused 
+                                             && String.IsNullOrEmpty(m_currentEpisode.EpisodeFile) == false) ? 
+                                            PodcastEpisodeModel.EpisodeStateEnum.Playable : 
+                                            m_originalEpisodeState;
             m_currentEpisode = null;
             m_screenUpdateTimer.Stop();
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
