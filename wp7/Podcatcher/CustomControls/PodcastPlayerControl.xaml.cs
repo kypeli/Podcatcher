@@ -100,9 +100,11 @@ namespace Podcatcher
         {
             bool audio = false;
             switch (episode.EpisodeFileMimeType)
-            {
+            {   
                 case "audio/mpeg":
                 case "audio/mp3":
+                case "":            // We have to treat empty as an audio, because that was what the previous 
+                                    // version had for mime type and we don't want to break the functionality.
                     audio = true;
                     break;
             }

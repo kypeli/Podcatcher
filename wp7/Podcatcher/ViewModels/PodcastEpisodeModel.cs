@@ -173,7 +173,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private String m_episodeFileMimeType;
+        private String m_episodeFileMimeType = "";
         [Column(UpdateCheck = UpdateCheck.Never)]
         public String EpisodeFileMimeType
         {
