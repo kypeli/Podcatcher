@@ -38,6 +38,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
+using System.Reflection;
 
 namespace Podcatcher.Views
 {
@@ -46,6 +47,11 @@ namespace Podcatcher.Views
         public AboutView()
         {
             InitializeComponent();
+            
+            var nameHelper = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
+            Version thisVersion = nameHelper.Version;
+            version.Text = String.Format("{0}.{1}.{2}.{3}", thisVersion.Major, thisVersion.Minor, thisVersion.Build, thisVersion.Revision);
+
             setUIIfPurchased();
             this.AnimatedTitleText.Begin();
         }
