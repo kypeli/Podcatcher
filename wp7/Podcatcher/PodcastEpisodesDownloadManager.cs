@@ -199,7 +199,7 @@ namespace Podcatcher
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
                                                                             new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
-                m_currentBackgroundTransfer.TransferPreferences = m_currentEpisodeDownload.EpisodeFileMimeType == "audio/mpeg" ? 
+                m_currentBackgroundTransfer.TransferPreferences = PodcastPlayerControl.isAudioPodcast(m_currentEpisodeDownload) ? 
                                                                   TransferPreferences.AllowCellularAndBattery : 
                                                                   TransferPreferences.None;
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
@@ -284,7 +284,8 @@ namespace Podcatcher
         {
             // If the status code of a completed transfer is 200 or 206, the
             // transfer was successful
-            if (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206)
+            if (transferRequest.TransferError == null &&
+                (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206))
             {
                 Debug.WriteLine("Transfer request completed succesfully.");
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
@@ -293,7 +294,7 @@ namespace Podcatcher
             }
             else
             {
-                Debug.WriteLine("Transfer request completed with error code: " + transferRequest.StatusCode);
+                Debug.WriteLine("Transfer request completed with error code: " + transferRequest.StatusCode + ", " + transferRequest.TransferError);
                 if (m_currentEpisodeDownload != null)
                 {
                     m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
