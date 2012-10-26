@@ -183,7 +183,7 @@ namespace Podcatcher
                         Debug.WriteLine("WARNING: Null element: enclosure");
                     }
 
-                    currentElement = getChildElementByName(episode, "EpisodeDownloadSize");
+                    currentElement = getChildElementByName(episode, "enclosure");
                     if (currentElement != null)
                     {
                         XAttribute downloadSizeAttribute = currentElement.Attribute("length");
@@ -258,7 +258,7 @@ namespace Podcatcher
 
             if (resultDateTime.Equals(DateTime.MinValue))   
             {
-                // Empty DateTime returned again. This is for you, Hacker Public Radio.
+                // Empty DateTime returned again. This is for you, Hacker Public Radio and the Economist!.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
                 resultDateTime = getDateTimeWithFormat("yyyy-MM-dd", pubDateString);            // Parse as 2012-06-25
             }
@@ -272,11 +272,17 @@ namespace Podcatcher
 
         private static DateTime getDateTimeWithFormat(string dateFormat, string pubDateString)
         {
+            DateTime result = new DateTime();
+            if (dateFormat.Length > pubDateString.Length)
+            {
+                Debug.WriteLine("Cannot parse pub date as its length doesn't match the format length we are looking for. Returning.");
+                return result;
+            }
+
             pubDateString = pubDateString.Substring(0, dateFormat.Length);     // Retrieve only the first part of the pubdate, 
                                                                                // and ignore timezone.
             Debug.WriteLine("Trying to parse pub date: '" + pubDateString + "', format: " + dateFormat);
 
-            DateTime result = new DateTime();
             if (DateTime.TryParseExact(pubDateString,
                                        dateFormat,
                                        CultureInfo.InvariantCulture,

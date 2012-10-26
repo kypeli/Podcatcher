@@ -203,6 +203,7 @@ namespace Podcatcher.Converters
                     break;
                 
                 case "video/mp4":
+                case "video/x-mp4":
                     playable = true;
                     break;
             }

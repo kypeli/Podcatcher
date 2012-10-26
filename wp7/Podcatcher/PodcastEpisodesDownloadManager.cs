@@ -199,9 +199,13 @@ namespace Podcatcher
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
                                                                             new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
-                m_currentBackgroundTransfer.TransferPreferences = PodcastPlayerControl.isAudioPodcast(m_currentEpisodeDownload) ? 
-                                                                  TransferPreferences.AllowCellularAndBattery : 
-                                                                  TransferPreferences.None;
+                if (canAllowCellularDownload(m_currentEpisodeDownload))
+                {
+                    m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
+                } else {
+                    m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.None;
+                }
+                                                                  
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                 m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
 
@@ -228,6 +232,20 @@ namespace Podcatcher
                 ProcessTransfer(m_currentBackgroundTransfer);
                 UpdateUI(m_currentBackgroundTransfer);
             }
+        }
+
+        private bool canAllowCellularDownload(PodcastEpisodeModel m_currentEpisodeDownload)
+        {
+            bool allowCellular = false;
+            if (PodcastPlayerControl.isAudioPodcast(m_currentEpisodeDownload))      // Allow when d/l audio
+            {
+                if (m_currentEpisodeDownload.EpisodeDownloadSize < 100000)          // Allow <100MB of audio
+                {
+                    allowCellular = true;
+                }
+            }
+
+            return allowCellular;
         }
 
         void backgroundTransferProgressChanged(object sender, BackgroundTransferEventArgs e)

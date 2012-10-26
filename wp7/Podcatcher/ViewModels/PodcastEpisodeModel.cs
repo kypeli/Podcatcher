@@ -103,9 +103,11 @@ namespace Podcatcher.ViewModels
                 }
 
                 // Stupid MSQL!!
-                if (value.Length > NVARCHAR_MAX)
+                // Yes, there's a 8kB limit per row in SQL so we want to make sure we don't 
+                // hit that, and hence take first 4kB of the description.
+                if (value.Length > 3000)
                 {
-                    value = value.Substring(0, NVARCHAR_MAX);
+                    value = value.Substring(0, 3000);
                 }
 
                 m_description = value; 
