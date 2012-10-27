@@ -1,13 +1,21 @@
-1.1.0.0
+1.1.0.1
 ----------
  * Add support for podcast audio and video streaming.
- * Add support for video podcasts.
+ * Add support for video podcast download.
+ * Add support for video podcast playback.
  * Show podcast description when tapping on subscription in top
-   or search lists.
+   or search lists when adding a podcast.
  * Add activity indicator to main screen when podcasts are being 
    refreshed.
  * Don't show download button for unsupported podcast types.
- * Fix opening the details page in Marketplace when tapping "Purchase full version". 
+ * Support "video/x-mp4" MIME type as playable video.
+ * Fix opening the details page instead of review page in Marketplace when tapping 
+   "Purchase full version". 
+ * Fix crash when podcast pubDate is shorter than the format pattern that is used 
+   when trying to parse the pubDate with.
+ * Fix exception that we get when podcast episode description is so long that it fills the 
+   8 kB limit of what a row can be in SQL CE.
+ * Fix downloading of audio podcasts larger than 100 MB
 
 1.0.1.0
 ----------
