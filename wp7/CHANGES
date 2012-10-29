@@ -1,3 +1,8 @@
+1.2.0.0
+----------
+ * Fix issue of episode state when playing an episode, exiting app and returning 
+   to the episode listing.
+
 1.1.0.1
 ----------
  * Add support for podcast audio and video streaming.

@@ -404,10 +404,12 @@ namespace Podcatcher
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
             }
             else
             {
                 this.PlayButtonImage.Source = m_playButtonBitmap;
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
             }
 
             m_screenUpdateTimer.Start();
