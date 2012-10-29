@@ -1,5 +1,6 @@
 1.2.0.0
 ----------
+ * New Windows Phone 7 styled icononography.
  * Fix issue of episode state when playing an episode, exiting app and returning 
    to the episode listing.
 
