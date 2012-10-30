@@ -239,7 +239,8 @@ namespace Podcatcher
             bool allowCellular = false;
             if (PodcastPlayerControl.isAudioPodcast(m_currentEpisodeDownload))      // Allow when d/l audio
             {
-                if (m_currentEpisodeDownload.EpisodeDownloadSize < 100000)          // Allow <100MB of audio
+                if (m_currentEpisodeDownload.EpisodeDownloadSize == 0 ||            // We had an error where the d/l size was not parsed. So we have to by default allow this not to change previous behavior.
+                    m_currentEpisodeDownload.EpisodeDownloadSize < 100000000)       // Allow <100MB of audio
                 {
                     allowCellular = true;
                 }
