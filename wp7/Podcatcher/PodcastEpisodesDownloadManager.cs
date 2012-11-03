@@ -195,10 +195,9 @@ namespace Podcatcher
                     return;
                 }
 
-                m_currentEpisodeDownload.EpisodeFile = episodeFile;
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
-                                                                            new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
+                                                                            new Uri(episodeFile, UriKind.Relative));
                 if (canAllowCellularDownload(m_currentEpisodeDownload))
                 {
                     m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
@@ -229,8 +228,6 @@ namespace Podcatcher
                     BackgroundTransferService.Add(m_currentBackgroundTransfer);
                 }
 
-                ProcessTransfer(m_currentBackgroundTransfer);
-                UpdateUI(m_currentBackgroundTransfer);
             }
         }
 
@@ -303,11 +300,13 @@ namespace Podcatcher
         {
             // If the status code of a completed transfer is 200 or 206, the
             // transfer was successful
-            if (transferRequest.TransferError == null &&
-                (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206))
+            if (transferRequest.TransferError == null && 
+               (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206))
             {
                 Debug.WriteLine("Transfer request completed succesfully.");
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
+
                 m_currentEpisodeDownload.PodcastSubscription.UnplayedEpisodes++;
 
             }

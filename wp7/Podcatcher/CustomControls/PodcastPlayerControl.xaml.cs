@@ -71,7 +71,6 @@ namespace Podcatcher
             InitializeComponent();
             m_appSettings = IsolatedStorageSettings.ApplicationSettings;
             m_instance = this;
-
             setupPlayerUI();
 
             if (BackgroundAudioPlayer.Instance.Track != null)
@@ -125,6 +124,7 @@ namespace Podcatcher
             if (isAudioPodcast(episodeModel))
             {
                 audioPlayback(episodeModel);
+                setupUIForEpisodePlaying();
             }
             else
             {
@@ -176,12 +176,12 @@ namespace Podcatcher
         {
             StopPlayback();
 
-            setupPlayerUIContent(episodeModel);
-            showPlayerLayout();
-
             m_originalEpisodeState = episodeModel.EpisodeState;
             m_currentEpisode = episodeModel;
             startPlayback(TimeSpan.Zero, true);
+            setupUIForEpisodePlaying();
+            setupPlayerUIContent(episodeModel);
+            showPlayerLayout();
         }
 
         public void StopPlayback()
@@ -217,6 +217,7 @@ namespace Podcatcher
             m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
+            m_screenUpdateTimer.Stop();
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
         }
@@ -289,8 +290,8 @@ namespace Podcatcher
                 return;
             }
 
-            BackgroundAudioPlayer.Instance.Track = playTrack;
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
+            BackgroundAudioPlayer.Instance.Track = playTrack;
 
             if (position.Ticks > 0) 
             {
@@ -299,13 +300,13 @@ namespace Podcatcher
 
             try
             {
-                BackgroundAudioPlayer.Instance.Play();
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
 
                 PodcastPlayerStarted(this, new EventArgs());
+                BackgroundAudioPlayer.Instance.Play();
             }
             catch (Exception)
             {
@@ -346,7 +347,6 @@ namespace Podcatcher
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
-                    setupUIForEpisodePlaying();
                     break;
 
                 case PlayState.Paused:
@@ -400,18 +400,16 @@ namespace Podcatcher
 
         private void setupUIForEpisodePlaying()
         {
-            this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            if (m_currentEpisode.EpisodeState ==  PodcastEpisodeModel.EpisodeStateEnum.Playing)
             {
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
             }
             else
             {
                 this.PlayButtonImage.Source = m_playButtonBitmap;
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
             }
 
+            m_screenUpdateTimer.Stop();
             m_screenUpdateTimer.Start();
         }
 
@@ -502,6 +500,7 @@ namespace Podcatcher
             position = BackgroundAudioPlayer.Instance.Position;
 
             this.CurrentPositionText.Text = position.ToString("hh\\:mm\\:ss");
+            this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
 
             settingSliderFromPlay = true;
             if (duration.Ticks > 0)

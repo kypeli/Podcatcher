@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-  <App xmlns="" ProductID="{e117d78a-e53c-49ee-99bb-bc88f5b7dfc2}" Title="Podcatcher" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Podcatcher author" Description="Sample description" Publisher="Podcatcher">
+  <App xmlns="" ProductID="{e117d78a-e53c-49ee-99bb-bc88f5b7dfc2}" Title="Podcatcher" RuntimeType="Silverlight" Version="1.1.0.2" Genre="apps.normal" Author="Johan Paul &lt;johan@paul.fi&gt;" Description="Sample description" Publisher="Johan Paul">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES" />
