@@ -9,7 +9,7 @@
 	d:DesignWidth="480" Margin="0">
 
 	<StackPanel Orientation="Horizontal" Margin="0,0,0,10" Height="110" >
-		<Image CacheMode="BitmapCache" Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,10,10,0" Stretch="Fill"/>
+		<Image Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,10,10,0" Stretch="Fill"/>
 		<StackPanel>
 			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Center" Margin="0,10,0,5" Width="316" VerticalAlignment="Center"/>
 			<TextBlock x:Name="NumberOfEpisodes" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,10,0,0"/>

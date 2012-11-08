@@ -124,6 +124,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private BitmapImage m_podcastBitmapLogo = null; 
         public BitmapImage PodcastLogo
         {
             get
@@ -131,6 +132,10 @@ namespace Podcatcher.ViewModels
                 if (m_PodcastLogoLocalLocation == null)
                 {
                     return null;
+                }
+
+                if (m_podcastBitmapLogo != null) {
+                    return m_podcastBitmapLogo;
                 }
 
                 // This method can be called when we still don't have a local
@@ -146,12 +151,14 @@ namespace Podcatcher.ViewModels
                     return null;
                 }
 
-                BitmapImage image = new BitmapImage();
+                m_podcastBitmapLogo = new BitmapImage();
+
                 using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                 {
-                    image.SetSource(stream);
+                    m_podcastBitmapLogo.SetSource(stream);
                 }
-                return image;
+
+                return m_podcastBitmapLogo;
             }
 
             private set { }

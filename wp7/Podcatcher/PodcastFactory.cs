@@ -189,7 +189,15 @@ namespace Podcatcher
                         XAttribute downloadSizeAttribute = currentElement.Attribute("length");
                         if (downloadSizeAttribute != null)
                         {
-                            episodeModel.EpisodeDownloadSize = Int64.Parse(downloadSizeAttribute.Value);
+                            try
+                            {
+                                episodeModel.EpisodeDownloadSize = Int64.Parse(downloadSizeAttribute.Value);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.WriteLine("ERROR: Parse error. Message: " + e.Message);
+                            }
+ 
                         }
                         else
                         {
@@ -200,13 +208,6 @@ namespace Podcatcher
                     {
                         Debug.WriteLine("WARNING: Null element: EpisodeDownloadSize");
                     }
-
-/*                    episodeModel.EpisodeName = episode.Element("title").Value;
-                    episodeModel.EpisodeDescription = episode.Element("description").Value;
-                    episodeModel.EpisodePublished = pubDate; 
-                    episodeModel.EpisodeDownloadUri = episode.Element("enclosure").Attribute("url").Value;
-                    episodeModel.EpisodeDownloadSize = Int64.Parse(episode.Element("enclosure").Attribute("length").Value);
-                    */
 
                     episodeModel.EpisodePublished = pubDate; 
 
