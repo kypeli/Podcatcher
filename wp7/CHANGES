@@ -1,3 +1,12 @@
+1.3.0.0
+----------
+ * Add support for multiple MPEG3 MIME type variations that can be encountered on the Internet.
+
+1.2.0.0
+----------
+ * Fix major memory leak in how podcast logos were handled in the UI. 
+ * Fix crash if 'length' property is set for the audio feed, but is empty.
+ 
 1.1.0.2
 ----------
  * New Windows Phone 7 styled icononography.
