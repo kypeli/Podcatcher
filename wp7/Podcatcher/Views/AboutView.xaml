@@ -6,12 +6,15 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:c4f="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True" Margin="0,2,0,-2"
+    Style="{StaticResource TurnstilePage}">
 
     <phone:PhoneApplicationPage.Resources>
         <Storyboard x:Name="AnimatedTitleText">
@@ -55,7 +58,7 @@
         	<StackPanel>
                 <TextBlock TextWrapping="Wrap" x:Name="version" TextAlignment="Center" Margin="0,0,0,16" FontSize="29.333"/>
                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" TextAlignment="Center" Height="86"><Run Text="by Johan Paul"/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="johan@paul.fi"/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="Twitter: @kypeli"/></TextBlock>
-                <TextBlock TextWrapping="Wrap" Height="403"><Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with, please feel free to contact me! I am more than delighted to receive bug reports."/><Run Text=" "/><LineBreak/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/><Run Text=" "/><LineBreak/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="This application is licensed under the BSD license. The source code is available at https://github.com/kypeli/Podcatcher/. "/></TextBlock>
+                <TextBlock TextWrapping="Wrap" Height="403"><Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with or any other issue, please feel free to contact me! I am more than delighted to receive bug reports."/><LineBreak/><Run Text=" "/><LineBreak/><Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/><Run Text=" "/><LineBreak/><LineBreak/><Run Text="This application is licensed under the BSD license. The source code is available at https://github.com/kypeli/Podcatcher/. "/></TextBlock>
                 <Button x:Name="PurchaseButton" Content="Purchase full version" Click="PurchaseButton_Click" VerticalAlignment="Bottom" />
         	</StackPanel>
         	<TextBlock x:Name="PurchasedText" TextWrapping="Wrap" Text="Thank you for purchasing Podcatcher!" Margin="8,0,-8,25" VerticalAlignment="Bottom" Style="{StaticResource PhoneTextLargeStyle}" TextAlignment="Center" Visibility="Collapsed"/></Grid>

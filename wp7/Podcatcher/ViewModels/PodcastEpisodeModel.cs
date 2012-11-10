@@ -144,7 +144,7 @@ namespace Podcatcher.ViewModels
             set { m_episodeDownloadUrl = value; }
         }
 
-        private long m_episodeDownloadSize;
+        private long m_episodeDownloadSize = 0;
         [Column(UpdateCheck = UpdateCheck.Never)]
         public long EpisodeDownloadSize
         {
