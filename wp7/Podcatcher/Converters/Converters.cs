@@ -195,10 +195,13 @@ namespace Podcatcher.Converters
             switch (episodeMimeType)
             {
                 case "audio/mpeg":
-                    playable = true;
-                    break;
-
                 case "audio/mp3":
+                case "audio/x-mp3":
+                case "audio/mpeg3":
+                case "audio/x-mpeg3":
+                case "audio/mpg":
+                case "audio/x-mpg":
+                case "audio/x-mpegaudio":
                     playable = true;
                     break;
                 

@@ -107,9 +107,15 @@ namespace Podcatcher
             }
 
             switch (episode.EpisodeFileMimeType)
-            {   
+            {
                 case "audio/mpeg":
                 case "audio/mp3":
+                case "audio/x-mp3":
+                case "audio/mpeg3":
+                case "audio/x-mpeg3":
+                case "audio/mpg":
+                case "audio/x-mpg":
+                case "audio/x-mpegaudio":
                     audio = true;
                     break;
             }
