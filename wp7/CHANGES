@@ -1,5 +1,7 @@
-1.3.0.0
+1.2.1.0
 ----------
+ * Make podcast subscriptions refresh sequantial, which eliminates crashes to due concurrancy issues to LINQ-to-SQL. 
+ * Memory consumption: 100MB -> 45MB (8 subscriptions). 
  * Add support for multiple MPEG3 MIME type variations that can be encountered on the Internet.
 
 1.2.0.0
