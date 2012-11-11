@@ -130,18 +130,22 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                if (m_PodcastLogoLocalLocation == null)
-                {
-                    return null;
-                }
-
                 if (m_podcastBitmapLogo != null) {
                     return m_podcastBitmapLogo;
                 }
 
+                string isoFilename;
+                if (String.IsNullOrEmpty(m_PodcastLogoLocalLocation))
+                {
+                    isoFilename = "/images/Podcatcher_generic_podcast_cover.png";
+                }
+                else
+                {
+                    isoFilename = m_PodcastLogoLocalLocation;
+                }
+
                 // This method can be called when we still don't have a local
                 // image stored, so the file name can be empty.
-                string isoFilename = m_PodcastLogoLocalLocation;
 
                 // When we request for the podcast logo we will in fact fetch
                 // the image from the local cache, create the BitmapImage object
@@ -152,11 +156,31 @@ namespace Podcatcher.ViewModels
                     return null;
                 }
 
-                m_podcastBitmapLogo = new BitmapImage();
-
                 using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                 {
-                    m_podcastBitmapLogo.SetSource(stream);
+                    try
+                    {
+                        m_podcastBitmapLogo = new BitmapImage();
+                        m_podcastBitmapLogo.SetSource(stream);
+                    }
+                    catch (Exception)
+                    {
+                        Debug.WriteLine("Unsupported subscription logo type.");
+                        m_podcastBitmapLogo = null;
+                    }
+                }
+
+                if (m_podcastBitmapLogo == null)
+                {
+                    try
+                    {
+                        Uri uri = new Uri("/images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
+                        m_podcastBitmapLogo = new BitmapImage(uri);
+                    }
+                    catch (Exception)
+                    {
+                        Debug.WriteLine("ERROR: Cannot set default podcast cover.");
+                    }
                 }
 
                 return m_podcastBitmapLogo;
