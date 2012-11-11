@@ -126,30 +126,8 @@ namespace Podcatcher
             stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.StartedRefreshing;
             OnPodcastSubscriptionsChanged(this, stateChangedArgs);
 
-            List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
-            foreach (PodcastSubscriptionModel s in subscriptions)
-            {
-                if (s.IsSubscribed == false)
-                {
-                    Debug.WriteLine("Not subscribed to {0}, no refresh.", s.PodcastName);
-                    continue;
-                }
-
-                m_refreshingChannels++;
-                Uri refreshUri = createNonCachedRefreshUri(s.PodcastRSSUrl);
-                Debug.WriteLine("Refreshing subscriptions for '{0}', using URI: {1}", s.PodcastName, refreshUri);
-
-                WebClient wc = new WebClient();
-                wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
-                wc.DownloadStringAsync(refreshUri, s);
-            }
-
-            if (m_refreshingChannels == 0)
-            {
-                // No channels were refreshed
-                stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
-                OnPodcastSubscriptionsChanged(this, stateChangedArgs);
-            }
+            m_subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+            refreshNextSubscription();
         }
 
         /************************************* Private implementation *******************************/
@@ -158,7 +136,7 @@ namespace Podcatcher
         private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
         private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
-        private int m_refreshingChannels                      = 0;
+        List<PodcastSubscriptionModel> m_subscriptions        = null;
 
         private PodcastSubscriptionsManager()
         {
@@ -222,31 +200,72 @@ namespace Podcatcher
             OnPodcastChannelFinished(this, addArgs);
         }
 
-        void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        private void refreshNextSubscription()
         {
-            m_refreshingChannels--;
-            if (m_refreshingChannels <= 0)
+            if (m_subscriptions.Count < 1)
             {
+                Debug.WriteLine("No more episodes to refresh. Done.");
                 stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
-                OnPodcastSubscriptionsChanged(this, stateChangedArgs);   
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);
+                return;
             }
 
+            PodcastSubscriptionModel subscription = m_subscriptions[0];
+            m_subscriptions.RemoveAt(0);
+
+            if (subscription.IsSubscribed == false)
+            {
+                Debug.WriteLine("Not subscribed to {0}, no refresh.", subscription.PodcastName);
+                refreshNextSubscription();
+            }
+
+            Uri refreshUri = createNonCachedRefreshUri(subscription.PodcastRSSUrl);
+            Debug.WriteLine("Refreshing subscriptions for '{0}', using URL: {1}", subscription.PodcastName, refreshUri);
+
+            WebClient wc = new WebClient();
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
+            wc.DownloadStringAsync(refreshUri, subscription);
+        }
+
+        void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
+            
             if (e.Error != null)
             {
                 Debug.WriteLine("ERROR: Got web error when refreshing subscriptions: " + e.ToString());
                 ToastPrompt toast = new ToastPrompt();
                 toast.Title = "Error";
-                toast.Message = "Cannot refresh subscriptions.";
+                toast.Message = "Cannot refresh subscription '" + subscription.PodcastName + "'";
 
                 toast.Show();
-                return;
+
+                refreshNextSubscription();
             }
 
-            PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
             subscription.CachedPodcastRSSFeed = e.Result as string;
-            subscription.EpisodesManager.updatePodcastEpisodes();
-            subscription.updateEpisodesCount();
-        } 
+
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(workerUpdateEpisodes);
+            worker.RunWorkerAsync(subscription);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerUpdateEpisodesCompleted);
+        }
+
+        private void workerUpdateEpisodes(object sender, DoWorkEventArgs args)
+        {
+            PodcastSubscriptionModel subscription = args.Argument as PodcastSubscriptionModel;
+            Debug.WriteLine("Starting refreshing episodes for " + subscription.PodcastName);
+            lock (subscription)
+            {
+                subscription.EpisodesManager.updatePodcastEpisodes();
+            }
+            Debug.WriteLine("Done.");
+        }
+
+        private void workerUpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            refreshNextSubscription();
+        }
 
         private void PodcastSubscriptionsManager_OnPodcastAddedFinished(object source, SubscriptionManagerArgs e)
         {

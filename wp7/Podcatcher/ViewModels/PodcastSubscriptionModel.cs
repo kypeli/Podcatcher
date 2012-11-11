@@ -37,6 +37,7 @@ using System.Data.Linq;
 using Podcatcher.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace Podcatcher.ViewModels
 {
@@ -277,17 +278,20 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_unplayedEpisodes = 0;
         public int UnplayedEpisodes
         {
             get
-            {   
-                return m_unplayedEpisodes;
+            {
+                var query = from episode in Episodes
+                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
+                                    && episode.SavedPlayPos == 0)
+                            select episode;
+
+                return query.Count();
             }
 
             set
             {
-                m_unplayedEpisodes = value;
                 NotifyPropertyChanged("UnplayedEpisodesText");
             }
         }
@@ -298,11 +302,11 @@ namespace Podcatcher.ViewModels
             {
                 if (UnplayedEpisodes > 0)
                 {
-                    return String.Format("{0} episodes, {1} unplayed", EpisodesCount, UnplayedEpisodes);
+                    return String.Format("{0} episodes, {1} unplayed", Episodes.Count(), UnplayedEpisodes);
                 }
                 else
                 {
-                    return String.Format("{0} episodes", EpisodesCount);
+                    return String.Format("{0} episodes", Episodes.Count());
                 }
             }
 
@@ -449,7 +453,6 @@ namespace Podcatcher.ViewModels
         public class PodcastEpisodesManager
         {
             private PodcastSubscriptionModel m_subscriptionModel;
-            private BackgroundWorker m_worker = new BackgroundWorker();
             private PodcastSqlModel m_podcastsSqlModel;
 
             public PodcastEpisodesManager(PodcastSubscriptionModel subscriptionModel)
@@ -461,42 +464,7 @@ namespace Podcatcher.ViewModels
             public void updatePodcastEpisodes()
             {
                 Debug.WriteLine("Updating episodes for podcast: " + m_subscriptionModel.PodcastName);
-                m_worker.DoWork += new DoWorkEventHandler(m_worker_DoWorkUpdateEpisodes);
-                m_worker.RunWorkerAsync();
-                m_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(m_worker_UpdateEpisodesCompleted);
-            }
 
-            void m_worker_UpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
-            {
-                if (e.Result == null)
-                {
-                    return;
-                }
-
-                List<PodcastEpisodeModel> newPodcastEpisodes = e.Result as List<PodcastEpisodeModel>;
-                
-                int numOfNewPodcasts = newPodcastEpisodes.Count;
-
-                Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);
-                m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
-
-                if (m_subscriptionModel.IsAutoDownload
-                    && newPodcastEpisodes.Count > 0)
-                {
-                    PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
-                }
-
-                // Update number of unplayed episodes.
-                var query = from episode in m_subscriptionModel.Episodes
-                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
-                                    && episode.SavedPlayPos == 0)
-                            select episode;
-
-                m_subscriptionModel.UnplayedEpisodes = query.Count();
-            }
-
-            private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
-            {
                 bool subscriptionAddedNow = true;
 
                 List<PodcastEpisodeModel> episodes = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel);
@@ -517,11 +485,14 @@ namespace Podcatcher.ViewModels
                 Debug.WriteLine("\nStarting to parse episodes for podcast: " + m_subscriptionModel.PodcastName);
                 List<PodcastEpisodeModel> newPodcastEpisodes = PodcastFactory.newPodcastEpisodes(m_subscriptionModel.CachedPodcastRSSFeed, latestEpisodePublishDate);
                 m_subscriptionModel.CachedPodcastRSSFeed = "";
+
                 if (newPodcastEpisodes == null)
                 {
                     Debug.WriteLine("WARNING: Got null list of new episodes.");
                     return;
                 }
+
+                m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
 
                 // Indicate new episodes to the UI only when we are not adding the feed. 
                 // I.e. we want to show new episodes only when we refresh the feed at restart.
@@ -532,10 +503,19 @@ namespace Podcatcher.ViewModels
                     {
                         e.NewEpisodeVisibility = System.Windows.Visibility.Visible;
                     }
-                    args.Result = newPodcastEpisodes;
+
+                    int numOfNewPodcasts = newPodcastEpisodes.Count;
+
+                    Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);
+                    m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
                 }
 
-                m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
+
+                if (m_subscriptionModel.IsAutoDownload
+                    && newPodcastEpisodes.Count > 0)
+                {
+                    PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
+                }
             }
         }
         #endregion

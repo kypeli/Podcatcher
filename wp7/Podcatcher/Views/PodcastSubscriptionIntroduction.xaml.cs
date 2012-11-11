@@ -29,7 +29,7 @@ namespace Podcatcher.Views
             Uri podcastUri;
             try {
                 podcastUri = new Uri(podcastUrl);
-            } catch(Exception ex) {
+            } catch(Exception) {
                Console.WriteLine("Malformed podcast address.");
                 // TODO: Show toast 
                return;

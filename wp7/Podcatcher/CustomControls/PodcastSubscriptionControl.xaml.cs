@@ -55,35 +55,6 @@ namespace Podcatcher
         void PodcastSubscriptionControl_Loaded(object sender, RoutedEventArgs e)
         {
             m_subscription = DataContext as PodcastSubscriptionModel;
-            m_subscription.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(m_subscription_PropertyChanged);
-            updateUnplayedEpisodesText();
-        }
-
-        private void updateUnplayedEpisodesText()
-        {
-            int unplayedEpisodes;
-
-            lock (this)
-            {
-                unplayedEpisodes = m_subscription.UnplayedEpisodes;
-            }
-
-            if (unplayedEpisodes > 0)
-            {
-                this.NumberOfEpisodes.Text = string.Format("{0} episodes, {1} unplayed", m_subscription.Episodes.Count, unplayedEpisodes);
-            }
-            else
-            {
-                this.NumberOfEpisodes.Text = string.Format("{0} episodes", m_subscription.Episodes.Count);
-            }
-        }
-
-        void m_subscription_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "UnplayedEpisodes")
-            {
-                updateUnplayedEpisodesText();
-            }
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)

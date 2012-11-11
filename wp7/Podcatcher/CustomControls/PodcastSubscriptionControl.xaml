@@ -12,9 +12,9 @@
 		<Image Source="{Binding PodcastLogo}" Height="100" Width="100" VerticalAlignment="Center" Margin="0,10,10,0" Stretch="Fill"/>
 		<StackPanel>
 			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Center" Margin="0,10,0,5" Width="316" VerticalAlignment="Center"/>
-			<TextBlock x:Name="NumberOfEpisodes" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,10,0,0"/>
+            <TextBlock x:Name="NumberOfEpisodes" Text="{Binding UnplayedEpisodesText}" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,10,0,0"/>
 		</StackPanel>
-		<TextBlock TextWrapping="Wrap" Text="{Binding NewEpisodesCount}" Width="50" TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" HorizontalAlignment="Center" Margin="0"/>
+	    <TextBlock TextWrapping="Wrap" Text="{Binding NewEpisodesCount}" Width="50" TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" HorizontalAlignment="Center" Margin="0"/>
 		<toolkit:ContextMenuService.ContextMenu>
 			<toolkit:ContextMenu>
 				<toolkit:MenuItem Header="Delete" Click="MenuItemDelete_Click" />

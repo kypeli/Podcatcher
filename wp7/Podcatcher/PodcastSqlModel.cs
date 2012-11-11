@@ -48,10 +48,11 @@ namespace Podcatcher
             get 
             {
                 var query = from PodcastSubscriptionModel podcastSubscription in this.Subscriptions
-                            orderby podcastSubscription.PodcastName 
+                            orderby podcastSubscription.PodcastName
                             select podcastSubscription;
 
                 m_podcastSubscriptions = new List<PodcastSubscriptionModel>(query);
+
                 return m_podcastSubscriptions;
             }
         }
@@ -70,14 +71,11 @@ namespace Podcatcher
 
         public PodcastSubscriptionModel subscriptionModelForIndex(int index)
         {
-            lock (this)
-            {
-                PodcastSubscriptionModel model = (from s in Subscriptions
-                                                  where s.PodcastId.Equals(index)
-                                                  select s).Single();
+            PodcastSubscriptionModel model = (from s in Subscriptions
+                                              where s.PodcastId.Equals(index)
+                                              select s).Single();
 
-                return model;
-            }
+            return model;
         }
 
         public void addSubscription(PodcastSubscriptionModel podcastModel)
@@ -153,21 +151,16 @@ namespace Podcatcher
                 subscriptionModel.Episodes.Add(episode);
             }
 
-            lock (this)
-            {
-                this.SubmitChanges();
-            }
+            this.SubmitChanges();
         }
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscriptionModel)
         {
-            lock (this) { 
-                var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
-                            orderby episode.EpisodePublished descending
-                            select episode;
+            var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
+                        orderby episode.EpisodePublished descending
+                        select episode;
 
-                return new List<PodcastEpisodeModel>(query);
-            }
+            return new List<PodcastEpisodeModel>(query);
         }
 
 
@@ -184,8 +177,8 @@ namespace Podcatcher
         public PodcastEpisodeModel episodeForEpisodeId(int episodeId)
         {
             PodcastEpisodeModel model = (from PodcastEpisodeModel episode in Episodes
-                         where episode.EpisodeId == episodeId
-                         select episode).FirstOrDefault();
+                                         where episode.EpisodeId == episodeId
+                                         select episode).FirstOrDefault();
 
             if (model == null)
             {
@@ -206,25 +199,29 @@ namespace Podcatcher
         private PodcastSqlModel()
             : base(m_connectionString)
         {
-            DatabaseSchemaUpdater updater;
+            DatabaseSchemaUpdater updater = null;
             if (DatabaseExists() == false)
             {
                 CreateDatabase();
                 updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
-                SubmitChanges();
+//                SubmitChanges();
             }
 
 
-            updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
-            if (updater.DatabaseSchemaVersion < 2)
+            if (updater == null)
             {
-                // Added in version 2 (release 1.1.0.0)
-                //  - PodcastEpisodeModel.EpisodeFileMimeType
-                updater.AddColumn<PodcastEpisodeModel>("EpisodeFileMimeType");
-                updater.DatabaseSchemaVersion = DB_VERSION;
-                updater.Execute();
+                updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
+
+                if (updater.DatabaseSchemaVersion < 2)
+                {
+                    // Added in version 2 (release 1.1.0.0)
+                    //  - PodcastEpisodeModel.EpisodeFileMimeType
+                    updater.AddColumn<PodcastEpisodeModel>("EpisodeFileMimeType");
+                    updater.DatabaseSchemaVersion = DB_VERSION;
+                    updater.Execute();
+                }
             }
             
             Subscriptions = GetTable<PodcastSubscriptionModel>();
