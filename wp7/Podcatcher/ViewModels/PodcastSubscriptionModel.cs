@@ -232,11 +232,30 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_episodesCount = 0;
+        public int EpisodesCount
+        {
+            get
+            {
+                return m_episodesCount;
+            }
+
+            set
+            {
+                m_episodesCount = value;
+                NotifyPropertyChanged("UnplayedEpisodesText");
+            }
+
+        }
+
         private EntitySet<PodcastEpisodeModel> m_podcastEpisodes = new EntitySet<PodcastEpisodeModel>();
         [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId", OtherKey = "PodcastId")]
         public EntitySet<PodcastEpisodeModel> Episodes
         {
-            get { return m_podcastEpisodes; }
+            get {
+                return m_podcastEpisodes;
+            }
+
             set {
                 NotifyPropertyChanging();
                 m_podcastEpisodes.Assign(value);
@@ -258,22 +277,35 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_unplayedEpisodes = 0;
         public int UnplayedEpisodes
         {
             get
-            {
-                var query = from episode in Episodes
-                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
-                                   && episode.SavedPlayPos == 0)
-                            select episode;
-
-                return query.Count();
+            {   
+                return m_unplayedEpisodes;
             }
 
             set
             {
-                NotifyPropertyChanged("UnplayedEpisodes");
+                m_unplayedEpisodes = value;
+                NotifyPropertyChanged("UnplayedEpisodesText");
             }
+        }
+
+        public String UnplayedEpisodesText
+        {
+            get
+            {
+                if (UnplayedEpisodes > 0)
+                {
+                    return String.Format("{0} episodes, {1} unplayed", EpisodesCount, UnplayedEpisodes);
+                }
+                else
+                {
+                    return String.Format("{0} episodes", EpisodesCount);
+                }
+            }
+
         }
 
         // Version column aids update performance.
@@ -290,6 +322,11 @@ namespace Podcatcher.ViewModels
             m_isolatedFileStorage = IsolatedStorageFile.GetUserStoreForApplication();
 
             createLogoCacheDirs();
+        }
+
+        public void updateEpisodesCount()
+        {
+            EpisodesCount = Episodes.Count();
         }
 
         public void cleanupForDeletion()
@@ -448,11 +485,20 @@ namespace Podcatcher.ViewModels
                 {
                     PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
                 }
+
+                // Update number of unplayed episodes.
+                var query = from episode in m_subscriptionModel.Episodes
+                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
+                                    && episode.SavedPlayPos == 0)
+                            select episode;
+
+                m_subscriptionModel.UnplayedEpisodes = query.Count();
             }
 
             private void m_worker_DoWorkUpdateEpisodes(object sender, DoWorkEventArgs args)
             {
                 bool subscriptionAddedNow = true;
+
                 List<PodcastEpisodeModel> episodes = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel);
                 DateTime latestEpisodePublishDate = new DateTime();
 
@@ -466,8 +512,11 @@ namespace Podcatcher.ViewModels
                     subscriptionAddedNow = false;
                 }
 
+                episodes = null;
+
                 Debug.WriteLine("\nStarting to parse episodes for podcast: " + m_subscriptionModel.PodcastName);
                 List<PodcastEpisodeModel> newPodcastEpisodes = PodcastFactory.newPodcastEpisodes(m_subscriptionModel.CachedPodcastRSSFeed, latestEpisodePublishDate);
+                m_subscriptionModel.CachedPodcastRSSFeed = "";
                 if (newPodcastEpisodes == null)
                 {
                     Debug.WriteLine("WARNING: Got null list of new episodes.");

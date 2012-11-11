@@ -132,7 +132,7 @@ namespace Podcatcher
                 if (s.IsSubscribed == false)
                 {
                     Debug.WriteLine("Not subscribed to {0}, no refresh.", s.PodcastName);
-                    return;
+                    continue;
                 }
 
                 m_refreshingChannels++;
@@ -228,7 +228,7 @@ namespace Podcatcher
             if (m_refreshingChannels <= 0)
             {
                 stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
-                OnPodcastSubscriptionsChanged(this, stateChangedArgs);                
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);   
             }
 
             if (e.Error != null)
@@ -245,6 +245,7 @@ namespace Podcatcher
             PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
             subscription.CachedPodcastRSSFeed = e.Result as string;
             subscription.EpisodesManager.updatePodcastEpisodes();
+            subscription.updateEpisodesCount();
         } 
 
         private void PodcastSubscriptionsManager_OnPodcastAddedFinished(object source, SubscriptionManagerArgs e)
