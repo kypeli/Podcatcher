@@ -38,6 +38,7 @@ using Podcatcher.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Podcatcher.ViewModels
 {
@@ -392,7 +393,10 @@ namespace Podcatcher.ViewModels
 
         public void addNumOfNewEpisodes(int newPodcastEpisodes)
         {
-            NewEpisodesCount = (m_newEpisodesCount + newPodcastEpisodes).ToString();
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                NewEpisodesCount = (m_newEpisodesCount + newPodcastEpisodes).ToString();
+            });
         }
 
         /************************************* Private implementation *******************************/
@@ -525,7 +529,10 @@ namespace Podcatcher.ViewModels
                     // Set the visibility for new episodes.
                     foreach (PodcastEpisodeModel e in newPodcastEpisodes)
                     {
-                        e.NewEpisodeVisibility = System.Windows.Visibility.Visible;
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            e.NewEpisodeVisibility = System.Windows.Visibility.Visible;
+                        });
                     }
 
                     int numOfNewPodcasts = newPodcastEpisodes.Count;
