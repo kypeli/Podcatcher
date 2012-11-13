@@ -241,6 +241,7 @@ namespace Podcatcher
                 toast.Show();
 
                 refreshNextSubscription();
+                return;
             }
 
             subscription.CachedPodcastRSSFeed = e.Result as string;
