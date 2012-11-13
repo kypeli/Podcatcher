@@ -303,20 +303,34 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_unplayedEpisodes = -1;
         public int UnplayedEpisodes
         {
             get
             {
-                var query = from episode in Episodes
-                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
-                                    && episode.SavedPlayPos == 0)
-                            select episode;
+                if (m_unplayedEpisodes < 0)
+                {
+                    var query = from episode in Episodes
+                                where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
+                                     && episode.SavedPlayPos == 0)
+                                select episode;
 
-                return query.Count();
+                    m_unplayedEpisodes = query.Count();
+                }
+                return m_unplayedEpisodes;
             }
 
             set
             {
+                if (value - 1 >= 0)
+                {
+                    m_unplayedEpisodes = value;
+                }
+                else
+                {
+                    m_unplayedEpisodes = -1;
+                }
+
                 NotifyPropertyChanged("UnplayedEpisodesText");
             }
         }
@@ -393,10 +407,7 @@ namespace Podcatcher.ViewModels
 
         public void addNumOfNewEpisodes(int newPodcastEpisodes)
         {
-            Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                NewEpisodesCount = (m_newEpisodesCount + newPodcastEpisodes).ToString();
-            });
+            NewEpisodesCount = (m_newEpisodesCount + newPodcastEpisodes).ToString();
         }
 
         /************************************* Private implementation *******************************/
@@ -538,14 +549,20 @@ namespace Podcatcher.ViewModels
                     int numOfNewPodcasts = newPodcastEpisodes.Count;
 
                     Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);
-                    m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
+                    });
                 }
 
 
                 if (m_subscriptionModel.IsAutoDownload
                     && newPodcastEpisodes.Count > 0)
                 {
-                    PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
+                    });
                 }
             }
         }
