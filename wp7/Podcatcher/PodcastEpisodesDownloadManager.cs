@@ -306,9 +306,7 @@ namespace Podcatcher
                 Debug.WriteLine("Transfer request completed succesfully.");
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
                 m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
-
-                m_currentEpisodeDownload.PodcastSubscription.UnplayedEpisodes++;
-
+                m_currentEpisodeDownload.PodcastSubscription.unplayedEpisodesChanged();
             }
             else
             {

@@ -303,26 +303,21 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_unplayedEpisodes = -1;
         public int UnplayedEpisodes
         {
             get
             {
-                if (m_unplayedEpisodes < 0)
-                {
-                    var query = from episode in Episodes
-                                where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
-                                     && episode.SavedPlayPos == 0)
-                                select episode;
+                var query = from episode in Episodes
+                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
+                                 && episode.SavedPlayPos == 0)
+                            select episode;
 
-                    m_unplayedEpisodes = query.Count();
-                }
-                return m_unplayedEpisodes;
+                return query.Count();
             }
 
             set
             {
-                if (value - 1 >= 0)
+/*                if (value - 1 >= 0)
                 {
                     m_unplayedEpisodes = value;
                 }
@@ -330,7 +325,7 @@ namespace Podcatcher.ViewModels
                 {
                     m_unplayedEpisodes = -1;
                 }
-
+                */
                 NotifyPropertyChanged("UnplayedEpisodesText");
             }
         }
@@ -567,5 +562,10 @@ namespace Podcatcher.ViewModels
             }
         }
         #endregion
+
+        internal void unplayedEpisodesChanged()
+        {
+            UnplayedEpisodes--;
+        }
     }
 }
