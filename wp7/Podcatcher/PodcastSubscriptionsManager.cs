@@ -168,7 +168,7 @@ namespace Podcatcher
             if (e.Error != null
                 || e.Cancelled)
             {
-                PodcastSubscriptionFailedWithMessage("Error retrieving podcast feed.");
+                PodcastSubscriptionFailedWithMessage("Could not fetch the podcast feed.");
                 return;
             }
 
@@ -176,7 +176,7 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = PodcastFactory.podcastModelFromRSS(podcastRss);
             if (podcastModel == null)
             {
-                PodcastSubscriptionFailedWithMessage("Could not parse podcast subscription.");
+                PodcastSubscriptionFailedWithMessage("Podcast feed is invalid.");
                 return;
             }
 
