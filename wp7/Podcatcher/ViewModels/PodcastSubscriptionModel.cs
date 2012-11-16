@@ -317,15 +317,6 @@ namespace Podcatcher.ViewModels
 
             set
             {
-/*                if (value - 1 >= 0)
-                {
-                    m_unplayedEpisodes = value;
-                }
-                else
-                {
-                    m_unplayedEpisodes = -1;
-                }
-                */
                 NotifyPropertyChanged("UnplayedEpisodesText");
             }
         }
