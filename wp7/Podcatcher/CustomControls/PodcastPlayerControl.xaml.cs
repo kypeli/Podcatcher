@@ -246,7 +246,15 @@ namespace Podcatcher
                 }
 
                 setupPlayerUIContent(m_currentEpisode);
-                setupUIForEpisodePlaying();
+
+                if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+                {
+                    setupUIForEpisodePlaying();
+                }
+                else
+                {
+                    setupUIForEpisodePaused();
+                }
             }
             else
             {
@@ -320,8 +328,6 @@ namespace Podcatcher
                                 "playing and there's a YouTube video playing. This this try-catch is really just " +
                                 "to guard against Microsoft's bug.");
             }
-
-            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
         }
 
         private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
@@ -354,6 +360,7 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is playing...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
                     m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
+                    setupUIForEpisodePlaying();
                     break;
 
                 case PlayState.Paused:
@@ -361,7 +368,6 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is paused...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
-                    setupUIForEpisodePaused();
 
                     // Clear CompositionTarget.Rendering 
                     m_screenUpdateTimer.Stop();
@@ -395,26 +401,14 @@ namespace Podcatcher
 
         private void setupUIForEpisodePaused()
         {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
-            {
-                this.PlayButtonImage.Source = m_pauseButtonBitmap;
-            }
-            else
-            {
-                this.PlayButtonImage.Source = m_playButtonBitmap;
-            }
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;                                                                                                              
+            this.PlayButtonImage.Source = m_playButtonBitmap;
         }
 
         private void setupUIForEpisodePlaying()
         {
-            if (m_currentEpisode.EpisodeState ==  PodcastEpisodeModel.EpisodeStateEnum.Playing)
-            {
-                this.PlayButtonImage.Source = m_pauseButtonBitmap;
-            }
-            else
-            {
-                this.PlayButtonImage.Source = m_playButtonBitmap;
-            }
+            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+            this.PlayButtonImage.Source = m_pauseButtonBitmap;
 
             m_screenUpdateTimer.Stop();
             m_screenUpdateTimer.Start();
@@ -431,12 +425,12 @@ namespace Podcatcher
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
                 BackgroundAudioPlayer.Instance.Pause();
-                this.PlayButtonImage.Source = m_playButtonBitmap;
+                setupUIForEpisodePaused();
             }
             else
             {
                 BackgroundAudioPlayer.Instance.Play();
-                this.PlayButtonImage.Source = m_pauseButtonBitmap;
+                setupUIForEpisodePlaying();
             }
         }
 
