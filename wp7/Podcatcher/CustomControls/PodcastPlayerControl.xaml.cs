@@ -437,6 +437,7 @@ namespace Podcatcher
         private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
             StopPlayback();
+            showNoPlayerLayout();
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
@@ -512,6 +513,7 @@ namespace Podcatcher
             {
                 this.PositionSlider.Value = 0;
             }
+
             settingSliderFromPlay = false;
         }
 
