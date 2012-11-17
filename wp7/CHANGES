@@ -3,6 +3,7 @@
  * Make podcast subscriptions refresh sequantial, which eliminates crashes to due concurrancy issues to LINQ-to-SQL. 
  * Memory consumption: 100MB -> 45MB (8 subscriptions). 
  * Add support for multiple MPEG3 MIME type variations that can be encountered on the Internet.
+ * Use default podcast icon for logo if we cannot fetch real icon.
 
 1.2.0.0
 ----------
