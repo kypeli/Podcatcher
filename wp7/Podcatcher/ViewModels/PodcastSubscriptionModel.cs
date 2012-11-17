@@ -152,22 +152,20 @@ namespace Podcatcher.ViewModels
                 // the image from the local cache, create the BitmapImage object
                 // and return that. 
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-                if (isoStore.FileExists(isoFilename) == false)
+                if (isoStore.FileExists(isoFilename) != false)
                 {
-                    return null;
-                }
-
-                using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
-                {
-                    try
+                    using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                     {
-                        m_podcastBitmapLogo = new BitmapImage();
-                        m_podcastBitmapLogo.SetSource(stream);
-                    }
-                    catch (Exception)
-                    {
-                        Debug.WriteLine("Unsupported subscription logo type.");
-                        m_podcastBitmapLogo = null;
+                        try
+                        {
+                            m_podcastBitmapLogo = new BitmapImage();
+                            m_podcastBitmapLogo.SetSource(stream);
+                        }
+                        catch (Exception)
+                        {
+                            Debug.WriteLine("Unsupported subscription logo type.");
+                            m_podcastBitmapLogo = null;
+                        }
                     }
                 }
 
