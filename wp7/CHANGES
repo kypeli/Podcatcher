@@ -4,6 +4,7 @@
  * Memory consumption: 100MB -> 45MB (8 subscriptions). 
  * Add support for multiple MPEG3 MIME type variations that can be encountered on the Internet.
  * Use default podcast icon for logo if we cannot fetch real icon.
+ * Tweak main list view layout so that podcast logos are not cropped.
 
 1.2.0.0
 ----------

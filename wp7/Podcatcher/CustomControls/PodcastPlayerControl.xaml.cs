@@ -125,7 +125,7 @@ namespace Podcatcher
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
-            Debug.WriteLine("Starting playback for episode: " + episodeModel);
+            Debug.WriteLine("Starting playback for episode: " + episodeModel.EpisodeName);
 
             if (isAudioPodcast(episodeModel))
             {
