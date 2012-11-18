@@ -131,7 +131,8 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                if (m_podcastBitmapLogo != null) {
+                if (m_podcastBitmapLogo != null)
+                {
                     return m_podcastBitmapLogo;
                 }
 
@@ -174,7 +175,7 @@ namespace Podcatcher.ViewModels
                     try
                     {
                         Uri uri = new Uri("/images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
-                        m_podcastBitmapLogo = new BitmapImage(uri);
+                        return new BitmapImage(uri);
                     }
                     catch (Exception)
                     {
@@ -413,6 +414,7 @@ namespace Podcatcher.ViewModels
             if (e.Cancelled || e.Error != null)
             {
                 Debug.WriteLine("ERROR: Cannot fetch channel logo.");
+                PodcastLogoLocalLocation = null;
                 return;
             }
 
