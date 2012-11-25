@@ -3,6 +3,7 @@
  * Fix crash if episode name contains a white space. 
  * Fix handling of pause event when headphones are removed. 
  * Fix crash when a feed does not always have a downloable episode, but Podcatcher still displayed the download button.
+ * Fix crash if episode logo cannot be used when starting episode playback.
 
 1.2.1.0
 ----------

@@ -140,6 +140,7 @@ namespace Podcatcher.ViewModels
                 if (String.IsNullOrEmpty(m_PodcastLogoLocalLocation))
                 {
                     isoFilename = "/images/Podcatcher_generic_podcast_cover.png";
+                    PodcastLogoLocalLocation = isoFilename;
                 }
                 else
                 {
