@@ -38,7 +38,7 @@ namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const int DB_VERSION = 2;
+        private const int DB_VERSION = 3;
 
         /************************************* Public properties *******************************/
 
@@ -219,9 +219,15 @@ namespace Podcatcher
                     // Added in version 2 (release 1.1.0.0)
                     //  - PodcastEpisodeModel.EpisodeFileMimeType
                     updater.AddColumn<PodcastEpisodeModel>("EpisodeFileMimeType");
-                    updater.DatabaseSchemaVersion = DB_VERSION;
-                    updater.Execute();
                 }
+
+                if (updater.DatabaseSchemaVersion < 3)
+                {
+                    updater.AddColumn<PodcastEpisodeModel>("TotalLengthTicks");
+                }
+
+                updater.DatabaseSchemaVersion = DB_VERSION;
+                updater.Execute();
             }
             
             Subscriptions = GetTable<PodcastSubscriptionModel>();

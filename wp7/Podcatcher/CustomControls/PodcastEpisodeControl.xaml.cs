@@ -64,6 +64,16 @@ namespace Podcatcher
             {
                 this.EpisodeRunningTime.Text = String.Format("Duration: {0}", m_episodeModel.EpisodeRunningTime);
             }
+
+            if (m_episodeModel.SavedPlayPos > 0 && m_episodeModel.TotalLengthTicks > 0)
+            {
+                PlayProgressBar.Visibility = System.Windows.Visibility.Visible;
+                PlayProgressBar.Value = (((double)m_episodeModel.SavedPlayPos / (double)m_episodeModel.TotalLengthTicks) * (double)100);
+            }
+            else
+            {
+                PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
+            }
         }
 
         private void EpisodeButton_Click(object sender, RoutedEventArgs e)

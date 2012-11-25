@@ -217,7 +217,15 @@ namespace Podcatcher.ViewModels
 
             set { m_savedPlayPos = value; }
         }
-        
+
+        private long m_totalLengthTicks = 0;
+        [Column(UpdateCheck = UpdateCheck.Never, DbType = "BIGINT DEFAULT 0 NOT NULL")] 
+        public long TotalLengthTicks
+        {
+            get { return m_totalLengthTicks; }
+            set { m_totalLengthTicks = value; }
+        }
+
         public enum EpisodeStateEnum
         {
             Idle,

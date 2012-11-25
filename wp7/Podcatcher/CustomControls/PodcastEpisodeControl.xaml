@@ -21,24 +21,26 @@
             <RowDefinition Height="*" />    
             <RowDefinition Height="50" />    
         </Grid.RowDefinitions>
-        
-        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="480">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="0.571*" />
-                <ColumnDefinition Width="0.429*" />
-            </Grid.ColumnDefinitions>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+        	<Grid HorizontalAlignment="Left" Width="480">
+        		<Grid.ColumnDefinitions>
+        			<ColumnDefinition Width="12" />
+        			<ColumnDefinition Width="0.571*" />
+        			<ColumnDefinition Width="0.429*" />
+        		</Grid.ColumnDefinitions>
 
-            <Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-        	<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
-            <Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
-                IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
-        		Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
-        		HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
-        </Grid>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
-        	<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="279" Style="{StaticResource PhoneTextSubtleStyle}" />
-        	<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0" Width="166" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
+        		<Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
+        		<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
+        		<Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
+        			IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
+        			Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
+        			HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
+        	</Grid>
+        	<StackPanel Orientation="Horizontal" Margin="0">
+        		<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="268" Style="{StaticResource PhoneTextSubtleStyle}" />
+        		<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0" Width="190" Style="{StaticResource PhoneTextSubtleStyle}" />
+        	</StackPanel>
+        	<ProgressBar x:Name="PlayProgressBar" Height="11" Width="201" HorizontalAlignment="Right"/>
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>

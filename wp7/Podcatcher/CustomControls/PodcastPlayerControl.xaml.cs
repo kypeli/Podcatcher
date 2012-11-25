@@ -340,6 +340,7 @@ namespace Podcatcher
         private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
         {
             m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+            m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
         }
 
         private void askForContinueEpisodePlaying()
