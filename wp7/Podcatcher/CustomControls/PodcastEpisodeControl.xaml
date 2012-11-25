@@ -37,8 +37,8 @@
         		HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="Auto">
-        	<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,16,0" HorizontalAlignment="Left" Width="195" Style="{StaticResource PhoneTextSubtleStyle}" />
-        	<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0,0,15,0" HorizontalAlignment="Right" Width="247" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
+        	<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="279" Style="{StaticResource PhoneTextSubtleStyle}" />
+        	<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0" Width="166" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>

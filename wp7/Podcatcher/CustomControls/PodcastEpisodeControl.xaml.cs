@@ -50,6 +50,7 @@ namespace Podcatcher
             // Required to initialize variables
             InitializeComponent();
 
+            this.Loaded += new RoutedEventHandler(Page_Loaded);
         }
 
         /************************************* Private implementations *******************************/
@@ -59,10 +60,9 @@ namespace Podcatcher
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             m_episodeModel = this.DataContext as PodcastEpisodeModel;
-
             if (String.IsNullOrEmpty(m_episodeModel.EpisodeRunningTime) == false)
             {
-                this.EpisodeRunningTime.Text = String.Format("Running time: {0}", m_episodeModel.EpisodeRunningTime);
+                this.EpisodeRunningTime.Text = String.Format("Duration: {0}", m_episodeModel.EpisodeRunningTime);
             }
         }
 

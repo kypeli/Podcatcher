@@ -64,7 +64,6 @@ namespace Podcatcher
             m_subscriptionsManager.refreshSubscriptions();
 
             // Post-pageinitialization event call hookup.
-            this.Loaded += new RoutedEventHandler(MainPage_Loaded);
 
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
@@ -138,10 +137,6 @@ namespace Podcatcher
             this.DownloadPivotHeader.AltText = downloadText;
         }
 
-        private void MainPage_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
-
         private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Views/AboutView.xaml", UriKind.Relative));
@@ -179,7 +174,6 @@ namespace Podcatcher
                 tappedSubscription.NewEpisodesCount = "0";
             }
         }
-
 
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
