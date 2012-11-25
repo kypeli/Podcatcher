@@ -161,10 +161,12 @@ namespace Podcatcher
                         XAttribute urlAttribute = currentElement.Attribute("url");
                         if (urlAttribute != null)
                         {
-                            episodeModel.EpisodeDownloadUri = urlAttribute.Value;
+                            String url = urlAttribute.Value;
+                            episodeModel.EpisodeDownloadUri = url.Trim();
                         }
                         else
                         {
+                            episodeModel.EpisodeFileMimeType = "-ERROR-";
                             Debug.WriteLine("WARNING: Null element: enclosure - url");
                         }
 
@@ -175,11 +177,13 @@ namespace Podcatcher
                         }
                         else
                         {
+                            episodeModel.EpisodeFileMimeType = "-ERROR-";
                             Debug.WriteLine("WARNING: Null element: enclosure - mime type");
                         }
                     }
                     else
                     {
+                        episodeModel.EpisodeFileMimeType = "-ERROR-";
                         Debug.WriteLine("WARNING: Null element: enclosure");
                     }
 

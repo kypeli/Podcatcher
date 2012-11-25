@@ -182,9 +182,13 @@ namespace Podcatcher
                 {
                     downloadUri = new Uri(m_currentEpisodeDownload.EpisodeDownloadUri, UriKind.Absolute);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     App.showErrorToast("Cannot download the episode.");
+                    Debug.WriteLine("Cannot download the episode. URI exception: " + e.Message);
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+                    m_episodeDownloadQueue.Dequeue();
+                    startNextEpisodeDownload();
                     return;
                 }
 
@@ -192,6 +196,10 @@ namespace Podcatcher
                 if (string.IsNullOrEmpty(episodeFile))
                 {
                     App.showErrorToast("Cannot download the episode.");
+                    Debug.WriteLine("Cannot download the episode. Episode file name is null or empty.");
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+                    m_episodeDownloadQueue.Dequeue();
+                    startNextEpisodeDownload();
                     return;
                 }
 
