@@ -144,8 +144,16 @@ namespace PodcastAudioAgent
                     break;
                 case UserAction.Stop:
                     if (player.PlayerState != PlayState.Stopped) {
-                        Debug.WriteLine("User.Action: Stop");
-                        player.Stop();
+
+                        try
+                        {
+                            player.Stop();
+                            Debug.WriteLine("User.Action: Stop");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Exception: " + e.InnerException.Message);
+                        }
                     }
                     break;
                 
