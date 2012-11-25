@@ -180,5 +180,10 @@ namespace Podcatcher
             }
         }
 
+
+        private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+        }
     }
 }

@@ -1,5 +1,6 @@
 1.2.2.0
 ----------
+ * Hide toolbar for other than the first page.
  * Fix crash if episode name contains a white space. 
  * Fix handling of pause event when headphones are removed. 
  * Fix crash when a feed does not always have a downloable episode, but Podcatcher still displayed the download button.

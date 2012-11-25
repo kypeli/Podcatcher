@@ -69,6 +69,12 @@ namespace Podcatcher
         public PodcastPlayerControl()
         {
             InitializeComponent();
+
+            if (System.ComponentModel.DesignerProperties.IsInDesignTool)
+            {
+                return;
+            }
+
             m_appSettings = IsolatedStorageSettings.ApplicationSettings;
             m_instance = this;
             setupPlayerUI();
