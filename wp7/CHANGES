@@ -1,3 +1,7 @@
+1.2.2.0
+----------
+ * Fix crash if episode name contains a white space. 
+
 1.2.1.0
 ----------
  * Make podcast subscriptions refresh sequantial, which eliminates crashes to due concurrancy issues to LINQ-to-SQL. 
