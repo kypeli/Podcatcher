@@ -245,6 +245,7 @@ namespace Podcatcher
                     return;
                 }
 
+                BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
                 setupPlayerUIContent(m_currentEpisode);
 
                 if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
@@ -368,6 +369,7 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is paused...");
                     m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
+                    setupUIForEpisodePaused();
 
                     // Clear CompositionTarget.Rendering 
                     m_screenUpdateTimer.Stop();
@@ -417,7 +419,7 @@ namespace Podcatcher
 
         private void rewButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            BackgroundAudioPlayer.Instance.Rewind();
+            BackgroundAudioPlayer.Instance.SkipPrevious();
         }
 
         private void playButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
@@ -442,7 +444,7 @@ namespace Podcatcher
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            BackgroundAudioPlayer.Instance.FastForward();
+            BackgroundAudioPlayer.Instance.SkipNext();
         }
 
         private AudioTrack getAudioTrackForEpisode(PodcastEpisodeModel m_currentEpisode)

@@ -138,24 +138,50 @@ namespace PodcastAudioAgent
                 case UserAction.Play:
                     if (player.PlayerState != PlayState.Playing)
                     {
+                        Debug.WriteLine("User.Action: Play");
                         player.Play();
                     }
                     break;
                 case UserAction.Stop:
+                    if (player.PlayerState != PlayState.Stopped) {
+                        Debug.WriteLine("User.Action: Stop");
+                        player.Stop();
+                    }
                     break;
+                
                 case UserAction.Pause:
+                    Debug.WriteLine("User.Action: Pause");
                     player.Pause();
                     break;
+                
                 case UserAction.FastForward:
-                    player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 10);
-                    Debug.WriteLine("Player fast forward. New position: " + player.Position);
                     break;
+                
                 case UserAction.Rewind:
-                    player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 10);
-                    Debug.WriteLine("Player rewind. New position: " + player.Position);
                     break;
+                
                 case UserAction.Seek:
                     player.Position = (TimeSpan)param;
+                    break;
+
+                case UserAction.SkipNext:
+                    try
+                    {
+                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
+                        Debug.WriteLine("Player fast forward. New position: " + player.Position);
+                    } catch(Exception) {
+                        Debug.WriteLine("Error seeking. Probably seeked passed the end.");
+                    }
+                    break;
+
+                case UserAction.SkipPrevious:
+                    try
+                    {
+                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);
+                        Debug.WriteLine("Player fast forward. New position: " + player.Position);
+                    } catch(Exception) {
+                        Debug.WriteLine("Error seeking. Probably seeked passed the start.");
+                    }
                     break;
             }
 
