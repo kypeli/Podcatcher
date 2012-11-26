@@ -65,7 +65,10 @@ namespace Podcatcher
                 this.EpisodeRunningTime.Text = String.Format("Duration: {0}", m_episodeModel.EpisodeRunningTime);
             }
 
-            if (m_episodeModel.SavedPlayPos > 0 && m_episodeModel.TotalLengthTicks > 0)
+            if ((m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Paused 
+                 || m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable)                 
+                && m_episodeModel.SavedPlayPos > 0 
+                && m_episodeModel.TotalLengthTicks > 0)
             {
                 PlayProgressBar.Visibility = System.Windows.Visibility.Visible;
                 PlayProgressBar.Value = (((double)m_episodeModel.SavedPlayPos / (double)m_episodeModel.TotalLengthTicks) * (double)100);
@@ -161,6 +164,7 @@ namespace Podcatcher
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
             podcastEpisode.deleteDownloadedEpisode();
+            PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
         }
         #endregion
     }

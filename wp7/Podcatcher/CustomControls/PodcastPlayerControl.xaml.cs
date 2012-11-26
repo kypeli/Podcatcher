@@ -45,6 +45,7 @@ using System.IO.IsolatedStorage;
 using System.Windows.Threading;
 using Coding4Fun.Phone.Controls;
 using Microsoft.Phone.Tasks;
+using System.IO;
 
 namespace Podcatcher
 {
@@ -135,8 +136,16 @@ namespace Podcatcher
 
             if (isAudioPodcast(episodeModel))
             {
-                audioPlayback(episodeModel);
-                setupUIForEpisodePlaying();
+                try
+                {
+                    audioPlayback(episodeModel);
+                    setupUIForEpisodePlaying();
+                }
+                catch (FileNotFoundException e)
+                {
+                    Console.WriteLine("Error: File not found. " + e.Message);
+                    App.showErrorToast("Cannot find episode.");
+                }
             }
             else
             {
@@ -339,8 +348,15 @@ namespace Podcatcher
 
         private void saveEpisodePlayPosition(PodcastEpisodeModel m_currentEpisode)
         {
-            m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-            m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+            try
+            {
+                m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+                m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+            }
+            catch (NullReferenceException)
+            {
+                Debug.WriteLine("BackgroundAudioPlayer returned NULL. Player didn't probably have a track that it was playing.");
+            }
         }
 
         private void askForContinueEpisodePlaying()

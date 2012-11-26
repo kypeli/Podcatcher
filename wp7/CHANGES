@@ -1,5 +1,6 @@
 1.2.2.0
 ----------
+ * Add indication of play progress to episode listing.
  * Hide toolbar for other than the first page.
  * Fix crash if episode name contains a white space. 
  * Fix handling of pause event when headphones are removed. 
