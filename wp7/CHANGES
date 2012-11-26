@@ -5,6 +5,8 @@
  * Fix handling of pause event when headphones are removed. 
  * Fix crash when a feed does not always have a downloable episode, but Podcatcher still displayed the download button.
  * Fix crash if episode logo cannot be used when starting episode playback.
+ * Fix crash in case podcast logo URL is malformed in the RSS XML.
+
 
 1.2.1.0
 ----------

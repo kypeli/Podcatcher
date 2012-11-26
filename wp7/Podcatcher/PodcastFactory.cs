@@ -61,12 +61,15 @@ namespace Podcatcher
 
             bool validFeed = true;
             XNamespace itunes = "http://www.itunes.com/dtds/podcast-1.0.dtd";
+
             var query = (from channel in rssXmlDoc.Descendants("channel")
                          select new
                          {
                              Title          = (string)channel.Element("title"),
                              Description    = (string)channel.Element("description"),
-                             ImageUrl       = (channel.Element(itunes + "image") != null ? channel.Element(itunes + "image").Attribute("href").Value : @""),
+                             ImageUrl = ((channel.Element(itunes + "image") != null && channel.Element(itunes + "image").Attribute("href") != null) ? 
+                                        channel.Element(itunes + "image").Attribute("href").Value : 
+                                        @""),
                              Link           = (string)channel.Element("link")
                          }).FirstOrDefault();
 
@@ -77,6 +80,13 @@ namespace Podcatcher
 
             if (String.IsNullOrEmpty(query.Link))
             {
+                Debug.WriteLine("ERROR: Podcast URL is empty in RSS feed.");
+                validFeed = false;
+            }
+
+            if (String.IsNullOrEmpty(query.ImageUrl))
+            {
+                Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
                 validFeed = false;
             }
 
@@ -89,7 +99,7 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = new PodcastSubscriptionModel();
             podcastModel.PodcastName            = query.Title;
             podcastModel.PodcastDescription     = query.Description;
-            podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.RelativeOrAbsolute);
+            podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.Absolute);
             podcastModel.PodcastShowLink        = query.Link;
 
             Debug.WriteLine("Got podcast subscription:"
