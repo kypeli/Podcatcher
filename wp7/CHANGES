@@ -2,6 +2,8 @@
 ----------
  * Add indication of play progress to episode listing.
  * Hide toolbar for other than the first page.
+ * Fix Bluetooth audio handling.
+ * Fix handling of skipping next/previous and fast forward/backward (jump 30s forward or backwards).
  * Fix crash if episode name contains a white space. 
  * Fix handling of pause event when headphones are removed. 
  * Fix crash when a feed does not always have a downloable episode, but Podcatcher still displayed the download button.

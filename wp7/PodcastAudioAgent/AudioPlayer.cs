@@ -85,10 +85,8 @@ namespace PodcastAudioAgent
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    player.Stop();
                     break;
                 case PlayState.TrackReady:
-                    player.Play();
                     break;
                 case PlayState.Shutdown:
                     // TODO: Handle the shutdown state here (e.g. save state)
@@ -98,7 +96,6 @@ namespace PodcastAudioAgent
                 case PlayState.Stopped:
                     break;
                 case PlayState.Paused:
-                    player.Pause();
                     break;
                 case PlayState.Playing:
                     break;
@@ -159,19 +156,17 @@ namespace PodcastAudioAgent
                 
                 case UserAction.Pause:
                     Debug.WriteLine("User.Action: Pause");
-                    player.Pause();
-                    break;
-                
-                case UserAction.FastForward:
-                    break;
-                
-                case UserAction.Rewind:
+                    if (player.PlayerState == PlayState.Playing)
+                    {
+                        player.Pause();
+                    }
                     break;
                 
                 case UserAction.Seek:
                     player.Position = (TimeSpan)param;
                     break;
 
+                case UserAction.FastForward:
                 case UserAction.SkipNext:
                     try
                     {
@@ -182,6 +177,7 @@ namespace PodcastAudioAgent
                     }
                     break;
 
+                case UserAction.Rewind:
                 case UserAction.SkipPrevious:
                     try
                     {
