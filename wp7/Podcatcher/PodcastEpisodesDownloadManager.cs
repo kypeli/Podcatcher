@@ -144,8 +144,6 @@ namespace Podcatcher
 
         }
 
-
-
         #region private
         private static PodcastEpisodesDownloadManager m_instance            = null;
         private ObservableQueue<PodcastEpisodeModel> m_episodeDownloadQueue = new ObservableQueue<PodcastEpisodeModel>();
@@ -254,7 +252,16 @@ namespace Podcatcher
                                                                             new Uri(episodeFile, UriKind.Relative));
                 if (canAllowCellularDownload(m_currentEpisodeDownload))
                 {
-                    m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
+                    bool settingsAllowCellular = PodcastSqlModel.getInstance().settings().IsUseCellularData;
+                    Debug.WriteLine("Settings: Allow cellular download: " + settingsAllowCellular);
+                    if (settingsAllowCellular)
+                    {
+                        m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
+                    }
+                    else
+                    {
+                        m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowBattery;
+                    }
                 } else {
                     m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.None;
                 }

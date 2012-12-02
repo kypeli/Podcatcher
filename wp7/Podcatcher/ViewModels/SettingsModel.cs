@@ -62,22 +62,26 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private bool m_IsNeverUseCellularData = false;
+        private bool m_TryUseCellularData = true;
         [Column]
-        public Boolean IsNeverUseCellularData
+        public Boolean IsUseCellularData
         {
             get
             {
-                return m_IsNeverUseCellularData;
+                return m_TryUseCellularData;
             }
 
             set
             {
-                if (m_IsNeverUseCellularData != value)
+                if (m_TryUseCellularData != value)
                 {
-                    m_IsNeverUseCellularData = value;
+                    m_TryUseCellularData = value;
                 }
             }
         }
+
+        // Version column aids update performance.
+        [Column(IsVersion = true)]
+        private Binary version;
     }
 }

@@ -57,7 +57,7 @@
                         <StackPanel Margin="0,9,12,0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap" Text="Try downloading using cellular data" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsNeverUseCellularData, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsUseCellularData, Mode=TwoWay}" Content="ToggleSwitchButton"/>
                             </StackPanel>
                             <TextBlock TextWrapping="Wrap" Text="If you turn this off, episodes will never be downloaded using cellular data. NOTE: Windows Phone will not download episodes larger than 20 MB even if this is turned on." Style="{StaticResource PhoneTextSubtleStyle}"/>
                         </StackPanel>
