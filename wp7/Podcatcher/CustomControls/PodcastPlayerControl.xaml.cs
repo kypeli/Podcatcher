@@ -183,7 +183,15 @@ namespace Podcatcher
 
             if (m_currentEpisode.SavedPlayPos > 0)
             {
-                askForContinueEpisodePlaying();
+                bool alwaysContinuePlayback = PodcastSqlModel.getInstance().settings().IsAutomaticContinuedPlayback;
+                if (alwaysContinuePlayback)
+                {
+                    startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos));
+                }
+                else
+                {
+                    askForContinueEpisodePlaying();
+                }
             }
             else
             {
