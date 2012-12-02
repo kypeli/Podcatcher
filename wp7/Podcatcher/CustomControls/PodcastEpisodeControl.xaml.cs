@@ -139,7 +139,6 @@ namespace Podcatcher
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
             podcastEpisode.deleteDownloadedEpisode();
-            PodcastSqlModel.getInstance().deleteEpisodeFromDB(podcastEpisode);
             PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
         }
         #endregion
