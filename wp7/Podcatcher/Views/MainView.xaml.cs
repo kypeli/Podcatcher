@@ -71,7 +71,6 @@ namespace Podcatcher
 
             // Hook to the event when the podcast player starts playing. 
             this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
-            this.PodcastPlayer.PodcastPlayerStopped += new EventHandler(PodcastPlayer_PodcastPlayerStopped);
         }
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)
@@ -95,11 +94,6 @@ namespace Podcatcher
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
         }
 
-        void PodcastPlayer_PodcastPlayerStopped(object sender, EventArgs e)
-        {
-            this.PodcastPlayerHeader.AltText = "";
-        }
-
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
         {
             PodcastPlayerControl player = sender as PodcastPlayerControl;
@@ -110,31 +104,23 @@ namespace Podcatcher
             // ...I don't really like this, but seems this is the way to work with the pivot control.
             NavigationService.GoBack();
             this.NavigationPivot.SelectedIndex = PODCAST_PLAYER_PIVOR_INDEX;
-            this.PodcastPlayerHeader.AltText = player.PlayingEpisode.PodcastSubscription.PodcastName;
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             int episodeDownloads = EpisodeDownloadList.Items.Count;
-            string downloadText = "";
-
             switch (episodeDownloads)
             {
                 case 0:
-                    downloadText = "";
                     EpisodesDownloadingText.Visibility = Visibility.Visible;
                     break;
                 case 1:
-                    downloadText = @"1 episode downloading";
                     EpisodesDownloadingText.Visibility = Visibility.Collapsed;
                     break;
                 default:
-                    downloadText = String.Format("{0} episodes downloading", EpisodeDownloadList.Items.Count);
                     EpisodesDownloadingText.Visibility = Visibility.Collapsed;
                     break;
             }
-
-            this.DownloadPivotHeader.AltText = downloadText;
         }
 
         private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)

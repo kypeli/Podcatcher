@@ -213,7 +213,10 @@ namespace Podcatcher
 
                 playbackStopped();
                 showNoPlayerLayout();
-                PodcastPlayerStopped(this, new EventArgs());
+                if (PodcastPlayerStopped != null)
+                {
+                    PodcastPlayerStopped(this, new EventArgs());
+                }
 
                 BackgroundAudioPlayer.Instance.Stop();
                 BackgroundAudioPlayer.Instance.Track = null;
