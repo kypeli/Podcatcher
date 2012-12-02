@@ -123,11 +123,6 @@ namespace Podcatcher
             }
         }
 
-        private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
-        {
-            NavigationService.Navigate(new Uri("/Views/AboutView.xaml", UriKind.Relative));
-        }
-
         private void AddSubscriptionIconButton_Click(object sender, EventArgs e)
         {
             bool allowAddSubscription = true;
@@ -164,6 +159,16 @@ namespace Podcatcher
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+        }
+
+        private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Views/AboutView.xaml", UriKind.Relative));
+        }
+
+        private void SettingsIconButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
         }
     }
 }

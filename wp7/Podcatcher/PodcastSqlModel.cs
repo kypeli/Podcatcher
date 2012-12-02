@@ -38,7 +38,7 @@ namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const int DB_VERSION = 3;
+        private const int DB_VERSION = 4;
 
         /************************************* Public properties *******************************/
 
@@ -188,6 +188,14 @@ namespace Podcatcher
             return model;
         }
 
+        public SettingsModel settings()
+        {
+            SettingsModel settings = (from SettingsModel s in Settings
+                                     select s).FirstOrDefault();
+
+            return settings;
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
@@ -195,6 +203,7 @@ namespace Podcatcher
         private static PodcastSqlModel m_instance = null;
         public Table<PodcastSubscriptionModel> Subscriptions;
         public Table<PodcastEpisodeModel> Episodes;
+        public Table<SettingsModel> Settings;
 
         private PodcastSqlModel()
             : base(m_connectionString)
@@ -206,7 +215,6 @@ namespace Podcatcher
                 updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
-//                SubmitChanges();
             }
 
 
@@ -226,12 +234,18 @@ namespace Podcatcher
                     updater.AddColumn<PodcastEpisodeModel>("TotalLengthTicks");
                 }
 
+                if (updater.DatabaseSchemaVersion < 4)
+                {
+                    updater.AddTable<SettingsModel>();
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
             
             Subscriptions = GetTable<PodcastSubscriptionModel>();
             Episodes = GetTable<PodcastEpisodeModel>();
+            Settings = GetTable<SettingsModel>();
 
             // Force to check if we have tables or not.
             try
@@ -268,6 +282,12 @@ namespace Podcatcher
             return true;
         }
 
+        internal void createSettings()
+        {
+            Settings.InsertOnSubmit(new SettingsModel());
+            SubmitChanges();
+        }
+
         private void subscriptionModelChanged()
         {
             SubmitChanges();
@@ -292,6 +312,5 @@ namespace Podcatcher
         }
         #endregion
         #endregion
-
     }
 }
