@@ -88,17 +88,8 @@ namespace Podcatcher
                 // Episode is idle => start downloading. 
                 case PodcastEpisodeModel.EpisodeStateEnum.Idle:
                     PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
-
-                    bool continueDl = true;
-                    if (PodcastPlayerControl.isAudioPodcast(m_episodeModel) == false)
-                    {
-                        continueDl = continueVideoDownload();                        
-                    }
-
-                    if (continueDl)
-                    {
-                        downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
-                    }
+                    PodcastEpisodesDownloadManager.notifyUserOfDownloadRestrictions(m_episodeModel);
+                    downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
                     break;
 
                 // Episode is playable -> Play episode.
@@ -107,27 +98,6 @@ namespace Podcatcher
                     player.playEpisode(m_episodeModel);
                     break;
             }
-        }
-
-        private bool continueVideoDownload()
-        {
-            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
-            if (appSettings.Contains(App.LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID) == false)
-            {
-                if (MessageBox.Show("Video podcasts can only be downloaded when the device is connected to a WiFi network and to a power source.",
-                    "Attention",
-                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                {
-                    appSettings.Add(App.LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID, true);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private void MenuItemStream_Click(object sender, RoutedEventArgs e)
@@ -167,5 +137,10 @@ namespace Podcatcher
             PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
         }
         #endregion
+
+        private void Episode_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastEpisodeDescriptionView.xaml?episodeId={0}", (this.DataContext as PodcastEpisodeModel).EpisodeId), UriKind.Relative));
+        }
     }
 }

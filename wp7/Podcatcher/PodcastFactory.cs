@@ -155,10 +155,10 @@ namespace Podcatcher
                         Debug.WriteLine("WARNING: Null element: title");
                     }
 
-                    currentElement = getChildElementByName(episode, "description");
-                    if (currentElement != null)
+                    XElement summaryElement = episode.Element(itunes + "summary");
+                    if (summaryElement != null)
                     {
-                        episodeModel.EpisodeDescription = currentElement.Value;
+                        episodeModel.EpisodeDescription = summaryElement.Value;
                     }
                     else
                     {

@@ -94,7 +94,17 @@ namespace Podcatcher.ViewModels
         [Column(UpdateCheck = UpdateCheck.Never)]
         public String EpisodeDescription
         {
-            get { return m_description; }
+            get 
+            {
+                string desc = m_description;
+                if (!String.IsNullOrEmpty(desc))
+                {
+                    desc = Converters.HtmlRemoval.StripTagsCharArray(desc);
+                }
+
+                return desc; 
+            }
+
             set 
             {
                 if (String.IsNullOrEmpty(value))

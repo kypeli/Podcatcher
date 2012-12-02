@@ -30,7 +30,7 @@
         		</Grid.ColumnDefinitions>
 
         		<Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-        		<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1"/>
+        		<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1" Tap="Episode_Tap" />
         		<Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
         			IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
         			Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
