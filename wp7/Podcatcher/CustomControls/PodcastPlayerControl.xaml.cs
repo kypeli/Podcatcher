@@ -363,6 +363,7 @@ namespace Podcatcher
             {
                 m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
                 m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+                PodcastSqlModel.getInstance().SubmitChanges();
             }
             catch (NullReferenceException)
             {
@@ -472,7 +473,17 @@ namespace Podcatcher
 
         private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            StopPlayback();
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
+            {
+                saveEpisodePlayPosition(m_currentEpisode);
+                // We are already stopped (playback ended or something). Let's update the episode state.
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+            }
+            else
+            {
+                StopPlayback();
+            }
+
             showNoPlayerLayout();
         }
 

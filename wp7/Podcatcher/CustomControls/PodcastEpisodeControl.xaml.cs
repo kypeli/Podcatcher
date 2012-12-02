@@ -96,6 +96,11 @@ namespace Podcatcher
                 case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                     player.playEpisode(m_episodeModel);
+
+                    if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
+                    {
+                        PodcastSqlModel.getInstance().startOldEpisodeCleanup(m_episodeModel.PodcastSubscription);
+                    }
                     break;
             }
         }
@@ -134,6 +139,7 @@ namespace Podcatcher
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
             podcastEpisode.deleteDownloadedEpisode();
+            PodcastSqlModel.getInstance().deleteEpisodeFromDB(podcastEpisode);
             PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
         }
         #endregion

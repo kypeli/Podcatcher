@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Podcatcher.ViewModels;
 using System.Data.Linq;
 using Microsoft.Phone.Data.Linq;
+using System.Windows;
 
 namespace Podcatcher
 {
@@ -87,12 +88,12 @@ namespace Podcatcher
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
             BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(deleteEpisodesFromDB);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteEpisodesFromDBCompleted);
+            worker.DoWork += new DoWorkEventHandler(deleteSubscriptionFromDB);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteSubscriptionFromDBCompleted);
             worker.RunWorkerAsync(podcastModel);
         }
 
-        void deleteEpisodesFromDB(object sender, DoWorkEventArgs e)
+        void deleteSubscriptionFromDB(object sender, DoWorkEventArgs e)
         {
             PodcastSubscriptionModel podcastModel = e.Argument as PodcastSubscriptionModel;
 
@@ -102,6 +103,7 @@ namespace Podcatcher
 
             foreach (var episode in queryDelEpisodes)
             {
+                episode.deleteDownloadedEpisode();
                 Episodes.DeleteOnSubmit(episode);
             }
 
@@ -110,11 +112,20 @@ namespace Podcatcher
                                         select subscription).First();
 
             Subscriptions.DeleteOnSubmit(queryDelSubscription);
-
             SubmitChanges();
         }
 
-        void deleteEpisodesFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void deleteEpisodeFromDB(PodcastEpisodeModel episode)
+        {
+            var queryDelEpisode = (from e in Episodes
+                                   where episode.EpisodeId.Equals(episode.EpisodeId)
+                                   select episode).FirstOrDefault();
+
+            Episodes.DeleteOnSubmit(queryDelEpisode);
+            SubmitChanges();
+        }
+
+        void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             NotifyPropertyChanged("PodcastSubscriptions");
         }
@@ -292,6 +303,43 @@ namespace Podcatcher
         {
             SubmitChanges();
             NotifyPropertyChanged("PodcastSubscriptions");
+        }
+
+        internal void startOldEpisodeCleanup(PodcastSubscriptionModel podcastSubscriptionModel)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(oldEpisodeCleanup);
+            worker.RunWorkerAsync(podcastSubscriptionModel);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(oldEpisodeCleanupCompleted);
+        }
+
+        private void oldEpisodeCleanup(object sender, DoWorkEventArgs args)
+        {
+            PodcastSubscriptionModel subscription = args.Argument as PodcastSubscriptionModel;
+            var queryDelEpisodes = from episode in Episodes
+                                   where (episode.PodcastId.Equals(subscription.PodcastId)      
+                                          && episode.EpisodeFile != ""
+                                          && (episode.TotalLengthTicks > 0 && episode.SavedPlayPos > 0)
+                                          && ((float)((float)episode.SavedPlayPos/(float)episode.TotalLengthTicks) > 0.9 ))
+                                   select episode;
+
+            foreach (var episode in queryDelEpisodes)
+            {
+                if (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable)
+                {
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                            {
+                                episode.deleteDownloadedEpisode();
+                            });
+//                    episode.deleteDownloadedEpisode(); 
+                    deleteEpisodeFromDB(episode);
+                }
+            }
+        }
+
+        private void oldEpisodeCleanupCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SubmitChanges();
         }
 
         private void episodesModelChanged()

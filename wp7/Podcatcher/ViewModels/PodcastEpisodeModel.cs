@@ -224,7 +224,6 @@ namespace Podcatcher.ViewModels
         public long SavedPlayPos
         {
             get { return m_savedPlayPos; }
-
             set { m_savedPlayPos = value; }
         }
 
@@ -336,6 +335,11 @@ namespace Podcatcher.ViewModels
 
         public void deleteDownloadedEpisode()
         {
+            if (String.IsNullOrEmpty(m_episodeFile)) 
+            {
+                return;
+            }
+
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 if (episodeStore.FileExists(EpisodeFile) == false)
