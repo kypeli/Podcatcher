@@ -47,6 +47,11 @@ namespace Podcatcher
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
         // Key for verifying user knows special requirements for D/L videos.
         public const string LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID = "dl_videoEPisodesNeedWifi";
+        
+        public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR = "dl_withCellular";
+        public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI = "dl_withWifi";
+        public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER = 100000000;
+        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD = 20000000;
 
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;

@@ -35,11 +35,21 @@ using Coding4Fun.Phone.Controls;
 using Microsoft.Phone.BackgroundTransfer;
 using Podcatcher.CustomControls;
 using Podcatcher.ViewModels;
+using Microsoft.Phone.Info;
 
 namespace Podcatcher
 {
+    public delegate void PodcastDownloadManagerHandler(object source, PodcastDownloadManagerArgs args);
+
+    public class PodcastDownloadManagerArgs : EventArgs
+    {
+        public int episodeId;
+    }
+
     public class PodcastEpisodesDownloadManager
     {
+        public event PodcastDownloadManagerHandler OnEpisodeDownloadInitiated;
+
         public ObservableQueue<PodcastEpisodeModel> EpisodeDownloadQueue
         {
             get
@@ -99,6 +109,42 @@ namespace Podcatcher
                 addEpisodeToDownloadQueue(episode);
             }
         }
+
+        public static void notifyUserOfDownloadRestrictions(PodcastEpisodeModel episode)
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            // Notify about >100 MB downloads
+            if (!settings.Contains(App.LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI)
+                && episode.EpisodeDownloadSize > App.MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER)
+            {
+
+                if (MessageBox.Show("You are about to download a file over 100 MB in size. Please note that Windows Phone allows downloading only if you are connected to a WiFi network and connected to an external power source.",
+                    "Attention",
+                    MessageBoxButton.OK) == MessageBoxResult.OK)
+                {
+                    settings.Add(App.LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI, true);
+                    return;
+                }
+            }
+
+            // Notify about >20 MB downloads
+            if (!settings.Contains(App.LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR)
+                && episode.EpisodeDownloadSize > App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD)
+            {
+
+                if (MessageBox.Show("You are about to download a file over 20 MB in size. Please note that Windows Phone allows downloading only if you are connected to a WiFi network.",
+                    "Attention",
+                    MessageBoxButton.OK) == MessageBoxResult.OK)
+                {
+                    settings.Add(App.LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR, true);
+                    return;
+                }
+            }
+
+        }
+
+
 
         #region private
         private static PodcastEpisodesDownloadManager m_instance            = null;
@@ -241,17 +287,20 @@ namespace Podcatcher
 
         private bool canAllowCellularDownload(PodcastEpisodeModel m_currentEpisodeDownload)
         {
-            bool allowCellular = false;
-            if (PodcastPlayerControl.isAudioPodcast(m_currentEpisodeDownload))      // Allow when d/l audio
+            if (m_currentEpisodeDownload.EpisodeDownloadSize == 0)
             {
-                if (m_currentEpisodeDownload.EpisodeDownloadSize == 0 ||            // We had an error where the d/l size was not parsed. So we have to by default allow this not to change previous behavior.
-                    m_currentEpisodeDownload.EpisodeDownloadSize < 100000000)       // Allow <100MB of audio
-                {
-                    allowCellular = true;
-                }
+                return true;
             }
 
-            return allowCellular;
+            long downloadSizeLimit = 100000000;
+            long episodeDownloadSize = m_currentEpisodeDownload.EpisodeDownloadSize;
+
+            if (episodeDownloadSize < downloadSizeLimit)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         void backgroundTransferProgressChanged(object sender, BackgroundTransferEventArgs e)
