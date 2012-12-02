@@ -59,6 +59,19 @@ namespace Podcatcher
         }
 
         /************************************* Public implementations *******************************/
+        public delegate void PodcastSqlHandler(object source, PodcastSqlHandlerArgs e);
+        public class PodcastSqlHandlerArgs
+        {
+            public enum SqlOperation
+            {
+                DeleteSubscriptionStarted,
+                DeleteSubscriptionFinished
+            }
+
+            public SqlOperation operationStatus;
+        }
+
+        public event PodcastSqlHandler OnPodcastSqlOperationChanged;
 
         public static PodcastSqlModel getInstance()
         {
@@ -87,6 +100,10 @@ namespace Podcatcher
 
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
+            PodcastSqlHandlerArgs args = new PodcastSqlHandlerArgs();
+            args.operationStatus = PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted;
+            this.OnPodcastSqlOperationChanged(this, args);
+
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(deleteSubscriptionFromDB);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteSubscriptionFromDBCompleted);
@@ -103,7 +120,11 @@ namespace Podcatcher
 
             foreach (var episode in queryDelEpisodes)
             {
-                episode.deleteDownloadedEpisode();
+                Deployment.Current.Dispatcher.BeginInvoke(() =>
+                {
+                    episode.deleteDownloadedEpisode();
+                });
+
                 Episodes.DeleteOnSubmit(episode);
             }
 
@@ -127,6 +148,10 @@ namespace Podcatcher
 
         void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            PodcastSqlHandlerArgs args = new PodcastSqlHandlerArgs();
+            args.operationStatus = PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionFinished;
+            this.OnPodcastSqlOperationChanged(this, args);
+
             NotifyPropertyChanged("PodcastSubscriptions");
         }
 

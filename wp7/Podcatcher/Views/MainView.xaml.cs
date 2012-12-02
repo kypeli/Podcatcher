@@ -71,6 +71,22 @@ namespace Podcatcher
 
             // Hook to the event when the podcast player starts playing. 
             this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+
+            // Hook to SQL events.
+            PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
+        }
+
+        void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)
+        {
+            if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted)
+            {
+                deleteProgressOverlay.Visibility = Visibility.Visible;
+            }
+
+            if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionFinished)
+            {
+                deleteProgressOverlay.Visibility = Visibility.Collapsed;
+            }
         }
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)

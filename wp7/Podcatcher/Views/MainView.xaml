@@ -10,6 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pc="clr-namespace:Podcatcher"
     xmlns:c="clr-namespace:Podcatcher.Converters"
+    xmlns:c4f="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -90,6 +91,17 @@
             </controls:PivotItem>
 
         </controls:Pivot>
+
+        <c4f:ProgressOverlay Name="deleteProgressOverlay" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center">Deleting</TextBlock>
+                <toolkit:PerformanceProgressBar 
+                        IsIndeterminate="True"
+                        Foreground="Green"
+                    />
+            </StackPanel>
+        </c4f:ProgressOverlay>
+
     </Grid>
 
     <phone:PhoneApplicationPage.ApplicationBar>

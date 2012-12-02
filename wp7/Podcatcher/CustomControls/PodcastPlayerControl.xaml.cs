@@ -262,14 +262,14 @@ namespace Podcatcher
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
                 m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-                m_originalEpisodeState = m_currentEpisode.EpisodeState;
-
                 if (m_currentEpisode == null)
                 {
                     // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
                     m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     return;
                 }
+
+                m_originalEpisodeState = m_currentEpisode.EpisodeState;
 
                 BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
                 setupPlayerUIContent(m_currentEpisode);
