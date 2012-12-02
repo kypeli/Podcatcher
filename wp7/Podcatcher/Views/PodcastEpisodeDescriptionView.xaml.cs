@@ -26,6 +26,7 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs naviArgs)
         {
+            this.DownloadButton.Visibility = System.Windows.Visibility.Collapsed;
             try
             {
                 int podcastEpisodeId = int.Parse(NavigationContext.QueryString["episodeId"]);
@@ -33,6 +34,10 @@ namespace Podcatcher.Views
                 if (m_podcastEpisode != null)
                 {
                     this.DataContext = m_podcastEpisode;
+                    if (m_podcastEpisode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Idle)
+                    {
+                        this.DownloadButton.Visibility = System.Windows.Visibility.Visible;
+                    }
                 }
                 else
                 {

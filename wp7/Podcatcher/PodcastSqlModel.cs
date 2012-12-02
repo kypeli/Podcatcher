@@ -331,7 +331,6 @@ namespace Podcatcher
                             {
                                 episode.deleteDownloadedEpisode();
                             });
-//                    episode.deleteDownloadedEpisode(); 
                     deleteEpisodeFromDB(episode);
                 }
             }
