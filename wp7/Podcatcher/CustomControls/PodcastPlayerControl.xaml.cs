@@ -266,6 +266,7 @@ namespace Podcatcher
                 {
                     // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
                     m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                    showNoPlayerLayout();
                     return;
                 }
 
