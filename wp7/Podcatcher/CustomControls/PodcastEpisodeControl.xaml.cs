@@ -96,6 +96,7 @@ namespace Podcatcher
                 case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                     player.playEpisode(m_episodeModel);
+                    m_episodeModel.PodcastSubscription.UnplayedEpisodes--;
 
                     if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
                     {
