@@ -359,6 +359,8 @@ namespace Podcatcher.ViewModels
                     episodeStore.DeleteFile(EpisodeFile);
                     EpisodeFile = null;
                     PodcastSubscription.UnplayedEpisodes--;
+                    SavedPlayPos = 0;
+                    TotalLengthTicks = 0;
                 }
                 catch (IsolatedStorageException)
                 {
