@@ -5,8 +5,9 @@
  * Settings for: Auto-continue playback from last saved position, clean old played episodes, try to use cellular data for downloading.
  * Indicator when subscriptions are being deleted. 
  * Add one-time popups to notify user about Windows Phone download policy when downloading (larger) episodes.
- * Fix deleting of episodes.  
  * Change main view pivot headers to match Windows Phone style (so people understand it can be swiped).
+ * Fix deleting of episodes.  
+ * Fix number of unplayed episodes when starting episode playback.
 
 1.2.2.0
 ----------
