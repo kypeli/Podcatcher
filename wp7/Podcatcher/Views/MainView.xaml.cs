@@ -74,6 +74,13 @@ namespace Podcatcher
 
             // Hook to SQL events.
             PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
+
+            // Create Settings instance if not yet created.
+            SettingsModel settingsModel = PodcastSqlModel.getInstance().settings();
+            if (settingsModel == null)
+            {
+                PodcastSqlModel.getInstance().createSettings();
+            }
         }
 
         void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)

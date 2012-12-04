@@ -24,15 +24,7 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            SettingsModel settingsModel = PodcastSqlModel.getInstance().settings();
-            if (settingsModel == null)
-            {
-                PodcastSqlModel.getInstance().createSettings();
-                settingsModel = PodcastSqlModel.getInstance().settings();
-            }
-
-            this.DataContext = settingsModel;
-
+            this.DataContext = PodcastSqlModel.getInstance().settings();
         }
     }
 }
