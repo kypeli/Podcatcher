@@ -46,7 +46,7 @@ namespace Podcatcher
 {
     public class PodcastFactory
     {
-        public static PodcastSubscriptionModel podcastModelFromRSS(string podcastRss)
+        public static PodcastSubscriptionModel podcastModelFromRSS(string podcastRss, String itunesNamespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
         {
             XDocument rssXmlDoc;
             try
@@ -60,18 +60,22 @@ namespace Podcatcher
             }
 
             bool validFeed = true;
-            XNamespace itunes = "http://www.itunes.com/dtds/podcast-1.0.dtd";
-
+            XNamespace namespaceDef = itunesNamespace;
             var query = (from channel in rssXmlDoc.Descendants("channel")
                          select new
                          {
                              Title          = (string)channel.Element("title"),
                              Description    = (string)channel.Element("description"),
-                             ImageUrl = ((channel.Element(itunes + "image") != null && channel.Element(itunes + "image").Attribute("href") != null) ? 
-                                        channel.Element(itunes + "image").Attribute("href").Value : 
+                             ImageUrl = ((channel.Element(namespaceDef + "image") != null && channel.Element(namespaceDef + "image").Attribute("href") != null) ? 
+                                        channel.Element(namespaceDef + "image").Attribute("href").Value : 
                                         @""),
                              Link           = (string)channel.Element("link")
                          }).FirstOrDefault();
+
+            if (query == null) 
+            {
+                return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
+            }
 
             if (query == null)
             {
@@ -86,9 +90,17 @@ namespace Podcatcher
 
             if (String.IsNullOrEmpty(query.ImageUrl))
             {
-                Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
-                validFeed = false;
-            }
+                if (itunesNamespace != "http://www.itunes.com/DTDs/Podcast-1.0.dtd")
+                {
+                    return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
+                }
+                else 
+                {
+                    Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
+                    validFeed = false;
+                }
+
+            } 
 
             if (validFeed == false)
             {
