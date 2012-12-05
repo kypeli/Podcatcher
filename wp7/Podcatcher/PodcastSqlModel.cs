@@ -226,10 +226,16 @@ namespace Podcatcher
 
         public SettingsModel settings()
         {
-            SettingsModel settings = (from SettingsModel s in Settings
+            SettingsModel settingsModel = (from SettingsModel s in Settings
                                      select s).FirstOrDefault();
 
-            return settings;
+            if (settingsModel == null)
+            {
+                createSettings();
+                return settings();
+            }
+
+            return settingsModel;
         }
 
         /************************************* Private implementation *******************************/
