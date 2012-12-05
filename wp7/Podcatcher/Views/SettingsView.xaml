@@ -4,18 +4,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:c4f="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
-    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:pc="clr-namespace:Podcatcher"
+    xmlns:c="clr-namespace:Podcatcher.Converters"
     xmlns:toolkitPrimitives="clr-namespace:Microsoft.Phone.Controls.Primitives;assembly=Microsoft.Phone.Controls.Toolkit" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
-    shell:SystemTray.IsVisible="True" Margin="0,2,0,-2"
-    Style="{StaticResource TurnstilePage}">
+    SupportedOrientations="Portrait"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="True"
+    Style="{StaticResource TurnstilePage}"
+    >
     
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -24,34 +27,45 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!--TitlePanel contains the name of the application and page title-->
+        <controls:Pivot x:Name="NavigationPivot" Grid.Row="1">
+            <!-- Player settings -->
+            <controls:PivotItem Header="player settings">
+                <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
+                    <StackPanel Margin="0,0,8,8">
+                        <StackPanel Margin="0,9,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock TextWrapping="Wrap" Text="Automatically continue playback" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutomaticContinuedPlayback, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="Normally Podcatcher asks if you want to continue from your previous saved position. If you turn this on, Podcatcher will automatically continue from the last saved position." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,9,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock TextWrapping="Wrap" Text="Delete listened episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDelete, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="If you turn this on, Podcatcher will delete previously listened episodes when you start playing a new episode." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </controls:PivotItem>
 
-        <!--ContentPanel - place additional content here-->
-        <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-        	<TextBlock Text="settings" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
-        </StackPanel>
+            <!-- Download settings -->
+            <controls:PivotItem Header="download settings">
+                <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
+                    <StackPanel Margin="0,0,8,8">
+                        <StackPanel Margin="0,9,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock TextWrapping="Wrap" Text="Try downloading using cellular data" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsUseCellularData, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="If you turn this off, episodes will never be downloaded using cellular data. NOTE: Windows Phone will not download episodes larger than 20 MB over cellular network even if you turn this on." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </controls:PivotItem>
 
-        <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
-<!--ContentPanel - place additional content here-->
-        	<Grid x:Name="ContentPanel" Width="456">
-        		<StackPanel Margin="0,0,8,8">
-        			<StackPanel Height="88" Orientation="Horizontal">
-        				<TextBlock TextWrapping="Wrap" Text="Subscribe" Width="288" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
-        				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsSubscribed, Mode=TwoWay}" Content="ToggleSwitchButton" Margin="0" Width="180" d:LayoutOverrides="Height"/>
-        			</StackPanel>
-        			<TextBlock TextWrapping="Wrap" Text="By subscribing to a podcast you receive new episodes as they are published. Turn subscription off if you don't want new episodes." Style="{StaticResource PhoneTextSubtleStyle}"/>
-        			<StackPanel Margin="0,9,12,0">
-        				<StackPanel Orientation="Horizontal">
-        					<TextBlock TextWrapping="Wrap" Text="Auto-update" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-        					<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDownload, Mode=TwoWay}" Content="ToggleSwitchButton"/>
-        				</StackPanel>
-        				<TextBlock TextWrapping="Wrap" Text="When auto-update is on, the new episodes for the subscription will be automatically downloaded to your device." Style="{StaticResource PhoneTextSubtleStyle}"/>
-        			</StackPanel>
-        		</StackPanel>
+        </controls:Pivot>
 
-        	</Grid>
-        </ScrollViewer>
-        
     </Grid>
 </phone:PhoneApplicationPage>
