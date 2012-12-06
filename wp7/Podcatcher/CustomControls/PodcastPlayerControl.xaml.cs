@@ -78,6 +78,18 @@ namespace Podcatcher
 
             m_appSettings = IsolatedStorageSettings.ApplicationSettings;
             m_instance = this;
+            setupPlayerUI();
+
+            if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                Debug.WriteLine("Restoring UI for currently playing episode.");
+                showPlayerLayout();
+                restoreEpisodeToPlayerUI();
+            }
+            else
+            {
+                showNoPlayerLayout();
+            }
         }
 
         public static PodcastPlayerControl getIntance()
@@ -244,18 +256,8 @@ namespace Podcatcher
 
         public void OnNavigatedTo()
         {
-            setupPlayerUI();
-
-            if (BackgroundAudioPlayer.Instance.Track != null)
-            {
-                Debug.WriteLine("Restoring UI for currently playing episode.");
-                showPlayerLayout();
-                restoreEpisodeToPlayerUI();
-            }
-            else
-            {
-                showNoPlayerLayout();
-            }
+            m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
+            m_screenUpdateTimer.Start();
         }
 
 
