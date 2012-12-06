@@ -256,14 +256,20 @@ namespace Podcatcher
 
         public void OnNavigatedTo()
         {
-            m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
-            m_screenUpdateTimer.Start();
+            if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
+                m_screenUpdateTimer.Start();
+            }
         }
 
 
         public void OnNavigatedFrom() {
-            m_screenUpdateTimer.Stop();
-            m_screenUpdateTimer.Tick -= new EventHandler(m_screenUpdateTimer_Tick);
+            if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                m_screenUpdateTimer.Stop();
+                m_screenUpdateTimer.Tick -= new EventHandler(m_screenUpdateTimer_Tick);
+            }
         }
 
         private void restoreEpisodeToPlayerUI()
