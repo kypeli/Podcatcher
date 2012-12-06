@@ -175,6 +175,16 @@ namespace Podcatcher
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+            
+            // Is player visible?
+            if (this.NavigationPivot.SelectedIndex == 2)
+            {
+                PodcastPlayerControl.getIntance().OnNavigatedTo();
+            }
+            else
+            {
+                PodcastPlayerControl.getIntance().OnNavigatedFrom();
+            }
         }
 
         private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
