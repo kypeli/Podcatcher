@@ -10,6 +10,7 @@
  * Fix deleting of episodes.  
  * Fix number of unplayed episodes when starting episode playback.
  * Fix status for downloads that are not downloading.
+ * Windows Phone 8 crash fix: stop timer and screen update when the player is not visible. We might hit a NULL pointer if the player is not yet initialized and we ask for the track info. 
 
 1.2.2.0
 ----------
