@@ -9,6 +9,7 @@
  * If podcast feed announced wrong file size and D/L fails because of that, user can try again with TransferPreferences.None
  * Fix deleting of episodes.  
  * Fix number of unplayed episodes when starting episode playback.
+ * Fix status for downloads that are not downloading.
 
 1.2.2.0
 ----------

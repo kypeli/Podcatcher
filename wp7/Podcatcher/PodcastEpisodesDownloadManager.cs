@@ -309,10 +309,8 @@ namespace Podcatcher
                 return true;
             }
 
-            long downloadSizeLimit = App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD;
-                                     
+            long downloadSizeLimit = App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD;                                     
             long episodeDownloadSize = m_currentEpisodeDownload.EpisodeDownloadSize;
-
             if (episodeDownloadSize < downloadSizeLimit)
             {
                 return true;
@@ -365,18 +363,22 @@ namespace Podcatcher
             {
                 case TransferStatus.WaitingForWiFi:
                     Debug.WriteLine("Transfer status: WaitingForWiFi");
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
                     WaitingForWiFi = true;
                     break;
                 case TransferStatus.WaitingForExternalPower:
                     Debug.WriteLine("Transfer status: WaitingForExternalPower");
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
                     WaitingForExternalPower = true;
                     break;
                 case TransferStatus.WaitingForExternalPowerDueToBatterySaverMode:
                     Debug.WriteLine("Transfer status: WaitingForExternalPowerDueToBatterySaverMode");
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
                     WaitingForExternalPowerDueToBatterySaverMode = true;
                     break;
                 case TransferStatus.WaitingForNonVoiceBlockingNetwork:
                     Debug.WriteLine("Transfer status: WaitingForNonVoiceBlockingNetwork");
+                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
                     WaitingForNonVoiceBlockingNetwork = true;
                     break;
                 case TransferStatus.Completed:
@@ -396,6 +398,11 @@ namespace Podcatcher
             if (transferRequest.TransferError == null && 
                (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206))
             {
+#if DEBUG
+                MessageBox.Show("Downloaded bytes: " + transferRequest.BytesReceived,
+                                "Completed", MessageBoxButton.OK);
+#endif
+
                 Debug.WriteLine("Transfer request completed succesfully.");
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
                 m_currentEpisodeDownload.PodcastSubscription.unplayedEpisodesChanged();
