@@ -50,8 +50,8 @@ namespace Podcatcher
         
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR = "dl_withCellular";
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI = "dl_withWifi";
-        public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER = 100000000;
-        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD = 20000000;
+        public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER = 104857600;
+        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD =       20971520;
 
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;

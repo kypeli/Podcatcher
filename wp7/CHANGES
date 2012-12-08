@@ -1,4 +1,4 @@
-1.3.0.0
+1.3.0.1
 ----------
  * Podcast episode description view with download button.
  * Access Settings view from main screen
@@ -6,6 +6,7 @@
  * Indicator when subscriptions are being deleted. 
  * Add one-time popups to notify user about Windows Phone download policy when downloading (larger) episodes.
  * Change main view pivot headers to match Windows Phone style (so people understand it can be swiped).
+ * If podcast feed announced wrong file size and D/L fails because of that, user can try again with TransferPreferences.None
  * Fix deleting of episodes.  
  * Fix number of unplayed episodes when starting episode playback.
 

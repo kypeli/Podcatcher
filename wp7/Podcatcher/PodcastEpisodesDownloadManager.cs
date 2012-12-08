@@ -119,7 +119,9 @@ namespace Podcatcher
                 && episode.EpisodeDownloadSize > App.MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER)
             {
 
-                if (MessageBox.Show("You are about to download a file over 100 MB in size. Please note that Windows Phone allows downloading only if you are connected to a WiFi network and connected to an external power source.",
+                if (MessageBox.Show("You are about to download a file over 100 MB in size. " +
+                                    "Please note that Windows Phone allows downloading this kind of files only if " +
+                                    "you are connected to a WiFi network and connected to an external power source.",
                     "Attention",
                     MessageBoxButton.OK) == MessageBoxResult.OK)
                 {
@@ -133,7 +135,9 @@ namespace Podcatcher
                 && episode.EpisodeDownloadSize > App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD)
             {
 
-                if (MessageBox.Show("You are about to download a file over 20 MB in size. Please note that Windows Phone allows downloading only if you are connected to a WiFi network.",
+                if (MessageBox.Show("You are about to download a file over 20 MB in size. Please " +
+                                    "note that Windows Phone allows downloading this kind of files only if you are " +
+                                    "connected to a WiFi network.",
                     "Attention",
                     MessageBoxButton.OK) == MessageBoxResult.OK)
                 {
@@ -216,7 +220,7 @@ namespace Podcatcher
             m_episodeDownloadQueue.RemoveItem(episode);
         }
 
-        private void startNextEpisodeDownload()
+        private void startNextEpisodeDownload(TransferPreferences useTransferPreferences = TransferPreferences.AllowCellularAndBattery)
         {
             if (m_episodeDownloadQueue.Count > 0)
             {
@@ -236,8 +240,8 @@ namespace Podcatcher
                     return;
                 }
 
-                string episodeFile = localEpisodeFileName(m_currentEpisodeDownload);
-                if (string.IsNullOrEmpty(episodeFile))
+                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
+                if (string.IsNullOrEmpty(m_currentEpisodeDownload.EpisodeFile))
                 {
                     App.showErrorToast("Cannot download the episode.");
                     Debug.WriteLine("Cannot download the episode. Episode file name is null or empty.");
@@ -249,12 +253,16 @@ namespace Podcatcher
 
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
-                                                                            new Uri(episodeFile, UriKind.Relative));
-                if (canAllowCellularDownload(m_currentEpisodeDownload))
+                                                                            new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
+                if (useTransferPreferences == TransferPreferences.None)
+                {
+                    m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.None;
+                } 
+                else if (canAllowCellularDownload(m_currentEpisodeDownload))
                 {
                     bool settingsAllowCellular = PodcastSqlModel.getInstance().settings().IsUseCellularData;
                     Debug.WriteLine("Settings: Allow cellular download: " + settingsAllowCellular);
-                    if (settingsAllowCellular)
+                    if (settingsAllowCellular && canDownloadOverCellular())
                     {
                         m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
                     }
@@ -265,7 +273,9 @@ namespace Podcatcher
                 } else {
                     m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.None;
                 }
-                                                                  
+                                                     
+                Debug.WriteLine("m_currentBackgroundTransfer.TransferPreferences = " + m_currentBackgroundTransfer.TransferPreferences.ToString());
+
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                 m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
 
@@ -292,6 +302,25 @@ namespace Podcatcher
             }
         }
 
+        private bool canDownloadOverCellular()
+        {
+            if (m_currentEpisodeDownload.EpisodeDownloadSize == 0)
+            {
+                return true;
+            }
+
+            long downloadSizeLimit = App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD;
+                                     
+            long episodeDownloadSize = m_currentEpisodeDownload.EpisodeDownloadSize;
+
+            if (episodeDownloadSize < downloadSizeLimit)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private bool canAllowCellularDownload(PodcastEpisodeModel m_currentEpisodeDownload)
         {
             if (m_currentEpisodeDownload.EpisodeDownloadSize == 0)
@@ -299,7 +328,7 @@ namespace Podcatcher
                 return true;
             }
 
-            long downloadSizeLimit = 100000000;
+            long downloadSizeLimit = App.MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER;
             long episodeDownloadSize = m_currentEpisodeDownload.EpisodeDownloadSize;
 
             if (episodeDownloadSize < downloadSizeLimit)
@@ -369,15 +398,40 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Transfer request completed succesfully.");
                 m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
-                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
                 m_currentEpisodeDownload.PodcastSubscription.unplayedEpisodesChanged();
             }
             else
             {
                 Debug.WriteLine("Transfer request completed with error code: " + transferRequest.StatusCode + ", " + transferRequest.TransferError);
+
+                // If error code is 200 but we still got an error, this means the max. transfer size exceeded.
+                // This is because the podcast feed announced a different download size than what the file actually is.
+                // If user wants, we can try again with larger file download size policy.
+                if (transferRequest.StatusCode == 200)
+                {
+                    Debug.WriteLine("Maxiumum download size exceeded. Shall we try again?");
+
+                    if (MessageBox.Show("Podcast feed announced wrong file size. Do you want to download again with larger file download settings?",
+                                        "Podcast download failed",
+                        MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        if (MessageBox.Show("Please connect your phone to an external power source and to a WiFi network.",
+                                            "Attention",
+                            MessageBoxButton.OK) == MessageBoxResult.OK) 
+                        {
+                            Debug.WriteLine("Download the same episode again, with preferences None.");
+
+                            // We download the same file again, but this time we force the TransferPrefernces to be None.
+                            startNextEpisodeDownload(TransferPreferences.None);
+                            return;
+                        }
+                    }
+                }
+
                 if (m_currentEpisodeDownload != null)
                 {
                     m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+                    m_currentEpisodeDownload.deleteDownloadedEpisode();
                 }
             }
 
@@ -389,6 +443,9 @@ namespace Podcatcher
 
         private void cleanupEpisodeDownload(BackgroundTransferRequest transferRequest)
         {
+            m_currentBackgroundTransfer.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
+            m_currentBackgroundTransfer.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+
             // Remove the transfer request in order to make room in the 
             // queue for more transfers. Transfers are not automatically
             // removed by the system.
@@ -401,9 +458,8 @@ namespace Podcatcher
             m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
             m_episodeDownloadQueue.Dequeue();
 
-            m_currentBackgroundTransfer.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
-            m_currentBackgroundTransfer.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
             m_currentBackgroundTransfer = null;
+            transferRequest = null;
 
             // Clean episode data.
             m_currentEpisodeDownload.DownloadRequest = null;
