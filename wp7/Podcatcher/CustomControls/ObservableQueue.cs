@@ -47,6 +47,11 @@ namespace Podcatcher.CustomControls
 
         public T Dequeue()
         {
+            if (queue.Count == 0)
+            {
+                return default(T);
+            }
+
             var item = queue.Dequeue();
             if (CollectionChanged != null)
                 CollectionChanged(this,
@@ -57,6 +62,11 @@ namespace Podcatcher.CustomControls
 
         public T Peek()
         {
+            if (queue.Count == 0)
+            {
+                return default(T);
+            }
+
             var item = queue.Peek();
             return item;
         }
