@@ -35,7 +35,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image Grid.Row="0" Grid.Column="0" Source="{Binding PodcastSubscription.PodcastLogo}" x:Name="PodcastIcon" HorizontalAlignment="Left" d:LayoutOverrides="GridBox" Margin="12,0,0,0" Stretch="UniformToFill" Height="160" />
+            <Image Grid.Row="0" Grid.Column="0" Source="{Binding PodcastSubscription.PodcastLogo}" x:Name="PodcastIcon" HorizontalAlignment="Left" d:LayoutOverrides="GridBox" Margin="12,0,0,0" Height="160" />
             <TextBlock  Grid.Row="0" Grid.Column="1" Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}">
                 <TextBlock.Foreground>
                     <SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
