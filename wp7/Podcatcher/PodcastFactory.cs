@@ -251,6 +251,42 @@ namespace Podcatcher
             return episodes;
         }
 
+        public static List<Uri> podcastUrlFromGpodderImport(string importRss) 
+        {
+            if (String.IsNullOrEmpty(importRss))
+            {
+                Debug.WriteLine("ERROR: Import XML file is empty. Cannot continue.");
+                return null;
+            }
+
+            XDocument podcastRssXmlDoc;
+            try
+            {
+                podcastRssXmlDoc = XDocument.Parse(importRss);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Debug.WriteLine("ERROR: Parse error when parsing imported subscriptions. Message: " + e.Message);
+                return null;
+            }
+
+            var podcastsQuery = from podcast in podcastRssXmlDoc.Descendants("podcast")
+                                select podcast;
+
+            List<Uri> podcastUrls = new List<Uri>();
+            foreach (var podcast in podcastsQuery)
+            {
+                XElement urlElement = podcast.Element("url");
+                if (urlElement != null)
+                {
+                    podcastUrls.Add(new Uri(urlElement.Value));
+                    Debug.WriteLine("Got new URI from gPodder: " + urlElement.Value);
+                }
+            }
+
+            return podcastUrls;
+        }
+
         private static XElement getChildElementByName(XElement episode, string name)
         {
             XElement element = episode.Element(name);

@@ -51,13 +51,19 @@ namespace Podcatcher.Views
 
             m_subscriptionManager = PodcastSubscriptionsManager.getInstance();
 
-            m_subscriptionManager.OnPodcastChannelStarted
-                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelStarted);
-            m_subscriptionManager.OnPodcastChannelFinished
-                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinished);
-            m_subscriptionManager.OnPodcastChannelFinishedWithError
-                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelFinishedWithError);
+            m_subscriptionManager.OnPodcastChannelAddStarted
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelAddStarted);
+            m_subscriptionManager.OnPodcastChannelAddFinished
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelAddFinished);
+            m_subscriptionManager.OnPodcastChannelAddFinishedWithError
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelAddFinishedWithError);
 
+            m_subscriptionManager.OnGPodderImportStarted
+                += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportStarted);
+            m_subscriptionManager.OnGPodderImportFinished
+                += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinished);
+            m_subscriptionManager.OnGPodderImportFinishedWithError
+                += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinishedWithError);
         }
 
         /************************************* Private implementations *******************************/
@@ -69,12 +75,13 @@ namespace Podcatcher.Views
             m_subscriptionManager.addSubscriptionFromURL(addFromUrlInput.Text);
         }
 
-        private void subscriptionManager_OnPodcastChannelStarted(object source, SubscriptionManagerArgs e)
+        private void subscriptionManager_OnPodcastChannelAddStarted(object source, SubscriptionManagerArgs e)
         {
+            ProgressText.Text = "Subscribing";
             progressOverlay.Show();
         }
 
-        private void subscriptionManager_OnPodcastChannelFinishedWithError(object source, SubscriptionManagerArgs e)
+        private void subscriptionManager_OnPodcastChannelAddFinishedWithError(object source, SubscriptionManagerArgs e)
         {
             progressOverlay.Hide();
 
@@ -85,7 +92,7 @@ namespace Podcatcher.Views
             toast.Show();
         }
 
-        private void subscriptionManager_OnPodcastChannelFinished(object source, SubscriptionManagerArgs e)
+        private void subscriptionManager_OnPodcastChannelAddFinished(object source, SubscriptionManagerArgs e)
         {
             progressOverlay.Hide();
             if (NavigationService.CanGoBack)
@@ -93,6 +100,41 @@ namespace Podcatcher.Views
                 NavigationService.GoBack();
             }
         }
+
+        private void importFromGpodderButton_Click(object sender, RoutedEventArgs e)
+        {
+            NetworkCredential nc = new NetworkCredential(gpodderUsername.Text, gpodderPassword.Password);
+            m_subscriptionManager.importFromGpodderWithCredentials(nc);
+        }
+
+        private void subscriptionManager_OnGPodderImportStarted(object source, SubscriptionManagerArgs e)
+        {
+            ProgressText.Text = "Importing from gPodder...";
+            progressOverlay.Show();
+        }
+
+        private void subscriptionManager_OnGPodderImportFinished(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Hide();
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+            progressOverlay.Hide();
+        }
+
+        private void subscriptionManager_OnGPodderImportFinishedWithError(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Hide();
+
+            ToastPrompt toast = new ToastPrompt();
+            toast.Title = "Error";
+            toast.Message = e.message;
+
+            toast.Show();
+        }
+
+
         #endregion
     }
 }

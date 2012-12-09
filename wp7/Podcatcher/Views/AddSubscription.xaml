@@ -47,12 +47,22 @@
                             <Button Content="Add" Height="71" Name="addFromUrlButton" Width="152" HorizontalAlignment="Right" Click="addFromUrlButton_Click" Margin="0,0,8,0" />
                             </StackPanel>
                     </controls:PivotItem>
-                    
+
+                    <!-- Add podcasts manually pivot item -->
+                    <controls:PivotItem Header="import from gpodder">
+                        <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
+                            <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder username" TextWrapping="Wrap" />
+                            <TextBox Height="71" Name="gpodderUsername" Text="" d:LayoutOverrides="HorizontalMargin" />
+                            <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder password" TextWrapping="Wrap" />
+                            <PasswordBox Height="71" Name="gpodderPassword" d:LayoutOverrides="HorizontalMargin" />
+                        <Button Content="Import" Height="71" Name="importFromGpodderButton" Width="152" HorizontalAlignment="Right" Click="importFromGpodderButton_Click" Margin="0,0,8,0" />
+                        </StackPanel>
+                    </controls:PivotItem>
             </controls:Pivot>
 
             <c4f:ProgressOverlay Name="progressOverlay" Visibility="Collapsed">
                 <StackPanel>
-                    <TextBlock HorizontalAlignment="Center">Subscribing</TextBlock>
+                    <TextBlock x:Name="ProgressText" HorizontalAlignment="Center"/>
                     <toolkit:PerformanceProgressBar 
                         IsIndeterminate="True"
                         Foreground="Green"

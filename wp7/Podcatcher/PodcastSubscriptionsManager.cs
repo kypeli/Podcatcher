@@ -48,15 +48,27 @@ namespace Podcatcher
         public String message;
         public PodcastSubscriptionModel addedSubscription;
         public PodcastSubscriptionsManager.SubscriptionsState state;
+        public bool isImportingFromGpodder = false;
+    }
+
+    internal class AddSubscriptionOptions
+    {
+        public String rssUrl = "";
+        public bool isImportingFromGpodder = false;
     }
 
     public class PodcastSubscriptionsManager
     {
         /************************************* Public implementations *******************************/
 
-        public event SubscriptionManagerHandler OnPodcastChannelStarted;
-        public event SubscriptionManagerHandler OnPodcastChannelFinished;
-        public event SubscriptionManagerHandler OnPodcastChannelFinishedWithError;
+        public event SubscriptionManagerHandler OnPodcastChannelAddStarted;
+        public event SubscriptionManagerHandler OnPodcastChannelAddFinished;
+        public event SubscriptionManagerHandler OnPodcastChannelAddFinishedWithError;
+
+        public event SubscriptionManagerHandler OnGPodderImportStarted;
+        public event SubscriptionManagerHandler OnGPodderImportFinished;
+        public event SubscriptionManagerHandler OnGPodderImportFinishedWithError;
+
         public event SubscriptionManagerHandler OnPodcastSubscriptionsChanged;
 
         public enum SubscriptionsState
@@ -75,7 +87,7 @@ namespace Podcatcher
             return m_subscriptionManagerInstance;
         }
 
-        public void addSubscriptionFromURL(string podcastRss)
+        public void addSubscriptionFromURL(string podcastRss, bool importingFromGpodder = false)
         {
 
             if (String.IsNullOrEmpty(podcastRss))
@@ -102,15 +114,27 @@ namespace Podcatcher
             catch (UriFormatException)
             {
                 Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
-                OnPodcastChannelFinishedWithError(this, null);
+                OnPodcastChannelAddFinishedWithError(this, null);
                 return;
+            }
+
+            AddSubscriptionOptions options = new AddSubscriptionOptions();
+            options.rssUrl = podcastRss;
+            options.isImportingFromGpodder = importingFromGpodder;
+
+            if (importingFromGpodder)
+            {
+                m_activeGPodderImportsCount++;
             }
 
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
-            wc.DownloadStringAsync(podcastRssUri, podcastRss);
+            wc.DownloadStringAsync(podcastRssUri, options);
 
-            OnPodcastChannelStarted(this, null);
+            if (!importingFromGpodder)
+            {
+                OnPodcastChannelAddStarted(this, null);
+            }
 
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
@@ -130,6 +154,30 @@ namespace Podcatcher
             refreshNextSubscription();
         }
 
+        public void importFromGpodderWithCredentials(NetworkCredential nc)
+        {
+            if (String.IsNullOrEmpty(nc.Password) || String.IsNullOrEmpty(nc.UserName))
+            {
+                Debug.WriteLine("gPodder username or password empty.");
+                
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "Please give both gPodder username and password.";
+                OnGPodderImportFinishedWithError(this, args);
+                
+                return;
+            }
+
+            OnGPodderImportStarted(this, null);
+
+            Uri gpodderImportUri = new Uri(string.Format("http://gpodder.net/subscriptions/{0}.xml", nc.UserName));
+            WebClient wc = new WebClient();
+            wc.Credentials = nc;
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_GpodderImportCompleted);
+            wc.DownloadStringAsync(gpodderImportUri);
+
+            Debug.WriteLine("Importing from gPodder for user, " + nc.UserName + ", URL: " + gpodderImportUri.ToString());
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
@@ -137,6 +185,7 @@ namespace Podcatcher
         private Random m_random                               = null;
         private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
         List<PodcastSubscriptionModel> m_subscriptions        = null;
+        int m_activeGPodderImportsCount                       = 0;
 
         private PodcastSubscriptionsManager()
         {
@@ -145,7 +194,7 @@ namespace Podcatcher
 
             // Hook a callback method to the signal that we emit when the subscription has been added.
             // This way we can continue the synchronous execution.
-            this.OnPodcastChannelFinished += new SubscriptionManagerHandler(PodcastSubscriptionsManager_OnPodcastAddedFinished);
+            this.OnPodcastChannelAddFinished += new SubscriptionManagerHandler(PodcastSubscriptionsManager_OnPodcastAddedFinished);
         }
 
 
@@ -180,10 +229,25 @@ namespace Podcatcher
                 return;
             }
 
-            string rssUrl = e.UserState as string;
+            AddSubscriptionOptions options = e.UserState as AddSubscriptionOptions;
+            string rssUrl = options.rssUrl;
+            bool importingFromGpodder = options.isImportingFromGpodder;
+
             if (m_podcastsSqlModel.isPodcastInDB(rssUrl))
             {
-                PodcastSubscriptionFailedWithMessage("You have already subscribed to that podcast.");
+                if (!importingFromGpodder)
+                {
+                    PodcastSubscriptionFailedWithMessage("You have already subscribed to that podcast.");
+                }
+
+                if (importingFromGpodder)                    
+                {
+                    m_activeGPodderImportsCount--;
+                    if (m_activeGPodderImportsCount <= 0)
+                    {
+                        OnGPodderImportFinished(this, null);
+                    }
+                }
                 return;
             }
 
@@ -196,8 +260,9 @@ namespace Podcatcher
 
             SubscriptionManagerArgs addArgs = new SubscriptionManagerArgs();
             addArgs.addedSubscription = podcastModel;
+            addArgs.isImportingFromGpodder = importingFromGpodder;
 
-            OnPodcastChannelFinished(this, addArgs);
+            OnPodcastChannelAddFinished(this, addArgs);
         }
 
         private void refreshNextSubscription()
@@ -260,6 +325,7 @@ namespace Podcatcher
             {
                 subscription.EpisodesManager.updatePodcastEpisodes();
             }
+
             Debug.WriteLine("Done.");
         }
 
@@ -274,6 +340,14 @@ namespace Podcatcher
             Debug.WriteLine("Podcast added successfully. Name: " + subscriptionModel.PodcastName);
 
             subscriptionModel.EpisodesManager.updatePodcastEpisodes();
+            if (e.isImportingFromGpodder)
+            {
+                m_activeGPodderImportsCount--;
+                if (m_activeGPodderImportsCount <= 0)
+                {
+                    OnGPodderImportFinished(this, null);
+                }
+            }
         }
 
         private void PodcastSubscriptionFailedWithMessage(string message)
@@ -282,7 +356,7 @@ namespace Podcatcher
             SubscriptionManagerArgs args = new SubscriptionManagerArgs();
             args.message = message;
 
-            OnPodcastChannelFinishedWithError(this, args);
+            OnPodcastChannelAddFinishedWithError(this, args);
         }
 
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
@@ -310,6 +384,32 @@ namespace Podcatcher
             Debug.WriteLine("Found icon filename: " + localPodcastLogoFilename);
 
             return localPodcastLogoFilename;
+        }
+
+        private void wc_GpodderImportCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                Debug.WriteLine("Error from gPodder when importing: " + e.Error + ", " + e.Error.ToString());
+
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "Error importing from gPodder. Please try again.";
+            
+                OnGPodderImportFinishedWithError(this, args);
+                return;
+            }
+
+            string xmlResponse = e.Result.ToString();
+            List<Uri> subscriptions = PodcastFactory.podcastUrlFromGpodderImport(xmlResponse);
+            foreach(Uri subscription in subscriptions) 
+            {
+                addSubscriptionFromGPodder(subscription.ToString());
+            }
+        }
+
+        private void addSubscriptionFromGPodder(string podcastRss)
+        {
+            addSubscriptionFromURL(podcastRss, true);
         }
         #endregion
     }
