@@ -14,7 +14,7 @@
         <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
         <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
         <c:DownloadEpisodeVisibleConverter x:Name="downloadEpisodeVisible" />
-        <c:ProgressBarVisibleConverter x:Name="progressBarVisible" />
+        <c:ProgressBarVisibleConverter x:Name="progressBarVisible" /> 
     </UserControl.Resources>
 
     <Grid x:Name="EpisodeMainLayout">
@@ -36,18 +36,22 @@
         				<SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
         			</TextBlock.Foreground>
         		</TextBlock>
-        		<Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
+                <StackPanel Orientation="Vertical" Margin="0" Grid.Column="2">
+                    <Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
         			IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="205" 
         			Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
-        			HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0,0,17,0" VerticalAlignment="Top" Grid.Column="2" />
-        	</Grid>
-        	<StackPanel Orientation="Horizontal" Margin="0">
-        		<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="268" Style="{StaticResource PhoneTextSubtleStyle}" />
-        		<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0" Width="190" Style="{StaticResource PhoneTextSubtleStyle}" />
-        	</StackPanel>
-            <ProgressBar Visibility="{Binding EpisodeState, 
+        			HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0,0,17,0" VerticalAlignment="Top" />
+
+                    <ProgressBar Visibility="{Binding EpisodeState, 
                                   Converter={StaticResource progressBarVisible}}"
-                         Value="{Binding DownloadPercentage}" x:Name="PlayProgressBar" Height="11" Width="201" HorizontalAlignment="Right"/>
+                         Value="{Binding DownloadPercentage}" x:Name="PlayProgressBar" Height="11" Width="205"  HorizontalAlignment="Right" Margin="0,0,17,0"/>
+
+                    <TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="12,0,17,0"  Style="{StaticResource PhoneTextSubtleStyle}" />
+
+                </StackPanel>
+        	</Grid>
+            
+            <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="268" Style="{StaticResource PhoneTextSubtleStyle}" />
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>
