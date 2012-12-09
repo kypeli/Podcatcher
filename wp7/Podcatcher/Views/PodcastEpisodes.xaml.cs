@@ -81,10 +81,11 @@ namespace Podcatcher.Views
 
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.NavigationPivot.SelectedIndex == 1 
-                && this.DownloadedEpisodesList.ItemsSource == null) {
-                    this.DownloadedEpisodesList.ItemsSource = m_podcastSqlModel.PlayableEpisodesForSubscription(m_subscription);
-                }
+            this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+
+            if (this.NavigationPivot.SelectedIndex == 1) {
+                this.DownloadedEpisodesList.ItemsSource = m_podcastSqlModel.PlayableEpisodesForSubscription(m_subscription);
+            }
 
         }
     }
