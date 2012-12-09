@@ -57,12 +57,7 @@ namespace Podcatcher.Views
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
-
-            m_episodes = new ObservableCollection<PodcastEpisodeModel>(m_podcastSqlModel.episodesForSubscription(m_subscription));
-            this.PodcastHeader.Header       = m_subscription.PodcastName;
-            this.PodcastDescription.Text    = m_subscription.PodcastDescription;
-            this.PodcastIcon.Source         = m_subscription.PodcastLogo;
-            this.EpisodeList.ItemsSource    = m_episodes;
+            this.DataContext = m_subscription;
         }
 
         /************************************* Priovate implementations *******************************/
@@ -70,7 +65,6 @@ namespace Podcatcher.Views
 
         private PodcastSqlModel m_podcastSqlModel;
         private PodcastSubscriptionModel m_subscription;
-        ObservableCollection<PodcastEpisodeModel> m_episodes;
         
         #endregion
 
@@ -82,11 +76,6 @@ namespace Podcatcher.Views
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
-
-            if (this.NavigationPivot.SelectedIndex == 1) {
-                this.DownloadedEpisodesList.ItemsSource = m_podcastSqlModel.PlayableEpisodesForSubscription(m_subscription);
-            }
-
         }
     }
 }

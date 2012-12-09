@@ -20,7 +20,7 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <controls:Pivot x:Name="NavigationPivot" Grid.Row="1" SelectionChanged="NavigationPivot_SelectionChanged">
             <!--Episodes listing -->
-            <controls:PivotItem x:Name="PodcastHeader">
+            <controls:PivotItem Header="{Binding PodcastName}">
                 <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="554"  Width="456">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="150"/>
@@ -32,10 +32,10 @@
                         <ColumnDefinition Width="160" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image Grid.Row="0" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" VerticalAlignment="Top" Margin="5,0" />
-                    <TextBlock Grid.Row="0" Grid.Column="1" x:Name="PodcastDescription" TextWrapping="Wrap" Height="Auto" Margin="17,0,0,0" VerticalAlignment="Top" FontSize="16" />
+                    <Image Grid.Row="0" Grid.Column="0" Source="{Binding PodcastLogo}" Width="150" Height="150" VerticalAlignment="Top" Margin="5,0" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding PodcastDescription}"  TextWrapping="Wrap" Height="Auto" Margin="17,0,0,0" VerticalAlignment="Top" FontSize="16" />
 
-                    <ListBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="EpisodeList" Height="Auto" Margin="0,10,0,0">
+                    <ListBox ItemsSource="{Binding Episodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="EpisodeList" Height="Auto" Margin="0,10,0,0">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
@@ -49,7 +49,7 @@
 
             <!--Episodes listing -->
             <controls:PivotItem Header="downloaded episodes">
-                <ListBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
+                <ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">

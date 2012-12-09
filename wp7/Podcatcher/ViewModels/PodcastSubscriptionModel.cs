@@ -334,7 +334,26 @@ namespace Podcatcher.ViewModels
                     return String.Format("{0} episodes", Episodes.Count());
                 }
             }
+        }
 
+        public List<PodcastEpisodeModel> PlayableEpisodes
+        {
+            get
+            {
+                var query = from PodcastEpisodeModel episode in Episodes
+                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable ||
+                                  episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playing ||
+                                  episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Paused)
+                            orderby episode.EpisodePublished descending
+                            select episode;
+
+                return new List<PodcastEpisodeModel>(query);
+            }
+
+            set
+            {
+                NotifyPropertyChanged("PlayableEpisodes");
+            }
         }
 
         // Version column aids update performance.

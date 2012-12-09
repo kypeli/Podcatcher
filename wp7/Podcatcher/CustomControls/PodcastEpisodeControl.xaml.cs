@@ -142,11 +142,12 @@ namespace Podcatcher
             podcastEpisode.deleteDownloadedEpisode();
             PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
         }
-        #endregion
 
         private void Episode_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
             (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastEpisodeDescriptionView.xaml?episodeId={0}", (this.DataContext as PodcastEpisodeModel).EpisodeId), UriKind.Relative));
         }
+
+        #endregion
     }
 }

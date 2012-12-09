@@ -260,6 +260,11 @@ namespace Podcatcher.ViewModels
 
                 NotifyPropertyChanged("EpisodeState");
                 NotifyPropertyChanged("EpisodeStatusText");
+                if (PodcastSubscription != null)
+                {
+                    // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
+                    PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
+                }
             }
         }
 
@@ -325,7 +330,6 @@ namespace Podcatcher.ViewModels
                 m_newEpisodeVisibility = value;
             }
         }
-
         #endregion
 
         /************************************* Public implementations *******************************/
