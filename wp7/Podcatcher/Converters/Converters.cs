@@ -62,6 +62,26 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class NoDownloadedEpisodesVisible : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            List<PodcastEpisodeModel> model = value as List<PodcastEpisodeModel>;
+            if (model == null
+                || model.Count < 1)
+            {
+                return Visibility.Visible;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
     public class EpisodeButtonActiveConverter : IValueConverter 
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -150,12 +170,6 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     episodeContextMenuVisible = Visibility.Visible;
                     break;
-
-// TODO: We need to handle player "Stop" so we can release the episode and delete it. 
-/*                case PodcastEpisodeModel.EpisodeStateVal.Paused:
-                    episodeContextMenuVisible = Visibility.Visible;
-                    break;
- */ 
             }
 
             return episodeContextMenuVisible;

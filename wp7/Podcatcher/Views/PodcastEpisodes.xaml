@@ -7,6 +7,7 @@
     xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"    
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:c="clr-namespace:Podcatcher.Converters"
     xmlns:pc="clr-namespace:Podcatcher"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -15,6 +16,10 @@
     mc:Ignorable="d" d:DesignHeight="696" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True"
     Style="{StaticResource TurnstilePage}">
+
+    <phone:PhoneApplicationPage.Resources>
+        <c:NoDownloadedEpisodesVisible x:Name="noDownloadedEpisodesVIsible"/>
+    </phone:PhoneApplicationPage.Resources>
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -49,15 +54,27 @@
 
             <!--Episodes listing -->
             <controls:PivotItem Header="downloaded episodes">
-                <ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
-                                <pc:PodcastEpisodeControl x:Name="DownloadedEpisodeControl"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Grid Background="Transparent">
+                    <ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
+                                    <pc:PodcastEpisodeControl x:Name="DownloadedEpisodeControl"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Text="No downloaded episodes."
+                             Visibility="{Binding PlayableEpisodes, 
+                                Converter={StaticResource noDownloadedEpisodesVIsible}}" 
+                             VerticalAlignment="Center" 
+                             HorizontalAlignment="Center" 
+                             TextWrapping="Wrap" 
+                             TextAlignment="Center" 
+                             Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                             Margin="34,96,32,278" />
+                </Grid>
             </controls:PivotItem>
 
         </controls:Pivot>
