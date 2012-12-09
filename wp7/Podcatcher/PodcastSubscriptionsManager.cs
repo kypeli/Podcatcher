@@ -49,12 +49,15 @@ namespace Podcatcher
         public PodcastSubscriptionModel addedSubscription;
         public PodcastSubscriptionsManager.SubscriptionsState state;
         public bool isImportingFromGpodder = false;
+        public Uri podcastFeedRSSUri;
     }
 
     internal class AddSubscriptionOptions
     {
         public String rssUrl = "";
         public bool isImportingFromGpodder = false;
+        public String username = "";
+        public String password = "";
     }
 
     public class PodcastSubscriptionsManager
@@ -64,6 +67,7 @@ namespace Podcatcher
         public event SubscriptionManagerHandler OnPodcastChannelAddStarted;
         public event SubscriptionManagerHandler OnPodcastChannelAddFinished;
         public event SubscriptionManagerHandler OnPodcastChannelAddFinishedWithError;
+        public event SubscriptionManagerHandler OnPodcastChannelRequiresAuthentication;
 
         public event SubscriptionManagerHandler OnGPodderImportStarted;
         public event SubscriptionManagerHandler OnGPodderImportFinished;
@@ -93,7 +97,7 @@ namespace Podcatcher
             if (String.IsNullOrEmpty(podcastRss))
             {
 #if DEBUG
-                podcastRss = "http://leo.am/podcasts/twit";
+                podcastRss = "http://192.168.0.6:8000/feed.rss";
 #else
                 Debug.WriteLine("ERROR: Empty URL.");
                 PodcastSubscriptionFailedWithMessage("Empty podcast address.");
@@ -135,6 +139,51 @@ namespace Podcatcher
             {
                 OnPodcastChannelAddStarted(this, null);
             }
+
+            Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
+        }
+
+        public void addSubscriptionFromURLWithCredentials(string podcastRss, NetworkCredential nc)
+        {
+            if (String.IsNullOrEmpty(podcastRss))
+            {
+#if DEBUG
+                podcastRss = "http://192.168.0.6:8000/feed.rss";
+#else
+                Debug.WriteLine("ERROR: Empty URL.");
+                PodcastSubscriptionFailedWithMessage("Empty podcast address.");
+                return; 
+#endif
+            }
+
+            if (podcastRss.StartsWith("http://") == false)
+            {
+                podcastRss = podcastRss.Insert(0, "http://");
+            }
+
+            Uri podcastRssUri;
+            try
+            {
+                podcastRssUri = new Uri(podcastRss);
+            }
+            catch (UriFormatException)
+            {
+                Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
+                OnPodcastChannelAddFinishedWithError(this, null);
+                return;
+            }
+
+            AddSubscriptionOptions options = new AddSubscriptionOptions();
+            options.rssUrl = podcastRss;
+            options.username = nc.UserName;
+            options.password = nc.Password;
+
+            WebClient wc = new WebClient();
+            wc.Credentials = nc;
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
+            wc.DownloadStringAsync(podcastRssUri, options);
+
+            OnPodcastChannelAddStarted(this, null);
 
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
@@ -217,6 +266,26 @@ namespace Podcatcher
             if (e.Error != null
                 || e.Cancelled)
             {
+                try
+                {
+                    string foo = e.Result;
+                }
+                catch (WebException ex)
+                {
+                    if (needsAuthentication(ex))
+                    {
+                        if (MessageBox.Show("Subscribing to this podcast requires authentication. Do you want to give username and password to continue?",
+                             "Attention",
+                             MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                        {
+                            SubscriptionManagerArgs authArgs = new SubscriptionManagerArgs();
+                            authArgs.podcastFeedRSSUri = ex.Response.ResponseUri;
+                            OnPodcastChannelRequiresAuthentication(this, authArgs);
+                            return;
+                        }
+                    }
+                }
+
                 PodcastSubscriptionFailedWithMessage("Could not fetch the podcast feed.");
                 return;
             }
@@ -254,6 +323,17 @@ namespace Podcatcher
             podcastModel.CachedPodcastRSSFeed = podcastRss;                        
             podcastModel.PodcastLogoLocalLocation = localLogoFileName(podcastModel);
             podcastModel.PodcastRSSUrl = rssUrl;
+
+            if (String.IsNullOrEmpty(options.username) == false)
+            {
+                podcastModel.Username = options.username;
+            }
+
+            if (String.IsNullOrEmpty(options.password) == false)
+            {
+                podcastModel.Password = options.password;
+            }
+
             m_podcastsSqlModel.addSubscription(podcastModel);
 
             podcastModel.fetchChannelLogo();
@@ -263,6 +343,16 @@ namespace Podcatcher
             addArgs.isImportingFromGpodder = importingFromGpodder;
 
             OnPodcastChannelAddFinished(this, addArgs);
+        }
+
+        private bool needsAuthentication(WebException e)
+        {
+            if (e.Response.Headers.ToString().ToLower().Contains("WWW-Authenticate".ToLower()))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void refreshNextSubscription()
@@ -287,7 +377,25 @@ namespace Podcatcher
             Uri refreshUri = createNonCachedRefreshUri(subscription.PodcastRSSUrl);
             Debug.WriteLine("Refreshing subscriptions for '{0}', using URL: {1}", subscription.PodcastName, refreshUri);
 
+            NetworkCredential nc = null;
+            if (String.IsNullOrEmpty(subscription.Username) == false)
+            {
+                nc = new NetworkCredential();
+                nc.UserName = subscription.Username;
+                Debug.WriteLine("Using username to refresh subscription: {0}", nc.UserName);
+            }
+
+            if (String.IsNullOrEmpty(subscription.Password) == false)
+            {
+                nc.Password = subscription.Password;
+                Debug.WriteLine("User password to refresh subscription.");
+            }
+
             WebClient wc = new WebClient();
+            if (nc != null)
+            {
+                wc.Credentials = nc;
+            }
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
             wc.DownloadStringAsync(refreshUri, subscription);
         }

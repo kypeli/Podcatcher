@@ -1,6 +1,7 @@
 2.0.0.0
 ----------
  * Import your subscriptions from gPodder.net.
+ * Subscribe to podcasts that require authentication.
  * Make podcast episode list view more Windows Phone styles.
  * Add pivot view to the subscritpion view to show all downloaded episodes.
  * Add download progress to the episode listings view.

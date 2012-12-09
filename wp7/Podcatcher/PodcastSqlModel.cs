@@ -39,7 +39,7 @@ namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const int DB_VERSION = 4;
+        private const int DB_VERSION = 5;
 
         /************************************* Public properties *******************************/
 
@@ -280,6 +280,12 @@ namespace Podcatcher
                     updater.AddTable<SettingsModel>();
                 }
 
+                if (updater.DatabaseSchemaVersion < 5)
+                {
+                    updater.AddColumn<PodcastSubscriptionModel>("Username");
+                    updater.AddColumn<PodcastSubscriptionModel>("Password");
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
@@ -291,7 +297,7 @@ namespace Podcatcher
             // Force to check if we have tables or not.
             try
             {
-                IEnumerator<PodcastSubscriptionModel> enumEntity = Subscriptions.GetEnumerator();
+                IEnumerator<PodcastEpisodeModel> enumEntity = Episodes.GetEnumerator();
             }
             catch (Exception)
             {

@@ -125,6 +125,9 @@
     <Compile Include="Views\PodcastEpisodes.xaml.cs">
       <DependentUpon>PodcastEpisodes.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PodcastSubscriptionCredentials.xaml.cs">
+      <DependentUpon>PodcastSubscriptionCredentials.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PodcastSubscriptionIntroduction.xaml.cs">
       <DependentUpon>PodcastSubscriptionIntroduction.xaml</DependentUpon>
     </Compile>
@@ -185,6 +188,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PodcastEpisodes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PodcastSubscriptionCredentials.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

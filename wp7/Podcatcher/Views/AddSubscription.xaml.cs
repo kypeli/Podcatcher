@@ -57,6 +57,8 @@ namespace Podcatcher.Views
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelAddFinished);
             m_subscriptionManager.OnPodcastChannelAddFinishedWithError
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelAddFinishedWithError);
+            m_subscriptionManager.OnPodcastChannelRequiresAuthentication
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelRequiresAuthentication);
 
             m_subscriptionManager.OnGPodderImportStarted
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportStarted);
@@ -64,6 +66,7 @@ namespace Podcatcher.Views
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinished);
             m_subscriptionManager.OnGPodderImportFinishedWithError
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinishedWithError);
+
         }
 
         /************************************* Private implementations *******************************/
@@ -100,6 +103,14 @@ namespace Podcatcher.Views
                 NavigationService.GoBack();
             }
         }
+
+        private void subscriptionManager_OnPodcastChannelRequiresAuthentication(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Hide();
+            NavigationService.Navigate(new Uri(string.Format("/Views/PodcastSubscriptionCredentials.xaml?url={0}", e.podcastFeedRSSUri.ToString()), UriKind.Relative));
+        }
+
+
 
         private void importFromGpodderButton_Click(object sender, RoutedEventArgs e)
         {

@@ -97,7 +97,11 @@ namespace Podcatcher
                 else 
                 {
                     Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
+#if DEBUG                    
+                    validFeed = true;
+#else
                     validFeed = false;
+#endif
                 }
 
             } 
@@ -111,7 +115,11 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = new PodcastSubscriptionModel();
             podcastModel.PodcastName            = query.Title;
             podcastModel.PodcastDescription     = query.Description;
-            podcastModel.PodcastLogoUrl         = new Uri(query.ImageUrl, UriKind.Absolute);
+#if DEBUG
+            podcastModel.PodcastLogoUrl = new Uri("https://gpodder.net/media/gpoddernet_64.png", UriKind.Absolute);
+#else
+            podcastModel.PodcastLogoUrl = new Uri(query.ImageUrl, UriKind.Absolute);
+#endif
             podcastModel.PodcastShowLink        = query.Link;
 
             Debug.WriteLine("Got podcast subscription:"

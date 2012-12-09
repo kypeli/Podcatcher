@@ -258,6 +258,37 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        [Column]
+        private string m_username;
+        public String Username
+        {
+            get
+            {
+                return m_username;
+            }
+
+            set
+            {
+                m_username = value;
+            }
+        }
+
+        [Column]
+        private string m_password;
+        public String Password
+        {
+            get
+            {
+                return m_password;
+            }
+
+            set
+            {
+                m_password = value;
+            }
+        }
+
+
         private int m_episodesCount = 0;
         public int EpisodesCount
         {

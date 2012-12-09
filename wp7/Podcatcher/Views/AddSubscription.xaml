@@ -60,7 +60,7 @@
                     </controls:PivotItem>
             </controls:Pivot>
 
-            <c4f:ProgressOverlay Name="progressOverlay" Visibility="Collapsed">
+            <c4f:ProgressOverlay x:Name="progressOverlay" Visibility="Collapsed">
                 <StackPanel>
                     <TextBlock x:Name="ProgressText" HorizontalAlignment="Center"/>
                     <toolkit:PerformanceProgressBar 
