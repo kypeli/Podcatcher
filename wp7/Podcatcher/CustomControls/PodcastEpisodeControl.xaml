@@ -14,6 +14,7 @@
         <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
         <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
         <c:DownloadEpisodeVisibleConverter x:Name="downloadEpisodeVisible" />
+        <c:ProgressBarVisibleConverter x:Name="progressBarVisible" />
     </UserControl.Resources>
 
     <Grid x:Name="EpisodeMainLayout">
@@ -44,7 +45,9 @@
         		<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="268" Style="{StaticResource PhoneTextSubtleStyle}" />
         		<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0" Width="190" Style="{StaticResource PhoneTextSubtleStyle}" />
         	</StackPanel>
-        	<ProgressBar x:Name="PlayProgressBar" Height="11" Width="201" HorizontalAlignment="Right"/>
+            <ProgressBar Visibility="{Binding EpisodeState, 
+                                  Converter={StaticResource progressBarVisible}}"
+                         Value="{Binding DownloadPercentage}" x:Name="PlayProgressBar" Height="11" Width="201" HorizontalAlignment="Right"/>
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>

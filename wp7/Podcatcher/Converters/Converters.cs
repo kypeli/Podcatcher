@@ -181,6 +181,31 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class ProgressBarVisibleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Visibility progressBarVisible = Visibility.Collapsed;
+
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            switch (episodeState)
+            {
+                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
+                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
+                    progressBarVisible = Visibility.Visible;
+                    break;
+            }
+
+            return progressBarVisible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
     public class DownloadEpisodeVisibleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
