@@ -200,6 +200,20 @@ namespace Podcatcher
         }
 
 
+        public List<PodcastEpisodeModel> PlayableEpisodesForSubscription(PodcastSubscriptionModel subscriptionModel)
+        {
+            var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
+                        where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable ||
+                              episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playing   ||
+                              episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Paused)
+                        orderby episode.EpisodePublished descending
+                        select episode;
+
+            return new List<PodcastEpisodeModel>(query);
+        }
+
+
+
         public List<PodcastEpisodeModel> episodesForSubscriptionId(int podcastId)
         {
             var query = from PodcastEpisodeModel episode in Episodes

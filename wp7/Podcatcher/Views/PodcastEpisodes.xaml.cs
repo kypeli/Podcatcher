@@ -59,7 +59,7 @@ namespace Podcatcher.Views
             m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
 
             m_episodes = new ObservableCollection<PodcastEpisodeModel>(m_podcastSqlModel.episodesForSubscription(m_subscription));
-            this.PodcastName.Text           = m_subscription.PodcastName;
+            this.PodcastHeader.Header       = m_subscription.PodcastName;
             this.PodcastDescription.Text    = m_subscription.PodcastDescription;
             this.PodcastIcon.Source         = m_subscription.PodcastLogo;
             this.EpisodeList.ItemsSource    = m_episodes;
@@ -77,6 +77,15 @@ namespace Podcatcher.Views
         private void ApplicationBarSettingsButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri(string.Format("/Views/SubscriptionSettings.xaml?podcastId={0}", m_subscription.PodcastId), UriKind.Relative));
+        }
+
+        private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.NavigationPivot.SelectedIndex == 1 
+                && this.DownloadedEpisodesList.ItemsSource == null) {
+                    this.DownloadedEpisodesList.ItemsSource = m_podcastSqlModel.PlayableEpisodesForSubscription(m_subscription);
+                }
+
         }
     }
 }

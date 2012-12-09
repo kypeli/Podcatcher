@@ -22,19 +22,23 @@
             <RowDefinition Height="50" />    
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-        	<Grid HorizontalAlignment="Left" Width="480">
+        	<Grid HorizontalAlignment="Left" Width="475">
         		<Grid.ColumnDefinitions>
         			<ColumnDefinition Width="12" />
-        			<ColumnDefinition Width="0.571*" />
-        			<ColumnDefinition Width="0.429*" />
+        			<ColumnDefinition Width="Auto" MinWidth="267" />
+        			<ColumnDefinition Width="201" />
         		</Grid.ColumnDefinitions>
 
         		<Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-        		<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,0,0" HorizontalAlignment="Left" Width="257" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1" Tap="Episode_Tap" />
+        		<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0,5,0" HorizontalAlignment="Left" Width="248" FontWeight="Bold" VerticalAlignment="Top" Grid.Column="1" Tap="Episode_Tap" >
+        			<TextBlock.Foreground>
+        				<SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
+        			</TextBlock.Foreground>
+        		</TextBlock>
         		<Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
-        			IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="201" 
+        			IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="188" 
         			Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
-        			HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" Grid.Column="2" />
+        			HorizontalContentAlignment="Center" Click="EpisodeButton_Click" HorizontalAlignment="Right" Margin="0,0,13,0" VerticalAlignment="Top" Grid.Column="2" />
         	</Grid>
         	<StackPanel Orientation="Horizontal" Margin="0">
         		<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="22,0,0,0" HorizontalAlignment="Left" Width="268" Style="{StaticResource PhoneTextSubtleStyle}" />
