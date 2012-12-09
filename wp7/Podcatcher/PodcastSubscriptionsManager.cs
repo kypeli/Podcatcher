@@ -394,13 +394,22 @@ namespace Podcatcher
 
                 SubscriptionManagerArgs args = new SubscriptionManagerArgs();
                 args.message = "Error importing from gPodder. Please try again.";
-            
                 OnGPodderImportFinishedWithError(this, args);
                 return;
             }
 
             string xmlResponse = e.Result.ToString();
             List<Uri> subscriptions = PodcastFactory.podcastUrlFromGpodderImport(xmlResponse);
+            if (subscriptions == null || subscriptions.Count == 0)
+            {
+                Debug.WriteLine("Got no subscriptions from gPodder.net.");
+
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "No subscriptions could be imported.";
+                OnGPodderImportFinishedWithError(this, args);
+                return;
+            }
+
             foreach(Uri subscription in subscriptions) 
             {
                 addSubscriptionFromGPodder(subscription.ToString());
