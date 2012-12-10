@@ -258,8 +258,8 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        [Column]
         private string m_username;
+        [Column]
         public String Username
         {
             get
@@ -273,8 +273,8 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        [Column]
         private string m_password;
+        [Column]
         public String Password
         {
             get
