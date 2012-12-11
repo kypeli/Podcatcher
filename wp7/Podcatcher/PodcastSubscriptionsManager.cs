@@ -518,6 +518,8 @@ namespace Podcatcher
                 return;
             }
 
+            MessageBox.Show("A blank screen may appear for a longer period of time. Please wait until the import has completed and do not exit the app.");
+
             foreach(Uri subscription in subscriptions) 
             {
                 addSubscriptionFromGPodder(subscription.ToString());
