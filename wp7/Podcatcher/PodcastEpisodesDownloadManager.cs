@@ -424,7 +424,7 @@ namespace Podcatcher
                     {
                         if (MessageBox.Show("Please connect your phone to an external power source and to a WiFi network.",
                                             "Attention",
-                            MessageBoxButton.OK) == MessageBoxResult.OK) 
+                            MessageBoxButton.OK) == MessageBoxResult.OK)
                         {
                             Debug.WriteLine("Download the same episode again, with preferences None.");
 
@@ -433,6 +433,10 @@ namespace Podcatcher
                             return;
                         }
                     }
+                }
+                else if (transferRequest.StatusCode != 0)       // If StatusCode == 0 then we canceled the request.
+                {
+                    App.showErrorToast("Could not download the episode from the server.");
                 }
 
                 if (m_currentEpisodeDownload != null)
