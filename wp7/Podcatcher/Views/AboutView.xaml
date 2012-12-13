@@ -58,10 +58,10 @@
         	<StackPanel>
                 <TextBlock TextWrapping="Wrap" x:Name="version" TextAlignment="Center" Margin="0,0,0,16" FontSize="29.333"/>
                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" TextAlignment="Center" Height="86"><Run Text="by Johan Paul"/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="johan@paul.fi"/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="Twitter: @kypeli"/></TextBlock>
-                <TextBlock TextWrapping="Wrap" Height="403"><Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with or any other issue, please feel free to contact me! I am more than delighted to receive bug reports."/><LineBreak/><Run Text=" "/><LineBreak/><Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/><Run Text=" "/><LineBreak/><LineBreak/><Run Text="This application is licensed under the BSD license. The source code is available at https://github.com/kypeli/Podcatcher/. "/></TextBlock>
-                <Button x:Name="PurchaseButton" Content="Purchase full version" Click="PurchaseButton_Click" VerticalAlignment="Bottom" />
+                <TextBlock TextWrapping="Wrap" Height="366"><Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with or any other issue, please feel free to contact me! I am more than delighted to receive bug reports."/><LineBreak/><Run Text=" "/><LineBreak/><Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/><Run Text=" "/><LineBreak/></TextBlock>
+                <Button x:Name="PurchaseButton" Content="Purchase full version" Click="PurchaseButton_Click" VerticalAlignment="Bottom" Height="77" />
         	</StackPanel>
-        	<TextBlock x:Name="PurchasedText" TextWrapping="Wrap" Text="Thank you for purchasing Podcatcher!" Margin="8,0,-8,25" VerticalAlignment="Bottom" Style="{StaticResource PhoneTextLargeStyle}" TextAlignment="Center" Visibility="Collapsed"/></Grid>
+        	<TextBlock x:Name="PurchasedText" TextWrapping="Wrap" Text="Thank you for purchasing Podcatcher!" Margin="8,0,-8,25" VerticalAlignment="Bottom" Style="{StaticResource PhoneTextLargeStyle}" Visibility="Collapsed" TextAlignment="Center"/></Grid>
     </Grid>
  
     <!--Sample code showing usage of ApplicationBar-->

@@ -60,23 +60,33 @@ namespace Podcatcher.Views
         {
             if ((Application.Current as App).IsTrial)
             {
-                this.PurchaseButton.Visibility = Visibility.Visible;
                 this.PurchasedText.Visibility = Visibility.Collapsed;
             }
             else
             {
-                this.PurchaseButton.Visibility = Visibility.Collapsed;
                 this.PurchasedText.Visibility = Visibility.Visible;
+                this.PurchaseButton.Content = "Give a review";
             }
         }
 
         private void PurchaseButton_Click(object sender, RoutedEventArgs e)
         {
+
             // pop up the link to rate and review the app
-            MarketplaceDetailTask purchase = new MarketplaceDetailTask();
-            purchase.ContentIdentifier = "5d5cebe9-420a-4566-a468-04c94aa34d93";
-            purchase.ContentType = MarketplaceContentType.Applications;
-            purchase.Show();
+            if ((Application.Current as App).IsTrial)
+            {
+                MarketplaceDetailTask marketplaceDetailTask = new MarketplaceDetailTask();
+                marketplaceDetailTask.ContentIdentifier = "5d5cebe9-420a-4566-a468-04c94aa34d93";
+                marketplaceDetailTask.ContentType = MarketplaceContentType.Applications;
+                marketplaceDetailTask.Show();
+            }
+            else
+            {
+                // Let people review.
+                MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
+                marketplaceReviewTask.Show();
+            }
+
         }
     }
 }
