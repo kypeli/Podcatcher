@@ -35,7 +35,7 @@
         <!--Pivot Control-->
         <controls:Pivot x:Name="NavigationPivot" Grid.Row="1" SelectionChanged="NavigationPivot_SelectionChanged">
             <!--Subscription listing -->
-            <controls:PivotItem Header="podcast subscriptions">                
+            <controls:PivotItem Header="subscriptions">                
                 <Grid x:Name="SubscriptionsRoot" Background="Transparent">
                     <ListBox x:Name="SubscriptionsList"  Grid.Row="0" Margin="0,0,0,0" ItemsSource="{Binding PodcastSubscriptions}" SelectionChanged="ListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
@@ -60,7 +60,7 @@
             </controls:PivotItem>
 
             <!-- New podcast episodes -->
-            <controls:PivotItem Header="podcast downloads">
+            <controls:PivotItem Header="downloads">
                 <Grid x:Name="DownloadsRoot" Background="Transparent">
                     <ListBox Margin="0,0,-12,0" x:Name="EpisodeDownloadList">
                     <ListBox.ItemTemplate>
@@ -84,7 +84,7 @@
             </controls:PivotItem>
 
             <!-- Podcast player -->
-            <controls:PivotItem Header="podcast player">
+            <controls:PivotItem Header="player">
                 <Grid Background="Transparent" Width="480">
                     <pc:PodcastPlayerControl x:Name="PodcastPlayer" />
                 </Grid>
