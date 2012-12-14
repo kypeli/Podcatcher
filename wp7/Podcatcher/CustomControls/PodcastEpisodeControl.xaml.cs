@@ -72,9 +72,46 @@ namespace Podcatcher
             }
         }
 
-        private void EpisodeButton_Click(object sender, RoutedEventArgs e)
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             m_episodeModel = this.DataContext as PodcastEpisodeModel;
+            if (m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable)
+            {
+                PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+                player.playEpisode(m_episodeModel);
+                m_episodeModel.PodcastSubscription.UnplayedEpisodes--;
+
+                if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
+                {
+                    PodcastSqlModel.getInstance().startOldEpisodeCleanup(m_episodeModel.PodcastSubscription);
+                }
+            }
+
+            if (m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Idle)
+            {
+                if (PodcastPlayerControl.isAudioPodcast(m_episodeModel))
+                {
+                    audioStreaming(m_episodeModel);
+                }
+                else
+                {
+                    PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+                    player.StopPlayback();
+                    videoStreaming(m_episodeModel);
+                }
+            }
+        }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
+            PodcastEpisodesDownloadManager.notifyUserOfDownloadRestrictions(m_episodeModel);
+            downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
+        }
+
+
+#if false
+        m_episodeModel = this.DataContext as PodcastEpisodeModel;
 
             switch (m_episodeModel.EpisodeState)
             {
@@ -98,6 +135,7 @@ namespace Podcatcher
                     break;
             }
         }
+#endif
 
         private void MenuItemStream_Click(object sender, RoutedEventArgs e)
         {

@@ -25,31 +25,36 @@
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
         	<Grid HorizontalAlignment="Left" Width="474">
         		<Grid.ColumnDefinitions>
-        			<ColumnDefinition Width="12" />
-        			<ColumnDefinition Width="Auto" MinWidth="276" />
-        			<ColumnDefinition Width="Auto" MinWidth="217" />
+        			<ColumnDefinition Width="15.667" />
+        			<ColumnDefinition Width="Auto" MinWidth="280" />
+        			<ColumnDefinition />
         		</Grid.ColumnDefinitions>
 
         		<Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-        		<StackPanel Grid.Column="1" Margin="0,0,8,0">
-        			<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="240" FontWeight="Bold" Tap="Episode_Tap" VerticalAlignment="Top" >
+        		<StackPanel Grid.Column="1" Margin="0.333,0,-0.333,0">
+        			<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="272" FontWeight="Bold" Tap="Episode_Tap" VerticalAlignment="Top" >
         				<TextBlock.Foreground>
         					<SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
         				</TextBlock.Foreground>
         			</TextBlock>
-        			<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="0" HorizontalAlignment="Left" Width="268" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" />
+        			<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="0" HorizontalAlignment="Left" Width="272" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" />
         		</StackPanel>
-                <StackPanel Orientation="Vertical" Margin="-37,0,31,0" Grid.Column="2">
+                <StackPanel Orientation="Vertical" Margin="0" Grid.Column="2">
 
-                    <Button Visibility="{Binding EpisodeFileMimeType, Converter={StaticResource downloadEpisodeVisible}}"
-        			IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" Width="205" 
-        			Content="{Binding EpisodeState, Converter={StaticResource downloadButtonText}}" 
-        			HorizontalContentAlignment="Center" Click="EpisodeButton_Click" Margin="0,0,17,0" VerticalAlignment="Top" />
+                    <StackPanel Orientation="Horizontal" d:LayoutOverrides="HorizontalAlignment">
+                        <Button Click="PlayButton_Click">
+                            <Image Source="/Podcatcher;component/Images/play_episode.png"/>
+                        </Button>
+                        
+                        <Button Click="DownloadButton_Click">
+                            <Image Source="/Podcatcher;component/Images/download_episode.png"/>
+                        </Button>
+                    </StackPanel>
 
                     <ProgressBar Visibility="{Binding EpisodeState, Converter={StaticResource progressBarVisible}}"
-                         Value="{Binding DownloadPercentage}" x:Name="PlayProgressBar" Height="11" Width="205" Margin="0,0,17,0"/>
+                         Value="{Binding DownloadPercentage}" x:Name="PlayProgressBar" Height="11" Margin="0,5,0,0"/>
 
-                    <TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="12,0,17,0"  Style="{StaticResource PhoneTextSubtleStyle}" />
+                    <TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0,5,0,0"  Style="{StaticResource PhoneTextSubtleStyle}" />
 
                 </StackPanel>
         	</Grid>

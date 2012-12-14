@@ -17,7 +17,7 @@
 	    <TextBlock TextWrapping="Wrap" Text="{Binding NewEpisodesCount}" Width="50" TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" HorizontalAlignment="Center" Margin="0"/>
 		<toolkit:ContextMenuService.ContextMenu>
 			<toolkit:ContextMenu>
-				<toolkit:MenuItem Header="Delete" Click="MenuItemDelete_Click" />
+				<toolkit:MenuItem Header="Unsubscribe" Click="MenuItemDelete_Click" />
 			</toolkit:ContextMenu>
 		</toolkit:ContextMenuService.ContextMenu>
 
