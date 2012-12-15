@@ -205,6 +205,7 @@ namespace Podcatcher.Converters
             {
                 case PodcastEpisodeModel.EpisodeStateEnum.Paused:
                 case PodcastEpisodeModel.EpisodeStateEnum.Playing:
+                case PodcastEpisodeModel.EpisodeStateEnum.Streaming:
                     playImageSource = "/Podcatcher;component/Images/play_episode_disabled.png";
                     break;                    
             }
@@ -253,6 +254,7 @@ namespace Podcatcher.Converters
             {
                 case PodcastEpisodeModel.EpisodeStateEnum.Playing:
                 case PodcastEpisodeModel.EpisodeStateEnum.Paused:
+                case PodcastEpisodeModel.EpisodeStateEnum.Streaming:
                     isActive = false;
                     break;
             }

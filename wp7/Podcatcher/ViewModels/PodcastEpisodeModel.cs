@@ -243,7 +243,8 @@ namespace Podcatcher.ViewModels
             Downloading,
             Playable,
             Playing,
-            Paused
+            Paused,
+            Streaming
         };
 
         private EpisodeStateEnum m_episodeState;
@@ -337,12 +338,13 @@ namespace Podcatcher.ViewModels
 
             get
             {
-                m_shouldShowDownloadButton = playableMimeType(EpisodeFileMimeType) 
-                                              && (EpisodeState == EpisodeStateEnum.Idle 
-                                                  || EpisodeState == EpisodeStateEnum.Downloading 
-                                                  || EpisodeState == EpisodeStateEnum.Queued) ? 
-                                                  Visibility.Visible                          :
-                                                  Visibility.Collapsed;
+                m_shouldShowDownloadButton = EpisodeState == EpisodeStateEnum.Streaming 
+                                             || (playableMimeType(EpisodeFileMimeType)
+                                                 && (EpisodeState == EpisodeStateEnum.Idle 
+                                                 || EpisodeState == EpisodeStateEnum.Downloading 
+                                                 || EpisodeState == EpisodeStateEnum.Queued))   ?
+                                                 Visibility.Visible                             :
+                                                 Visibility.Collapsed;
 
                 return m_shouldShowDownloadButton;                                                   
             }

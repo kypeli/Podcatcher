@@ -413,7 +413,14 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+                    if (BackgroundAudioPlayer.Instance.Track.Source.ToString().IndexOf("http") > -1)
+                    {
+                        m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Streaming;
+                    }
+                    else
+                    {
+                        m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+                    }
                     m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
                     setupUIForEpisodePlaying();
                     break;
@@ -469,9 +476,22 @@ namespace Podcatcher
 
         private void setupUIForEpisodePlaying()
         {
-            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
-            this.PlayButtonImage.Source = m_pauseButtonBitmap;
+            if (BackgroundAudioPlayer.Instance.Track == null)
+            {
+                Debug.WriteLine("Error: Cannot setup player UI when BackgroundAudioPlayer.Instance.Track == null");
+                return;
+            }
 
+            if (BackgroundAudioPlayer.Instance.Track.Source.ToString().IndexOf("http") > -1)
+            {
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Streaming;
+            }
+            else
+            {
+                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+            }
+
+            this.PlayButtonImage.Source = m_pauseButtonBitmap;
             m_screenUpdateTimer.Stop();
             m_screenUpdateTimer.Start();
         }
