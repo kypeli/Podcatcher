@@ -70,6 +70,8 @@ namespace Podcatcher
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             m_episodeModel = this.DataContext as PodcastEpisodeModel;
+
+            // Play locally from a downloaded file.
             if (m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable)
             {
                 PodcastPlayerControl player = PodcastPlayerControl.getIntance();
@@ -82,6 +84,7 @@ namespace Podcatcher
                 }
             }
 
+            // Stream it. 
             if (m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Idle)
             {
                 if (PodcastPlayerControl.isAudioPodcast(m_episodeModel))
@@ -103,49 +106,6 @@ namespace Podcatcher
             PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
             PodcastEpisodesDownloadManager.notifyUserOfDownloadRestrictions(m_episodeModel);
             downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
-        }
-
-
-#if false
-        m_episodeModel = this.DataContext as PodcastEpisodeModel;
-
-            switch (m_episodeModel.EpisodeState)
-            {
-                // Episode is idle => start downloading. 
-                case PodcastEpisodeModel.EpisodeStateEnum.Idle:
-                    PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
-                    PodcastEpisodesDownloadManager.notifyUserOfDownloadRestrictions(m_episodeModel);
-                    downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
-                    break;
-
-                // Episode is playable -> Play episode.
-                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
-                    PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                    player.playEpisode(m_episodeModel);
-                    m_episodeModel.PodcastSubscription.UnplayedEpisodes--;
-
-                    if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
-                    {
-                        PodcastSqlModel.getInstance().startOldEpisodeCleanup(m_episodeModel.PodcastSubscription);
-                    }
-                    break;
-            }
-        }
-#endif
-
-        private void MenuItemStream_Click(object sender, RoutedEventArgs e)
-        {
-            PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
-            if (PodcastPlayerControl.isAudioPodcast(podcastEpisode)) 
-            {
-                audioStreaming(podcastEpisode);
-            }
-            else
-            {
-                PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                player.StopPlayback();
-                videoStreaming(podcastEpisode);
-            }
         }
 
         private void videoStreaming(PodcastEpisodeModel podcastEpisode)
