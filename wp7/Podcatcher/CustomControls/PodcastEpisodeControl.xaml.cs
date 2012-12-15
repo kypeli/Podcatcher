@@ -72,7 +72,7 @@ namespace Podcatcher
             m_episodeModel = this.DataContext as PodcastEpisodeModel;
 
             // Play locally from a downloaded file.
-            if (m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable)
+            if (m_episodeModel.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded)
             {
                 PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                 player.playEpisode(m_episodeModel);
@@ -85,7 +85,7 @@ namespace Podcatcher
             }
 
             // Stream it. 
-            if (m_episodeModel.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Idle)
+            if (m_episodeModel.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle)
             {
                 if (PodcastPlayerControl.isAudioPodcast(m_episodeModel))
                 {

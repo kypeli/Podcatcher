@@ -70,7 +70,7 @@ namespace Podcatcher
 
         public void addEpisodeToDownloadQueue(PodcastEpisodeModel episode)
         {
-            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Queued;
+            episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
             m_episodeDownloadQueue.Enqueue(episode);
 
             if (m_currentEpisodeDownload == null)
@@ -82,7 +82,7 @@ namespace Podcatcher
         public void cancelEpisodeDownload(PodcastEpisodeModel episode)
         {
             // Update new episode state.
-            episode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+            episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
 
             // Get the transfer request that we should cancel. 
             BackgroundTransferRequest thisRequest = episode.DownloadRequest;
@@ -195,7 +195,7 @@ namespace Podcatcher
 
                 int downloadingEpisodeId = (int)m_applicationSettings[App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID];
                 m_currentEpisodeDownload = PodcastSqlModel.getInstance().episodeForEpisodeId(downloadingEpisodeId);
-                m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
+                m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                 m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
 
                 ProcessTransfer(m_currentBackgroundTransfer);
@@ -234,7 +234,7 @@ namespace Podcatcher
                 {
                     App.showErrorToast("Cannot download the episode.");
                     Debug.WriteLine("Cannot download the episode. URI exception: " + e.Message);
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_episodeDownloadQueue.Dequeue();
                     startNextEpisodeDownload();
                     return;
@@ -245,7 +245,7 @@ namespace Podcatcher
                 {
                     App.showErrorToast("Cannot download the episode.");
                     Debug.WriteLine("Cannot download the episode. Episode file name is null or empty.");
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_episodeDownloadQueue.Dequeue();
                     startNextEpisodeDownload();
                     return;
@@ -363,22 +363,22 @@ namespace Podcatcher
             {
                 case TransferStatus.WaitingForWiFi:
                     Debug.WriteLine("Transfer status: WaitingForWiFi");
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     WaitingForWiFi = true;
                     break;
                 case TransferStatus.WaitingForExternalPower:
                     Debug.WriteLine("Transfer status: WaitingForExternalPower");
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     WaitingForExternalPower = true;
                     break;
                 case TransferStatus.WaitingForExternalPowerDueToBatterySaverMode:
                     Debug.WriteLine("Transfer status: WaitingForExternalPowerDueToBatterySaverMode");
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     WaitingForExternalPowerDueToBatterySaverMode = true;
                     break;
                 case TransferStatus.WaitingForNonVoiceBlockingNetwork:
                     Debug.WriteLine("Transfer status: WaitingForNonVoiceBlockingNetwork");
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     WaitingForNonVoiceBlockingNetwork = true;
                     break;
                 case TransferStatus.Completed:
@@ -386,7 +386,7 @@ namespace Podcatcher
                     completePodcastDownload(backgroundTransferRequest);
                     break;
                 case TransferStatus.Transferring:
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     break;
             }
         }
@@ -404,7 +404,8 @@ namespace Podcatcher
 #endif
 
                 Debug.WriteLine("Transfer request completed succesfully.");
-                m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                m_currentEpisodeDownload.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
                 m_currentEpisodeDownload.PodcastSubscription.unplayedEpisodesChanged();
             }
             else
@@ -441,7 +442,7 @@ namespace Podcatcher
 
                 if (m_currentEpisodeDownload != null)
                 {
-                    m_currentEpisodeDownload.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Idle;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_currentEpisodeDownload.deleteDownloadedEpisode();
                 }
             }

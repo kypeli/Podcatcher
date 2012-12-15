@@ -169,10 +169,10 @@ namespace Podcatcher
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
-                m_currentEpisode.EpisodeState = m_originalEpisodeState;
+                m_currentEpisode.EpisodePlayState = m_originalEpisodePlayState;
             }
 
-            m_originalEpisodeState = episodeModel.EpisodeState;
+            m_originalEpisodePlayState = episodeModel.EpisodePlayState;
             m_currentEpisode = episodeModel;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
             m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
@@ -205,7 +205,7 @@ namespace Podcatcher
         {
             StopPlayback();
 
-            m_originalEpisodeState = episodeModel.EpisodeState;
+            m_originalEpisodePlayState = episodeModel.EpisodePlayState;
             m_currentEpisode = episodeModel;
             startPlayback(TimeSpan.Zero, true);
             setupUIForEpisodePlaying();
@@ -240,7 +240,7 @@ namespace Podcatcher
         private bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
         private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
-        private PodcastEpisodeModel.EpisodeStateEnum m_originalEpisodeState;
+        private PodcastEpisodeModel.EpisodePlayStateEnum m_originalEpisodePlayState;
 
         private void setupPlayerUI()
         {
@@ -288,7 +288,7 @@ namespace Podcatcher
                     return;
                 }
 
-                m_originalEpisodeState = m_currentEpisode.EpisodeState;
+                m_originalEpisodePlayState = m_currentEpisode.EpisodePlayState;
 
                 BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
                 setupPlayerUIContent(m_currentEpisode);
@@ -415,11 +415,11 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is playing...");
                     if (BackgroundAudioPlayer.Instance.Track.Source.ToString().IndexOf("http") > -1)
                     {
-                        m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Streaming;
+                        m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                     }
                     else
                     {
-                        m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+                        m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
                     }
                     m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
                     setupUIForEpisodePlaying();
@@ -428,7 +428,7 @@ namespace Podcatcher
                 case PlayState.Paused:
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused...");
-                    m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;
+                    m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
                     setupUIForEpisodePaused();
 
@@ -462,15 +462,15 @@ namespace Podcatcher
 
         private void saveEpisodeState(PodcastEpisodeModel episode)
         {
-            episode.EpisodeState = (m_currentEpisode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Paused
+            episode.EpisodePlayState = (m_currentEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused
                                     && String.IsNullOrEmpty(m_currentEpisode.EpisodeFile) == false) ?
-                                    PodcastEpisodeModel.EpisodeStateEnum.Playable                   :
-                                    m_originalEpisodeState;
+                                    PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded             :
+                                    m_originalEpisodePlayState;
         }
 
         private void setupUIForEpisodePaused()
         {
-            m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Paused;                                                                                                              
+            m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;                                                                                                              
             this.PlayButtonImage.Source = m_playButtonBitmap;
         }
 
@@ -484,11 +484,11 @@ namespace Podcatcher
 
             if (BackgroundAudioPlayer.Instance.Track.Source.ToString().IndexOf("http") > -1)
             {
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Streaming;
+                m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
             }
             else
             {
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playing;
+                m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             }
 
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
@@ -522,7 +522,7 @@ namespace Podcatcher
             {
                 saveEpisodePlayPosition(m_currentEpisode);
                 // We are already stopped (playback ended or something). Let's update the episode state.
-                m_currentEpisode.EpisodeState = PodcastEpisodeModel.EpisodeStateEnum.Playable;
+                m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
             }
             else
             {

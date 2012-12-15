@@ -34,7 +34,7 @@ namespace Podcatcher.Views
                 if (m_podcastEpisode != null)
                 {
                     this.DataContext = m_podcastEpisode;
-                    if (m_podcastEpisode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Idle)
+                    if (String.IsNullOrEmpty(m_podcastEpisode.EpisodeFile))
                     {
                         this.DownloadButton.Visibility = System.Windows.Visibility.Visible;
                     }

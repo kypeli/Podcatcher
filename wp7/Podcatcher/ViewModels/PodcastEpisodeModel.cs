@@ -175,14 +175,14 @@ namespace Podcatcher.ViewModels
         public String EpisodeFile
         {
             get { return m_episodeFile; }
-            set {
-                EpisodeState = EpisodeStateEnum.Idle;
+            set 
+            { 
                 m_episodeFile = value;
                 if (String.IsNullOrEmpty(m_episodeFile) == false)
                 {
-                    EpisodeState = EpisodeStateEnum.Playable;
+                    EpisodePlayState = EpisodePlayStateEnum.Downloaded;
+                    EpisodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
                 }
-
             }
         }
 
@@ -236,32 +236,40 @@ namespace Podcatcher.ViewModels
             set { m_totalLengthTicks = value; }
         }
 
-        public enum EpisodeStateEnum
+        public enum EpisodePlayStateEnum
         {
             Idle,
-            Queued,
-            Downloading,
-            Playable,
+            Downloaded,
             Playing,
             Paused,
             Streaming
         };
 
-        private EpisodeStateEnum m_episodeState;
-        public EpisodeStateEnum EpisodeState
+        public enum EpisodeDownloadStateEnum
+        {
+            Idle,
+            Queued,
+            Downloading,
+            Downloaded
+        };
+
+
+        private EpisodeDownloadStateEnum m_episodeDownloadState;
+        public EpisodeDownloadStateEnum EpisodeDownloadState
         {
             get 
             { 
-                return m_episodeState; 
+                return m_episodeDownloadState; 
             }
 
             set
             {
-                m_episodeState = value;
+                m_episodeDownloadState = value;
 
-                NotifyPropertyChanged("EpisodeState");
                 NotifyPropertyChanged("EpisodeStatusText");
                 NotifyPropertyChanged("ShouldShowDownloadButton");
+                NotifyPropertyChanged("EpisodeDownloadState");
+                NotifyPropertyChanged("ProgressBarIsVisible");
                 if (PodcastSubscription != null)
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
@@ -270,30 +278,43 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        public String EpisodeStatusText
+        private EpisodePlayStateEnum m_episodePlayState;
+        public EpisodePlayStateEnum EpisodePlayState
+        {
+            get 
+            {
+                if (m_episodePlayState == EpisodePlayStateEnum.Idle 
+                    && String.IsNullOrEmpty(EpisodeFile) == false)
+                {
+                    m_episodePlayState = EpisodePlayStateEnum.Downloaded;
+                }
+
+                return m_episodePlayState; 
+            }
+
+            set
+            {
+                m_episodePlayState = value;
+                NotifyPropertyChanged("EpisodePlayState");
+                NotifyPropertyChanged("ProgressBarIsVisible");
+            }
+        }
+
+        public String EpisodeDownloadStatusText
         {
             get 
             {
                 String statusText = "";
-                switch (m_episodeState)
+                switch (m_episodeDownloadState)
                 {
-                    case EpisodeStateEnum.Downloading:
+                    case EpisodeDownloadStateEnum.Downloading:
                         statusText = "Downloading...";
                         break;
-                    case EpisodeStateEnum.Idle:
+                    case EpisodeDownloadStateEnum.Idle:
                         statusText = "";
                         break;
-                    case EpisodeStateEnum.Playable:
-                        statusText = "Play";
-                        break;
-                    case EpisodeStateEnum.Queued:
+                    case EpisodeDownloadStateEnum.Queued:
                         statusText = "Queued";
-                        break;
-                    case EpisodeStateEnum.Playing:
-                        statusText = "Playing";
-                        break;
-                    case EpisodeStateEnum.Paused:
-                        statusText = "Paused";
                         break;
                 }
 
@@ -332,18 +353,36 @@ namespace Podcatcher.ViewModels
 
         // I should do this in a Converter from XAML, but as this is dependant of two properties,
         // it's just easier to do it this way. 
+        private Visibility m_progressBarIsVisible = Visibility.Collapsed;
+        public Visibility ProgressBarIsVisible
+        {
+            get
+            {
+                m_progressBarIsVisible = (EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading
+                                          || EpisodePlayState == EpisodePlayStateEnum.Downloaded
+                                          || EpisodePlayState == EpisodePlayStateEnum.Paused) ?
+                                          Visibility.Visible :
+                                          Visibility.Collapsed;
+
+                return m_progressBarIsVisible;
+            }
+
+            private set { }
+        }
+
+        // And this too.
         private Visibility m_shouldShowDownloadButton = Visibility.Collapsed;
         public Visibility ShouldShowDownloadButton
         {
 
             get
             {
-                m_shouldShowDownloadButton = EpisodeState == EpisodeStateEnum.Streaming 
+                m_shouldShowDownloadButton = EpisodePlayState == EpisodePlayStateEnum.Streaming 
                                              || (playableMimeType(EpisodeFileMimeType)
-                                                 && (EpisodeState == EpisodeStateEnum.Idle 
-                                                 || EpisodeState == EpisodeStateEnum.Downloading 
-                                                 || EpisodeState == EpisodeStateEnum.Queued))   ?
-                                                 Visibility.Visible                             :
+                                                 && (EpisodeDownloadState == EpisodeDownloadStateEnum.Idle 
+                                                 || EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading 
+                                                 || EpisodeDownloadState == EpisodeDownloadStateEnum.Queued))   ?
+                                                 Visibility.Visible                                             :
                                                  Visibility.Collapsed;
 
                 return m_shouldShowDownloadButton;                                                   
@@ -394,11 +433,11 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                if (m_episodeState == EpisodeStateEnum.Downloading)
+                if (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading)
                 {
                     return DownloadPercentage;
                 }
-                else if (m_episodeState == EpisodeStateEnum.Playable)  // SavedPlayPos > 0 && TotalLengthTicks > 0)
+                else if (m_episodePlayState == EpisodePlayStateEnum.Downloaded)
                 {
                     if (SavedPlayPos > 0 && TotalLengthTicks > 0)
                     {
@@ -428,7 +467,8 @@ namespace Podcatcher.ViewModels
 
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                EpisodeState = EpisodeStateEnum.Idle;
+                EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
+                EpisodePlayState = EpisodePlayStateEnum.Idle;
 
                 if (episodeStore.FileExists(EpisodeFile) == false)
                 {
@@ -498,7 +538,8 @@ namespace Podcatcher.ViewModels
         void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.WriteLine("Episode written to disk. Filename: {0}", EpisodeFile);
-            EpisodeState =  EpisodeStateEnum.Playable;
+            EpisodePlayState =  EpisodePlayStateEnum.Downloaded;
+            EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
             m_downloadStream = null;
         }
 

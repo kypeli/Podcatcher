@@ -10,9 +10,7 @@
     d:DesignWidth="480" d:DesignHeight="800">
 
     <UserControl.Resources>
-        <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
         <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
-        <c:ProgressBarVisibleConverter x:Name="progressBarVisible" />
         <c:PlayButtonImageConverter x:Name="playButtonImage" />
         <c:DownloadButtonImageConverter x:Name="downloadButtonImage" />
         <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
@@ -55,18 +53,18 @@
 
                     <Button Click="DownloadButton_Click" 
         				Visibility="{Binding ShouldShowDownloadButton}" 
-        				IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" 
+        				IsEnabled="{Binding EpisodeDownloadState, Converter={StaticResource downloadButtonActive}}" 
                                 HorizontalAlignment="Left" Margin="0" d:LayoutOverrides="Height" VerticalAlignment="Center" 
                                 >
-        				<Image Source="{Binding EpisodeState, Converter={StaticResource downloadButtonImage}}"/>
+        				<Image Source="{Binding EpisodeDownloadState, Converter={StaticResource downloadButtonImage}}"/>
         			</Button>
         			<Button Click="PlayButton_Click" 
-        				IsEnabled="{Binding EpisodeState, Converter={StaticResource playButtonActive}}"  
+        				IsEnabled="{Binding EpisodePlayState, Converter={StaticResource playButtonActive}}"  
                                 HorizontalAlignment="Right" Margin="0" d:LayoutOverrides="Height" Grid.Column="1" VerticalAlignment="Center"  
                                 >
-        				<Image Source="{Binding EpisodeState, Converter={StaticResource playButtonImage}}"/>
+        				<Image Source="{Binding EpisodePlayState, Converter={StaticResource playButtonImage}}"/>
         			</Button>
-        			<ProgressBar Visibility="{Binding EpisodeState, Converter={StaticResource progressBarVisible}}"
+        			<ProgressBar Visibility="{Binding ProgressBarIsVisible}"
         				Value="{Binding ProgressBarValue}" x:Name="PlayProgressBar" Height="11" Margin="0" VerticalAlignment="Top" Grid.Row="1" Grid.ColumnSpan="2"/>
         			<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0"  Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" d:LayoutOverrides="GridBox" Grid.ColumnSpan="2" Grid.Row="2" />
         		</Grid>

@@ -339,7 +339,7 @@ namespace Podcatcher.ViewModels
             get
             {
                 var query = from episode in Episodes
-                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable
+                            where (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
                                  && episode.SavedPlayPos == 0)
                             select episode;
 
@@ -372,9 +372,9 @@ namespace Podcatcher.ViewModels
             get
             {
                 var query = from PodcastEpisodeModel episode in Episodes
-                            where (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable ||
-                                  episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playing ||
-                                  episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Paused)
+                            where (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded ||
+                                  episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing ||
+                                  episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused)
                             orderby episode.EpisodePublished descending
                             select episode;
 

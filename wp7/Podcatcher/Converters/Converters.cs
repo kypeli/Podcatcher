@@ -86,58 +86,20 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            PodcastEpisodeModel.EpisodeDownloadStateEnum episodeState = (PodcastEpisodeModel.EpisodeDownloadStateEnum)value;
             bool buttonEnabled = true;
 
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateEnum.Queued:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued:
                     buttonEnabled = false;
                     break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading:
                     buttonEnabled = false;
                     break;
             }
 
             return buttonEnabled;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-    public class DownloadButtonTextConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
-
-            String buttonText = @"Error!";
-            switch (episodeState)
-            {
-                case PodcastEpisodeModel.EpisodeStateEnum.Idle:
-                    buttonText = @"Download";
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Queued:
-                    buttonText = @"Queued";
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
-                    buttonText = @"Downloading";
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
-                    buttonText = @"Play";
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
-                    buttonText = @"Playing";
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
-                    buttonText = @"Paused";
-                    break;
-            }
-
-            return buttonText;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -152,40 +114,15 @@ namespace Podcatcher.Converters
         {
             Visibility episodeContextMenuVisible = Visibility.Collapsed;
 
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            PodcastEpisodeModel.EpisodeDownloadStateEnum episodeState = (PodcastEpisodeModel.EpisodeDownloadStateEnum)value;
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded:
                     episodeContextMenuVisible = Visibility.Visible;
                     break;
             }
 
             return episodeContextMenuVisible;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-    public class ProgressBarVisibleConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            Visibility progressBarVisible = Visibility.Collapsed;
-
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
-            switch (episodeState)
-            {
-                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
-                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
-                case PodcastEpisodeModel.EpisodeStateEnum.Playable:
-                    progressBarVisible = Visibility.Visible;
-                    break;
-            }
-
-            return progressBarVisible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -200,12 +137,12 @@ namespace Podcatcher.Converters
         {
             string playImageSource = "/Podcatcher;component/Images/play_episode.png";
 
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            PodcastEpisodeModel.EpisodePlayStateEnum episodeState = (PodcastEpisodeModel.EpisodePlayStateEnum)value;
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
-                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
-                case PodcastEpisodeModel.EpisodeStateEnum.Streaming:
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Paused:
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Playing:
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Streaming:
                     playImageSource = "/Podcatcher;component/Images/play_episode_disabled.png";
                     break;                    
             }
@@ -225,11 +162,11 @@ namespace Podcatcher.Converters
         {
             string downloadImageSource = "/Podcatcher;component/Images/download_episode.png";
 
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            PodcastEpisodeModel.EpisodeDownloadStateEnum episodeState = (PodcastEpisodeModel.EpisodeDownloadStateEnum)value;
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
-                case PodcastEpisodeModel.EpisodeStateEnum.Queued:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued:
                     downloadImageSource = "/Podcatcher;component/Images/download_episode_disabled.png";
                     break;
             }
@@ -249,12 +186,12 @@ namespace Podcatcher.Converters
         {
             bool isActive = true;
 
-            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            PodcastEpisodeModel.EpisodePlayStateEnum episodeState = (PodcastEpisodeModel.EpisodePlayStateEnum)value;
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
-                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
-                case PodcastEpisodeModel.EpisodeStateEnum.Streaming:
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Playing:
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Paused:
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Streaming:
                     isActive = false;
                     break;
             }

@@ -361,7 +361,7 @@ namespace Podcatcher
 
             foreach (var episode in queryDelEpisodes)
             {
-                if (episode.EpisodeState == PodcastEpisodeModel.EpisodeStateEnum.Playable)
+                if (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded)
                 {
                     Deployment.Current.Dispatcher.BeginInvoke(() =>
                             {
