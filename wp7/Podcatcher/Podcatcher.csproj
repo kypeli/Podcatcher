@@ -225,6 +225,7 @@
     </Content>
     <Resource Include="Images\download.png" />
     <Resource Include="Images\download_episode.png" />
+    <Resource Include="Images\download_episode_disabled.png" />
     <Content Include="Images\ff.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -245,6 +246,7 @@
     <Resource Include="Images\play_episode.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\play_episode_disabled.png" />
     <Content Include="Images\Podcatcher_generic_podcast_cover.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

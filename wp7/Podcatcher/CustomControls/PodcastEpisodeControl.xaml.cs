@@ -65,11 +65,6 @@ namespace Podcatcher
                 this.EpisodeRunningTime.Text = String.Format("Duration: {0}", m_episodeModel.EpisodeRunningTime);
             }
 
-            if (m_episodeModel.SavedPlayPos > 0 
-                && m_episodeModel.TotalLengthTicks > 0)
-            {
-                PlayProgressBar.Value = (((double)m_episodeModel.SavedPlayPos / (double)m_episodeModel.TotalLengthTicks) * (double)100);
-            }
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
@@ -104,6 +99,7 @@ namespace Podcatcher
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
+            m_episodeModel = this.DataContext as PodcastEpisodeModel;
             PodcastEpisodesDownloadManager downloadManager = PodcastEpisodesDownloadManager.getInstance();
             PodcastEpisodesDownloadManager.notifyUserOfDownloadRestrictions(m_episodeModel);
             downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
@@ -171,7 +167,6 @@ namespace Podcatcher
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
             podcastEpisode.deleteDownloadedEpisode();
-            PlayProgressBar.Visibility = System.Windows.Visibility.Collapsed;
         }
 
         private void Episode_Tap(object sender, System.Windows.Input.GestureEventArgs e)

@@ -175,13 +175,14 @@ namespace Podcatcher.ViewModels
         public String EpisodeFile
         {
             get { return m_episodeFile; }
-            set { 
-                m_episodeFile = value;
+            set {
                 EpisodeState = EpisodeStateEnum.Idle;
-                if (m_episodeFile != null)
+                m_episodeFile = value;
+                if (String.IsNullOrEmpty(m_episodeFile) == false)
                 {
                     EpisodeState = EpisodeStateEnum.Playable;
                 }
+
             }
         }
 
@@ -214,7 +215,7 @@ namespace Podcatcher.ViewModels
                 if (m_downloadPercentage != value)
                 {
                     m_downloadPercentage = value;
-                    NotifyPropertyChanged("DownloadPercentage");
+                    NotifyPropertyChanged("ProgressBarValue");
                 }
             }
         }
@@ -240,7 +241,6 @@ namespace Podcatcher.ViewModels
             Idle,
             Queued,
             Downloading,
-            Saving,
             Playable,
             Playing,
             Paused
@@ -260,6 +260,7 @@ namespace Podcatcher.ViewModels
 
                 NotifyPropertyChanged("EpisodeState");
                 NotifyPropertyChanged("EpisodeStatusText");
+                NotifyPropertyChanged("ShouldShowDownloadButton");
                 if (PodcastSubscription != null)
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
@@ -277,9 +278,6 @@ namespace Podcatcher.ViewModels
                 {
                     case EpisodeStateEnum.Downloading:
                         statusText = "Downloading...";
-                        break;
-                    case EpisodeStateEnum.Saving:
-                        statusText = "Saving...";
                         break;
                     case EpisodeStateEnum.Idle:
                         statusText = "";
@@ -330,6 +328,88 @@ namespace Podcatcher.ViewModels
                 m_newEpisodeVisibility = value;
             }
         }
+
+        // I should do this in a Converter from XAML, but as this is dependant of two properties,
+        // it's just easier to do it this way. 
+        private Visibility m_shouldShowDownloadButton = Visibility.Collapsed;
+        public Visibility ShouldShowDownloadButton
+        {
+
+            get
+            {
+                m_shouldShowDownloadButton = playableMimeType(EpisodeFileMimeType) 
+                                              && (EpisodeState == EpisodeStateEnum.Idle 
+                                                  || EpisodeState == EpisodeStateEnum.Downloading 
+                                                  || EpisodeState == EpisodeStateEnum.Queued) ? 
+                                                  Visibility.Visible                          :
+                                                  Visibility.Collapsed;
+
+                return m_shouldShowDownloadButton;                                                   
+            }
+
+            private set { }
+ 
+        }
+
+        private bool playableMimeType(string episodeMimeType)
+        {
+            if (episodeMimeType == "-ERROR-")
+            {
+                return false;
+            }
+
+            // Since we added the MIME type in version 2 of DB, we have to assume that if the 
+            // value is empty, we show the button.
+            if (String.IsNullOrEmpty(episodeMimeType))
+            {
+                return true;
+            }
+
+            bool playable = false;
+            switch (episodeMimeType)
+            {
+                case "audio/mpeg":
+                case "audio/mp3":
+                case "audio/x-mp3":
+                case "audio/mpeg3":
+                case "audio/x-mpeg3":
+                case "audio/mpg":
+                case "audio/x-mpg":
+                case "audio/x-mpegaudio":
+                    playable = true;
+                    break;
+
+                case "video/mp4":
+                case "video/x-mp4":
+                    playable = true;
+                    break;
+            }
+
+            return playable;
+        }
+
+        public double ProgressBarValue
+        {
+            get
+            {
+                if (m_episodeState == EpisodeStateEnum.Downloading)
+                {
+                    return DownloadPercentage;
+                }
+                else if (m_episodeState == EpisodeStateEnum.Playable)  // SavedPlayPos > 0 && TotalLengthTicks > 0)
+                {
+                    if (SavedPlayPos > 0 && TotalLengthTicks > 0)
+                    {
+                        return (((double)SavedPlayPos / (double)TotalLengthTicks) * (double)100);
+                    }
+                }
+
+                return 0.0;
+            }
+
+            private set { }
+        }
+
         #endregion
 
         /************************************* Public implementations *******************************/
@@ -346,12 +426,13 @@ namespace Podcatcher.ViewModels
 
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
+                EpisodeState = EpisodeStateEnum.Idle;
+
                 if (episodeStore.FileExists(EpisodeFile) == false)
                 {
                     // If we cannot find the episode file to delete, then we at least have to reset the episode state 
                     // back to idle.
                     Debug.WriteLine("WARNING: Could not find downloaded episode to delete. Name: " + EpisodeFile);
-                    EpisodeState = EpisodeStateEnum.Idle;
                     EpisodeFile = null;
                     return;
                 }
@@ -386,7 +467,6 @@ namespace Podcatcher.ViewModels
             bw.DoWork += new DoWorkEventHandler(savePodcastAsync);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(SavePodcastEpisodeCompleted);
             bw.RunWorkerAsync();
-            EpisodeState = EpisodeStateEnum.Saving;
         }
 
         void savePodcastAsync(object sender, DoWorkEventArgs e)

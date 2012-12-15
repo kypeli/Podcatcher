@@ -10,11 +10,13 @@
     d:DesignWidth="480" d:DesignHeight="800">
 
     <UserControl.Resources>
-        <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
         <c:DownloadButtonTextConverter x:Name="downloadButtonText"/>
         <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
-        <c:DownloadEpisodeVisibleConverter x:Name="downloadEpisodeVisible" />
-        <c:ProgressBarVisibleConverter x:Name="progressBarVisible" /> 
+        <c:ProgressBarVisibleConverter x:Name="progressBarVisible" />
+        <c:PlayButtonImageConverter x:Name="playButtonImage" />
+        <c:DownloadButtonImageConverter x:Name="downloadButtonImage" />
+        <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
+        <c:EpisodePlayButtonActiveConverter x:Name="playButtonActive"/>
     </UserControl.Resources>
 
     <Grid x:Name="EpisodeMainLayout">
@@ -42,17 +44,22 @@
                 <StackPanel Orientation="Vertical" Margin="0" Grid.Column="2">
 
                     <StackPanel Orientation="Horizontal" d:LayoutOverrides="HorizontalAlignment">
-                        <Button Click="PlayButton_Click">
-                            <Image Source="/Podcatcher;component/Images/play_episode.png"/>
+                        <Button Click="DownloadButton_Click" 
+                                Visibility="{Binding ShouldShowDownloadButton}" 
+                                IsEnabled="{Binding EpisodeState, Converter={StaticResource downloadButtonActive}}" 
+                                >
+                            <Image Source="{Binding EpisodeState, Converter={StaticResource downloadButtonImage}}"/>
                         </Button>
-                        
-                        <Button Click="DownloadButton_Click">
-                            <Image Source="/Podcatcher;component/Images/download_episode.png"/>
+
+                        <Button Click="PlayButton_Click" 
+                                IsEnabled="{Binding EpisodeState, Converter={StaticResource playButtonActive}}"  
+                                >
+                            <Image Source="{Binding EpisodeState, Converter={StaticResource playButtonImage}}"/>
                         </Button>
                     </StackPanel>
 
                     <ProgressBar Visibility="{Binding EpisodeState, Converter={StaticResource progressBarVisible}}"
-                         Value="{Binding DownloadPercentage}" x:Name="PlayProgressBar" Height="11" Margin="0,5,0,0"/>
+                         Value="{Binding ProgressBarValue}" x:Name="PlayProgressBar" Height="11" Margin="-9,5,0,0"/>
 
                     <TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0,5,0,0"  Style="{StaticResource PhoneTextSubtleStyle}" />
 

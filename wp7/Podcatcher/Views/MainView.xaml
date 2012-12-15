@@ -94,7 +94,7 @@
 
         <c4f:ProgressOverlay Name="deleteProgressOverlay" Visibility="Collapsed">
             <StackPanel>
-                <TextBlock HorizontalAlignment="Center">Deleting</TextBlock>
+                <TextBlock HorizontalAlignment="Center">Unsubscribing</TextBlock>
                 <toolkit:PerformanceProgressBar 
                         IsIndeterminate="True"
                         Foreground="Green"

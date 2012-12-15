@@ -97,15 +97,6 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
                     buttonEnabled = false;
                     break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Saving:
-                    buttonEnabled = false;
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
-                    buttonEnabled = false;
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
-                    buttonEnabled = false;
-                    break;
             }
 
             return buttonEnabled;
@@ -134,9 +125,6 @@ namespace Podcatcher.Converters
                     break;
                 case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
                     buttonText = @"Downloading";
-                    break;
-                case PodcastEpisodeModel.EpisodeStateEnum.Saving:
-                    buttonText = @"Saving...";
                     break;
                 case PodcastEpisodeModel.EpisodeStateEnum.Playable:
                     buttonText = @"Play";
@@ -206,56 +194,22 @@ namespace Podcatcher.Converters
         }
     }
 
-    public class DownloadEpisodeVisibleConverter : IValueConverter
+    public class PlayButtonImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Visibility episodeDLVisible = Visibility.Collapsed;
+            string playImageSource = "/Podcatcher;component/Images/play_episode.png";
 
-            String episodeMimeType = (String)value;
-            if (playableMimeType(episodeMimeType))
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            switch (episodeState)
             {
-                episodeDLVisible = Visibility.Visible;
+                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
+                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
+                    playImageSource = "/Podcatcher;component/Images/play_episode_disabled.png";
+                    break;                    
             }
 
-            return episodeDLVisible;
-        }
-
-        private bool playableMimeType(string episodeMimeType)
-        {
-            if (episodeMimeType == "-ERROR-")
-            {
-                return false;
-            }
-
-            // Since we added the MIME type in version 2 of DB, we have to assume that if the 
-            // value is empty, we show the button.
-            if (String.IsNullOrEmpty(episodeMimeType))
-            {
-                return true;
-            }
-
-            bool playable = false;
-            switch (episodeMimeType)
-            {
-                case "audio/mpeg":
-                case "audio/mp3":
-                case "audio/x-mp3":
-                case "audio/mpeg3":
-                case "audio/x-mpeg3":
-                case "audio/mpg":
-                case "audio/x-mpg":
-                case "audio/x-mpegaudio":
-                    playable = true;
-                    break;
-                
-                case "video/mp4":
-                case "video/x-mp4":
-                    playable = true;
-                    break;
-            }
-
-            return playable;
+            return playImageSource;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -263,4 +217,55 @@ namespace Podcatcher.Converters
             throw new NotSupportedException();
         }
     }
+
+    public class DownloadButtonImageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string downloadImageSource = "/Podcatcher;component/Images/download_episode.png";
+
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            switch (episodeState)
+            {
+                case PodcastEpisodeModel.EpisodeStateEnum.Downloading:
+                case PodcastEpisodeModel.EpisodeStateEnum.Queued:
+                    downloadImageSource = "/Podcatcher;component/Images/download_episode_disabled.png";
+                    break;
+            }
+
+            return downloadImageSource;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class EpisodePlayButtonActiveConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool isActive = true;
+
+            PodcastEpisodeModel.EpisodeStateEnum episodeState = (PodcastEpisodeModel.EpisodeStateEnum)value;
+            switch (episodeState)
+            {
+                case PodcastEpisodeModel.EpisodeStateEnum.Playing:
+                case PodcastEpisodeModel.EpisodeStateEnum.Paused:
+                    isActive = false;
+                    break;
+            }
+
+            return isActive;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+
+
 }
