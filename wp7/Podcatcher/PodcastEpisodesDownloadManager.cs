@@ -73,6 +73,7 @@ namespace Podcatcher
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
             episode.DownloadPercentage = 0;
             m_episodeDownloadQueue.Enqueue(episode);
+            pushToQueueCache(episode);
 
             if (m_currentEpisodeDownload == null)
             {
@@ -169,9 +170,12 @@ namespace Podcatcher
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
 
             findCurrentTransfer();
-            if (m_currentBackgroundTransfer != null) { 
+            if (m_currentBackgroundTransfer != null)
+            {
                 processOngoingTransfer();
             }
+
+            processStoredQueuedTransfers();
         }
 
         private void createEpisodeDownloadDir()
@@ -203,6 +207,97 @@ namespace Podcatcher
             }
         }
 
+        private void processStoredQueuedTransfers()
+        {
+            if (m_applicationSettings.Contains(App.LSKEY_PODCAST_DOWNLOAD_QUEUE) == false)
+            {
+                m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, "");        // Create empty setting if we don't have the key yet.
+            }
+
+            // This will return a comma separated list of episode IDs that are queued for downloading.
+            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
+
+            List<string> episodeIds = queuedSettingsString.Split(',').ToList();
+            PodcastSqlModel sqlModel = PodcastSqlModel.getInstance();
+            foreach(string episodeIdStr in episodeIds) 
+            {
+                try
+                {
+                    int episodeId = Int16.Parse(episodeIdStr);
+                    PodcastEpisodeModel episode = sqlModel.episodeForEpisodeId(episodeId);
+                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
+                    m_episodeDownloadQueue.Enqueue(episode);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error: Could not parse queued episode ids. Message: " + e.Message);
+                }
+            }
+
+            if (m_currentBackgroundTransfer == null && m_episodeDownloadQueue.Count > 0)
+            {
+                startNextEpisodeDownload();
+            }
+        }
+
+        private void pushToQueueCache(PodcastEpisodeModel episode)
+        {
+            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
+            if (String.IsNullOrEmpty(queuedSettingsString) == false)
+            {
+                queuedSettingsString += ",";
+            }
+
+            queuedSettingsString += episode.EpisodeId.ToString();
+
+            m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
+            m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
+        }
+
+        private void popFromQueueCache()
+        {
+            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
+            List<string> episodeIds = queuedSettingsString.Split(',').ToList();
+            queuedSettingsString = "";
+            for (int i = 1; i < episodeIds.Count; i++)
+            {
+                if (String.IsNullOrEmpty(queuedSettingsString) == false) 
+                {
+                    queuedSettingsString += ",";
+                }
+
+                queuedSettingsString += episodeIds[i];
+            }
+
+            m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
+            m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
+        }
+
+        private void removeFromQueueCache(PodcastEpisodeModel episode) 
+        {
+            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
+            List<string> episodeIds = queuedSettingsString.Split(',').ToList();
+            queuedSettingsString = "";
+            for (int i = 0; i < episodeIds.Count; i++)
+            {
+                if (Int16.Parse(episodeIds[i]) == episode.EpisodeId)
+                {
+                    continue;
+                }
+
+                if (String.IsNullOrEmpty(queuedSettingsString) == false)
+                {
+                    queuedSettingsString += ",";
+                }
+
+                queuedSettingsString += episodeIds[i];
+            }
+
+            m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
+            m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
+
+        }
+
         private void findCurrentTransfer()
         {
             IEnumerable<BackgroundTransferRequest> requests = BackgroundTransferService.Requests;
@@ -219,12 +314,15 @@ namespace Podcatcher
         private void removeEpisodeFromDownloadQueue(PodcastEpisodeModel episode)
         {
             m_episodeDownloadQueue.RemoveItem(episode);
+            removeFromQueueCache(episode);
         }
 
         private void startNextEpisodeDownload(TransferPreferences useTransferPreferences = TransferPreferences.AllowCellularAndBattery)
         {
             if (m_episodeDownloadQueue.Count > 0)
             {
+                popFromQueueCache();
+
                 m_currentEpisodeDownload = m_episodeDownloadQueue.Peek();
                 Uri downloadUri;
                 try
@@ -360,6 +458,11 @@ namespace Podcatcher
 
         private void ProcessTransfer(BackgroundTransferRequest backgroundTransferRequest)
         {
+            if (m_currentEpisodeDownload == null)
+            {
+                return;
+            }
+
             switch (backgroundTransferRequest.TransferStatus)
             {
                 case TransferStatus.WaitingForWiFi:
