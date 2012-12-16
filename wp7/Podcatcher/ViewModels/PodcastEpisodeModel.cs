@@ -176,9 +176,10 @@ namespace Podcatcher.ViewModels
         {
             get { return m_episodeFile; }
             set 
-            { 
+            {
                 m_episodeFile = value;
-                if (String.IsNullOrEmpty(m_episodeFile) == false)
+                if (m_episodePlayState == EpisodePlayStateEnum.Idle
+                    && String.IsNullOrEmpty(EpisodeFile) == false)
                 {
                     EpisodePlayState = EpisodePlayStateEnum.Downloaded;
                     EpisodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
@@ -270,6 +271,7 @@ namespace Podcatcher.ViewModels
                 NotifyPropertyChanged("ShouldShowDownloadButton");
                 NotifyPropertyChanged("EpisodeDownloadState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
+                NotifyPropertyChanged("ProgressBarValue");
                 if (PodcastSubscription != null)
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
@@ -283,12 +285,6 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
-                if (m_episodePlayState == EpisodePlayStateEnum.Idle 
-                    && String.IsNullOrEmpty(EpisodeFile) == false)
-                {
-                    m_episodePlayState = EpisodePlayStateEnum.Downloaded;
-                }
-
                 return m_episodePlayState; 
             }
 
@@ -358,9 +354,9 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                m_progressBarIsVisible = (EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading
-                                          || EpisodePlayState == EpisodePlayStateEnum.Downloaded
-                                          || EpisodePlayState == EpisodePlayStateEnum.Paused) ?
+                m_progressBarIsVisible = (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
+                                          || m_episodePlayState == EpisodePlayStateEnum.Downloaded
+                                          || m_episodePlayState == EpisodePlayStateEnum.Paused) ?
                                           Visibility.Visible :
                                           Visibility.Collapsed;
 
@@ -377,13 +373,12 @@ namespace Podcatcher.ViewModels
 
             get
             {
-                m_shouldShowDownloadButton = EpisodePlayState == EpisodePlayStateEnum.Streaming 
-                                             || (playableMimeType(EpisodeFileMimeType)
-                                                 && (EpisodeDownloadState == EpisodeDownloadStateEnum.Idle 
-                                                 || EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading 
-                                                 || EpisodeDownloadState == EpisodeDownloadStateEnum.Queued))   ?
-                                                 Visibility.Visible                                             :
-                                                 Visibility.Collapsed;
+                m_shouldShowDownloadButton = playableMimeType(EpisodeFileMimeType)
+                                             && (EpisodeDownloadState == EpisodeDownloadStateEnum.Idle 
+                                             || EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading 
+                                             || EpisodeDownloadState == EpisodeDownloadStateEnum.Queued)   ?
+                                             Visibility.Visible                                            :
+                                             Visibility.Collapsed;
 
                 return m_shouldShowDownloadButton;                                                   
             }
@@ -433,7 +428,8 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                if (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading)
+                if (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
+                    || m_episodeDownloadState == EpisodeDownloadStateEnum.Queued)
                 {
                     return DownloadPercentage;
                 }
@@ -467,9 +463,6 @@ namespace Podcatcher.ViewModels
 
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
-                EpisodePlayState = EpisodePlayStateEnum.Idle;
-
                 if (episodeStore.FileExists(EpisodeFile) == false)
                 {
                     // If we cannot find the episode file to delete, then we at least have to reset the episode state 
@@ -488,6 +481,9 @@ namespace Podcatcher.ViewModels
                     PodcastSubscription.UnplayedEpisodes--;
                     SavedPlayPos = 0;
                     TotalLengthTicks = 0;
+
+                    EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
+                    EpisodePlayState = EpisodePlayStateEnum.Idle;
                 }
                 catch (IsolatedStorageException)
                 {

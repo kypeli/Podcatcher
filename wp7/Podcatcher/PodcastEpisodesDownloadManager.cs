@@ -71,6 +71,7 @@ namespace Podcatcher
         public void addEpisodeToDownloadQueue(PodcastEpisodeModel episode)
         {
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
+            episode.DownloadPercentage = 0;
             m_episodeDownloadQueue.Enqueue(episode);
 
             if (m_currentEpisodeDownload == null)
