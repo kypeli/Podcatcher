@@ -421,6 +421,7 @@ namespace Podcatcher.ViewModels
                 case "audio/mpg":
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
+                case "audio/x-m4a":
                     playable = true;
                     break;
 
@@ -431,6 +432,10 @@ namespace Podcatcher.ViewModels
             }
 
             return playable;
+        }
+
+        public bool isPlayable() {
+            return playableMimeType(m_episodeFileMimeType);
         }
 
         public double ProgressBarValue

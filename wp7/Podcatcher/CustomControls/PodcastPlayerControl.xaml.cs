@@ -123,6 +123,7 @@ namespace Podcatcher
                 case "audio/mpg":
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
+                case "audio/x-m4a":
                     audio = true;
                     break;
             }
