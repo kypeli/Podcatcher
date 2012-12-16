@@ -297,6 +297,11 @@ namespace Podcatcher.ViewModels
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("EpisodeStatusText");
+                if (PodcastSubscription != null)
+                {
+                    // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
+                    PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
+                }
             }
         }
 
@@ -528,6 +533,8 @@ namespace Podcatcher.ViewModels
                     // back to idle.
                     Debug.WriteLine("WARNING: Could not find downloaded episode to delete. Name: " + EpisodeFile);
                     EpisodeFile = null;
+                    EpisodePlayState = EpisodePlayStateEnum.Idle;
+                    EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                     return;
                 }
 
