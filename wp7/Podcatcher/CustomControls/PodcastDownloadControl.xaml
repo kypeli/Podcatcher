@@ -21,8 +21,9 @@
             <Image x:Name="CancelDownloadButton" Width="32" Margin="0,10" Source="/Podcatcher;component/Images/minus.png" Tap="StopDownloadImage_Tap" Height="57" />
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Text="{Binding EpisodeStatusText}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto" Width="Auto"/>
             <TextBlock x:Name="DownloadProgressText" Text="{Binding DownloadPercentage}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto" Width="61"/>
-            <ProgressBar Width="181" Value="{Binding DownloadPercentage}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto" ValueChanged="ProgressBar_ValueChanged" />
+            <ProgressBar Width="181" Value="{Binding ProgressBarValue}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto" ValueChanged="ProgressBar_ValueChanged" />            
         </StackPanel>
     </Grid>
 </UserControl>
