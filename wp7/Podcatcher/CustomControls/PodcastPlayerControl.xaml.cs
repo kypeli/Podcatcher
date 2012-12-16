@@ -26,24 +26,14 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Podcatcher.ViewModels;
-using Microsoft.Phone.Controls;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
 using Microsoft.Phone.BackgroundAudio;
 using System.IO.IsolatedStorage;
 using System.Windows.Threading;
-using Coding4Fun.Phone.Controls;
 using Microsoft.Phone.Tasks;
 using System.IO;
 
@@ -77,7 +67,12 @@ namespace Podcatcher
             }
 
             m_appSettings = IsolatedStorageSettings.ApplicationSettings;
-            m_instance = this;
+            
+            if (m_instance == null) 
+            {
+                m_instance = this;                     
+            }
+
             setupPlayerUI();
 
             if (BackgroundAudioPlayer.Instance.Track != null)
@@ -170,10 +165,9 @@ namespace Podcatcher
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
-                m_currentEpisode.EpisodePlayState = m_originalEpisodePlayState;
+                saveEpisodeState(m_currentEpisode);
             }
 
-            m_originalEpisodePlayState = episodeModel.EpisodePlayState;
             m_currentEpisode = episodeModel;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
             m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
@@ -206,7 +200,6 @@ namespace Podcatcher
         {
             StopPlayback();
 
-            m_originalEpisodePlayState = episodeModel.EpisodePlayState;
             m_currentEpisode = episodeModel;
             startPlayback(TimeSpan.Zero, true);
             setupUIForEpisodePlaying();
@@ -227,8 +220,30 @@ namespace Podcatcher
                     PodcastPlayerStopped(this, new EventArgs());
                 }
 
+                m_screenUpdateTimer.Stop();
                 BackgroundAudioPlayer.Instance.Stop();
                 BackgroundAudioPlayer.Instance.Track = null;
+            }
+        }
+
+        public void OnNavigatedTo()
+        {
+            if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+/*                m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
+                m_screenUpdateTimer.Start();
+ */ 
+            }
+        }
+
+
+        public void OnNavigatedFrom()
+        {
+            if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+/*                m_screenUpdateTimer.Stop();
+                m_screenUpdateTimer.Tick -= new EventHandler(m_screenUpdateTimer_Tick);
+ */ 
             }
         }
 
@@ -241,7 +256,6 @@ namespace Podcatcher
         private bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
         private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
-        private PodcastEpisodeModel.EpisodePlayStateEnum m_originalEpisodePlayState;
 
         private void setupPlayerUI()
         {
@@ -250,27 +264,8 @@ namespace Podcatcher
             m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
-            m_screenUpdateTimer.Stop();
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
-        }
-
-        public void OnNavigatedTo()
-        {
-            if (BackgroundAudioPlayer.Instance.Track != null)
-            {
-                m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
-                m_screenUpdateTimer.Start();
-            }
-        }
-
-
-        public void OnNavigatedFrom() {
-            if (BackgroundAudioPlayer.Instance.Track != null)
-            {
-                m_screenUpdateTimer.Stop();
-                m_screenUpdateTimer.Tick -= new EventHandler(m_screenUpdateTimer_Tick);
-            }
         }
 
         private void restoreEpisodeToPlayerUI()
@@ -289,17 +284,17 @@ namespace Podcatcher
                     return;
                 }
 
-                m_originalEpisodePlayState = m_currentEpisode.EpisodePlayState;
-
                 BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
                 setupPlayerUIContent(m_currentEpisode);
 
                 if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
                 {
                     setupUIForEpisodePlaying();
+                    m_screenUpdateTimer.Start();
                 }
                 else
                 {
+                    m_screenUpdateTimer.Stop();
                     setupUIForEpisodePaused();
                 }
             }
@@ -366,8 +361,8 @@ namespace Podcatcher
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
 
-                PodcastPlayerStarted(this, new EventArgs());
                 BackgroundAudioPlayer.Instance.Play();
+                PodcastPlayerStarted(this, new EventArgs());
             }
             catch (Exception)
             {
@@ -455,18 +450,22 @@ namespace Podcatcher
             
             saveEpisodePlayPosition(m_currentEpisode);
             saveEpisodeState(m_currentEpisode);
-
             m_currentEpisode = null;
-            m_screenUpdateTimer.Stop();
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
         }
 
         private void saveEpisodeState(PodcastEpisodeModel episode)
         {
-            episode.EpisodePlayState = (m_currentEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused
-                                    && String.IsNullOrEmpty(m_currentEpisode.EpisodeFile) == false) ?
-                                    PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded             :
-                                    m_originalEpisodePlayState;
+            if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+            {
+                episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+            }
+            else
+            {
+                episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+                episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+            }
         }
 
         private void setupUIForEpisodePaused()
@@ -588,6 +587,11 @@ namespace Podcatcher
 
         void m_screenUpdateTimer_Tick(object sender, EventArgs e)
         {
+            if (BackgroundAudioPlayer.Instance.Track == null)
+            {
+                return;
+            }
+
             TimeSpan position = TimeSpan.Zero;
             TimeSpan duration = TimeSpan.Zero;
 
@@ -600,7 +604,9 @@ namespace Podcatcher
             settingSliderFromPlay = true;
             if (duration.Ticks > 0)
             {
-                this.PositionSlider.Value = (double)position.Ticks / duration.Ticks;
+                double playPosition = (double)position.Ticks / duration.Ticks;
+                this.PositionSlider.Value = playPosition;
+                m_currentEpisode.ProgressBarValue = playPosition;
             }
             else
             {

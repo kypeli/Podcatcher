@@ -52,6 +52,7 @@ namespace Podcatcher
         private PodcastSqlModel m_podcastsModel = PodcastSqlModel.getInstance();
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
+        private PodcastPlayerControl m_playerControl;
 
         public MainView()
         {
@@ -70,7 +71,8 @@ namespace Podcatcher
             ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
 
             // Hook to the event when the podcast player starts playing. 
-            this.PodcastPlayer.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+            m_playerControl = PodcastPlayerControl.getIntance();
+            m_playerControl.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
 
             // Hook to SQL events.
             PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
@@ -106,20 +108,12 @@ namespace Podcatcher
         {
             // Hook data contextes.
             DataContext = m_podcastsModel;
-
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
         {
-            PodcastPlayerControl player = sender as PodcastPlayerControl;
-
-            // Got event that the podcast player started playing. We now
-            //  - Pop the navigation back to the main page (yes, we know that the subscription page is open).
-            //  - Set the pivot index to show the player. 
-            // ...I don't really like this, but seems this is the way to work with the pivot control.
-            NavigationService.GoBack();
-            this.NavigationPivot.SelectedIndex = PODCAST_PLAYER_PIVOR_INDEX;
+            NavigationService.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -175,15 +169,10 @@ namespace Podcatcher
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
-            
-            // Is player visible?
+
             if (this.NavigationPivot.SelectedIndex == 2)
             {
-                PodcastPlayerControl.getIntance().OnNavigatedTo();
-            }
-            else
-            {
-                PodcastPlayerControl.getIntance().OnNavigatedFrom();
+                this.NowPlaying.SetupNowPlayingView();
             }
         }
 

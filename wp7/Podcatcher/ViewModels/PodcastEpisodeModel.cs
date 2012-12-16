@@ -440,6 +440,7 @@ namespace Podcatcher.ViewModels
             return playableMimeType(m_episodeFileMimeType);
         }
 
+        private double m_progressBarValue;
         public double ProgressBarValue
         {
             get
@@ -456,11 +457,24 @@ namespace Podcatcher.ViewModels
                         return (((double)SavedPlayPos / (double)TotalLengthTicks) * (double)100);
                     }
                 }
+                else if (m_episodePlayState == EpisodePlayStateEnum.Playing
+                         || m_episodePlayState == EpisodePlayStateEnum.Streaming)
+                {
+                    return m_progressBarValue;
+                }
 
                 return 0.0;
             }
 
-            private set { }
+            set 
+            {
+                if (m_episodePlayState == EpisodePlayStateEnum.Playing 
+                    || m_episodePlayState == EpisodePlayStateEnum.Streaming)
+                {
+                    m_progressBarValue = value;
+                    NotifyPropertyChanged("ProgressBarValue");
+                }
+            }
         }
 
         public String EpisodeStatusText

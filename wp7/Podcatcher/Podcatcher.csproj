@@ -83,6 +83,9 @@
     <Compile Include="CustomControls\PodcastDownloadControl.xaml.cs">
       <DependentUpon>PodcastDownloadControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\PodcastNowPlaying.xaml.cs">
+      <DependentUpon>PodcastNowPlaying.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\PodcastPlayerControl.xaml.cs">
       <DependentUpon>PodcastPlayerControl.xaml</DependentUpon>
     </Compile>
@@ -125,6 +128,9 @@
     <Compile Include="Views\PodcastEpisodes.xaml.cs">
       <DependentUpon>PodcastEpisodes.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PodcastPlayerView.xaml.cs">
+      <DependentUpon>PodcastPlayerView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PodcastSubscriptionCredentials.xaml.cs">
       <DependentUpon>PodcastSubscriptionCredentials.xaml</DependentUpon>
     </Compile>
@@ -146,6 +152,10 @@
     <Page Include="CustomControls\PodcastDownloadControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+    <Page Include="CustomControls\PodcastNowPlaying.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CustomControls\PodcastPlayerControl.xaml">
       <SubType>Designer</SubType>
@@ -188,6 +198,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PodcastEpisodes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PodcastPlayerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

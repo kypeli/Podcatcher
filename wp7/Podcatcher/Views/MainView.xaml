@@ -83,10 +83,15 @@
                 </Grid>
             </controls:PivotItem>
 
-            <!-- Podcast player -->
-            <controls:PivotItem Header="player">
+            <!-- Podcast play history -->
+            <controls:PivotItem Header="play history">
                 <Grid Background="Transparent" Width="480">
-                    <pc:PodcastPlayerControl x:Name="PodcastPlayer" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <pc:PodcastNowPlaying x:Name="NowPlaying" Grid.Row="0"/>
                 </Grid>
             </controls:PivotItem>
 
