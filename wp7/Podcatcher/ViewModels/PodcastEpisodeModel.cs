@@ -385,6 +385,8 @@ namespace Podcatcher.ViewModels
                 m_shouldShowDownloadButton = playableMimeType(EpisodeFileMimeType)
                                              && (EpisodeDownloadState == EpisodeDownloadStateEnum.Idle 
                                              || EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading 
+                                             || EpisodeDownloadState == EpisodeDownloadStateEnum.WaitingForWiFi
+                                             || EpisodeDownloadState == EpisodeDownloadStateEnum.WaitingForWifiAndPower
                                              || EpisodeDownloadState == EpisodeDownloadStateEnum.Queued)   ?
                                              Visibility.Visible                                            :
                                              Visibility.Collapsed;
