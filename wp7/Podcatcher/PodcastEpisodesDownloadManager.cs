@@ -240,8 +240,8 @@ namespace Podcatcher
                     return;
                 }
 
-                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
-                if (string.IsNullOrEmpty(m_currentEpisodeDownload.EpisodeFile))
+                String episodeFileName = localEpisodeFileName(m_currentEpisodeDownload);
+                if (string.IsNullOrEmpty(episodeFileName))
                 {
                     App.showErrorToast("Cannot download the episode.");
                     Debug.WriteLine("Cannot download the episode. Episode file name is null or empty.");
@@ -253,7 +253,7 @@ namespace Podcatcher
 
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
-                                                                            new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
+                                                                            new Uri(episodeFileName, UriKind.Relative));
                 if (useTransferPreferences == TransferPreferences.None)
                 {
                     m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.None;
@@ -404,7 +404,7 @@ namespace Podcatcher
 #endif
 
                 Debug.WriteLine("Transfer request completed succesfully.");
-                m_currentEpisodeDownload.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
                 m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
                 m_currentEpisodeDownload.PodcastSubscription.unplayedEpisodesChanged();
             }

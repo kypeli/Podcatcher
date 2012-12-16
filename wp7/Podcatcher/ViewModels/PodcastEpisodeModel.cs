@@ -183,6 +183,7 @@ namespace Podcatcher.ViewModels
                     EpisodePlayState = EpisodePlayStateEnum.Downloaded;
                     EpisodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
                 }
+
             }
         }
 
@@ -266,7 +267,6 @@ namespace Podcatcher.ViewModels
             {
                 m_episodeDownloadState = value;
 
-                NotifyPropertyChanged("EpisodeStatusText");
                 NotifyPropertyChanged("ShouldShowDownloadButton");
                 NotifyPropertyChanged("EpisodeDownloadState");
                 NotifyPropertyChanged("ProgressBarIsVisible");

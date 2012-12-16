@@ -74,7 +74,7 @@
         <toolkit:ContextMenuService.ContextMenu>
             <toolkit:ContextMenu >
                 <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" 
-                                  Visibility="{Binding EpisodeState, 
+                                  Visibility="{Binding EpisodeDownloadState, 
                                   Converter={StaticResource contextMenuEnabled}}"/>
             </toolkit:ContextMenu>
         </toolkit:ContextMenuService.ContextMenu>
