@@ -56,6 +56,7 @@
                             <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder password" TextWrapping="Wrap" />
                             <PasswordBox Height="71" Name="gpodderPassword" d:LayoutOverrides="HorizontalMargin" />
                         <Button Content="Import" Height="71" Name="importFromGpodderButton" Width="152" HorizontalAlignment="Right" Click="importFromGpodderButton_Click" Margin="0,0,8,0" />
+                            <TextBlock TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="If you have an account on gpodder.net you can import your subscriptions by entering your username and password"/><Run Text=" above"/><Run Text=". If you don't have an account"/><Run Text=","/><Run Text=" you can create one for free"/><Run Text=" at "/><Run Text="https://gpodder.net/register/. "/><LineBreak/><Run/><LineBreak/><Run Text="Username or password will not be stored"/><Run Text=" locally"/><Run Text="."/></TextBlock>
                         </StackPanel>
                     </controls:PivotItem>
             </controls:Pivot>
