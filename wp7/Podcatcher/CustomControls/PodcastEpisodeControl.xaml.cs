@@ -60,11 +60,6 @@ namespace Podcatcher
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             m_episodeModel = this.DataContext as PodcastEpisodeModel;
-            if (String.IsNullOrEmpty(m_episodeModel.EpisodeRunningTime) == false)
-            {
-                this.EpisodeRunningTime.Text = String.Format("Duration: {0}", m_episodeModel.EpisodeRunningTime);
-            }
-
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)

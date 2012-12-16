@@ -364,22 +364,22 @@ namespace Podcatcher
             {
                 case TransferStatus.WaitingForWiFi:
                     Debug.WriteLine("Transfer status: WaitingForWiFi");
-                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi;
                     WaitingForWiFi = true;
                     break;
                 case TransferStatus.WaitingForExternalPower:
                     Debug.WriteLine("Transfer status: WaitingForExternalPower");
-                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower;
                     WaitingForExternalPower = true;
                     break;
                 case TransferStatus.WaitingForExternalPowerDueToBatterySaverMode:
                     Debug.WriteLine("Transfer status: WaitingForExternalPowerDueToBatterySaverMode");
-                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower;
                     WaitingForExternalPowerDueToBatterySaverMode = true;
                     break;
                 case TransferStatus.WaitingForNonVoiceBlockingNetwork:
                     Debug.WriteLine("Transfer status: WaitingForNonVoiceBlockingNetwork");
-                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi;
                     WaitingForNonVoiceBlockingNetwork = true;
                     break;
                 case TransferStatus.Completed:

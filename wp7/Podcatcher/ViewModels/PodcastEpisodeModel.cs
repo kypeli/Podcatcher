@@ -252,7 +252,9 @@ namespace Podcatcher.ViewModels
             Idle,
             Queued,
             Downloading,
-            Downloaded
+            Downloaded,
+            WaitingForWiFi,
+            WaitingForWifiAndPower
         };
 
 
@@ -272,6 +274,7 @@ namespace Podcatcher.ViewModels
                 NotifyPropertyChanged("EpisodeDownloadState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("ProgressBarValue");
+                NotifyPropertyChanged("EpisodeStatusText");
                 if (PodcastSubscription != null)
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
@@ -293,6 +296,7 @@ namespace Podcatcher.ViewModels
                 m_episodePlayState = value;
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
+                NotifyPropertyChanged("EpisodeStatusText");
             }
         }
 
@@ -442,6 +446,61 @@ namespace Podcatcher.ViewModels
                 }
 
                 return 0.0;
+            }
+
+            private set { }
+        }
+
+        public String EpisodeStatusText
+        {
+            get 
+            {
+                String text = "";
+                switch (m_episodeDownloadState)
+                {
+                    case EpisodeDownloadStateEnum.Downloading:
+                        text = "Downloading...";
+                        break;
+                    case EpisodeDownloadStateEnum.Queued:
+                        text = "Queued.";
+                        break;
+/*                    case EpisodeDownloadStateEnum.:
+                        break;
+                    case EpisodeDownloadStateEnum.:
+                        break;
+                    case EpisodeDownloadStateEnum.:
+                        break;
+                    case EpisodeDownloadStateEnum.:
+                        break;
+                    case EpisodeDownloadStateEnum.:
+                        break;
+                    case EpisodeDownloadStateEnum.:
+                        break;*/
+                }
+
+                if (String.IsNullOrEmpty(text) == false)
+                {
+                    return text;
+                }
+
+                switch (m_episodePlayState)
+                {
+                    case EpisodePlayStateEnum.Idle:
+                    case EpisodePlayStateEnum.Downloaded:
+                        text = String.Format("Duration: {0}", EpisodeRunningTime);
+                        break;                        
+                    case EpisodePlayStateEnum.Playing:
+                        text = "Playing locally.";
+                        break;
+                    case EpisodePlayStateEnum.Streaming:
+                        text = "Playing remotely.";
+                        break;
+                    case EpisodePlayStateEnum.Paused:
+                        text = "Paused.";
+                        break;
+                }
+
+                return text;
             }
 
             private set { }

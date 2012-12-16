@@ -66,7 +66,7 @@
         			</Button>
         			<ProgressBar Visibility="{Binding ProgressBarIsVisible}"
         				Value="{Binding ProgressBarValue}" x:Name="PlayProgressBar" Height="11" Margin="0" VerticalAlignment="Top" Grid.Row="1" Grid.ColumnSpan="2"/>
-        			<TextBlock x:Name="EpisodeRunningTime" TextWrapping="Wrap" Margin="0"  Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" d:LayoutOverrides="GridBox" Grid.ColumnSpan="2" Grid.Row="2" />
+                    <TextBlock Text="{Binding EpisodeStatusText}"  TextWrapping="Wrap" Margin="8,0,0,0"  Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" d:LayoutOverrides="GridBox" Grid.ColumnSpan="2" Grid.Row="2" />
         		</Grid>
         	</Grid>
         </StackPanel>
