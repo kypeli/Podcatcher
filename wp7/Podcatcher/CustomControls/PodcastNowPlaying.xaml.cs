@@ -16,17 +16,23 @@ namespace Podcatcher
         public PodcastNowPlaying()
         {
             InitializeComponent();
-            m_appSettings = IsolatedStorageSettings.ApplicationSettings;
+
+            if (System.ComponentModel.DesignerProperties.IsInDesignTool)
+            {
+                return;
+            }
         }
 
         internal void SetupNowPlayingView()
         {
+            m_appSettings = IsolatedStorageSettings.ApplicationSettings;
             if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
                 m_playingEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
                 if (m_playingEpisode != null)
                 {
+                    this.Visibility = Visibility.Visible;
                     this.DataContext = m_playingEpisode;
                 }
             }

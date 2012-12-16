@@ -83,6 +83,9 @@
     <Compile Include="CustomControls\PodcastDownloadControl.xaml.cs">
       <DependentUpon>PodcastDownloadControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\PodcastHistoryItem.xaml.cs">
+      <DependentUpon>PodcastHistoryItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\PodcastNowPlaying.xaml.cs">
       <DependentUpon>PodcastNowPlaying.xaml</DependentUpon>
     </Compile>
@@ -152,6 +155,10 @@
     <Page Include="CustomControls\PodcastDownloadControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+    <Page Include="CustomControls\PodcastHistoryItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CustomControls\PodcastNowPlaying.xaml">
       <SubType>Designer</SubType>

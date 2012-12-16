@@ -365,7 +365,8 @@ namespace Podcatcher.ViewModels
             {
                 m_progressBarIsVisible = (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
                                           || m_episodePlayState == EpisodePlayStateEnum.Downloaded
-                                          || m_episodePlayState == EpisodePlayStateEnum.Paused) ?
+                                          || m_episodePlayState == EpisodePlayStateEnum.Paused
+                                          || m_episodePlayState == EpisodePlayStateEnum.Playing) ?
                                           Visibility.Visible :
                                           Visibility.Collapsed;
 
@@ -460,7 +461,7 @@ namespace Podcatcher.ViewModels
                 else if (m_episodePlayState == EpisodePlayStateEnum.Playing
                          || m_episodePlayState == EpisodePlayStateEnum.Streaming)
                 {
-                    return m_progressBarValue;
+                    return m_progressBarValue * 100;
                 }
 
                 return 0.0;

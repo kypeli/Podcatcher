@@ -109,6 +109,8 @@ namespace Podcatcher
             // Hook data contextes.
             DataContext = m_podcastsModel;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
+
+            this.NowPlaying.SetupNowPlayingView();
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
