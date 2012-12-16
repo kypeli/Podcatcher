@@ -469,18 +469,12 @@ namespace Podcatcher.ViewModels
                     case EpisodeDownloadStateEnum.Queued:
                         text = "Queued.";
                         break;
-/*                    case EpisodeDownloadStateEnum.:
+                    case EpisodeDownloadStateEnum.WaitingForWiFi:
+                        text = "Waiting for WiFi.";
                         break;
-                    case EpisodeDownloadStateEnum.:
+                    case EpisodeDownloadStateEnum.WaitingForWifiAndPower:
+                        text = "Waiting for WiFi and external power.";
                         break;
-                    case EpisodeDownloadStateEnum.:
-                        break;
-                    case EpisodeDownloadStateEnum.:
-                        break;
-                    case EpisodeDownloadStateEnum.:
-                        break;
-                    case EpisodeDownloadStateEnum.:
-                        break;*/
                 }
 
                 if (String.IsNullOrEmpty(text) == false)
@@ -492,7 +486,10 @@ namespace Podcatcher.ViewModels
                 {
                     case EpisodePlayStateEnum.Idle:
                     case EpisodePlayStateEnum.Downloaded:
-                        text = String.Format("Duration: {0}", EpisodeRunningTime);
+                        if (String.IsNullOrEmpty(m_episodeRunningTime) == false)
+                        {
+                            text = String.Format("Duration: {0}", m_episodeRunningTime);
+                        }
                         break;                        
                     case EpisodePlayStateEnum.Playing:
                         text = "Playing locally.";
