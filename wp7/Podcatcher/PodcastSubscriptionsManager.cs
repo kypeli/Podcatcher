@@ -470,7 +470,7 @@ namespace Podcatcher
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
         {
             string podcastLogoFilename;
-            if (String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
+            if (podcastModel.PodcastLogoUrl == null || String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
             {
                 // Podcast logo URL is empty - use default placeholder logo.
                 podcastLogoFilename = @"Podcatcher_generic_podcast_cover.png";

@@ -88,23 +88,24 @@ namespace Podcatcher
                 validFeed = false;
             }
 
+            string imageUrl = "";
             if (String.IsNullOrEmpty(query.ImageUrl))
             {
                 if (itunesNamespace != "http://www.itunes.com/DTDs/Podcast-1.0.dtd")
                 {
                     return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
                 }
-                else 
+                else
                 {
                     Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
-#if DEBUG                    
-                    validFeed = true;
-#else
-                    validFeed = false;
-#endif
+                    imageUrl = "";
                 }
 
-            } 
+            }
+            else
+            {
+                imageUrl = query.ImageUrl;
+            }
 
             if (validFeed == false)
             {
@@ -115,11 +116,11 @@ namespace Podcatcher
             PodcastSubscriptionModel podcastModel = new PodcastSubscriptionModel();
             podcastModel.PodcastName            = query.Title;
             podcastModel.PodcastDescription     = query.Description;
-#if DEBUG
-            podcastModel.PodcastLogoUrl = new Uri("https://gpodder.net/media/gpoddernet_64.png", UriKind.Absolute);
-#else
-            podcastModel.PodcastLogoUrl = new Uri(query.ImageUrl, UriKind.Absolute);
-#endif
+
+            if (string.IsNullOrEmpty(imageUrl) == false)
+            {
+                podcastModel.PodcastLogoUrl = new Uri(imageUrl, UriKind.Absolute);
+            }
             podcastModel.PodcastShowLink        = query.Link;
 
             Debug.WriteLine("Got podcast subscription:"

@@ -109,7 +109,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private Uri m_PodcastLogoUrl = new Uri("Images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
+        private Uri m_PodcastLogoUrl; // = new Uri("Images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
         public Uri PodcastLogoUrl
         {
             get
@@ -433,6 +433,12 @@ namespace Podcatcher.ViewModels
 
         public void fetchChannelLogo()
         {
+            if (m_PodcastLogoUrl == null)
+            {
+                Debug.WriteLine("Logo is null. Using default cover.");
+                return;
+            }
+
             Debug.WriteLine("Getting podcast icon: " + m_PodcastLogoUrl);
 
             // Fetch the remote podcast logo to store locally in the IsolatedStorage.
