@@ -138,7 +138,7 @@ namespace Podcatcher
         private void AddSubscriptionIconButton_Click(object sender, EventArgs e)
         {
             bool allowAddSubscription = true;
-            if ((Application.Current as App).IsTrial)
+            if (App.IsTrial)
             {
                 if (m_podcastsModel.PodcastSubscriptions.Count >= TRIAL_SUBSCRIPTION_LIMIT)
                 {

@@ -58,7 +58,7 @@ namespace Podcatcher.Views
 
         private void setUIIfPurchased()
         {
-            if ((Application.Current as App).IsTrial)
+            if (App.IsTrial)
             {
                 this.PurchasedText.Visibility = Visibility.Collapsed;
             }
@@ -73,7 +73,7 @@ namespace Podcatcher.Views
         {
 
             // pop up the link to rate and review the app
-            if ((Application.Current as App).IsTrial)
+            if (App.IsTrial)
             {
                 MarketplaceDetailTask marketplaceDetailTask = new MarketplaceDetailTask();
                 marketplaceDetailTask.ContentIdentifier = "5d5cebe9-420a-4566-a468-04c94aa34d93";
