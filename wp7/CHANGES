@@ -2,6 +2,8 @@
 ----------
  * Improve player navigation UX so that back stepping history is not lost.
  * Replace player pivot view with play history view.
+ * Tap now playing item to open player
+ * Tap recent item to open the subscription.
  * Import your subscriptions from gPodder.net.
  * Subscribe to podcasts that require authentication.
  * Replace one action button in episodes with two separate buttons for play/stream and download.
