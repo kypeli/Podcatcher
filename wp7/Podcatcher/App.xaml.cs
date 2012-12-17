@@ -58,7 +58,7 @@ namespace Podcatcher
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
 
-        public bool IsTrial
+        public static bool IsTrial
         {
             get
             {
@@ -207,7 +207,7 @@ namespace Podcatcher
         /// <summary>
         /// Check the current license information for this application
         /// </summary>
-        private void CheckLicense()
+        private static void CheckLicense()
         {
             // When debugging, we want to simulate a trial mode experience. The following conditional allows us to set the _isTrial 
             // property to simulate trial mode being on or off. 

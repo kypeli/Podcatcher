@@ -66,7 +66,26 @@ namespace Podcatcher.Views
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinished);
             m_subscriptionManager.OnGPodderImportFinishedWithError
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinishedWithError);
+        }
 
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            if (App.IsTrial)
+            {
+                this.gpodderDisclaimer.Visibility = System.Windows.Visibility.Collapsed;
+                this.gpodderNotAvailable.Visibility = System.Windows.Visibility.Visible;
+                this.gpodderPassword.IsEnabled = false;
+                this.gpodderUsername.IsEnabled = false;
+                this.importFromGpodderButton.IsEnabled = false;
+            }
+            else
+            {
+                this.gpodderDisclaimer.Visibility = System.Windows.Visibility.Visible;
+                this.gpodderNotAvailable.Visibility = System.Windows.Visibility.Collapsed;
+                this.gpodderPassword.IsEnabled = true;
+                this.gpodderUsername.IsEnabled = true;
+                this.importFromGpodderButton.IsEnabled = true;
+            }
         }
 
         /************************************* Private implementations *******************************/
@@ -109,8 +128,6 @@ namespace Podcatcher.Views
             progressOverlay.Hide();
             NavigationService.Navigate(new Uri(string.Format("/Views/PodcastSubscriptionCredentials.xaml?url={0}", e.podcastFeedRSSUri.ToString()), UriKind.Relative));
         }
-
-
 
         private void importFromGpodderButton_Click(object sender, RoutedEventArgs e)
         {
