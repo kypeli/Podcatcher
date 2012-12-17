@@ -96,13 +96,7 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
-                string desc = m_description;
-                if (!String.IsNullOrEmpty(desc))
-                {
-                    desc = Converters.HtmlRemoval.StripTagsCharArray(desc);
-                }
-
-                return desc; 
+                return m_description; 
             }
 
             set 
@@ -120,7 +114,8 @@ namespace Podcatcher.ViewModels
                     value = value.Substring(0, 3000);
                 }
 
-                m_description = value; 
+                m_description = value;
+                m_description = Converters.HtmlRemoval.StripTagsCharArray(m_description);
             }
         }
 
