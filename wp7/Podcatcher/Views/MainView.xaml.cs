@@ -115,6 +115,7 @@ namespace Podcatcher
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             this.NowPlaying.SetupNowPlayingView();
+            this.PlayHistory.ItemsSource = playHistoryEpisodes();
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)

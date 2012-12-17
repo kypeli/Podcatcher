@@ -138,7 +138,6 @@ namespace Podcatcher
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
             PodcastSqlModel.getInstance().SubmitChanges();
-            PodcastPlayerControl.getIntance().OnNavigatedFrom();
         }
 
         // Code to execute if a navigation fails

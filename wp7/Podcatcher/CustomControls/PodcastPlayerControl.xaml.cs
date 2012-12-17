@@ -216,6 +216,7 @@ namespace Podcatcher
                 || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
             {
 
+                addEpisodeToPlayHistory(m_currentEpisode);
                 playbackStopped();
                 showNoPlayerLayout();
                 if (PodcastPlayerStopped != null)
@@ -227,15 +228,6 @@ namespace Podcatcher
                 BackgroundAudioPlayer.Instance.Stop();
                 BackgroundAudioPlayer.Instance.Track = null;
             }
-        }
-
-        public void OnNavigatedTo()
-        {
-        }
-
-
-        public void OnNavigatedFrom()
-        {
         }
 
         /************************************* Private implementation *******************************/
@@ -438,7 +430,6 @@ namespace Podcatcher
         private void playbackStopped()
         {
             BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
-            addEpisodeToPlayHistory(m_currentEpisode);
             saveEpisodePlayPosition(m_currentEpisode);
             saveEpisodeState(m_currentEpisode);
             m_currentEpisode = null;
@@ -649,9 +640,14 @@ namespace Podcatcher
                 m_appSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, "");
             }
 
+            if (m_currentEpisode == null)
+            {
+                return;
+            }
+
             string historyString = m_currentEpisode.EpisodeId.ToString();
 
-            List<string> historyIds = (m_appSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(',').ToList();
+            List<string> historyIds = (m_appSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             int addHistoryEntries = historyIds.Count >= 4 ? 3 : historyIds.Count;
             for (int i = 0; i<addHistoryEntries; i++)
