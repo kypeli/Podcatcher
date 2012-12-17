@@ -13,9 +13,7 @@
         <StackPanel VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
                 <Image Source="{Binding PodcastSubscription.PodcastLogo}" Height="120" Width="120" HorizontalAlignment="Left"/>
-                <StackPanel Height="119" Margin="18,0,0,0" Width="325">
-                    <TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Height="118" Style="{StaticResource PhoneTextLargeStyle}"/>
-                </StackPanel>
+                <TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextLargeStyle}" Margin="20,0,0,0" Width="318"/>
             </StackPanel>
         </StackPanel>
 

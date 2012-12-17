@@ -47,8 +47,10 @@ namespace Podcatcher
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
         // Key for verifying user knows special requirements for D/L videos.
         public const string LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID    = "dl_videoEPisodesNeedWifi";
-
+        // Key for storing the download queue information in.
         public const string LSKEY_PODCAST_DOWNLOAD_QUEUE            = "dl_queue";
+        // Key for storing the play history information in.
+        public const string LSKEY_PODCAST_PLAY_HISTORY              = "play_history";
         
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR = "dl_withCellular";
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI = "dl_withWifi";

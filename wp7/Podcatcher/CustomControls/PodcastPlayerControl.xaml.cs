@@ -36,6 +36,9 @@ using System.IO.IsolatedStorage;
 using System.Windows.Threading;
 using Microsoft.Phone.Tasks;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
 
 namespace Podcatcher
 {
@@ -435,7 +438,7 @@ namespace Podcatcher
         private void playbackStopped()
         {
             BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
-            
+            addEpisodeToPlayHistory(m_currentEpisode);
             saveEpisodePlayPosition(m_currentEpisode);
             saveEpisodeState(m_currentEpisode);
             m_currentEpisode = null;
@@ -513,6 +516,7 @@ namespace Podcatcher
                 m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
 
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                addEpisodeToPlayHistory(m_currentEpisode);
             }
             else
             {
@@ -636,6 +640,31 @@ namespace Podcatcher
                 long ticks = (long)(e.NewValue * duration.Ticks);
                 BackgroundAudioPlayer.Instance.Position = new TimeSpan(ticks);
             }
+        }
+
+        private void addEpisodeToPlayHistory(PodcastEpisodeModel m_currentEpisode)
+        {
+            if (m_appSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY) == false)
+            {
+                m_appSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, "");
+            }
+
+            string historyString = m_currentEpisode.EpisodeId.ToString();
+
+            List<string> historyIds = (m_appSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(',').ToList();
+
+            int addHistoryEntries = historyIds.Count >= 4 ? 3 : historyIds.Count;
+            for (int i = 0; i<addHistoryEntries; i++)
+            {
+                historyString += "," + historyIds[i];
+            }
+
+            if (m_appSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY))
+            {
+                m_appSettings.Remove(App.LSKEY_PODCAST_PLAY_HISTORY);
+            }
+
+            m_appSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, historyString);
         }
     }
 }

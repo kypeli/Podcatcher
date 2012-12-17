@@ -41,6 +41,7 @@ using System.Collections.ObjectModel;
 using Podcatcher.ViewModels;
 using System.Diagnostics;
 using System.Collections.Specialized;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -53,6 +54,7 @@ namespace Podcatcher
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
         private PodcastPlayerControl m_playerControl;
+        private IsolatedStorageSettings m_applicationSettings = null;
 
         public MainView()
         {
@@ -76,6 +78,8 @@ namespace Podcatcher
 
             // Hook to SQL events.
             PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
+
+            m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
         }
 
         void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)
@@ -175,6 +179,7 @@ namespace Podcatcher
             if (this.NavigationPivot.SelectedIndex == 2)
             {
                 this.NowPlaying.SetupNowPlayingView();
+                this.PlayHistory.ItemsSource = playHistoryEpisodes();
             }
         }
 
@@ -186,6 +191,35 @@ namespace Podcatcher
         private void SettingsIconButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
+        }
+
+        private List<PodcastEpisodeModel> playHistoryEpisodes()
+        {
+            List<PodcastEpisodeModel> history = new List<PodcastEpisodeModel>();
+
+            if (m_applicationSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY) == false)
+            {
+                m_applicationSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, "");
+                return history;
+            }
+
+            List<string> historyIds = (m_applicationSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(',').ToList();
+
+            foreach (string id in historyIds)
+            {
+                if (String.IsNullOrEmpty(id))
+                {
+                    continue;
+                }
+
+                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(Int16.Parse(id));
+                if (episode != null)
+                {
+                    history.Add(episode);
+                }
+            }
+
+            return history;
         }
     }
 }
