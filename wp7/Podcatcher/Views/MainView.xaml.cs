@@ -115,7 +115,7 @@ namespace Podcatcher
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             this.NowPlaying.SetupNowPlayingView();
-            this.PlayHistory.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
+            this.PlayHistoryList.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
@@ -180,7 +180,27 @@ namespace Podcatcher
             if (this.NavigationPivot.SelectedIndex == 2)
             {
                 this.NowPlaying.SetupNowPlayingView();
-                this.PlayHistory.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
+
+                List<PodcastEpisodeModel> playHistory = PodcastSqlModel.getInstance().getPlayHistory();
+                if (playHistory.Count == 0)
+                {
+                    this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
+
+                    if (m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+                    {
+                        this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Visible;
+                    }
+                } 
+                else 
+                {
+                    this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
+                    this.PlayHistoryList.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
+                    this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
+                }
             }
         }
 

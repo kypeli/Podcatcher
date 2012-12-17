@@ -33,12 +33,11 @@ namespace Podcatcher.ViewModels
             set { m_historyId = value; }
         }
 
-        private EntityRef<PodcastEpisodeModel> m_playHistoryEpisode = new EntityRef<PodcastEpisodeModel>();
-        [Association(Storage = "m_playHistoryEpisode", ThisKey = "LastPlayedID", OtherKey = "EpisodeId")]
-        public PodcastEpisodeModel LastPlayedEpisode
+        [Column]
+        public int LastPlayedEpisodeId
         {
-            get { return m_playHistoryEpisode.Entity; }
-            set { m_playHistoryEpisode.Entity = value; }
+            get;
+            set;
         }
 
         [Column]

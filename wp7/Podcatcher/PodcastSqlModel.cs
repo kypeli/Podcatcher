@@ -240,7 +240,7 @@ namespace Podcatcher
         public void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
         {
             LastPlayedEpisodeModel newHistoryItem = new LastPlayedEpisodeModel();
-            newHistoryItem.LastPlayedEpisode = episode;
+            newHistoryItem.LastPlayedEpisodeId = episode.EpisodeId;
             newHistoryItem.TimeStamp = DateTime.Now;
 
             if (PlayHistory.Count() >= 4)
@@ -270,7 +270,8 @@ namespace Podcatcher
 
             foreach (LastPlayedEpisodeModel e in query)
             {
-                playHistory.Add(e.LastPlayedEpisode);
+                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
+                playHistory.Add(episode);
             }
 
             return playHistory;

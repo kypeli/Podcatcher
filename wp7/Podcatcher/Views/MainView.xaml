@@ -94,14 +94,25 @@
                     
                     <pc:PodcastNowPlaying x:Name="NowPlaying" Grid.Row="0"/>
 
-                    <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="history" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,20"/>
-                    <ListBox Grid.Row="2" x:Name="PlayHistory" Height="Auto">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                               <pc:PodcastHistoryItem/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox> 
+                    <StackPanel Grid.Row="1" x:Name="PlayHistory">
+                        <TextBlock TextWrapping="Wrap" Text="history" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,20"/>
+                        <ListBox x:Name="PlayHistoryList" Height="Auto">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <pc:PodcastHistoryItem/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+
+                    <TextBlock Text="You have no play history."
+                                 x:Name="NoPlayHistoryText" 
+                                 VerticalAlignment="Center" 
+                                 HorizontalAlignment="Center" 
+                                 TextWrapping="Wrap" 
+                                 TextAlignment="Center" 
+                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                                 Margin="71,193,69,181" />
                 </Grid>
             </controls:PivotItem>
 
