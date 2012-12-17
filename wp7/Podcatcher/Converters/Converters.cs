@@ -92,9 +92,9 @@ namespace Podcatcher.Converters
             switch (episodeState)
             {
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued:
-                    buttonEnabled = false;
-                    break;
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower:
                     buttonEnabled = false;
                     break;
             }
@@ -167,6 +167,8 @@ namespace Podcatcher.Converters
             {
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading:
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi:
+                case PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower:
                     downloadImageSource = "/Podcatcher;component/Images/download_episode_disabled.png";
                     break;
             }
