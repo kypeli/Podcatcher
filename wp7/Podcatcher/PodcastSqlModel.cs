@@ -237,6 +237,46 @@ namespace Podcatcher
             return settingsModel;
         }
 
+        public void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
+        {
+            LastPlayedEpisodeModel newHistoryItem = new LastPlayedEpisodeModel();
+            newHistoryItem.LastPlayedEpisode = episode;
+            newHistoryItem.TimeStamp = DateTime.Now;
+
+            if (PlayHistory.Count() >= 4)
+            {
+                LastPlayedEpisodeModel oldestHistoryItem = (from LastPlayedEpisodeModel e in PlayHistory
+                                                            orderby e.TimeStamp ascending
+                                                            select e).FirstOrDefault();
+
+                if (oldestHistoryItem != null)
+                {
+                    PlayHistory.DeleteOnSubmit(oldestHistoryItem);
+                }
+            }
+
+            PlayHistory.InsertOnSubmit(newHistoryItem);
+
+            SubmitChanges();
+        }
+
+        public List<PodcastEpisodeModel> getPlayHistory()
+        {
+            List<PodcastEpisodeModel> playHistory = new List<PodcastEpisodeModel>();
+
+            var query = from LastPlayedEpisodeModel e in PlayHistory
+                        orderby e.TimeStamp descending
+                        select e;
+
+            foreach (LastPlayedEpisodeModel e in query)
+            {
+                playHistory.Add(e.LastPlayedEpisode);
+            }
+
+            return playHistory;
+        }
+
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
@@ -245,6 +285,7 @@ namespace Podcatcher
         public Table<PodcastSubscriptionModel> Subscriptions;
         public Table<PodcastEpisodeModel> Episodes;
         public Table<SettingsModel> Settings;
+        public Table<LastPlayedEpisodeModel> PlayHistory;
 
         private PodcastSqlModel()
             : base(m_connectionString)
@@ -284,6 +325,7 @@ namespace Podcatcher
                 {
                     updater.AddColumn<PodcastSubscriptionModel>("Username");
                     updater.AddColumn<PodcastSubscriptionModel>("Password");
+                    updater.AddTable<LastPlayedEpisodeModel>();
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;
@@ -293,6 +335,7 @@ namespace Podcatcher
             Subscriptions = GetTable<PodcastSubscriptionModel>();
             Episodes = GetTable<PodcastEpisodeModel>();
             Settings = GetTable<SettingsModel>();
+            PlayHistory = GetTable<LastPlayedEpisodeModel>();
 
             // Force to check if we have tables or not.
             try

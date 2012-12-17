@@ -86,6 +86,7 @@ namespace Podcatcher
             }
             else
             {
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 showNoPlayerLayout();
             }
         }
@@ -633,34 +634,9 @@ namespace Podcatcher
             }
         }
 
-        private void addEpisodeToPlayHistory(PodcastEpisodeModel m_currentEpisode)
+        private void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
         {
-            if (m_appSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY) == false)
-            {
-                m_appSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, "");
-            }
-
-            if (m_currentEpisode == null)
-            {
-                return;
-            }
-
-            string historyString = m_currentEpisode.EpisodeId.ToString();
-
-            List<string> historyIds = (m_appSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            int addHistoryEntries = historyIds.Count >= 4 ? 3 : historyIds.Count;
-            for (int i = 0; i<addHistoryEntries; i++)
-            {
-                historyString += "," + historyIds[i];
-            }
-
-            if (m_appSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY))
-            {
-                m_appSettings.Remove(App.LSKEY_PODCAST_PLAY_HISTORY);
-            }
-
-            m_appSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, historyString);
+            PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
         }
     }
 }

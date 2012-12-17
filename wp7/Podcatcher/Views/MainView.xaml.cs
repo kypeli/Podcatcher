@@ -115,7 +115,7 @@ namespace Podcatcher
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             this.NowPlaying.SetupNowPlayingView();
-            this.PlayHistory.ItemsSource = playHistoryEpisodes();
+            this.PlayHistory.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
@@ -180,7 +180,7 @@ namespace Podcatcher
             if (this.NavigationPivot.SelectedIndex == 2)
             {
                 this.NowPlaying.SetupNowPlayingView();
-                this.PlayHistory.ItemsSource = playHistoryEpisodes();
+                this.PlayHistory.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
             }
         }
 
@@ -194,7 +194,7 @@ namespace Podcatcher
             NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
         }
 
-        private List<PodcastEpisodeModel> playHistoryEpisodes()
+/*        private List<PodcastEpisodeModel> playHistoryEpisodes()
         {
             List<PodcastEpisodeModel> history = new List<PodcastEpisodeModel>();
 
@@ -221,6 +221,6 @@ namespace Podcatcher
             }
 
             return history;
-        }
+        } */
     }
 }

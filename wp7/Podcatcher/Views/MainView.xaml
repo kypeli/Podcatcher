@@ -101,7 +101,7 @@
                                <pc:PodcastHistoryItem/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                    </ListBox>
+                    </ListBox> 
                 </Grid>
             </controls:PivotItem>
 

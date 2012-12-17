@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="ViewModels\GPodderResultModel.cs" />
+    <Compile Include="ViewModels\LastPlayedModel.cs" />
     <Compile Include="ViewModels\PodcastEpisodeModel.cs" />
     <Compile Include="PodcastFactory.cs" />
     <Compile Include="PodcastSubscriptionsManager.cs" />
