@@ -228,23 +228,11 @@ namespace Podcatcher
 
         public void OnNavigatedTo()
         {
-            if (BackgroundAudioPlayer.Instance.Track != null)
-            {
-/*                m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
-                m_screenUpdateTimer.Start();
- */ 
-            }
         }
 
 
         public void OnNavigatedFrom()
         {
-            if (BackgroundAudioPlayer.Instance.Track != null)
-            {
-/*                m_screenUpdateTimer.Stop();
-                m_screenUpdateTimer.Tick -= new EventHandler(m_screenUpdateTimer_Tick);
- */ 
-            }
         }
 
         /************************************* Private implementation *******************************/
@@ -523,6 +511,8 @@ namespace Podcatcher
                 saveEpisodePlayPosition(m_currentEpisode);
                 // We are already stopped (playback ended or something). Let's update the episode state.
                 m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
             }
             else
             {
