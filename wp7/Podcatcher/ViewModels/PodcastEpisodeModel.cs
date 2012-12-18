@@ -558,12 +558,12 @@ namespace Podcatcher.ViewModels
                 {
                     episodeStore.DeleteFile(EpisodeFile);
                     EpisodeFile = null;
-                    PodcastSubscription.UnplayedEpisodes--;
                     SavedPlayPos = 0;
                     TotalLengthTicks = 0;
 
                     EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                     EpisodePlayState = EpisodePlayStateEnum.Idle;
+                    PodcastSubscription.UnplayedEpisodes--;
                 }
                 catch (IsolatedStorageException)
                 {
@@ -571,7 +571,11 @@ namespace Podcatcher.ViewModels
                     toast.Title = "Error";
                     toast.Message = "Could not delete episode.";
 
-                    toast.Show();                    
+                    toast.Show();
+                }
+                catch (NullReferenceException nullEx)
+                {
+                    Debug.WriteLine("Got NULL pointer exception when deleting episode.");
                 }
             }
         }
