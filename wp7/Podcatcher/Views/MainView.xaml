@@ -88,20 +88,25 @@
                 <Grid Background="Transparent" Width="480">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <pc:PodcastNowPlaying Grid.Row="0" x:Name="NowPlaying" Height="Auto" />
 
                     <StackPanel Grid.Row="1" x:Name="PlayHistory" Height="Auto">
                         <TextBlock TextWrapping="Wrap" Text="recent" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,20"/>
-                        <ListBox x:Name="PlayHistoryList" Height="213" ItemsSource="{Binding PlayHistoryListProperty}">
-                            <ListBox.ItemTemplate>
+                        <ItemsControl x:Name="PlayHistoryList" ItemsSource="{Binding PlayHistoryListProperty}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <toolkit:WrapPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <pc:PodcastHistoryItem/>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
 
                     <TextBlock Text="You have no play history."
@@ -136,10 +141,6 @@
                 <shell:ApplicationBarMenuItem Text="Settings" Click="SettingsIconButton_Click"/>
                 <shell:ApplicationBarMenuItem Text="About" Click="AboutSubscriptionIconButton_Click"/>
             </shell:ApplicationBar.MenuItems>
-            <!--            <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
-                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
-            </shell:ApplicationBar.MenuItems> -->
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 
