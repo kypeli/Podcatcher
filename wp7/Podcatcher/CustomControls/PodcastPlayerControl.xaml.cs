@@ -439,6 +439,12 @@ namespace Podcatcher
 
         private void saveEpisodeState(PodcastEpisodeModel episode)
         {
+            if (episode == null)
+            {
+                Debug.WriteLine("Warning: Trying to save NULL episode's state.");
+                return;
+            }
+
             if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
             {
                 episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
