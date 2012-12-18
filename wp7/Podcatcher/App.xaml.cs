@@ -169,6 +169,13 @@ namespace Podcatcher
                 toast.Show();        
         }
 
+        public static void showNotificationToast(string message)
+        {
+            ToastPrompt toast = new ToastPrompt();
+            toast.Message = message;
+            toast.Show();
+        }
+
         #region Phone application initialization
 
         // Avoid double-initialization
