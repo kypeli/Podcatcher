@@ -1,24 +1,6 @@
 ﻿using System.Data.Linq.Mapping;
 using System.ComponentModel;
-using System.Data.Linq;
-using System.Linq;
 using System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.Linq.Mapping;
-using System.Data.Linq;
-using System.ComponentModel;
-using System.Net;
-using System.Diagnostics;
-using System.IO;
-using System.IO.IsolatedStorage;
-using Microsoft.Phone.BackgroundTransfer;
-using System.Windows;
-using Coding4Fun.Phone.Controls;
-
-
 
 namespace Podcatcher.ViewModels
 {

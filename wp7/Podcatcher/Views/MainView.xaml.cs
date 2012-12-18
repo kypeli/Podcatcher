@@ -80,6 +80,8 @@ namespace Podcatcher
             PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
 
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
+
+            this.PlayHistoryList.DataContext = m_podcastsModel;
         }
 
         void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)
@@ -115,7 +117,6 @@ namespace Podcatcher
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
 
             this.NowPlaying.SetupNowPlayingView();
-            this.PlayHistoryList.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
@@ -181,8 +182,7 @@ namespace Podcatcher
             {
                 this.NowPlaying.SetupNowPlayingView();
 
-                List<PodcastEpisodeModel> playHistory = PodcastSqlModel.getInstance().getPlayHistory();
-                if (playHistory.Count == 0)
+                if (PodcastSqlModel.getInstance().PlayHistoryListCount == 0)
                 {
                     this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -198,7 +198,6 @@ namespace Podcatcher
                 else 
                 {
                     this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
-                    this.PlayHistoryList.ItemsSource = PodcastSqlModel.getInstance().getPlayHistory();
                     this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
                 }
             }

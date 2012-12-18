@@ -88,15 +88,14 @@
                 <Grid Background="Transparent" Width="480">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
-                    <pc:PodcastNowPlaying x:Name="NowPlaying" Grid.Row="0"/>
 
-                    <StackPanel Grid.Row="1" x:Name="PlayHistory">
-                        <TextBlock TextWrapping="Wrap" Text="history" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,20"/>
-                        <ListBox x:Name="PlayHistoryList" Height="Auto">
+                    <pc:PodcastNowPlaying Grid.Row="0" x:Name="NowPlaying" Height="Auto" />
+
+                    <StackPanel Grid.Row="1" x:Name="PlayHistory" Height="Auto">
+                        <TextBlock TextWrapping="Wrap" Text="recent" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,20"/>
+                        <ListBox x:Name="PlayHistoryList" Height="213" ItemsSource="{Binding PlayHistoryListProperty}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <pc:PodcastHistoryItem/>

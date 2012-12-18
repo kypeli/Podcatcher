@@ -6,11 +6,10 @@
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    d:DesignHeight="480" d:DesignWidth="480">
+    Foreground="{StaticResource PhoneForegroundBrush}" d:DesignWidth="480" Height="231">
     
-    <Grid x:Name="LayoutRoot">
-    	<StackPanel VerticalAlignment="Top" Tap="NowPlayingTapped">
+    <Grid x:Name="LayoutRoot" VerticalAlignment="Top" Height="231">
+    	<StackPanel VerticalAlignment="Top" Tap="NowPlayingTapped" Height="231">
     		<TextBlock TextWrapping="Wrap" Text="now" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,10"/>
     		<StackPanel Orientation="Horizontal" Margin="12,0,0,0">
                 <Image Source="{Binding PodcastSubscription.PodcastLogo}" Height="120" Width="120" HorizontalAlignment="Left"/>

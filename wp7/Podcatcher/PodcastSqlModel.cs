@@ -34,6 +34,7 @@ using Podcatcher.ViewModels;
 using System.Data.Linq;
 using Microsoft.Phone.Data.Linq;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace Podcatcher
 {
@@ -43,7 +44,7 @@ namespace Podcatcher
 
         /************************************* Public properties *******************************/
 
-        private List<PodcastSubscriptionModel> m_podcastSubscriptions = new List<PodcastSubscriptionModel>();
+        private List<PodcastSubscriptionModel> m_podcastSubscriptions;
         public List<PodcastSubscriptionModel> PodcastSubscriptions
         {         
             get 
@@ -55,6 +56,36 @@ namespace Podcatcher
                 m_podcastSubscriptions = new List<PodcastSubscriptionModel>(query);
 
                 return m_podcastSubscriptions;
+            }
+        }
+
+        private ObservableCollection<PodcastEpisodeModel> m_playHistory = new ObservableCollection<PodcastEpisodeModel>(); 
+        public ObservableCollection<PodcastEpisodeModel> PlayHistoryListProperty
+        {
+            get
+            {
+                var query = from LastPlayedEpisodeModel e in PlayHistory
+                            orderby e.TimeStamp descending
+                            select e;
+
+                m_playHistory.Clear();
+                foreach (LastPlayedEpisodeModel e in query)
+                {
+                    PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
+                    m_playHistory.Add(episode);
+                }
+
+                return m_playHistory;
+            }
+
+            private set { }
+        }
+
+        public int PlayHistoryListCount
+        {
+            get
+            {
+                return m_playHistory.Count();
             }
         }
 
@@ -256,28 +287,28 @@ namespace Podcatcher
             }
 
             PlayHistory.InsertOnSubmit(newHistoryItem);
-
             SubmitChanges();
+
+            NotifyPropertyChanged("PlayHistoryListProperty");
         }
 
-        public List<PodcastEpisodeModel> getPlayHistory()
-        {
-            List<PodcastEpisodeModel> playHistory = new List<PodcastEpisodeModel>();
-
+/*        public List<PodcastEpisodeModel> getPlayHistory()
+        {        
             var query = from LastPlayedEpisodeModel e in PlayHistory
                         orderby e.TimeStamp descending
                         select e;
 
+            m_playHistory.Clear();
             foreach (LastPlayedEpisodeModel e in query)
             {
                 PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
-                playHistory.Add(episode);
+                m_playHistory.Add(episode);
             }
 
-            return playHistory;
+            return m_playHistory;
         }
 
-
+        */
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";

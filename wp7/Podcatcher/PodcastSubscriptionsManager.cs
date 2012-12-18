@@ -233,7 +233,7 @@ namespace Podcatcher
         private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
         private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
-        List<PodcastSubscriptionModel> m_subscriptions        = null;
+        private List<PodcastSubscriptionModel> m_subscriptions = null;
         int m_activeGPodderImportsCount                       = 0;
 
         private PodcastSubscriptionsManager()
@@ -470,7 +470,7 @@ namespace Podcatcher
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
         {
             string podcastLogoFilename;
-            if (podcastModel.PodcastLogoUrl == null || String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
+            if (String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
             {
                 // Podcast logo URL is empty - use default placeholder logo.
                 podcastLogoFilename = @"Podcatcher_generic_podcast_cover.png";
