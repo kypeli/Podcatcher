@@ -1,7 +1,7 @@
 2.0.0.0
 ----------
  * Improve player navigation UX so that back stepping history is not lost.
- * Replace player pivot view with play history view.
+ * Replace player pivot view with play history view for current and recent episodes.
  * Tap now playing item to open player
  * Tap recent item to open the subscription.
  * Import your subscriptions from gPodder.net.
@@ -10,6 +10,7 @@
  * Do not lose download queue after restart. 
  * Make podcast episode list view more Windows Phone styles.
  * Add pivot view to the subscritpion view to show all downloaded episodes.
+ * Show episode state next to the episode.
  * Add download progress to the episode listings view.
  * Show download progress in episode listing.
  * Show play progress in episode listing. 
