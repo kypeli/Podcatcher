@@ -69,10 +69,22 @@ namespace Podcatcher
                             select e;
 
                 m_playHistory.Clear();
+                int itemsCount = 0;
                 foreach (LastPlayedEpisodeModel e in query)
                 {
                     PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
+                    if (episode == null)
+                    {
+                        continue;
+                    }
+
                     m_playHistory.Add(episode);
+                    
+                    itemsCount++;
+                    if (itemsCount >= 4)
+                    {
+                        break;
+                    }
                 }
 
                 return m_playHistory;
@@ -270,19 +282,25 @@ namespace Podcatcher
 
         public void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
         {
+            if (episode == null)
+            {
+                Debug.WriteLine("Warning: Trying to add NULL episode to play history.");
+                return;
+            }
+
             LastPlayedEpisodeModel newHistoryItem = new LastPlayedEpisodeModel();
             newHistoryItem.LastPlayedEpisodeId = episode.EpisodeId;
             newHistoryItem.TimeStamp = DateTime.Now;
 
-            if (PlayHistory.Count() >= 4)
+            if (PlayHistory.Count() >= 10)
             {
-                LastPlayedEpisodeModel oldestHistoryItem = (from LastPlayedEpisodeModel e in PlayHistory
-                                                            orderby e.TimeStamp ascending
-                                                            select e).FirstOrDefault();
+                var oldestHistoryItems = (from LastPlayedEpisodeModel e in PlayHistory
+                                         orderby e.TimeStamp ascending
+                                         select e).Skip(10);
 
-                if (oldestHistoryItem != null)
+                if (oldestHistoryItems != null)
                 {
-                    PlayHistory.DeleteOnSubmit(oldestHistoryItem);
+                    PlayHistory.DeleteAllOnSubmit(oldestHistoryItems);
                 }
             }
 
@@ -292,23 +310,6 @@ namespace Podcatcher
             NotifyPropertyChanged("PlayHistoryListProperty");
         }
 
-/*        public List<PodcastEpisodeModel> getPlayHistory()
-        {        
-            var query = from LastPlayedEpisodeModel e in PlayHistory
-                        orderby e.TimeStamp descending
-                        select e;
-
-            m_playHistory.Clear();
-            foreach (LastPlayedEpisodeModel e in query)
-            {
-                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
-                m_playHistory.Add(episode);
-            }
-
-            return m_playHistory;
-        }
-
-        */
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
