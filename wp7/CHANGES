@@ -13,6 +13,7 @@
  * Add download progress to the episode listings view.
  * Show download progress in episode listing.
  * Show play progress in episode listing. 
+ * Compensate for lacking timestamp in feed; supported format is now also "Tue, 18 Dec 2012 06:34"
 
 1.3.0.1
 ----------

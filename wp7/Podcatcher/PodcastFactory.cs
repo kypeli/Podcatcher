@@ -326,19 +326,27 @@ namespace Podcatcher
                 // Empty DateTime returned.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
                 resultDateTime = getDateTimeWithFormat("d MMM yyyy HH:mm:ss", pubDateString);   // Parse as 2 Jun 2012 11:53:25
-            }
+            } 
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Empty DateTime returned.
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm", pubDateString);   // Parse as 2 Jun 2012 11:53
+            } 
 
             if (resultDateTime.Equals(DateTime.MinValue))   
             {
                 // Empty DateTime returned again. This is for you, Hacker Public Radio and the Economist!.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
                 resultDateTime = getDateTimeWithFormat("yyyy-MM-dd", pubDateString);            // Parse as 2012-06-25
-            }
+            } 
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {
                 Debug.WriteLine("ERROR: Could not parse pub date!");
             }
+
             return resultDateTime;
         }
 
