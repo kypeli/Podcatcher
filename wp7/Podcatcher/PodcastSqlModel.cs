@@ -288,10 +288,22 @@ namespace Podcatcher
                 return;
             }
 
-            LastPlayedEpisodeModel newHistoryItem = new LastPlayedEpisodeModel();
-            newHistoryItem.LastPlayedEpisodeId = episode.EpisodeId;
-            newHistoryItem.TimeStamp = DateTime.Now;
+            LastPlayedEpisodeModel existingItem = (from LastPlayedEpisodeModel e in PlayHistory
+                                                   where e.LastPlayedEpisodeId == episode.EpisodeId
+                                                   select e).FirstOrDefault();
 
+            // Episode is already in play history. Just update the timestamp instead of adding a duplicate one. 
+            if (existingItem != null)
+            {
+                existingItem.TimeStamp = DateTime.Now;
+                existingItem.LastPlayedEpisodeId = episode.EpisodeId;
+                SubmitChanges();
+                NotifyPropertyChanged("PlayHistoryListProperty");
+                return;
+            }
+
+            Debug.WriteLine("Play history count: " + PlayHistory.Count());
+            // Clean old history items (if we have more than 10).
             if (PlayHistory.Count() >= 10)
             {
                 var oldestHistoryItems = (from LastPlayedEpisodeModel e in PlayHistory
@@ -303,6 +315,13 @@ namespace Podcatcher
                     PlayHistory.DeleteAllOnSubmit(oldestHistoryItems);
                 }
             }
+
+            // Add a new item.
+            LastPlayedEpisodeModel newHistoryItem = new LastPlayedEpisodeModel();
+            newHistoryItem.LastPlayedEpisodeId = episode.EpisodeId;
+            newHistoryItem.TimeStamp = DateTime.Now;
+
+            Debug.WriteLine("Inserting episode to history with id: " + episode.EpisodeId);
 
             PlayHistory.InsertOnSubmit(newHistoryItem);
             SubmitChanges();
