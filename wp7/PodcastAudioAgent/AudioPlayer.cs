@@ -29,6 +29,7 @@ using System;
 using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
 using System.Diagnostics;
+using System.IO.IsolatedStorage;
 
 namespace PodcastAudioAgent
 {
@@ -92,12 +93,16 @@ namespace PodcastAudioAgent
                     // TODO: Handle the shutdown state here (e.g. save state)
                     break;
                 case PlayState.Unknown:
+                    Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
+                    Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
+                    Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
+                    Debug.WriteLine("Play state: Playing");
                     break;
                 case PlayState.BufferingStarted:
                     break;

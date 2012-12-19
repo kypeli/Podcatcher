@@ -252,6 +252,7 @@ namespace Podcatcher
 
             m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
             m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
+            m_applicationSettings.Save();
         }
 
         private void popFromQueueCache()
@@ -271,6 +272,7 @@ namespace Podcatcher
 
             m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
             m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
+            m_applicationSettings.Save();
         }
 
         private void removeFromQueueCache(PodcastEpisodeModel episode) 
@@ -295,7 +297,7 @@ namespace Podcatcher
 
             m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
             m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
-
+            m_applicationSettings.Save();
         }
 
         private void findCurrentTransfer()
@@ -383,6 +385,7 @@ namespace Podcatcher
 
                 m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
                 m_applicationSettings.Add(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID, m_currentEpisodeDownload.EpisodeId);
+                m_applicationSettings.Save();
 
                 try
                 {

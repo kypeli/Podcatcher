@@ -196,8 +196,6 @@ namespace Podcatcher
             {
                 startPlayback();
             }
-
-            m_currentEpisode.SavedPlayPos = 1;  // To mark that the playback has started - we update UI correctly in podcast listing.
         }
 
         public void streamEpisode(PodcastEpisodeModel episodeModel)
@@ -217,8 +215,6 @@ namespace Podcatcher
                 || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
             {
 
-                addEpisodeToPlayHistory(m_currentEpisode);
-                playbackStopped();
                 showNoPlayerLayout();
                 if (PodcastPlayerStopped != null)
                 {
@@ -227,7 +223,6 @@ namespace Podcatcher
 
                 m_screenUpdateTimer.Stop();
                 BackgroundAudioPlayer.Instance.Stop();
-                BackgroundAudioPlayer.Instance.Track = null;
             }
         }
 
@@ -264,6 +259,7 @@ namespace Podcatcher
                 {
                     // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
                     m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                    m_appSettings.Save();
                     showNoPlayerLayout();
                     return;
                 }
@@ -418,11 +414,13 @@ namespace Podcatcher
 
                 case PlayState.Stopped:
                     // Player stopped
+                    playbackStopped();
                     Debug.WriteLine("Podcast player stopped.");
                     break;
 
                 case PlayState.Shutdown:
                     playbackStopped();
+                    Debug.WriteLine("Podcast player shut down.");
                     break;
 
             }
@@ -430,11 +428,15 @@ namespace Podcatcher
 
         private void playbackStopped()
         {
-            BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
             saveEpisodePlayPosition(m_currentEpisode);
+            addEpisodeToPlayHistory(m_currentEpisode);
             saveEpisodeState(m_currentEpisode);
+            
             m_currentEpisode = null;
+            BackgroundAudioPlayer.Instance.Track = null;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+
+            m_appSettings.Save();
         }
 
         private void saveEpisodeState(PodcastEpisodeModel episode)
