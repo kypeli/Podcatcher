@@ -200,6 +200,10 @@ namespace Podcatcher
 
         public void streamEpisode(PodcastEpisodeModel episodeModel)
         {
+            saveEpisodePlayPosition(m_currentEpisode);
+            addEpisodeToPlayHistory(m_currentEpisode);
+            saveEpisodeState(m_currentEpisode);
+
             StopPlayback();
 
             m_currentEpisode = episodeModel;
