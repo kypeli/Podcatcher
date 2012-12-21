@@ -383,16 +383,12 @@ namespace Podcatcher
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
-            
-            Subscriptions = GetTable<PodcastSubscriptionModel>();
-            Episodes = GetTable<PodcastEpisodeModel>();
-            Settings = GetTable<SettingsModel>();
-            PlayHistory = GetTable<LastPlayedEpisodeModel>();
 
             // Force to check if we have tables or not.
             try
             {
-                IEnumerator<PodcastEpisodeModel> enumEntity = Episodes.GetEnumerator();
+                IEnumerator<PodcastEpisodeModel> enumEntityEpisodes = Episodes.GetEnumerator();
+                IEnumerator<PodcastSubscriptionModel> enumEntitySubscriptions = Subscriptions.GetEnumerator();
             }
             catch (Exception)
             {
@@ -405,6 +401,10 @@ namespace Podcatcher
                 Debug.WriteLine("Recreated database.");
             }
 
+            Subscriptions = GetTable<PodcastSubscriptionModel>();
+            Episodes = GetTable<PodcastEpisodeModel>();
+            Settings = GetTable<SettingsModel>();
+            PlayHistory = GetTable<LastPlayedEpisodeModel>();
         }
 
         private bool isValidSubscriptionModelIndex(int index)
