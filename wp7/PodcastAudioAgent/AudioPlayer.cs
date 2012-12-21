@@ -138,37 +138,60 @@ namespace PodcastAudioAgent
             switch (action)
             {
                 case UserAction.Play:
-                    if (player.PlayerState != PlayState.Playing)
+                    try
                     {
-                        Debug.WriteLine("User.Action: Play");
-                        player.Play();
+                        if (player.PlayerState != PlayState.Playing)
+                        {
+                            Debug.WriteLine("User.Action: Play");
+                            player.Play();
+                        }
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        Debug.WriteLine("Exception: " + e.Message);
                     }
                     break;
                 case UserAction.Stop:
-                    if (player.PlayerState != PlayState.Stopped) {
-
-                        try
-                        {
+                    try
+                    {
+                        if (player.PlayerState != PlayState.Stopped) {    
                             player.Stop();
                             Debug.WriteLine("User.Action: Stop");
                         }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Exception: " + e.InnerException.Message);
-                        }
+                    } 
+                    catch (Exception e)
+                    {
+                       Debug.WriteLine("Exception: " + e.Message);
                     }
                     break;
                 
                 case UserAction.Pause:
                     Debug.WriteLine("User.Action: Pause");
-                    if (player.PlayerState == PlayState.Playing)
+                    try
                     {
-                        player.Pause();
+                        if (player.PlayerState == PlayState.Playing)
+                        {
+                            player.Pause();
+                        }
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        Debug.WriteLine("Exception: " + e.Message);
                     }
                     break;
                 
                 case UserAction.Seek:
-                    player.Position = (TimeSpan)param;
+                    try
+                    {
+                        if (player.PlayerState == PlayState.Playing)
+                        {
+                            player.Position = (TimeSpan)param;
+                        }
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        Debug.WriteLine("Exception: " + e.Message);
+                    }
                     break;
 
                 case UserAction.FastForward:
