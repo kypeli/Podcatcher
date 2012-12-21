@@ -19,5 +19,10 @@ namespace Podcatcher.Views
         {
             InitializeComponent();
         }
+
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            this.PodcastPlayer.initializePlayerUI();
+        }
     }
 }

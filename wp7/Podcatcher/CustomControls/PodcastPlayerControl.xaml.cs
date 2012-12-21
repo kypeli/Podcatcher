@@ -78,15 +78,34 @@ namespace Podcatcher
 
             setupPlayerUI();
 
-            if (BackgroundAudioPlayer.Instance.Track != null)
+            initializePlayerUI();
+        }
+
+        public void initializePlayerUI()
+        {
+            try
             {
-                Debug.WriteLine("Restoring UI for currently playing episode.");
-                showPlayerLayout();
-                restoreEpisodeToPlayerUI();
+                if (BackgroundAudioPlayer.Instance.Track != null)
+                {
+                    Debug.WriteLine("Restoring UI for currently playing episode.");
+                    showPlayerLayout();
+                    restoreEpisodeToPlayerUI();
+                }
+                else
+                {
+                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                    showNoPlayerLayout();
+                }
             }
-            else
+            catch (InvalidOperationException)
             {
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                if (m_currentEpisode != null)
+                {
+                    m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                    m_currentEpisode = null;
+                }
+
                 showNoPlayerLayout();
             }
         }
@@ -474,6 +493,7 @@ namespace Podcatcher
             if (BackgroundAudioPlayer.Instance.Track == null)
             {
                 Debug.WriteLine("Error: Cannot setup player UI when BackgroundAudioPlayer.Instance.Track == null");
+                showNoPlayerLayout();
                 return;
             }
 
@@ -585,7 +605,8 @@ namespace Podcatcher
 
         void m_screenUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (BackgroundAudioPlayer.Instance.Track == null)
+            if (BackgroundAudioPlayer.Instance.Track == null
+                || BackgroundAudioPlayer.Instance.Position == null)
             {
                 return;
             }
