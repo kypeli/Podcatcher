@@ -188,7 +188,16 @@ namespace Podcatcher.ViewModels
         public String EpisodeFileMimeType
         {
             get { return m_episodeFileMimeType; }
-            set { m_episodeFileMimeType = value; }
+            set { 
+                m_episodeFileMimeType = value;
+                if (isPlayable() == false)
+                {
+                    EpisodePlayState = EpisodePlayStateEnum.UnsupportedFormat;
+                    EpisodeDownloadState = EpisodeDownloadStateEnum.UnsupportedFormat;
+                    NotifyPropertyChanged("EpisodePlayState");
+                    NotifyPropertyChanged("EpisodeDownloadState");
+                }
+            }
         }
         
         private long m_episodePlayBookmark;
@@ -239,7 +248,8 @@ namespace Podcatcher.ViewModels
             Downloaded,
             Playing,
             Paused,
-            Streaming
+            Streaming,
+            UnsupportedFormat
         };
 
         public enum EpisodeDownloadStateEnum
@@ -249,7 +259,8 @@ namespace Podcatcher.ViewModels
             Downloading,
             Downloaded,
             WaitingForWiFi,
-            WaitingForWifiAndPower
+            WaitingForWifiAndPower,
+            UnsupportedFormat
         };
 
 
@@ -378,13 +389,12 @@ namespace Podcatcher.ViewModels
 
             get
             {
-                m_shouldShowDownloadButton = playableMimeType(EpisodeFileMimeType)
-                                             && (EpisodeDownloadState == EpisodeDownloadStateEnum.Idle 
+                m_shouldShowDownloadButton = EpisodeDownloadState == EpisodeDownloadStateEnum.Idle 
                                              || EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading 
                                              || EpisodeDownloadState == EpisodeDownloadStateEnum.WaitingForWiFi
                                              || EpisodeDownloadState == EpisodeDownloadStateEnum.WaitingForWifiAndPower
-                                             || EpisodeDownloadState == EpisodeDownloadStateEnum.Queued)   ?
-                                             Visibility.Visible                                            :
+                                             || EpisodeDownloadState == EpisodeDownloadStateEnum.Queued   ?
+                                             Visibility.Visible                                           :
                                              Visibility.Collapsed;
 
                 return m_shouldShowDownloadButton;                                                   
@@ -392,6 +402,23 @@ namespace Podcatcher.ViewModels
 
             private set { }
  
+        }
+
+        private Visibility m_shouldShowPlayButton = Visibility.Collapsed;
+        public Visibility ShouldShowPlayButton
+        {
+
+            get
+            {
+                m_shouldShowPlayButton = EpisodePlayState != EpisodePlayStateEnum.UnsupportedFormat ?
+                                         Visibility.Visible                                         :
+                                         Visibility.Collapsed;
+
+                return m_shouldShowPlayButton;
+            }
+
+            private set { }
+
         }
 
         private bool playableMimeType(string episodeMimeType)
@@ -493,6 +520,9 @@ namespace Podcatcher.ViewModels
                     case EpisodeDownloadStateEnum.WaitingForWifiAndPower:
                         text = "Waiting for WiFi and external power.";
                         break;
+                    case EpisodeDownloadStateEnum.UnsupportedFormat:
+                        text = "Unsupported file format.";
+                        break;
                 }
 
                 if (String.IsNullOrEmpty(text) == false)
@@ -517,6 +547,9 @@ namespace Podcatcher.ViewModels
                         break;
                     case EpisodePlayStateEnum.Paused:
                         text = "Paused.";
+                        break;
+                    case EpisodePlayStateEnum.UnsupportedFormat:
+                        text = "Unsupported file format.";
                         break;
                 }
 

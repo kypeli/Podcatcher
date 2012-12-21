@@ -59,6 +59,7 @@
         				<Image Source="{Binding EpisodeDownloadState, Converter={StaticResource downloadButtonImage}}"/>
         			</Button>
         			<Button Click="PlayButton_Click" 
+                        Visibility="{Binding ShouldShowPlayButton}"
         				IsEnabled="{Binding EpisodePlayState, Converter={StaticResource playButtonActive}}"  
                                 HorizontalAlignment="Right" Margin="0" d:LayoutOverrides="Height" Grid.Column="1" VerticalAlignment="Center"  
                                 >
