@@ -169,12 +169,7 @@ namespace Podcatcher
 
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
 
-            findCurrentTransfer();
-            if (m_currentBackgroundTransfer != null)
-            {
-                processOngoingTransfer();
-            }
-
+            processOngoingTransfer();
             processStoredQueuedTransfers();
         }
 
@@ -190,20 +185,31 @@ namespace Podcatcher
 
         private void processOngoingTransfer()
         {
-            if (m_currentBackgroundTransfer != null
-                && m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID))
+            // If key exists, we know we have need to process a download request.
+            if (m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID))
             {
-                Debug.WriteLine("Found ongoing episode download...");
-
-                m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
-                m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
-
+                Debug.WriteLine("Found a episode download that we need to process.");
                 int downloadingEpisodeId = (int)m_applicationSettings[App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID];
                 m_currentEpisodeDownload = PodcastSqlModel.getInstance().episodeForEpisodeId(downloadingEpisodeId);
-                m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
-                m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
 
-                ProcessTransfer(m_currentBackgroundTransfer);
+                if (BackgroundTransferService.Requests.Count() > 0)
+                {
+                    // Found an ongoing request.
+                    Debug.WriteLine("Found an ongoing transfer...");
+                    m_currentBackgroundTransfer = BackgroundTransferService.Requests.ElementAt(0);
+                    m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
+                    m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+                    m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    ProcessTransfer(m_currentBackgroundTransfer);
+                }
+                else
+                {
+                    // No ongoing requests found. Then we need to process a finished request.
+                    // Probably happened in the background while we were suspended.
+                    Debug.WriteLine("Found a completd request.");
+                    updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
+                    m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
+                }
             }
         }
 
@@ -300,19 +306,6 @@ namespace Podcatcher
             m_applicationSettings.Save();
         }
 
-        private void findCurrentTransfer()
-        {
-            IEnumerable<BackgroundTransferRequest> requests = BackgroundTransferService.Requests;
-            foreach (BackgroundTransferRequest transfer in requests)
-            {
-                if (transfer.TransferStatus == TransferStatus.Transferring)
-                {
-                    m_currentBackgroundTransfer = transfer;
-                    break;
-                }
-            }
-        }
-
         private void removeEpisodeFromDownloadQueue(PodcastEpisodeModel episode)
         {
             m_episodeDownloadQueue.RemoveItem(episode);
@@ -400,7 +393,6 @@ namespace Podcatcher
 
                     BackgroundTransferService.Add(m_currentBackgroundTransfer);
                 }
-
             }
         }
 
@@ -511,9 +503,7 @@ namespace Podcatcher
 #endif
 
                 Debug.WriteLine("Transfer request completed succesfully.");
-                m_currentEpisodeDownload.EpisodeFile = localEpisodeFileName(m_currentEpisodeDownload);
-                m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                m_currentEpisodeDownload.PodcastSubscription.unplayedEpisodesChanged();
+                updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
             }
             else
             {
@@ -558,6 +548,18 @@ namespace Podcatcher
 
             // And start a next round of downloading.
             startNextEpisodeDownload();
+        }
+
+        private void updateEpisodeWhenDownloaded(PodcastEpisodeModel episode)
+        {
+            Debug.WriteLine("Updating episode information for episode when download completed: " + episode.EpisodeName);
+
+            episode.EpisodeFile = localEpisodeFileName(episode);
+            Debug.WriteLine(" * Downloaded file name: " + episode.EpisodeFile);
+            episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+            Debug.WriteLine(" * Episode state: " + episode.EpisodeDownloadState.ToString());
+            episode.PodcastSubscription.unplayedEpisodesChanged();
+            Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.UnplayedEpisodesText);
         }
 
         private void cleanupEpisodeDownload(BackgroundTransferRequest transferRequest)
