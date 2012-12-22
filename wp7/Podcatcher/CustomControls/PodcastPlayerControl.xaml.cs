@@ -352,11 +352,6 @@ namespace Podcatcher
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
             BackgroundAudioPlayer.Instance.Track = playTrack;
 
-            if (position.Ticks > 0) 
-            {
-                BackgroundAudioPlayer.Instance.Position = new TimeSpan(position.Ticks);
-            }
-
             try
             {
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;
@@ -365,6 +360,11 @@ namespace Podcatcher
                 m_appSettings.Save();
 
                 BackgroundAudioPlayer.Instance.Play();
+                if (position.Ticks > 0)
+                {
+                    BackgroundAudioPlayer.Instance.Position = new TimeSpan(position.Ticks);
+                }
+
                 PodcastPlayerStarted(this, new EventArgs());
             }
             catch (Exception)
@@ -605,20 +605,27 @@ namespace Podcatcher
 
         void m_screenUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (BackgroundAudioPlayer.Instance.Track == null
-                || BackgroundAudioPlayer.Instance.Position == null)
-            {
-                return;
-            }
-
             TimeSpan position = TimeSpan.Zero;
             TimeSpan duration = TimeSpan.Zero;
 
-            duration = BackgroundAudioPlayer.Instance.Track.Duration;
-            position = BackgroundAudioPlayer.Instance.Position;
+            try
+            {
+                if (BackgroundAudioPlayer.Instance.Track == null
+                    || BackgroundAudioPlayer.Instance.Position == null)
+                {
+                    return;
+                }
 
-            this.CurrentPositionText.Text = position.ToString("hh\\:mm\\:ss");
-            this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
+                duration = BackgroundAudioPlayer.Instance.Track.Duration;
+                position = BackgroundAudioPlayer.Instance.Position;
+
+                this.CurrentPositionText.Text = position.ToString("hh\\:mm\\:ss");
+                this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
+            }
+            catch (InvalidOperationException ioe)
+            {
+                Debug.WriteLine("Error when updating player: " + ioe.Message);
+            }
 
             settingSliderFromPlay = true;
             if (duration.Ticks > 0)
