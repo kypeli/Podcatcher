@@ -23,6 +23,12 @@ namespace Podcatcher.Views
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             this.PodcastPlayer.initializePlayerUI();
+
+            if (this.PodcastPlayer.PlayingEpisode != null && PodcastSqlModel.getInstance().settings().IsAutoDelete)
+            {
+                PodcastSqlModel.getInstance().startOldEpisodeCleanup(PodcastPlayerControl.getIntance().PlayingEpisode.PodcastSubscription);
+            }
+
         }
     }
 }

@@ -200,15 +200,15 @@ namespace Podcatcher
                     m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                     m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
                     ProcessTransfer(m_currentBackgroundTransfer);
                 }
                 else
                 {
                     // No ongoing requests found. Then we need to process a finished request.
                     // Probably happened in the background while we were suspended.
-                    Debug.WriteLine("Found a completd request.");
+                    Debug.WriteLine("Found a completed request.");
                     updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
-                    m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
                 }
             }
         }
@@ -227,10 +227,21 @@ namespace Podcatcher
             PodcastSqlModel sqlModel = PodcastSqlModel.getInstance();
             foreach(string episodeIdStr in episodeIds) 
             {
+                if (String.IsNullOrEmpty(episodeIdStr))
+                {
+                    continue;
+                }
+
                 try
                 {
                     int episodeId = Int16.Parse(episodeIdStr);
                     PodcastEpisodeModel episode = sqlModel.episodeForEpisodeId(episodeId);
+                    if (episode == null)
+                    {
+                        Debug.WriteLine("Warning: Got NULL episode when processing stored queued download episodes!");
+                        return;
+                    }
+
                     episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
                     m_episodeDownloadQueue.Enqueue(episode);
                 }

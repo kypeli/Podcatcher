@@ -75,6 +75,7 @@ namespace Podcatcher
                     PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
                     if (episode == null)
                     {
+                        Debug.WriteLine("Got NULL episode for play history. This probably means the subscription has been deleted.");
                         continue;
                     }
 
@@ -295,6 +296,7 @@ namespace Podcatcher
             // Episode is already in play history. Just update the timestamp instead of adding a duplicate one. 
             if (existingItem != null)
             {
+                Debug.WriteLine("Found episode already in history. Updating timestamp. Name: " + episode.EpisodeName);
                 existingItem.TimeStamp = DateTime.Now;
                 existingItem.LastPlayedEpisodeId = episode.EpisodeId;
                 SubmitChanges();
@@ -307,11 +309,12 @@ namespace Podcatcher
             if (PlayHistory.Count() >= 10)
             {
                 var oldestHistoryItems = (from LastPlayedEpisodeModel e in PlayHistory
-                                         orderby e.TimeStamp ascending
+                                         orderby e.TimeStamp descending
                                          select e).Skip(10);
 
                 if (oldestHistoryItems != null)
                 {
+                    Debug.WriteLine("Cleaning old episode from history.");
                     PlayHistory.DeleteAllOnSubmit(oldestHistoryItems);
                 }
             }
@@ -321,7 +324,7 @@ namespace Podcatcher
             newHistoryItem.LastPlayedEpisodeId = episode.EpisodeId;
             newHistoryItem.TimeStamp = DateTime.Now;
 
-            Debug.WriteLine("Inserting episode to history with id: " + episode.EpisodeId);
+            Debug.WriteLine("Inserting episode to history: " + episode.EpisodeName);
 
             PlayHistory.InsertOnSubmit(newHistoryItem);
             SubmitChanges();

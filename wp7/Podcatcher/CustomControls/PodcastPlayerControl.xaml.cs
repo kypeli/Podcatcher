@@ -70,42 +70,26 @@ namespace Podcatcher
             }
 
             m_appSettings = IsolatedStorageSettings.ApplicationSettings;
-            
-            if (m_instance == null) 
-            {
-                m_instance = this;                     
-            }
-
             setupPlayerUI();
 
-            initializePlayerUI();
+            if (m_instance == null) 
+            {
+                m_instance = this;
+                initializePlayerUI();
+            }
         }
 
         public void initializePlayerUI()
         {
-            try
+            if (BackgroundAudioPlayer.Instance.Track != null)
             {
-                if (BackgroundAudioPlayer.Instance.Track != null)
-                {
-                    Debug.WriteLine("Restoring UI for currently playing episode.");
-                    showPlayerLayout();
-                    restoreEpisodeToPlayerUI();
-                }
-                else
-                {
-                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                    showNoPlayerLayout();
-                }
+                Debug.WriteLine("Restoring UI for currently playing episode.");
+                showPlayerLayout();
+                restoreEpisodeToPlayerUI();
             }
-            catch (InvalidOperationException)
+            else
             {
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                if (m_currentEpisode != null)
-                {
-                    m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                    m_currentEpisode = null;
-                }
-
                 showNoPlayerLayout();
             }
         }
@@ -257,7 +241,7 @@ namespace Podcatcher
         private static PodcastEpisodeModel m_currentEpisode = null;
         private bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
-        private DispatcherTimer m_screenUpdateTimer = new DispatcherTimer();
+        private DispatcherTimer m_screenUpdateTimer = null;
 
         private void setupPlayerUI()
         {
@@ -266,14 +250,19 @@ namespace Podcatcher
             m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
             m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
 
+            if (m_screenUpdateTimer == null)
+            {
+                m_screenUpdateTimer = new DispatcherTimer();
+            }
+
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
         }
 
         private void restoreEpisodeToPlayerUI()
         {
-            // If we have an episodeId stored in local cache, this means we have that episode playing.
-            // Hence, here we need to reload the episode data from the SQL. 
+            // If we have an episodeId stored in local cache, this means we returned to the app and 
+            // have that episode playing. Hence, here we need to reload the episode data from the SQL. 
             if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
@@ -301,7 +290,13 @@ namespace Podcatcher
                     setupUIForEpisodePaused();
                 }
             }
-            else
+            // We setup the player UI because we started the playback ourselves (no stored
+            // episode ID found from Isolated Storage).
+            else if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                m_screenUpdateTimer.Stop();
+            } 
+            else 
             {
                 showNoPlayerLayout();
                 Debug.WriteLine("WARNING: Could not find episode ID from app settings, so cannot restore player UI with episode information!");
@@ -316,6 +311,7 @@ namespace Podcatcher
 
         private void showNoPlayerLayout()
         {
+            m_screenUpdateTimer.Stop();
             this.NoPlayingLayout.Visibility = Visibility.Visible;
             this.PlayingLayout.Visibility = Visibility.Collapsed;
         }
@@ -359,7 +355,10 @@ namespace Podcatcher
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
 
+                // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
+                // then for some reason it's not honored. 
                 BackgroundAudioPlayer.Instance.Play();
+
                 if (position.Ticks > 0)
                 {
                     BackgroundAudioPlayer.Instance.Position = new TimeSpan(position.Ticks);
@@ -454,7 +453,8 @@ namespace Podcatcher
             saveEpisodePlayPosition(m_currentEpisode);
             addEpisodeToPlayHistory(m_currentEpisode);
             saveEpisodeState(m_currentEpisode);
-            
+
+            m_screenUpdateTimer.Stop();
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
             m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
@@ -533,6 +533,8 @@ namespace Podcatcher
 
         private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
+            m_screenUpdateTimer.Stop();
+
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
@@ -605,6 +607,14 @@ namespace Podcatcher
 
         void m_screenUpdateTimer_Tick(object sender, EventArgs e)
         {
+            Debug.WriteLine("Tick.");
+
+            if (m_currentEpisode == null)
+            {
+                Debug.WriteLine("Warning: Current episode playing is NULL!");
+                return;
+            }
+
             TimeSpan position = TimeSpan.Zero;
             TimeSpan duration = TimeSpan.Zero;
 
