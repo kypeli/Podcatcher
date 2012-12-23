@@ -314,6 +314,7 @@ namespace Podcatcher
 
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
+            m_screenUpdateTimer.Start();
 
             this.NoPlayingLayout.Visibility = Visibility.Collapsed;
             this.PlayingLayout.Visibility = Visibility.Visible;
@@ -498,6 +499,11 @@ namespace Podcatcher
             else
             {
                 m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+            }
+
+            if (m_screenUpdateTimer != null && !m_screenUpdateTimer.IsEnabled)
+            {
+                m_screenUpdateTimer.Start();
             }
 
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
