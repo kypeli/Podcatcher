@@ -501,7 +501,6 @@ namespace Podcatcher
             }
 
             this.PlayButtonImage.Source = m_pauseButtonBitmap;
-            m_screenUpdateTimer.Start();
         }
 
         private void rewButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
