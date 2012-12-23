@@ -55,12 +55,12 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-        	<StackPanel Grid.Row="0" Margin="0,15,0,204" d:LayoutOverrides="VerticalAlignment">
+        	<StackPanel Margin="0,15,0,173" d:LayoutOverrides="VerticalAlignment">
                 <TextBlock TextWrapping="Wrap" x:Name="version" TextAlignment="Center" Margin="0,0,0,16" FontSize="29.333"/>
                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" TextAlignment="Center" Height="86"><Run Text="by Johan Paul"/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="johan@paul.fi"/><Run Text=" "/><LineBreak/><Run Text=" "/><Run Text="Twitter: @kypeli"/></TextBlock>
-                <TextBlock TextWrapping="Wrap" Height="339"><Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with or any other issue, please feel free to contact me! I am more than delighted to receive bug reports."/><LineBreak/><Run Text=" "/><LineBreak/><Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/><LineBreak/><LineBreak/><Run Text="Follow the account @PodcatcherWP on Twitter to get updates regarding Podcatcher."/></TextBlock>
+                <TextBlock TextWrapping="Wrap" Height="360"><Run Text="Thank you for using Podcatcher - I hope you are enjoying it! In case you encounter any podcasts that Podcatcher is having problems dealing with or any other issue, please feel free to contact me! I am more than delighted to receive bug reports."/><LineBreak/><Run Text=" "/><LineBreak/><Run Text="Special thanks go to gPodder.net for providing an awesome podcasting service!"/><LineBreak/><LineBreak/><Run Text="Follow the account @PodcatcherWP on Twitter to get updates regarding Podcatcer."/></TextBlock>
         	</StackPanel>
-            <StackPanel Grid.Row="1" Height="200" VerticalAlignment="Bottom">
+            <StackPanel Grid.Row="1" Height="180" VerticalAlignment="Bottom">
                 <Button x:Name="PurchaseButton" Content="Purchase full version" Click="PurchaseButton_Click" VerticalAlignment="Bottom" Height="77" />
                 <TextBlock x:Name="PurchasedText" TextWrapping="Wrap" Text="Thank you for purchasing Podcatcher!" Margin="8,0,-8,25" VerticalAlignment="Bottom" Style="{StaticResource PhoneTextLargeStyle}"  TextAlignment="Center"/>
             </StackPanel>
