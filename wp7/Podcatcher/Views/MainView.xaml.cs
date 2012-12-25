@@ -42,6 +42,7 @@ using Podcatcher.ViewModels;
 using System.Diagnostics;
 using System.Collections.Specialized;
 using System.IO.IsolatedStorage;
+using Microsoft.Phone.Tasks;
 
 namespace Podcatcher
 {
@@ -60,17 +61,17 @@ namespace Podcatcher
         {
             InitializeComponent();
 
-            // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
-            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
-            m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
-
-            m_subscriptionsManager.refreshSubscriptions();
-
-            // Post-pageinitialization event call hookup.
-
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
             ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
+
+            // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
+            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+            m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
+            m_subscriptionsManager.refreshSubscriptions();
+
+            m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
+            this.PlayHistoryList.DataContext = m_podcastsModel;
 
             // Hook to the event when the podcast player starts playing. 
             m_playerControl = PodcastPlayerControl.getIntance();
@@ -79,9 +80,7 @@ namespace Podcatcher
             // Hook to SQL events.
             PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
 
-            m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
-
-            this.PlayHistoryList.DataContext = m_podcastsModel;
+            handleShowReviewPopup();
         }
 
         void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)
@@ -212,33 +211,31 @@ namespace Podcatcher
             NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
         }
 
-/*        private List<PodcastEpisodeModel> playHistoryEpisodes()
+        private void handleShowReviewPopup()
         {
-            List<PodcastEpisodeModel> history = new List<PodcastEpisodeModel>();
-
-            if (m_applicationSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY) == false)
+            if (m_applicationSettings.Contains(App.LSKEY_PODCATCHER_STARTS))
             {
-                m_applicationSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, "");
-                return history;
-            }
-
-            List<string> historyIds = (m_applicationSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(',').ToList();
-
-            foreach (string id in historyIds)
-            {
-                if (String.IsNullOrEmpty(id))
+                int podcatcherStarts = (int)m_applicationSettings[App.LSKEY_PODCATCHER_STARTS];
+                if (podcatcherStarts > App.PODCATCHER_NEW_STARTS_BEFORE_SHOWING_REVIEW)
                 {
-                    continue;
+                    m_applicationSettings.Remove(App.LSKEY_PODCATCHER_STARTS);
+
+                    if (MessageBox.Show("Would you now like to review Podcatcher on Windows Phone Marketplace?",
+                                        "I hope you are enjoying Podcatcher!",
+                        MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
+                        marketplaceReviewTask.Show();
+                    }
+                }
+                else
+                {
+                    m_applicationSettings.Remove(App.LSKEY_PODCATCHER_STARTS);
+                    m_applicationSettings.Add(App.LSKEY_PODCATCHER_STARTS, ++podcatcherStarts);
                 }
 
-                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(Int16.Parse(id));
-                if (episode != null)
-                {
-                    history.Add(episode);
-                }
+                m_applicationSettings.Save();
             }
-
-            return history;
-        } */
+        }
     }
 }

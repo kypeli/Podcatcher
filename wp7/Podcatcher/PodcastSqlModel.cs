@@ -35,6 +35,7 @@ using System.Data.Linq;
 using Microsoft.Phone.Data.Linq;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -352,6 +353,12 @@ namespace Podcatcher
                 updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
+
+                // Here we can determine if this was a new install or not. If yes, we install a key 
+                // to count how many times the app has been restarted.
+                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+                settings.Add(App.LSKEY_PODCATCHER_STARTS, 1);
+                settings.Save();
             }
 
 

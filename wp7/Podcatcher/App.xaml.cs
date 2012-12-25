@@ -51,6 +51,9 @@ namespace Podcatcher
         public const string LSKEY_PODCAST_DOWNLOAD_QUEUE            = "dl_queue";
         // Key for storing the play history information in.
         public const string LSKEY_PODCAST_PLAY_HISTORY              = "play_history";
+        // Key for determining how many restarts there's been since installing the app.
+        public const string LSKEY_PODCATCHER_STARTS                 = "podcatcher_starts";
+        public const int PODCATCHER_NEW_STARTS_BEFORE_SHOWING_REVIEW = 10;
         
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR = "dl_withCellular";
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI = "dl_withWifi";
