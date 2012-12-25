@@ -16,6 +16,7 @@
  * Show play progress in episode listing. 
  * Fix handling of downloads when we are suspended in the background.
  * Compensate for lacking timestamp in feed; supported format is now also "Tue, 18 Dec 2012 06:34"
+ * Increase the volume level of podcast audio playback.
 
 1.3.0.1
 ----------
