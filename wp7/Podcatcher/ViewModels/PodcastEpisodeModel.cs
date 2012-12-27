@@ -136,8 +136,7 @@ namespace Podcatcher.ViewModels
                     return "";
                 }
 
-                string format = "dd MMM yyyy";
-                return m_published.ToString(format); 
+                return m_published.ToString("d"); 
             }
         }
         
