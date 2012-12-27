@@ -11,7 +11,7 @@
 	<StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
 		<Image Source="{Binding PodcastLogo}" Width="150" VerticalAlignment="Center" Margin="0,0,10,0" Height="150"/>
 		<StackPanel Width="300">
-			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Center" Margin="0,10,0,5" Width="300" VerticalAlignment="Center" TextTrimming="WordEllipsis"/>
+			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Center" Margin="0,10,0,5" Width="300" VerticalAlignment="Center" TextWrapping="Wrap"/>
             <TextBlock x:Name="NumberOfEpisodes" Text="{Binding UnplayedEpisodesText}" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,10,0,0"/>
 		</StackPanel>
 	    <TextBlock TextWrapping="Wrap" Text="{Binding NewEpisodesCount}" Width="55" TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" HorizontalAlignment="Left" Margin="5,0,0,0"/>
