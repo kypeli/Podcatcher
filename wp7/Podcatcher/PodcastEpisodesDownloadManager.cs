@@ -199,8 +199,12 @@ namespace Podcatcher
                     m_currentBackgroundTransfer = BackgroundTransferService.Requests.ElementAt(0);
                     m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
                     m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
+                    
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
+                    m_currentEpisodeDownload.DownloadRequest = m_currentBackgroundTransfer;
+                    
                     m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
+                    
                     ProcessTransfer(m_currentBackgroundTransfer);
                 }
                 else
@@ -209,6 +213,7 @@ namespace Podcatcher
                     // Probably happened in the background while we were suspended.
                     Debug.WriteLine("Found a completed request.");
                     updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
+                    m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
                 }
             }
         }
@@ -222,6 +227,10 @@ namespace Podcatcher
 
             // This will return a comma separated list of episode IDs that are queued for downloading.
             string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
+            if (String.IsNullOrEmpty(queuedSettingsString))
+            {
+                return;
+            }
 
             List<string> episodeIds = queuedSettingsString.Split(',').ToList();
             PodcastSqlModel sqlModel = PodcastSqlModel.getInstance();
