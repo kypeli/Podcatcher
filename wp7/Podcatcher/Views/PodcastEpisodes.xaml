@@ -55,7 +55,7 @@
         		</controls:PivotItem>
 
             <!--Episodes listing -->
-        		<controls:PivotItem Header="downloads" Margin="12,8,12,0">
+        		<controls:PivotItem Header="downloaded" Margin="12,8,12,0">
         			<Grid Background="Transparent">
         				<ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
         					<ListBox.ItemTemplate>
