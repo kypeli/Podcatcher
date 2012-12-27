@@ -13,7 +13,7 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d" d:DesignHeight="696" d:DesignWidth="480"
+    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True"
     Style="{StaticResource TurnstilePage}">
 
@@ -23,67 +23,69 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <controls:Pivot x:Name="NavigationPivot" Grid.Row="1" SelectionChanged="NavigationPivot_SelectionChanged">
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="480" Height="760">
+            <TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap" FontSize="23" Margin="20,0,12,0"/>
+        	<controls:Pivot x:Name="NavigationPivot" SelectionChanged="NavigationPivot_SelectionChanged" Height="762" Margin="0">
             <!--Episodes listing -->
-            <controls:PivotItem Header="{Binding PodcastName}">
-                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="554"  Width="456">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="150"/>
-                        <RowDefinition Height="0"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
+        		<controls:PivotItem Header="episodes" Margin="12,8,12,0">
+        			<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="640"  Width="456">
+        				<Grid.RowDefinitions>
+        					<RowDefinition Height="150"/>
+        					<RowDefinition Height="0"/>
+        					<RowDefinition/>
+        				</Grid.RowDefinitions>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="160" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Image Grid.Row="0" Grid.Column="0" Source="{Binding PodcastLogo}" Width="150" Height="150" VerticalAlignment="Top" Margin="5,0" />
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding PodcastDescription}"  TextWrapping="Wrap" Height="Auto" Margin="17,0,0,0" VerticalAlignment="Top" FontSize="16" />
+        				<Grid.ColumnDefinitions>
+        					<ColumnDefinition Width="160" />
+        					<ColumnDefinition Width="*" />
+        				</Grid.ColumnDefinitions>
+        				<Image Grid.Row="0" Grid.Column="0" Source="{Binding PodcastLogo}" Width="150" Height="150" VerticalAlignment="Top" Margin="5,0,12,0" />
+        				<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding PodcastDescription}"  TextWrapping="Wrap" Height="Auto" Margin="17,0,0,0" VerticalAlignment="Top" FontSize="16" />
 
-                    <ListBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="EpisodeList" Height="Auto" Margin="0,10,0,0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
-                                    <pc:PodcastEpisodeControl x:Name="EpisodeControl"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
-            </controls:PivotItem>
+        				<ListBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="EpisodeList" Height="Auto" Margin="0,10,0,0">
+        					<ListBox.ItemTemplate>
+        						<DataTemplate>
+        							<StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
+        								<pc:PodcastEpisodeControl x:Name="EpisodeControl"/>
+        							</StackPanel>
+        						</DataTemplate>
+        					</ListBox.ItemTemplate>
+        				</ListBox>
+        			</Grid>
+        		</controls:PivotItem>
 
             <!--Episodes listing -->
-            <controls:PivotItem Header="downloaded episodes">
-                <Grid Background="Transparent">
-                    <ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
-                                    <pc:PodcastEpisodeControl x:Name="DownloadedEpisodeControl"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+        		<controls:PivotItem Header="downloads" Margin="12,8,12,0">
+        			<Grid Background="Transparent">
+        				<ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
+        					<ListBox.ItemTemplate>
+        						<DataTemplate>
+        							<StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
+        								<pc:PodcastEpisodeControl x:Name="DownloadedEpisodeControl"/>
+        							</StackPanel>
+        						</DataTemplate>
+        					</ListBox.ItemTemplate>
+        				</ListBox>
 
-                    <TextBlock Text="No downloaded episodes."
-                             Visibility="{Binding PlayableEpisodes, 
-                                Converter={StaticResource noDownloadedEpisodesVIsible}}" 
-                             VerticalAlignment="Center" 
-                             HorizontalAlignment="Center" 
-                             TextWrapping="Wrap" 
-                             TextAlignment="Center" 
-                             Style="{StaticResource PhoneTextGroupHeaderStyle}" 
-                             Margin="34,96,32,278" />
-                </Grid>
-            </controls:PivotItem>
+        				<TextBlock Text="No downloaded episodes."
+        					Visibility="{Binding PlayableEpisodes, Converter={StaticResource noDownloadedEpisodesVIsible}}" 
+        					VerticalAlignment="Center" 
+        					HorizontalAlignment="Center" 
+        					TextWrapping="Wrap" 
+        					TextAlignment="Center" 
+        					Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+        					Margin="34,96,32,278" />
+        			</Grid>
+        		</controls:PivotItem>
 
-        </controls:Pivot>
+        	</controls:Pivot>
+        </StackPanel>
     </Grid>
 
 
     <!--Sample code showing usage of ApplicationBar-->
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Opacity="0.7">
             <shell:ApplicationBarIconButton IconUri="/Images/settings.png" Text="Settings" Click="ApplicationBarSettingsButton_Click" />
 <!--            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
             <shell:ApplicationBar.MenuItems>
