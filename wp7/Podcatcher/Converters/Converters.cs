@@ -207,6 +207,22 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class NewEpisodesTextVisible : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            String newEpisodesText = value as String;
+            if (String.IsNullOrEmpty(newEpisodesText) == false)
+            {
+                return Visibility.Visible;
+            }
 
+            return Visibility.Collapsed;
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
 }

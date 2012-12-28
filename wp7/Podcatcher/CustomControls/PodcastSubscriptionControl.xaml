@@ -4,17 +4,25 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"    
+    xmlns:c="clr-namespace:Podcatcher.Converters"
 	mc:Ignorable="d"
 	x:Class="Podcatcher.PodcastSubscriptionControl"
 	d:DesignWidth="480" Margin="0">
-
+    
+    <UserControl.Resources>
+        <c:NewEpisodesTextVisible x:Name="newEpisodesTextVisible"/>
+    </UserControl.Resources>
+    
 	<StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
 		<Image Source="{Binding PodcastLogo}" Width="150" VerticalAlignment="Center" Margin="0,0,10,0" Height="150"/>
-		<StackPanel Width="300">
-			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Center" Margin="0,10,0,5" Width="300" VerticalAlignment="Center" TextWrapping="Wrap"/>
-            <TextBlock x:Name="NumberOfEpisodes" Text="{Binding UnplayedEpisodesText}" TextWrapping="Wrap" Style="{StaticResource PhoneTextSmallStyle}" Margin="0,10,0,0"/>
+		<StackPanel Width="319">
+			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" Margin="0,10,0,0" VerticalAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Left" Width="300"/>
+			<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <TextBlock x:Name="NumberOfEpisodes" Text="{Binding NumberOfEpisodesText}" Foreground="#99FFFFFF" TextWrapping="Wrap" FontSize="20" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextVisible}}" x:Name="Separator" TextWrapping="Wrap" Text=" / " FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#99FFFFFF" Margin="3,0"/>
+                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextVisible}}" x:Name="NewEpisodes" Text="{Binding NewEpisodesText}"  TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" FontSize="20" Foreground="{StaticResource PhoneAccentBrush}"/>
+			</StackPanel>
 		</StackPanel>
-	    <TextBlock TextWrapping="Wrap" Text="{Binding NewEpisodesCount}" Width="55" TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource PhoneTextLargeStyle}" Foreground="{StaticResource PhoneAccentBrush}" HorizontalAlignment="Left" Margin="5,0,0,0"/>
 		<toolkit:ContextMenuService.ContextMenu>
 			<toolkit:ContextMenu>
 				<toolkit:MenuItem Header="Unsubscribe" Click="MenuItemDelete_Click" />

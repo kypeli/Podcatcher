@@ -206,24 +206,24 @@ namespace Podcatcher.ViewModels
 
         [Column]
         private int m_newEpisodesCount;
-        public String NewEpisodesCount
+        public int NewEpisodesCount
         {
             get
             {
                 if (m_newEpisodesCount == 0)
                 {
-                    return "";
+                    return 0;
                 }
 
-                return m_newEpisodesCount.ToString();
+                return m_newEpisodesCount;
             }
 
             set
             {
-                if (m_newEpisodesCount.ToString() != value)
+                if (m_newEpisodesCount != value)
                 {
-                    m_newEpisodesCount = int.Parse(value);
-                    NotifyPropertyChanged("NewEpisodesCount");
+                    m_newEpisodesCount = value;
+                    NotifyPropertyChanged("NewEpisodesText");
                 }
             }
         }
@@ -300,7 +300,7 @@ namespace Podcatcher.ViewModels
             set
             {
                 m_episodesCount = value;
-                NotifyPropertyChanged("UnplayedEpisodesText");
+                NotifyPropertyChanged("NumberOfEpisodesText");
             }
 
         }
@@ -348,11 +348,11 @@ namespace Podcatcher.ViewModels
 
             set
             {
-                NotifyPropertyChanged("UnplayedEpisodesText");
+                NotifyPropertyChanged("NumberOfEpisodesText");
             }
         }
 
-        public String UnplayedEpisodesText
+        public String NumberOfEpisodesText
         {
             get
             {
@@ -363,6 +363,21 @@ namespace Podcatcher.ViewModels
                 else
                 {
                     return String.Format("{0} episodes", Episodes.Count());
+                }
+            }
+        }
+
+        public String NewEpisodesText 
+        {
+            get
+            {
+                if (NewEpisodesCount > 0)
+                {
+                    return String.Format("{0} new", NewEpisodesCount);
+                }
+                else
+                {
+                    return "";
                 }
             }
         }
@@ -449,7 +464,7 @@ namespace Podcatcher.ViewModels
 
         public void addNumOfNewEpisodes(int newPodcastEpisodes)
         {
-            NewEpisodesCount = (m_newEpisodesCount + newPodcastEpisodes).ToString();
+            NewEpisodesCount = m_newEpisodesCount + newPodcastEpisodes;
         }
 
         /************************************* Private implementation *******************************/
