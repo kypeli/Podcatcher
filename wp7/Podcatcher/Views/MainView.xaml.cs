@@ -70,6 +70,9 @@ namespace Podcatcher
             m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
             m_subscriptionsManager.refreshSubscriptions();
 
+            // Hook to SkyDrive export events
+            m_subscriptionsManager.OnOPMLExportToSkydriveChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnOPMLExportToSkydriveChanged);
+
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
             this.PlayHistoryList.DataContext = m_podcastsModel;
 
@@ -87,6 +90,7 @@ namespace Podcatcher
         {
             if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted)
             {
+                ProgressText.Text = "Ubsubscribing";
                 deleteProgressOverlay.Visibility = Visibility.Visible;
             }
 
@@ -106,6 +110,20 @@ namespace Podcatcher
             if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing)
             {
                 UpdatingIndicator.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        void m_subscriptionsManager_OnOPMLExportToSkydriveChanged(object source, SubscriptionManagerArgs e)
+        {
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.StartedSkydriveExport)
+            {
+                ProgressText.Text = "Exporting to SkyDrive";
+                deleteProgressOverlay.Visibility = Visibility.Visible;
+            }
+
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedSkydriveExport)
+            {
+                deleteProgressOverlay.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -240,8 +258,8 @@ namespace Podcatcher
 
         private void ExportSubscriptionsMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Export subscriptions via email",
-                                "This will export your podcast subscriptions information in OPML format via email. Do you want to continue?",
+            if (MessageBox.Show("This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?",
+                                "Export subscriptions to SkyDrive",
                                 MessageBoxButton.OKCancel) == MessageBoxResult.OK) 
             {
                 PodcastSubscriptionsManager.getInstance().exportSubscriptions();
