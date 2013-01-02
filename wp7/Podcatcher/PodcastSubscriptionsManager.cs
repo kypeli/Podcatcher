@@ -609,7 +609,7 @@ namespace Podcatcher
         private void DoOPMLExport()
         {
             String dateCreated = DateTime.Now.ToString("r");
-            String opmlExportFileName = String.Format("PodcatcherSubscriptions_{0}.opml.xml", DateTime.Now.ToString("MM_dd_yyyy"));
+            String opmlExportFileName = String.Format("PodcatcherSubscriptions_{0}.opml.xml", DateTime.Now.ToString("dd_MM_yyyy"));
 
             using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
             {
