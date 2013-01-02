@@ -139,6 +139,7 @@
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.add.rest.png" Text="Add" Click="AddSubscriptionIconButton_Click" />
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Settings" Click="SettingsIconButton_Click"/>
+                <shell:ApplicationBarMenuItem Text="Export subscriptions" Click="ExportSubscriptionsMenuItem_Click"/>
                 <shell:ApplicationBarMenuItem Text="About" Click="AboutSubscriptionIconButton_Click"/>
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>

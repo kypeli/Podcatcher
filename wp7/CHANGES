@@ -1,3 +1,7 @@
+2.1.0.0
+----------
+ * Podcast subscriptions export via email in OPML format.
+
 2.0.0.0
 ----------
  * Improve player navigation UX so that back stepping history is not lost.

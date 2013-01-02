@@ -38,6 +38,8 @@ using Podcatcher.ViewModels;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Xml;
+using Microsoft.Phone.Tasks;
 
 namespace Podcatcher
 {
@@ -225,6 +227,65 @@ namespace Podcatcher
             wc.DownloadStringAsync(gpodderImportUri);
 
             Debug.WriteLine("Importing from gPodder for user, " + nc.UserName + ", URL: " + gpodderImportUri.ToString());
+        }
+
+        public void exportSubscriptions()
+        {
+            List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+            if (subscriptions.Count == 0)
+            {
+                MessageBox.Show("No subscriptions to export.");
+                return;
+            }
+
+            String dateCreated = DateTime.Now.ToString("r");
+            StringBuilder opmlString = new StringBuilder();
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.Encoding = Encoding.UTF8;
+            using (XmlWriter writer = XmlWriter.Create(opmlString, settings))
+            {
+                /** OPML root */
+                writer.WriteStartElement("opml");
+                writer.WriteAttributeString("version", "2.0");
+
+                /** Head */
+                writer.WriteStartElement("head");
+                // title
+                writer.WriteStartElement("title");
+                writer.WriteString("My subscriptions from Podcatcher");
+                writer.WriteEndElement();
+                // dateCreated
+                writer.WriteStartElement("dateCreated");
+                writer.WriteString(dateCreated);
+                writer.WriteEndElement();
+
+                /** Body */
+                writer.WriteStartElement("body");
+                // Each outline
+                foreach (PodcastSubscriptionModel s in subscriptions)
+                {
+                    writer.WriteStartElement("outline");
+                    writer.WriteAttributeString("title", s.PodcastName);
+                    writer.WriteAttributeString("xmlUrl", s.PodcastRSSUrl);
+                    writer.WriteAttributeString("type", "rss");
+                    writer.WriteAttributeString("text", s.PodcastDescription);
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+
+                // Finish the document
+                writer.WriteEndDocument();
+                writer.Flush();
+            }
+
+            Debug.WriteLine("OPML: " + opmlString.ToString());
+
+            EmailComposeTask emailTask = new EmailComposeTask();
+            emailTask.Subject = "Podcast subscriptions from Podcatcher.";
+            emailTask.Body = opmlString.ToString();
+            emailTask.Show();
         }
 
         /************************************* Private implementation *******************************/
@@ -531,5 +592,6 @@ namespace Podcatcher
             addSubscriptionFromURL(podcastRss, true);
         }
         #endregion
+
     }
 }

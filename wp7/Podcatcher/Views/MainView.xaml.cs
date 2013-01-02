@@ -222,7 +222,7 @@ namespace Podcatcher
 
                     if (MessageBox.Show("Would you now like to review Podcatcher on Windows Phone Marketplace?",
                                         "I hope you are enjoying Podcatcher!",
-                        MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                                        MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
                         MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
                         marketplaceReviewTask.Show();
@@ -235,6 +235,16 @@ namespace Podcatcher
                 }
 
                 m_applicationSettings.Save();
+            }
+        }
+
+        private void ExportSubscriptionsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Export subscriptions via email",
+                                "This will export your podcast subscriptions information in OPML format via email. Do you want to continue?",
+                                MessageBoxButton.OKCancel) == MessageBoxResult.OK) 
+            {
+                PodcastSubscriptionsManager.getInstance().exportSubscriptions();
             }
         }
     }
