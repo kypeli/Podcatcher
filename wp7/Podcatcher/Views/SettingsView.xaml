@@ -50,8 +50,8 @@
                 </ScrollViewer>
             </controls:PivotItem>
 
-            <!-- Download settings -->
-            <controls:PivotItem Header="downloads">
+            <!-- Subscription settings -->
+            <controls:PivotItem Header="subscriptions">
                 <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
                     <StackPanel Margin="0,0,8,8">
                         <StackPanel Margin="0,9,12,0">
@@ -61,6 +61,18 @@
                             </StackPanel>
                             <TextBlock TextWrapping="Wrap" Text="If you turn this off, episodes will never be downloaded using cellular data. NOTE: Windows Phone will not download episodes larger than 20 MB over cellular network even if you turn this on." Style="{StaticResource PhoneTextSubtleStyle}"/>
                         </StackPanel>
+                        
+                        <StackPanel Margin="0,9,12,0">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock TextWrapping="Wrap" Text="Export subscriptions" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Left"/>
+                                <toolkit:ListPicker x:Name="ExportMode" SelectedIndex="{Binding SelectedExportIndex, Mode=TwoWay}">
+                                    <toolkit:ListPickerItem>To SkyDrive</toolkit:ListPickerItem>
+                                    <toolkit:ListPickerItem>Via email</toolkit:ListPickerItem>
+                                </toolkit:ListPicker>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="You can select weather you want to export your subscriptions OPML file to your SkyDrive account or send the content via email." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                        </StackPanel>
+
                     </StackPanel>
                 </ScrollViewer>
             </controls:PivotItem>

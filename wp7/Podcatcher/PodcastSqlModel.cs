@@ -41,7 +41,7 @@ namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const int DB_VERSION = 5;
+        private const int DB_VERSION = 6;
 
         /************************************* Public properties *******************************/
 
@@ -388,6 +388,11 @@ namespace Podcatcher
                     updater.AddColumn<PodcastSubscriptionModel>("Username");
                     updater.AddColumn<PodcastSubscriptionModel>("Password");
                     updater.AddTable<LastPlayedEpisodeModel>();
+                }
+
+                if (updater.DatabaseSchemaVersion < 6)
+                {
+                    updater.AddColumn<SettingsModel>("SelectedExportIndex");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;

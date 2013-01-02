@@ -246,15 +246,21 @@ namespace Podcatcher
             }
 
 
-            if (liveConnect == null)
+            if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
             {
-                loginUserToSkyDrive();
+                if (liveConnect == null)
+                {
+                    loginUserToSkyDrive();
+                }
+                else
+                {
+                    DoOPMLExport();
+                }
             }
-            else
+            else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
             {
                 DoOPMLExport();
             }
-
         }
 
         /************************************* Private implementation *******************************/
@@ -602,10 +608,6 @@ namespace Podcatcher
 
         private void DoOPMLExport()
         {
-            SubscriptionManagerArgs args = new SubscriptionManagerArgs();
-            args.state = SubscriptionsState.StartedSkydriveExport;
-            OnOPMLExportToSkydriveChanged(this, args);
-
             String dateCreated = DateTime.Now.ToString("r");
             String opmlExportFileName = String.Format("PodcatcherSubscriptions_{0}.opml.xml", DateTime.Now.ToString("MM_dd_yyyy"));
 
@@ -653,15 +655,38 @@ namespace Podcatcher
                 }
 
                 isoStream.Seek(0, SeekOrigin.Begin);
-                liveConnect.UploadCompleted += new EventHandler<LiveOperationCompletedEventArgs>(opmlLiveOperation_UploadCompleted);
-                liveConnect.UploadAsync("me/skydrive", opmlExportFileName, isoStream, OverwriteOption.Overwrite, null);
-            }
 
-/*          EmailComposeTask emailTask = new EmailComposeTask();
+                if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                {
+                    SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                    args.state = SubscriptionsState.StartedSkydriveExport;
+                    OnOPMLExportToSkydriveChanged(this, args);
+
+                    exportToSkyDrive(opmlExportFileName, isoStream);
+                }
+                else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+                {
+                    exportViaEmail(isoStream);
+                }
+
+            }
+        }
+
+        private void exportToSkyDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
+        {
+            liveConnect.UploadCompleted += new EventHandler<LiveOperationCompletedEventArgs>(opmlLiveOperation_UploadCompleted);
+            liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite, null);
+        }
+
+        private void exportViaEmail(IsolatedStorageFileStream isoStream)
+        {
+            StreamReader reader = new StreamReader(isoStream);
+            String emailBody = reader.ReadToEnd();
+
+            EmailComposeTask emailTask = new EmailComposeTask();
             emailTask.Subject = "Podcast subscriptions from Podcatcher.";
-            emailTask.Body = opmlString.ToString();
+            emailTask.Body = emailBody;
             emailTask.Show();
- */
         }
 
         private void opmlLiveOperation_UploadCompleted(object sender, LiveOperationCompletedEventArgs args)
@@ -672,7 +697,7 @@ namespace Podcatcher
 
             if (args.Error == null)
             {
-                MessageBox.Show("Uploaded to SkyDrive succesfully!");
+                MessageBox.Show("Exported to SkyDrive succesfully!");
 
             }
             else

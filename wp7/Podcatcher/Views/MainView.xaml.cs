@@ -258,8 +258,18 @@ namespace Podcatcher
 
         private void ExportSubscriptionsMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?",
-                                "Export subscriptions to SkyDrive",
+            String exportNotificationText = "";
+            if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive) 
+            {
+                exportNotificationText = "This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?";
+            }
+            else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+            {
+                exportNotificationText = "This will export your podcast subscriptions information in OPML format via email. Do you want to continue?";
+            }
+
+            if (MessageBox.Show(exportNotificationText,
+                                "Export subscriptions in OPML format",
                                 MessageBoxButton.OKCancel) == MessageBoxResult.OK) 
             {
                 PodcastSubscriptionsManager.getInstance().exportSubscriptions();

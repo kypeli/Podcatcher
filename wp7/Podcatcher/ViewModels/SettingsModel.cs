@@ -18,6 +18,12 @@ namespace Podcatcher.ViewModels
     [Table]
     public class SettingsModel
     {
+        public enum ExportMode
+        {
+            ExportToSkyDrive,
+            ExportViaEmail
+        };
+
         private int m_settingsId;
         [Column(IsPrimaryKey = true, CanBeNull = false, IsDbGenerated = true)]
         public int SettingsId
@@ -76,6 +82,24 @@ namespace Podcatcher.ViewModels
                 if (m_TryUseCellularData != value)
                 {
                     m_TryUseCellularData = value;
+                }
+            }
+        }
+
+        private int m_SelectedExportIndex = 0;
+        [Column(DbType = "INT DEFAULT 0 NOT NULL")]
+        public int SelectedExportIndex
+        {
+            get
+            {
+                return m_SelectedExportIndex;
+            }
+
+            set
+            {
+                if (m_SelectedExportIndex != value)
+                {
+                    m_SelectedExportIndex = value;
                 }
             }
         }
