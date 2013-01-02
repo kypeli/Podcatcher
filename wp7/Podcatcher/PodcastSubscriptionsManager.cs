@@ -633,6 +633,8 @@ namespace Podcatcher
                     writer.WriteStartElement("dateCreated");
                     writer.WriteString(dateCreated);
                     writer.WriteEndElement();
+                    /** End Head */
+                    writer.WriteEndElement();  
 
                     /** Body */
                     writer.WriteStartElement("body");
@@ -647,6 +649,7 @@ namespace Podcatcher
                         writer.WriteAttributeString("text", s.PodcastDescription);
                         writer.WriteEndElement();
                     }
+                    /** End Body */
                     writer.WriteEndElement();
 
                     // Finish the document
