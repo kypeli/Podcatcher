@@ -1,6 +1,7 @@
 2.1.0.0
 ----------
  * Podcast subscriptions export via email or SkyDrive in OPML format.
+ * Fix: Check for NULL in podcast logo when subscribing to a podcast.
 
 2.0.0.0
 ----------

@@ -507,7 +507,8 @@ namespace Podcatcher
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
         {
             string podcastLogoFilename;
-            if (String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
+            if (podcastModel.PodcastLogoUrl == null 
+                || String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
             {
                 // Podcast logo URL is empty - use default placeholder logo.
                 podcastLogoFilename = @"Podcatcher_generic_podcast_cover.png";
@@ -671,14 +672,13 @@ namespace Podcatcher
                 {
                     exportViaEmail(isoStream);
                 }
-
             }
         }
 
         private void exportToSkyDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
         {
             liveConnect.UploadCompleted += new EventHandler<LiveOperationCompletedEventArgs>(opmlLiveOperation_UploadCompleted);
-            liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite, null);
+            liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite);
         }
 
         private void exportViaEmail(IsolatedStorageFileStream isoStream)
@@ -708,7 +708,6 @@ namespace Podcatcher
                 MessageBox.Show("There was an error uploading to SkyDrive. Please try again.");
             }
         }
-
         #endregion
 
     }
