@@ -90,7 +90,7 @@ namespace Podcatcher
         {
             if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted)
             {
-                ProgressText.Text = "Ubsubscribing";
+                ProgressText.Text = "Unsubscribing";
                 deleteProgressOverlay.Visibility = Visibility.Visible;
             }
 
