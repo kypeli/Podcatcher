@@ -528,34 +528,40 @@ namespace Podcatcher
             else
             {
                 Debug.WriteLine("Transfer request completed with error code: " + transferRequest.StatusCode + ", " + transferRequest.TransferError);
-
-                // If error code is 200 but we still got an error, this means the max. transfer size exceeded.
-                // This is because the podcast feed announced a different download size than what the file actually is.
-                // If user wants, we can try again with larger file download size policy.
-                if (transferRequest.StatusCode == 200)
+                switch (transferRequest.StatusCode)
                 {
-                    Debug.WriteLine("Maxiumum download size exceeded. Shall we try again?");
+                    // If error code is 200 but we still got an error, this means the max. transfer size exceeded.
+                    // This is because the podcast feed announced a different download size than what the file actually is.
+                    // If user wants, we can try again with larger file download size policy.
+                    case 200:
+                        Debug.WriteLine("Maxiumum download size exceeded. Shall we try again?");
 
-                    if (MessageBox.Show("Podcast feed announced wrong file size. Do you want to download again with larger file download settings?",
-                                        "Podcast download failed",
-                        MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                    {
-                        if (MessageBox.Show("Please connect your phone to an external power source and to a WiFi network.",
-                                            "Attention",
-                            MessageBoxButton.OK) == MessageBoxResult.OK)
+                        if (MessageBox.Show("Podcast feed announced wrong file size. Do you want to download again with larger file download settings?",
+                                            "Podcast download failed",
+                                            MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                         {
-                            Debug.WriteLine("Download the same episode again, with preferences None.");
+                            if (MessageBox.Show("Please connect your phone to an external power source and to a WiFi network.",
+                                                "Attention",
+                                MessageBoxButton.OK) == MessageBoxResult.OK)
+                            {
+                                Debug.WriteLine("Download the same episode again, with preferences None.");
 
-                            // We download the same file again, but this time we force the TransferPrefernces to be None.
-                            startNextEpisodeDownload(TransferPreferences.None);
-                            return;
+                                // We download the same file again, but this time we force the TransferPrefernces to be None.
+                                startNextEpisodeDownload(TransferPreferences.None);
+                                return;
+                            }
                         }
-                    }
+                        break;
+
+                    case 301:
+                        App.showErrorToast("Windows Phone 8 can't download from this location.");
+                        break;
+
+                    default:
+                        App.showErrorToast("Could not download the episode from the server.");
+                        break;
                 }
-                else if (transferRequest.StatusCode != 0)       // If StatusCode == 0 then we canceled the request.
-                {
-                    App.showErrorToast("Could not download the episode from the server.");
-                }
+
 
                 if (m_currentEpisodeDownload != null)
                 {
