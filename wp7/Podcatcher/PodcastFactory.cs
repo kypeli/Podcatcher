@@ -157,6 +157,12 @@ namespace Podcatcher
             XNamespace itunes = "http://www.itunes.com/dtds/podcast-1.0.dtd";
             foreach (var episode in episodesQuery)
             {
+                if (episode.Element("pubDate") == null)
+                {
+                    Debug.WriteLine("Episode has no pubDate. Ignoring.");
+                    continue;
+                }
+
                 // Only return newer than given timestamp episodes.
                 DateTime pubDate = parsePubDate(episode.Element("pubDate").Value);
                 if (pubDate > latestLocalEpisodeTimestamp)
