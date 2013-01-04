@@ -530,6 +530,10 @@ namespace Podcatcher
                 Debug.WriteLine("Transfer request completed with error code: " + transferRequest.StatusCode + ", " + transferRequest.TransferError);
                 switch (transferRequest.StatusCode)
                 {
+                    case 0:
+                        Debug.WriteLine("Request canceled.");
+                        break;
+
                     // If error code is 200 but we still got an error, this means the max. transfer size exceeded.
                     // This is because the podcast feed announced a different download size than what the file actually is.
                     // If user wants, we can try again with larger file download size policy.
@@ -554,7 +558,7 @@ namespace Podcatcher
                         break;
 
                     case 301:
-                        App.showErrorToast("Windows Phone 8 can't download from this location.");
+                        App.showErrorToast("WP8 cannot download from this location.");
                         break;
 
                     default:
