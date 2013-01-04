@@ -258,10 +258,10 @@ namespace Podcatcher
             m_stopButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/stop.png", UriKind.Relative));
             this.StopButtonImage.Source = m_stopButtonBitmap;
 
-            m_nextButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/rew.png", UriKind.Relative));
+            m_nextButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/ff.png", UriKind.Relative));
             this.NextButtonImage.Source = m_nextButtonBitmap;
 
-            m_prevButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/ff.png", UriKind.Relative));
+            m_prevButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/rew.png", UriKind.Relative));
             this.PrevButtonImage.Source = m_prevButtonBitmap;
         }
 
