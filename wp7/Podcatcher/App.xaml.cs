@@ -32,6 +32,7 @@ using Microsoft.Phone.Shell;
 using Microsoft.Phone.Marketplace;
 using System.Diagnostics;
 using Coding4Fun.Phone.Controls;
+using System.Windows.Media;
 
 namespace Podcatcher
 {
@@ -70,6 +71,22 @@ namespace Podcatcher
             get
             {
                 return m_isTrial;
+            }
+        }
+
+        // An enum to specify the theme.
+        public enum AppTheme
+        {
+            Dark,
+            Light
+        }
+
+        private static AppTheme m_currentTheme = AppTheme.Dark;
+        internal static AppTheme CurrentTheme
+        {
+            get
+            {
+                return m_currentTheme;
             }
         }
 
@@ -114,6 +131,8 @@ namespace Podcatcher
             }
             
             m_licenseInfo = new LicenseInformation();
+
+            detectCurrentTheme();
         }
 
         // Code to execute when the application is launching (eg, from Start)
@@ -239,6 +258,21 @@ namespace Podcatcher
             m_isTrial = m_licenseInfo.IsTrial();
 #endif
         }
+
+        private void detectCurrentTheme()
+        {
+            Color lightThemeBackground = Color.FromArgb(255, 255, 255, 255);
+            Color darkThemeBackground = Color.FromArgb(255, 0, 0, 0);
+            SolidColorBrush backgroundBrush  = Application.Current.Resources["PhoneBackgroundBrush"] as SolidColorBrush;
+
+            if (backgroundBrush.Color == lightThemeBackground)
+                m_currentTheme = AppTheme.Light;
+            else if (backgroundBrush.Color == darkThemeBackground)
+                m_currentTheme = AppTheme.Dark;
+            else
+                Debug.WriteLine("Warning: Could not get current background theme color!");
+        }
+
         #endregion
 
 

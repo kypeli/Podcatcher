@@ -30,12 +30,13 @@
     		</StackPanel>
     		<StackPanel Margin="0" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Height="48" Width="411">
                 <!-- Rew button-->
-                <Image Margin="0,0,65,0" Source="/Podcatcher;component/Images/rew.png" Tap="rewButtonClicked" Width="53" />
+                <Image Margin="0,0,65,0" x:Name="PrevButtonImage" Tap="rewButtonClicked" Width="53" />
                 <!-- Play button-->
-                <Image Margin="0,0,65,0" x:Name="PlayButtonImage" Source="/Images/play.png" Tap="playButtonClicked" Width="51"/>
-                <!-- Next button-->
-                <Image Source="/Images/ff.png" Tap="ffButtonClicked" Width="52" Margin="0,0,65,0"/>
-                <Image Width="54"  Source="/Podcatcher;component/Images/stop.png" Tap="stopButtonClicked"/>                
+                <Image Margin="0,0,65,0" x:Name="PlayButtonImage" Tap="playButtonClicked" Width="51"/>
+                <!-- Next button -->
+                <Image x:Name="NextButtonImage" Tap="ffButtonClicked" Width="52" Margin="0,0,65,0"/>
+                <!-- Stop button -->
+                <Image Width="54" x:Name="StopButtonImage" Tap="stopButtonClicked"/>                
     		</StackPanel>
     	</Grid>
     	<Grid x:Name="NoPlayingLayout" Margin="0,0,8,8">

@@ -235,19 +235,34 @@ namespace Podcatcher
         /************************************* Private implementation *******************************/
 
         private static PodcastPlayerControl m_instance = null;
-        private BitmapImage m_playButtonBitmap;
-        private BitmapImage m_pauseButtonBitmap;
         private static PodcastEpisodeModel m_currentEpisode = null;
         private bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
         private static DispatcherTimer m_screenUpdateTimer = null;
 
+        // Loading the control images based on the theme color
+        private BitmapImage m_playButtonBitmap;
+        private BitmapImage m_pauseButtonBitmap;
+        private BitmapImage m_stopButtonBitmap;
+        private BitmapImage m_nextButtonBitmap;
+        private BitmapImage m_prevButtonBitmap;
+
         private void setupPlayerUI()
         {
             Microsoft.Xna.Framework.Media.MediaLibrary library = new Microsoft.Xna.Framework.Media.MediaLibrary();
 
-            m_playButtonBitmap = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative));
-            m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative));
+            m_playButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/play.png", UriKind.Relative));
+            m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/pause.png", UriKind.Relative));
+            this.PlayButtonImage.Source = m_playButtonBitmap;
+
+            m_stopButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/stop.png", UriKind.Relative));
+            this.StopButtonImage.Source = m_stopButtonBitmap;
+
+            m_nextButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/rew.png", UriKind.Relative));
+            this.NextButtonImage.Source = m_nextButtonBitmap;
+
+            m_prevButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/ff.png", UriKind.Relative));
+            this.PrevButtonImage.Source = m_prevButtonBitmap;
         }
 
         private void restoreEpisodeToPlayerUI()
