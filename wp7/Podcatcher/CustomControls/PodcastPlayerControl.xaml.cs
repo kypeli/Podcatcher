@@ -400,6 +400,10 @@ namespace Podcatcher
             {
                 Debug.WriteLine("BackgroundAudioPlayer returned NULL. Player didn't probably have a track that it was playing.");
             }
+            catch (SystemException syse)
+            {
+                Debug.WriteLine("Got system exception when trying to save position.");
+            }
         }
 
         private void askForContinueEpisodePlaying()
@@ -646,6 +650,14 @@ namespace Podcatcher
             catch (InvalidOperationException ioe)
             {
                 Debug.WriteLine("Error when updating player: " + ioe.Message);
+                return;
+            }
+            catch (SystemException syse)
+            {
+                Debug.WriteLine("Error when updating player: " + syse.Message);
+                App.showErrorToast("WP8 cannot play from this location.");
+                StopPlayback();
+                return;
             }
 
             settingSliderFromPlay = true;

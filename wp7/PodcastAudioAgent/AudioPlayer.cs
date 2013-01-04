@@ -150,6 +150,10 @@ namespace PodcastAudioAgent
                     {
                         Debug.WriteLine("Exception: " + e.Message);
                     }
+                    catch (SystemException syse)
+                    {
+                        Debug.WriteLine("Exception: " + syse.Message);
+                    }
                     break;
                 case UserAction.Stop:
                     try
