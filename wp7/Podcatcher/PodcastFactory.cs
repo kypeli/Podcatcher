@@ -46,7 +46,7 @@ namespace Podcatcher
 {
     public class PodcastFactory
     {
-        public static PodcastSubscriptionModel podcastModelFromRSS(string podcastRss, String itunesNamespace = "http://www.itunes.com/dtds/podcast-1.0.dtd")
+        public static PodcastSubscriptionModel podcastModelFromRSS(string podcastRss, String itunesNamespace = "")
         {
             XDocument rssXmlDoc;
             try
@@ -66,9 +66,7 @@ namespace Podcatcher
                          {
                              Title          = (string)channel.Element("title"),
                              Description    = (string)channel.Element("description"),
-                             ImageUrl = ((channel.Element(namespaceDef + "image") != null && channel.Element(namespaceDef + "image").Attribute("href") != null) ? 
-                                        channel.Element(namespaceDef + "image").Attribute("href").Value : 
-                                        @""),
+                             ImageUrl       = channel.Element(namespaceDef + "image"),
                              Link           = (string)channel.Element("link")
                          }).FirstOrDefault();
 
@@ -89,9 +87,12 @@ namespace Podcatcher
             }
 
             string imageUrl = "";
-            if (String.IsNullOrEmpty(query.ImageUrl))
+            if (query.ImageUrl == null)
             {
-                if (itunesNamespace != "http://www.itunes.com/DTDs/Podcast-1.0.dtd")
+                if (itunesNamespace != "http://www.itunes.com/dtds/podcast-1.0.dtd")
+                {
+                    return podcastModelFromRSS(podcastRss, "http://www.itunes.com/dtds/podcast-1.0.dtd");
+                } else if (itunesNamespace != "http://www.itunes.com/DTDs/Podcast-1.0.dtd")
                 {
                     return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
                 }
@@ -100,11 +101,24 @@ namespace Podcatcher
                     Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
                     imageUrl = "";
                 }
-
             }
             else
             {
-                imageUrl = query.ImageUrl;
+                // Find the logo URL as the attribute of the 'image' element.
+                XElement logoXmlElement = query.ImageUrl;
+                if (logoXmlElement.Attribute("href") != null)
+                {
+                    imageUrl = logoXmlElement.Attribute("href").Value;
+                }
+                // Find the logo URL as the child element of the 'image' element.
+                else if (logoXmlElement.Element("url") != null)
+                {
+                    imageUrl = logoXmlElement.Element("url").Value;
+                }
+                else
+                {
+                    imageUrl = "";
+                }
             }
 
             if (validFeed == false)
