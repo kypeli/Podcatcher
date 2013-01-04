@@ -1,3 +1,10 @@
+2.1.0.0
+----------
+ * Podcast subscriptions export via email or SkyDrive in OPML format.
+ * Fix: Check for NULL in podcast logo when subscribing to a podcast.
+ * Fix: Default to playable content if MIME type is missing.
+ * Fix: Handle icon colors for both light and dark backgrounds.
+
 2.0.0.0
 ----------
  * Improve player navigation UX so that back stepping history is not lost.
@@ -16,6 +23,8 @@
  * Show play progress in episode listing. 
  * Fix handling of downloads when we are suspended in the background.
  * Compensate for lacking timestamp in feed; supported format is now also "Tue, 18 Dec 2012 06:34"
+ * Increase the volume level of podcast audio playback.
+ * Fix episode download naming when we hit non-alphabetical and numerical characters.
 
 1.3.0.1
 ----------

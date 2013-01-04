@@ -35,12 +35,13 @@ using System.Data.Linq;
 using Microsoft.Phone.Data.Linq;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const int DB_VERSION = 5;
+        private const int DB_VERSION = 6;
 
         /************************************* Public properties *******************************/
 
@@ -352,6 +353,12 @@ namespace Podcatcher
                 updater = Microsoft.Phone.Data.Linq.Extensions.CreateDatabaseSchemaUpdater(this);
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
+
+                // Here we can determine if this was a new install or not. If yes, we install a key 
+                // to count how many times the app has been restarted.
+                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+                settings.Add(App.LSKEY_PODCATCHER_STARTS, 1);
+                settings.Save();
             }
 
 
@@ -381,6 +388,11 @@ namespace Podcatcher
                     updater.AddColumn<PodcastSubscriptionModel>("Username");
                     updater.AddColumn<PodcastSubscriptionModel>("Password");
                     updater.AddTable<LastPlayedEpisodeModel>();
+                }
+
+                if (updater.DatabaseSchemaVersion < 6)
+                {
+                    updater.AddColumn<SettingsModel>("SelectedExportIndex");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;

@@ -11,7 +11,7 @@
     xmlns:pc="clr-namespace:Podcatcher"
     xmlns:c="clr-namespace:Podcatcher.Converters"
     xmlns:c4f="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -94,7 +94,7 @@
                     <pc:PodcastNowPlaying Grid.Row="0" x:Name="NowPlaying" Height="Auto" />
 
                     <StackPanel Grid.Row="1" x:Name="PlayHistory" Height="Auto">
-                        <TextBlock TextWrapping="Wrap" Text="recent" Style="{StaticResource PhoneTextTitle1Style}" Margin="12,0,12,20"/>
+                        <TextBlock TextWrapping="Wrap" Text="RECENT" Style="{StaticResource PhoneTextTitle2Style}" Margin="12,0,12,20"/>
                         <ItemsControl x:Name="PlayHistoryList" ItemsSource="{Binding PlayHistoryListProperty}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -124,7 +124,7 @@
 
         <c4f:ProgressOverlay Name="deleteProgressOverlay" Visibility="Collapsed">
             <StackPanel>
-                <TextBlock HorizontalAlignment="Center">Unsubscribing</TextBlock>
+                <TextBlock x:Name="ProgressText" HorizontalAlignment="Center"/>
                 <toolkit:PerformanceProgressBar 
                         IsIndeterminate="True"
                         Foreground="Green"
@@ -135,10 +135,11 @@
     </Grid>
 
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Opacity="0.7">
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.add.rest.png" Text="Add" Click="AddSubscriptionIconButton_Click" />
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Settings" Click="SettingsIconButton_Click"/>
+                <shell:ApplicationBarMenuItem Text="Export subscriptions" Click="ExportSubscriptionsMenuItem_Click"/>
                 <shell:ApplicationBarMenuItem Text="About" Click="AboutSubscriptionIconButton_Click"/>
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>

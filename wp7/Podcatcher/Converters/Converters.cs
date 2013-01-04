@@ -135,7 +135,8 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string playImageSource = "/Podcatcher;component/Images/play_episode.png";
+//            string playImageSource = "/Podcatcher;component/Images/" + App.CurrentTheme + "/play_episode.png";
+            string playImageSource = "/Images/" + App.CurrentTheme + "/play_episode.png";
 
             PodcastEpisodeModel.EpisodePlayStateEnum episodeState = (PodcastEpisodeModel.EpisodePlayStateEnum)value;
             switch (episodeState)
@@ -143,7 +144,7 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Paused:
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Playing:
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Streaming:
-                    playImageSource = "/Podcatcher;component/Images/play_episode_disabled.png";
+                    playImageSource = "/Images/" + App.CurrentTheme + "/play_episode_disabled.png";
                     break;                    
             }
 
@@ -160,7 +161,7 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string downloadImageSource = "/Podcatcher;component/Images/download_episode.png";
+            string downloadImageSource = "/Images/" + App.CurrentTheme + "/download_episode.png";
 
             PodcastEpisodeModel.EpisodeDownloadStateEnum episodeState = (PodcastEpisodeModel.EpisodeDownloadStateEnum)value;
             switch (episodeState)
@@ -169,7 +170,7 @@ namespace Podcatcher.Converters
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued:
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi:
                 case PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower:
-                    downloadImageSource = "/Podcatcher;component/Images/download_episode_disabled.png";
+                    downloadImageSource = "/Images/" + App.CurrentTheme + "/download_episode_disabled.png";
                     break;
             }
 
@@ -207,6 +208,22 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class NewEpisodesTextVisible : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            String newEpisodesText = value as String;
+            if (String.IsNullOrEmpty(newEpisodesText) == false)
+            {
+                return Visibility.Visible;
+            }
 
+            return Visibility.Collapsed;
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
 }

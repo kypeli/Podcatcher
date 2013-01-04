@@ -42,6 +42,7 @@ using Podcatcher.ViewModels;
 using System.Diagnostics;
 using System.Collections.Specialized;
 using System.IO.IsolatedStorage;
+using Microsoft.Phone.Tasks;
 
 namespace Podcatcher
 {
@@ -60,17 +61,20 @@ namespace Podcatcher
         {
             InitializeComponent();
 
-            // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
-            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
-            m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
-
-            m_subscriptionsManager.refreshSubscriptions();
-
-            // Post-pageinitialization event call hookup.
-
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
             ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
+
+            // Upon startup, refresh all subscriptions so we get the latest episodes for each. 
+            m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
+            m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
+            m_subscriptionsManager.refreshSubscriptions();
+
+            // Hook to SkyDrive export events
+            m_subscriptionsManager.OnOPMLExportToSkydriveChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnOPMLExportToSkydriveChanged);
+
+            m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
+            this.PlayHistoryList.DataContext = m_podcastsModel;
 
             // Hook to the event when the podcast player starts playing. 
             m_playerControl = PodcastPlayerControl.getIntance();
@@ -79,15 +83,14 @@ namespace Podcatcher
             // Hook to SQL events.
             PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
 
-            m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
-
-            this.PlayHistoryList.DataContext = m_podcastsModel;
+            handleShowReviewPopup();
         }
 
         void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)
         {
             if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted)
             {
+                ProgressText.Text = "Unsubscribing";
                 deleteProgressOverlay.Visibility = Visibility.Visible;
             }
 
@@ -107,6 +110,20 @@ namespace Podcatcher
             if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing)
             {
                 UpdatingIndicator.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        void m_subscriptionsManager_OnOPMLExportToSkydriveChanged(object source, SubscriptionManagerArgs e)
+        {
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.StartedSkydriveExport)
+            {
+                ProgressText.Text = "Exporting to SkyDrive";
+                deleteProgressOverlay.Visibility = Visibility.Visible;
+            }
+
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedSkydriveExport)
+            {
+                deleteProgressOverlay.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -169,7 +186,7 @@ namespace Podcatcher
                 Debug.WriteLine("Showing episodes for podcast. Name: " + tappedSubscription.PodcastName);
                 NavigationService.Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", tappedSubscription.PodcastId), UriKind.Relative));
                 this.SubscriptionsList.SelectedIndex = -1;  // Aaargh... stupid Silverlight.
-                tappedSubscription.NewEpisodesCount = "0";
+                tappedSubscription.NewEpisodesCount = 0;
             }
         }
 
@@ -212,33 +229,51 @@ namespace Podcatcher
             NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
         }
 
-/*        private List<PodcastEpisodeModel> playHistoryEpisodes()
+        private void handleShowReviewPopup()
         {
-            List<PodcastEpisodeModel> history = new List<PodcastEpisodeModel>();
-
-            if (m_applicationSettings.Contains(App.LSKEY_PODCAST_PLAY_HISTORY) == false)
+            if (m_applicationSettings.Contains(App.LSKEY_PODCATCHER_STARTS))
             {
-                m_applicationSettings.Add(App.LSKEY_PODCAST_PLAY_HISTORY, "");
-                return history;
-            }
-
-            List<string> historyIds = (m_applicationSettings[App.LSKEY_PODCAST_PLAY_HISTORY] as string).Split(',').ToList();
-
-            foreach (string id in historyIds)
-            {
-                if (String.IsNullOrEmpty(id))
+                int podcatcherStarts = (int)m_applicationSettings[App.LSKEY_PODCATCHER_STARTS];
+                if (podcatcherStarts > App.PODCATCHER_NEW_STARTS_BEFORE_SHOWING_REVIEW)
                 {
-                    continue;
+                    m_applicationSettings.Remove(App.LSKEY_PODCATCHER_STARTS);
+
+                    if (MessageBox.Show("Would you now like to review Podcatcher on Windows Phone Marketplace?",
+                                        "I hope you are enjoying Podcatcher!",
+                                        MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        MarketplaceReviewTask marketplaceReviewTask = new MarketplaceReviewTask();
+                        marketplaceReviewTask.Show();
+                    }
+                }
+                else
+                {
+                    m_applicationSettings.Remove(App.LSKEY_PODCATCHER_STARTS);
+                    m_applicationSettings.Add(App.LSKEY_PODCATCHER_STARTS, ++podcatcherStarts);
                 }
 
-                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(Int16.Parse(id));
-                if (episode != null)
-                {
-                    history.Add(episode);
-                }
+                m_applicationSettings.Save();
+            }
+        }
+
+        private void ExportSubscriptionsMenuItem_Click(object sender, EventArgs e)
+        {
+            String exportNotificationText = "";
+            if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive) 
+            {
+                exportNotificationText = "This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?";
+            }
+            else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+            {
+                exportNotificationText = "This will export your podcast subscriptions information in OPML format via email. Do you want to continue?";
             }
 
-            return history;
-        } */
+            if (MessageBox.Show(exportNotificationText,
+                                "Export subscriptions in OPML format",
+                                MessageBoxButton.OKCancel) == MessageBoxResult.OK) 
+            {
+                PodcastSubscriptionsManager.getInstance().exportSubscriptions();
+            }
+        }
     }
 }

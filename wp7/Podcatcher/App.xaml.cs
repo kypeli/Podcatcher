@@ -32,6 +32,7 @@ using Microsoft.Phone.Shell;
 using Microsoft.Phone.Marketplace;
 using System.Diagnostics;
 using Coding4Fun.Phone.Controls;
+using System.Windows.Media;
 
 namespace Podcatcher
 {
@@ -51,12 +52,17 @@ namespace Podcatcher
         public const string LSKEY_PODCAST_DOWNLOAD_QUEUE            = "dl_queue";
         // Key for storing the play history information in.
         public const string LSKEY_PODCAST_PLAY_HISTORY              = "play_history";
+        // Key for determining how many restarts there's been since installing the app.
+        public const string LSKEY_PODCATCHER_STARTS                 = "podcatcher_starts";
+        public const int PODCATCHER_NEW_STARTS_BEFORE_SHOWING_REVIEW = 10;
         
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR = "dl_withCellular";
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI = "dl_withWifi";
         public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER = 104857600;
         public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD =       20971520;
 
+        public const string LSKEY_LIVE_CLIENT_ID                    = "00000000400E9C91";
+        
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
 
@@ -65,6 +71,22 @@ namespace Podcatcher
             get
             {
                 return m_isTrial;
+            }
+        }
+
+        // An enum to specify the theme.
+        public enum AppTheme
+        {
+            Dark,
+            Light
+        }
+
+        private static AppTheme m_currentTheme = AppTheme.Dark;
+        internal static AppTheme CurrentTheme
+        {
+            get
+            {
+                return m_currentTheme;
             }
         }
 
@@ -109,6 +131,8 @@ namespace Podcatcher
             }
             
             m_licenseInfo = new LicenseInformation();
+
+            detectCurrentTheme();
         }
 
         // Code to execute when the application is launching (eg, from Start)
@@ -234,7 +258,23 @@ namespace Podcatcher
             m_isTrial = m_licenseInfo.IsTrial();
 #endif
         }
+
+        private void detectCurrentTheme()
+        {
+            Color lightThemeBackground = Color.FromArgb(255, 255, 255, 255);
+            Color darkThemeBackground = Color.FromArgb(255, 0, 0, 0);
+            SolidColorBrush backgroundBrush  = Application.Current.Resources["PhoneBackgroundBrush"] as SolidColorBrush;
+
+            if (backgroundBrush.Color == lightThemeBackground)
+                m_currentTheme = AppTheme.Light;
+            else if (backgroundBrush.Color == darkThemeBackground)
+                m_currentTheme = AppTheme.Dark;
+            else
+                Debug.WriteLine("Warning: Could not get current background theme color!");
+        }
+
         #endregion
+
 
     }
 }

@@ -197,8 +197,8 @@ namespace Podcatcher
                         }
                         else
                         {
-                            episodeModel.EpisodeFileMimeType = "-ERROR-";
-                            Debug.WriteLine("WARNING: Null element: enclosure - url");
+                            episodeModel.EpisodeDownloadUri = "";
+                            Debug.WriteLine("WARNING: Null element: enclosure - url. Defaulting to empty.");
                         }
 
                         XAttribute mimeTypeAttribute = currentElement.Attribute("type");
@@ -208,8 +208,8 @@ namespace Podcatcher
                         }
                         else
                         {
-                            episodeModel.EpisodeFileMimeType = "-ERROR-";
-                            Debug.WriteLine("WARNING: Null element: enclosure - mime type");
+                            episodeModel.EpisodeFileMimeType = "";
+                            Debug.WriteLine("WARNING: Null element: enclosure - mime type. Defaulting to empty.");
                         }
                     }
                     else
@@ -340,7 +340,14 @@ namespace Podcatcher
                 // Empty DateTime returned again. This is for you, Hacker Public Radio and the Economist!.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
                 resultDateTime = getDateTimeWithFormat("yyyy-MM-dd", pubDateString);            // Parse as 2012-06-25
-            } 
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Talk Radio 702 - The Week That Wasn't
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("yyyy/MM/dd HH:mm:ss", pubDateString);  // Parse as 2012/12/17 03:18:16 PM
+            }
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {

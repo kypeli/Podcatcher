@@ -38,6 +38,11 @@ using Podcatcher.ViewModels;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Xml;
+using Microsoft.Phone.Tasks;
+using Microsoft.Live;
+using System.IO.IsolatedStorage;
+using System.IO;
 
 namespace Podcatcher
 {
@@ -75,10 +80,14 @@ namespace Podcatcher
 
         public event SubscriptionManagerHandler OnPodcastSubscriptionsChanged;
 
+        public event SubscriptionManagerHandler OnOPMLExportToSkydriveChanged;
+
         public enum SubscriptionsState
         {
             StartedRefreshing,
-            FinishedRefreshing
+            FinishedRefreshing,
+            StartedSkydriveExport,
+            FinishedSkydriveExport
         }
 
         public static PodcastSubscriptionsManager getInstance()
@@ -227,6 +236,33 @@ namespace Podcatcher
             Debug.WriteLine("Importing from gPodder for user, " + nc.UserName + ", URL: " + gpodderImportUri.ToString());
         }
 
+        public void exportSubscriptions()
+        {
+            List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+            if (subscriptions.Count == 0)
+            {
+                MessageBox.Show("No subscriptions to export.");
+                return;
+            }
+
+
+            if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+            {
+                if (liveConnect == null)
+                {
+                    loginUserToSkyDrive();
+                }
+                else
+                {
+                    DoOPMLExport();
+                }
+            }
+            else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+            {
+                DoOPMLExport();
+            }
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
@@ -235,6 +271,7 @@ namespace Podcatcher
         private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
         private List<PodcastSubscriptionModel> m_subscriptions = null;
         int m_activeGPodderImportsCount                       = 0;
+        private LiveConnectClient liveConnect                 = null;
 
         private PodcastSubscriptionsManager()
         {
@@ -470,7 +507,8 @@ namespace Podcatcher
         private string localLogoFileName(PodcastSubscriptionModel podcastModel)
         {
             string podcastLogoFilename;
-            if (String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
+            if (podcastModel.PodcastLogoUrl == null 
+                || String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
             {
                 // Podcast logo URL is empty - use default placeholder logo.
                 podcastLogoFilename = @"Podcatcher_generic_podcast_cover.png";
@@ -530,6 +568,147 @@ namespace Podcatcher
         {
             addSubscriptionFromURL(podcastRss, true);
         }
+
+        private void loginUserToSkyDrive()
+        {
+            LiveAuthClient auth = new LiveAuthClient(App.LSKEY_LIVE_CLIENT_ID); 
+            auth.LoginCompleted +=
+                new EventHandler<LoginCompletedEventArgs>(greetUser_LoginCompleted);
+            auth.LoginAsync(new string[] { "wl.skydrive_update" });
+        }
+
+        void greetUser_LoginCompleted(object sender, LoginCompletedEventArgs e)
+        {
+            if (e.Status == LiveConnectSessionStatus.Connected)
+            {
+                liveConnect = new LiveConnectClient(e.Session);
+                liveConnect.GetCompleted +=
+                    new EventHandler<LiveOperationCompletedEventArgs>(greetUser_GetCompleted);
+                liveConnect.GetAsync("me");
+            }
+            else
+            {
+                Debug.WriteLine("Could not finish SkyDrive login.");
+                MessageBox.Show("Sorry. Could not log in to SkyDrive. Please try again.");
+            }
+        }
+
+        void greetUser_GetCompleted(object sender, LiveOperationCompletedEventArgs e)
+        {
+            if (e.Error == null)
+            {
+                Debug.WriteLine("I am logged in to SkyDrive!");
+                DoOPMLExport();
+            }
+            else
+            {
+                Debug.WriteLine("Error logging in to SkyDrive: " + e.Error);
+                MessageBox.Show("Sorry. Could not log in to SkyDrive. Please try again.");
+            }
+        }
+
+        private void DoOPMLExport()
+        {
+            String dateCreated = DateTime.Now.ToString("r");
+            String opmlExportFileName = String.Format("PodcatcherSubscriptions_{0}.opml.xml", DateTime.Now.ToString("dd_MM_yyyy"));
+
+            using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                IsolatedStorageFileStream isoStream = new IsolatedStorageFileStream(opmlExportFileName, FileMode.Create, myIsolatedStorage);
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.Encoding = Encoding.UTF8;
+                using (XmlWriter writer = XmlWriter.Create(isoStream, settings))
+                {
+                    /** OPML root */
+                    writer.WriteStartElement("opml");
+                    writer.WriteAttributeString("version", "2.0");
+
+                    /** Head */
+                    writer.WriteStartElement("head");
+                    // title
+                    writer.WriteStartElement("title");
+                    writer.WriteString("My subscriptions from Podcatcher");
+                    writer.WriteEndElement();
+                    // dateCreated
+                    writer.WriteStartElement("dateCreated");
+                    writer.WriteString(dateCreated);
+                    writer.WriteEndElement();
+                    /** End Head */
+                    writer.WriteEndElement();  
+
+                    /** Body */
+                    writer.WriteStartElement("body");
+                    // Each outline
+                    List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+                    foreach (PodcastSubscriptionModel s in subscriptions)
+                    {
+                        writer.WriteStartElement("outline");
+                        writer.WriteAttributeString("title", s.PodcastName);
+                        writer.WriteAttributeString("xmlUrl", s.PodcastRSSUrl);
+                        writer.WriteAttributeString("type", "rss");
+                        writer.WriteAttributeString("text", s.PodcastDescription);
+                        writer.WriteEndElement();
+                    }
+                    /** End Body */
+                    writer.WriteEndElement();
+
+                    // Finish the document
+                    writer.WriteEndDocument();
+                    writer.Flush();
+                }
+
+                isoStream.Seek(0, SeekOrigin.Begin);
+
+                if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                {
+                    SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                    args.state = SubscriptionsState.StartedSkydriveExport;
+                    OnOPMLExportToSkydriveChanged(this, args);
+
+                    exportToSkyDrive(opmlExportFileName, isoStream);
+                }
+                else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+                {
+                    exportViaEmail(isoStream);
+                }
+            }
+        }
+
+        private void exportToSkyDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
+        {
+            liveConnect.UploadCompleted += new EventHandler<LiveOperationCompletedEventArgs>(opmlLiveOperation_UploadCompleted);
+            liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite);
+        }
+
+        private void exportViaEmail(IsolatedStorageFileStream isoStream)
+        {
+            StreamReader reader = new StreamReader(isoStream);
+            String emailBody = reader.ReadToEnd();
+
+            EmailComposeTask emailTask = new EmailComposeTask();
+            emailTask.Subject = "Podcast subscriptions from Podcatcher.";
+            emailTask.Body = emailBody;
+            emailTask.Show();
+        }
+
+        private void opmlLiveOperation_UploadCompleted(object sender, LiveOperationCompletedEventArgs args)
+        {
+            SubscriptionManagerArgs managerArgs = new SubscriptionManagerArgs();
+            managerArgs.state = SubscriptionsState.FinishedSkydriveExport;
+            OnOPMLExportToSkydriveChanged(this, managerArgs);
+
+            if (args.Error == null)
+            {
+                MessageBox.Show("Exported to SkyDrive succesfully!");
+
+            }
+            else
+            {
+                MessageBox.Show("There was an error uploading to SkyDrive. Please try again.");
+            }
+        }
         #endregion
+
     }
 }

@@ -31,13 +31,12 @@
         		</Grid.ColumnDefinitions>
 
         		<Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
-        		<StackPanel Grid.Column="1" Margin="0.333,0,10.667,0">
-        			<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="272" FontWeight="Bold" Tap="Episode_Tap" VerticalAlignment="Top" >
-        				<TextBlock.Foreground>
-        					<SolidColorBrush Color="{StaticResource PhoneAccentColor}"/>
-        				</TextBlock.Foreground>
-        			</TextBlock>
-        			<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="0" HorizontalAlignment="Left" Width="272" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" />
+                <StackPanel Grid.Column="1" Margin="0.333,0,10.667,0" Tap="Episode_Tap">
+        			<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="272" FontWeight="Bold" VerticalAlignment="Top" FontSize="27" />
+        			<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="0,5,0,0" HorizontalAlignment="Left" Width="272" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" FontSize="24" />
+        			<ProgressBar Visibility="{Binding ProgressBarIsVisible}"
+        				Value="{Binding ProgressBarValue}" x:Name="PlayProgressBar" Height="11" Margin="-12,10,-12,0" VerticalAlignment="Top"/>
+        			<TextBlock Text="{Binding EpisodeStatusText}"  TextWrapping="Wrap" Margin="0,5,0,0"  Style="{StaticResource PhoneTextSubtleStyle}" d:LayoutOverrides="GridBox" FontSize="16" />
         		</StackPanel>
         		<Grid Grid.Column="2" Margin="-15.667,0,7.667,0">
                     <Grid.ColumnDefinitions>
@@ -47,8 +46,6 @@
                     
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>                            
-                        <RowDefinition Height="20" MinHeight="20" />
-                        <RowDefinition Height="20" MinHeight="20"/>
                     </Grid.RowDefinitions>
 
                     <Button Click="DownloadButton_Click" 
@@ -65,9 +62,6 @@
                                 >
         				<Image Source="{Binding EpisodePlayState, Converter={StaticResource playButtonImage}}"/>
         			</Button>
-        			<ProgressBar Visibility="{Binding ProgressBarIsVisible}"
-        				Value="{Binding ProgressBarValue}" x:Name="PlayProgressBar" Height="11" Margin="0" VerticalAlignment="Top" Grid.Row="1" Grid.ColumnSpan="2"/>
-                    <TextBlock Text="{Binding EpisodeStatusText}"  TextWrapping="Wrap" Margin="8,0,0,0"  Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" d:LayoutOverrides="GridBox" Grid.ColumnSpan="2" Grid.Row="2" />
         		</Grid>
         	</Grid>
         </StackPanel>
