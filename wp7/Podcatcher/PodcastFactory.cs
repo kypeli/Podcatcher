@@ -197,8 +197,8 @@ namespace Podcatcher
                         }
                         else
                         {
-                            episodeModel.EpisodeFileMimeType = "-ERROR-";
-                            Debug.WriteLine("WARNING: Null element: enclosure - url");
+                            episodeModel.EpisodeDownloadUri = "";
+                            Debug.WriteLine("WARNING: Null element: enclosure - url. Defaulting to empty.");
                         }
 
                         XAttribute mimeTypeAttribute = currentElement.Attribute("type");
@@ -208,8 +208,8 @@ namespace Podcatcher
                         }
                         else
                         {
-                            episodeModel.EpisodeFileMimeType = "-ERROR-";
-                            Debug.WriteLine("WARNING: Null element: enclosure - mime type");
+                            episodeModel.EpisodeFileMimeType = "";
+                            Debug.WriteLine("WARNING: Null element: enclosure - mime type. Defaulting to empty.");
                         }
                     }
                     else

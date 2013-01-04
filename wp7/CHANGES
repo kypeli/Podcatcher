@@ -2,6 +2,7 @@
 ----------
  * Podcast subscriptions export via email or SkyDrive in OPML format.
  * Fix: Check for NULL in podcast logo when subscribing to a podcast.
+ * Fix: Default to playable content if MIME type is missing.
 
 2.0.0.0
 ----------
