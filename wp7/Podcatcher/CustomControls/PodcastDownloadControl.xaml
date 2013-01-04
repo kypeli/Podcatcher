@@ -18,7 +18,7 @@
         <StackPanel  Grid.Row="0" Orientation="Horizontal">
             <Image Width="100" Height="100" Source="{Binding PodcastSubscription.PodcastLogo}" VerticalAlignment="Center" />
             <TextBlock TextWrapping="Wrap" Text="{Binding EpisodeName}" Width="284" Height="100" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0" VerticalAlignment="Center"/>
-            <Image x:Name="CancelDownloadButton" Width="32" Margin="0,10" Source="/Podcatcher;component/Images/minus.png" Tap="StopDownloadImage_Tap" Height="57" />
+            <Image x:Name="CancelDownloadButton" Width="32" Margin="0,10" Tap="StopDownloadImage_Tap" Height="57" />
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock Text="{Binding EpisodeStatusText}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto" Width="Auto"/>
