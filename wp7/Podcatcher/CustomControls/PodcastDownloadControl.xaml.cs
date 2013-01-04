@@ -30,6 +30,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Podcatcher.ViewModels;
+using System.Windows.Media.Imaging;
 
 namespace Podcatcher
 {
@@ -42,6 +43,7 @@ namespace Podcatcher
         {
             InitializeComponent();
             this.DownloadProgressText.Text = "";
+            this.CancelDownloadButton.Source = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/minus.png", UriKind.Relative));
 
             Loaded += new RoutedEventHandler(PodcastDownloadControl_Loaded);
         }

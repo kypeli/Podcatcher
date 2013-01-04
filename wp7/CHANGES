@@ -4,6 +4,8 @@
  * Fix: Check for NULL in podcast logo when subscribing to a podcast.
  * Fix: Default to playable content if MIME type is missing.
  * Fix: Handle icon colors for both light and dark backgrounds.
+ * Fix: Handle feeds that has empty episodes.
+ * Fix: Handle podcast feed logos better. 
 
 2.0.0.0
 ----------
