@@ -340,33 +340,40 @@ namespace Podcatcher
 
             // Next we try to parse the date string field in various formats that 
             // can be found in podcast RSS feeds.
-            resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm:ss", pubDateString);      // Parse as 25 Jun 2012 11:53:25
+            resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm:ss", pubDateString, "dd MMM yyyy HH:mm:ss".Length);      // Parse as 25 Jun 2012 11:53:25
             if (resultDateTime.Equals(DateTime.MinValue))   
             {
                 // Empty DateTime returned.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
-                resultDateTime = getDateTimeWithFormat("d MMM yyyy HH:mm:ss", pubDateString);   // Parse as 2 Jun 2012 11:53:25
-            } 
+                resultDateTime = getDateTimeWithFormat("d MMM yyyy HH:mm:ss", pubDateString, "d MMM yyyy HH:mm:ss".Length);   // Parse as 2 Jun 2012 11:53:25
+            }
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {
                 // Empty DateTime returned.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
-                resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm", pubDateString);   // Parse as 2 Jun 2012 11:53
+                resultDateTime = getDateTimeWithFormat("dd MMMM yyyy HH:mm:ss GMT", pubDateString, pubDateString.Length);   // Parse as 2 December 2012 11:53:23 GMT
+            }
+            
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Empty DateTime returned.
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm", pubDateString, "dd MMM yyyy HH:mm".Length);   // Parse as 2 Jun 2012 11:53
             } 
 
             if (resultDateTime.Equals(DateTime.MinValue))   
             {
                 // Empty DateTime returned again. This is for you, Hacker Public Radio and the Economist!.
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
-                resultDateTime = getDateTimeWithFormat("yyyy-MM-dd", pubDateString);            // Parse as 2012-06-25
+                resultDateTime = getDateTimeWithFormat("yyyy-MM-dd", pubDateString, "yyyy-MM-dd".Length);            // Parse as 2012-06-25
             }
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {
                 // Talk Radio 702 - The Week That Wasn't
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
-                resultDateTime = getDateTimeWithFormat("yyyy/MM/dd HH:mm:ss", pubDateString);  // Parse as 2012/12/17 03:18:16 PM
+                resultDateTime = getDateTimeWithFormat("yyyy/MM/dd HH:mm:ss", pubDateString, "yyyy/MM/dd HH:mm:ss".Length);  // Parse as 2012/12/17 03:18:16 PM
             }
 
             if (resultDateTime.Equals(DateTime.MinValue))
@@ -377,22 +384,20 @@ namespace Podcatcher
             return resultDateTime;
         }
 
-        private static DateTime getDateTimeWithFormat(string dateFormat, string pubDateString)
+        private static DateTime getDateTimeWithFormat(string dateFormat, string pubDateString, int parseLength)
         {
             DateTime result = new DateTime();
-            if (dateFormat.Length > pubDateString.Length)
+            if (parseLength > pubDateString.Length)
             {
                 Debug.WriteLine("Cannot parse pub date as its length doesn't match the format length we are looking for. Returning.");
                 return result;
             }
 
-            pubDateString = pubDateString.Substring(0, dateFormat.Length);     // Retrieve only the first part of the pubdate, 
-                                                                               // and ignore timezone.
-            Debug.WriteLine("Trying to parse pub date: '" + pubDateString + "', format: " + dateFormat);
-
+            pubDateString = pubDateString.Substring(0, parseLength);
             if (DateTime.TryParseExact(pubDateString,
                                        dateFormat,
-                                       CultureInfo.InvariantCulture,
+                                       new CultureInfo("en-US"),
+                                       // CultureInfo.InvariantCulture,
                                        DateTimeStyles.None,
                                        out result) == false)
             {
