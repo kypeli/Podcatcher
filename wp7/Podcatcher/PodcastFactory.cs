@@ -89,17 +89,21 @@ namespace Podcatcher
             string imageUrl = "";
             if (query.ImageUrl == null)
             {
-                if (itunesNamespace != "http://www.itunes.com/dtds/podcast-1.0.dtd")
+                // We try with three different iTunes namespaces to get the logo image. When we get here, we have
+                // tried once - with empty namespace.
+                // Then we try with two more.
+                // If we then haven't found a logo, we hit the default branch.
+                switch (itunesNamespace)
                 {
-                    return podcastModelFromRSS(podcastRss, "http://www.itunes.com/dtds/podcast-1.0.dtd");
-                } else if (itunesNamespace != "http://www.itunes.com/DTDs/Podcast-1.0.dtd")
-                {
-                    return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
-                }
-                else
-                {
-                    Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
-                    imageUrl = "";
+                    case "":
+                        return podcastModelFromRSS(podcastRss, "http://www.itunes.com/dtds/podcast-1.0.dtd");
+                    case "http://www.itunes.com/dtds/podcast-1.0.dtd":
+                        return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
+                    default:
+                        Debug.WriteLine("ERROR: Podcast logo URL in RSS is invalid.");
+                        imageUrl = "";
+                        break;
+                        
                 }
             }
             else
