@@ -453,6 +453,7 @@ namespace Podcatcher.ViewModels
                 case "video/x-mp4":
                 case "video/x-m4v":
                 case "video/mpeg":
+                case "video/vnd.objectvideo":
                     playable = true;
                     break;
             }
