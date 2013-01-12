@@ -382,6 +382,13 @@ namespace Podcatcher
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {
+                // The Dan Patrick Show: Podcast
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("d MMMM yyyy HH:mm:ss EST", pubDateString, pubDateString.Length);  // Parse as 11 January 2013 10:10:10 EST
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
                 Debug.WriteLine("ERROR: Could not parse pub date!");
             }
 
