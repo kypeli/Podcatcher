@@ -658,6 +658,7 @@ namespace Podcatcher
             string localPath = new Uri(podcastEpisode.EpisodeDownloadUri).LocalPath;
             string podcastEpisodeFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
 
+            // Remove all unnecessary cruft from the filename
             string cleanFilename = "";
             foreach (Char c in podcastEpisodeFilename.ToCharArray())
             {
@@ -667,9 +668,8 @@ namespace Podcatcher
                 }
             }
             
-            // Remove whitespace from filename, as WP has difficulties handling that kind of names.
             podcastEpisodeFilename = cleanFilename;
-
+            
             string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + "/" + podcastEpisodeFilename;
             Debug.WriteLine("Found episode filename: " + localPodcastEpisodeFilename);
 

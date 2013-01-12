@@ -446,6 +446,7 @@ namespace Podcatcher.ViewModels
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
                 case "audio/x-m4a":
+                case "audio/x-mpeg":
                     playable = true;
                     break;
 

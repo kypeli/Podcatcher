@@ -126,6 +126,7 @@ namespace Podcatcher
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
                 case "audio/x-m4a":
+                case "audio/x-mpeg":
                     audio = true;
                     break;
             }
@@ -148,6 +149,7 @@ namespace Podcatcher
                 {
                     Console.WriteLine("Error: File not found. " + e.Message);
                     App.showErrorToast("Cannot find episode.");
+                    showNoPlayerLayout();
                 }
             }
             else
