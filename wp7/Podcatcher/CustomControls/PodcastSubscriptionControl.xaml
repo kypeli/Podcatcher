@@ -11,6 +11,7 @@
     
     <UserControl.Resources>
         <c:NewEpisodesTextVisible x:Name="newEpisodesTextVisible"/>
+        <c:ShowPinToStart x:Name="showPinToStart"/>
     </UserControl.Resources>
     
 	<StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
@@ -33,8 +34,11 @@
 		</StackPanel>
 		<toolkit:ContextMenuService.ContextMenu>
 			<toolkit:ContextMenu>
-				<toolkit:MenuItem Header="Unsubscribe" Click="MenuItemDelete_Click" />
-			</toolkit:ContextMenu>
+                <toolkit:MenuItem Header="Pin to start" Click="MenuItemPin_Click" 
+                                  Visibility="{Binding PodcastId, 
+                                  Converter={StaticResource showPinToStart}}"/>
+                <toolkit:MenuItem Header="Unsubscribe" Click="MenuItemDelete_Click" />
+            </toolkit:ContextMenu>
 		</toolkit:ContextMenuService.ContextMenu>
 
 	</StackPanel>

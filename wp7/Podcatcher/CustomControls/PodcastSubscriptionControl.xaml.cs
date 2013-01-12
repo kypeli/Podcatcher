@@ -37,6 +37,8 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
+using Microsoft.Phone.Shell;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher
 {
@@ -66,5 +68,36 @@ namespace Podcatcher
             subscriptionsManager.deleteSubscription(subscriptionToDelete);
         }
 
+        private void MenuItemPin_Click(object sender, RoutedEventArgs e)
+        {
+            // Copy the logo file to tile's shared location.
+            String tileImageLocation = "Shared/ShellContent/" + m_subscription.PodcastLogoLocalLocation.Split('/')[1];
+            using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                if (myIsolatedStorage.FileExists(tileImageLocation) == false)
+                {
+                    myIsolatedStorage.CopyFile(m_subscription.PodcastLogoLocalLocation,
+                                               tileImageLocation);
+                }
+            }
+
+            // Setup data for the live tile.
+            StandardTileData tileData = new StandardTileData();
+            tileData.BackgroundImage = new Uri("isostore:/" + tileImageLocation, UriKind.Absolute);
+            tileData.Title = m_subscription.PodcastName;
+
+            Uri tileUri = new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", m_subscription.PodcastId), UriKind.Relative);
+
+            Debug.WriteLine(string.Format("Pinning to start: Image: {0} Title: {1} Navigation uri: {2}", tileData.BackgroundImage, tileData.Title, tileUri));
+
+            try
+            {
+                ShellTile.Create(tileUri, tileData);
+            }
+            catch (InvalidOperationException)
+            {
+                Debug.WriteLine("Could not pin to start screen. The subscription is already pinned.");
+            }
+        }
     }
 }

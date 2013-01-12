@@ -39,6 +39,8 @@ using System.Windows.Data;
 using Podcatcher.ViewModels;
 using System.Globalization;
 using System.Collections.Generic;
+using Microsoft.Phone.Shell;
+using System.Linq;
 
 namespace Podcatcher.Converters
 {
@@ -226,4 +228,26 @@ namespace Podcatcher.Converters
             throw new NotSupportedException();
         }
     }
+
+    public class ShowPinToStart : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int episodeId = (int)value;
+            ShellTile TileToFind = ShellTile.ActiveTiles.FirstOrDefault(x => x.NavigationUri.ToString().Contains("podcastId=" + episodeId));
+            if (TileToFind == null)
+            {
+                return Visibility.Visible;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
 }
+
