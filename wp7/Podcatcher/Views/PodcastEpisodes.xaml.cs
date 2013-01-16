@@ -78,5 +78,22 @@ namespace Podcatcher.Views
         {
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
         }
+
+        private void DeleteAllDownloads_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to delete all downloaded episodes in this subscription?",
+                    "Delete?",
+                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                List<PodcastEpisodeModel> episodes = m_podcastSqlModel.episodesForSubscription(m_subscription);
+                foreach (PodcastEpisodeModel episode in episodes)
+                {
+                    if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
+                    {
+                        episode.deleteDownloadedEpisode();
+                    }
+                }
+            }
+        }
     }
 }

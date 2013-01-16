@@ -589,6 +589,7 @@ namespace Podcatcher
             Debug.WriteLine(" * Episode state: " + episode.EpisodeDownloadState.ToString());
             episode.PodcastSubscription.unplayedEpisodesChanged();
             Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.NumberOfEpisodesText);
+            PodcastSqlModel.getInstance().SubmitChanges();
         }
 
         private void cleanupEpisodeDownload(BackgroundTransferRequest transferRequest)

@@ -560,31 +560,20 @@ namespace Podcatcher.ViewModels
 
         public void deleteDownloadedEpisode()
         {
-            if (String.IsNullOrEmpty(m_episodeFile)) 
-            {
-                return;
-            }
-
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                EpisodeFile = null;
-                EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
-                EpisodePlayState = EpisodePlayStateEnum.Idle;
-
-                if (episodeStore.FileExists(EpisodeFile) == false)
-                {
-                    Debug.WriteLine("WARNING: Could not find downloaded episode to delete. Name: " + EpisodeFile);
-                    return;
-                }
-
-                Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
-
                 try
                 {
-                    episodeStore.DeleteFile(EpisodeFile);
+                    Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
+                    if (episodeStore.FileExists(EpisodeFile))
+                    {
+                        episodeStore.DeleteFile(EpisodeFile);
+                    } else {
+                        Debug.WriteLine("Warning: Cannot delete episode with file: " + EpisodeFile);
+                    }
+
                     SavedPlayPos = 0;
                     TotalLengthTicks = 0;
-
                     PodcastSubscription.UnplayedEpisodes--;
                 }
                 catch (IsolatedStorageException)
@@ -599,6 +588,12 @@ namespace Podcatcher.ViewModels
                 {
                     Debug.WriteLine("Got NULL pointer exception when deleting episode.");
                 }
+
+                EpisodeFile = null;
+                EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
+                EpisodePlayState = EpisodePlayStateEnum.Idle;
+
+                PodcastSqlModel.getInstance().SubmitChanges();
             }
         }
 

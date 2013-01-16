@@ -1,6 +1,7 @@
 2.2.0.0
 ----------
  * Generate unique file names for episodes so that we don't rely on unique file names from the stream.
+ * Add possibility to delete all downloaded episodes in a subscription.
 
 2.1.0.0
 ----------
