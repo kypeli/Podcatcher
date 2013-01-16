@@ -257,7 +257,12 @@ namespace Podcatcher.ViewModels
         public EpisodeDownloadStateEnum EpisodeDownloadState
         {
             get 
-            { 
+            {
+                if (String.IsNullOrEmpty(m_episodeFile) == false)
+                {
+                    m_episodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
+                }
+
                 return m_episodeDownloadState; 
             }
 
@@ -283,6 +288,11 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
+                if (String.IsNullOrEmpty(m_episodeFile) == false)
+                {
+                    m_episodePlayState = EpisodePlayStateEnum.Downloaded;
+                }
+
                 return m_episodePlayState; 
             }
 
