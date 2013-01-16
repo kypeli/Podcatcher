@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual Studio 2010 Express for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Podcatcher", "Podcatcher\Podcatcher.csproj", "{75A2BB1F-5E6C-4E38-8218-18582527DD3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PodcastAudioAgent", "PodcastAudioAgent\PodcastAudioAgent.csproj", "{F97A569F-32A5-4533-9F6A-355D8CE418E1}"

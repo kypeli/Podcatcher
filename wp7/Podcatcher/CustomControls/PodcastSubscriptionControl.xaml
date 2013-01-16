@@ -10,7 +10,7 @@
 	d:DesignWidth="480" Margin="0">
     
     <UserControl.Resources>
-        <c:NewEpisodesTextVisible x:Name="newEpisodesTextVisible"/>
+        <c:NewEpisodesTextVisible x:Name="newEpisodesTextIsVisible"/>
         <c:ShowPinToStart x:Name="showPinToStart"/>
     </UserControl.Resources>
     
@@ -24,12 +24,12 @@
                 		<SolidColorBrush Color="{StaticResource PhoneSubtleColor}"/>
                 	</TextBlock.Foreground>
                 </TextBlock>
-                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextVisible}}" x:Name="Separator" TextWrapping="Wrap" Text=" / " FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,0">
+                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextIsVisible}}" x:Name="Separator" TextWrapping="Wrap" Text=" / " FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,0">
                 	<TextBlock.Foreground>
                 		<SolidColorBrush Color="{StaticResource PhoneSubtleColor}"/>
                 	</TextBlock.Foreground>
                 </TextBlock>
-                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextVisible}}" x:Name="NewEpisodes" Text="{Binding NewEpisodesText}"  TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" FontSize="20" Foreground="{StaticResource PhoneAccentBrush}"/>
+                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextIsVisible}}" x:Name="NewEpisodes" Text="{Binding NewEpisodesText}"  TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" FontSize="20" Foreground="{StaticResource PhoneAccentBrush}"/>
 			</StackPanel>
 		</StackPanel>
 		<toolkit:ContextMenuService.ContextMenu>

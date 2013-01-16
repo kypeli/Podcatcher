@@ -354,8 +354,8 @@ namespace Podcatcher
                     return;
                 }
 
-                String episodeFileName = localEpisodeFileName(m_currentEpisodeDownload);
-                if (string.IsNullOrEmpty(episodeFileName))
+                m_currentEpisodeDownload.EpisodeFile = generateLocalEpisodeFileName(m_currentEpisodeDownload);
+                if (string.IsNullOrEmpty(m_currentEpisodeDownload.EpisodeFile))
                 {
                     App.showErrorToast("Cannot download the episode.");
                     Debug.WriteLine("Cannot download the episode. Episode file name is null or empty.");
@@ -367,7 +367,7 @@ namespace Podcatcher
 
                 // Create a new background transfer request for the podcast episode download.
                 m_currentBackgroundTransfer = new BackgroundTransferRequest(downloadUri,
-                                                                            new Uri(episodeFileName, UriKind.Relative));
+                                                                            new Uri(m_currentEpisodeDownload.EpisodeFile, UriKind.Relative));
                 if (useTransferPreferences == TransferPreferences.None)
                 {
                     m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.None;
@@ -584,7 +584,6 @@ namespace Podcatcher
         {
             Debug.WriteLine("Updating episode information for episode when download completed: " + episode.EpisodeName);
 
-            episode.EpisodeFile = localEpisodeFileName(episode);
             Debug.WriteLine(" * Downloaded file name: " + episode.EpisodeFile);
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
             Debug.WriteLine(" * Episode state: " + episode.EpisodeDownloadState.ToString());
@@ -652,7 +651,7 @@ namespace Podcatcher
             }
         }
 
-        private string localEpisodeFileName(PodcastEpisodeModel podcastEpisode)
+        private string generateLocalEpisodeFileName(PodcastEpisodeModel podcastEpisode)
         {
             // Parse the filename of the logo from the remote URL.
             string localPath = new Uri(podcastEpisode.EpisodeDownloadUri).LocalPath;
@@ -669,6 +668,7 @@ namespace Podcatcher
             }
             
             podcastEpisodeFilename = cleanFilename;
+            podcastEpisodeFilename = String.Format("{0}_{1}", DateTime.Now.Millisecond, podcastEpisodeFilename);
             
             string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + "/" + podcastEpisodeFilename;
             Debug.WriteLine("Found episode filename: " + localPodcastEpisodeFilename);

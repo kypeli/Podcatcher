@@ -169,17 +169,7 @@ namespace Podcatcher.ViewModels
         public String EpisodeFile
         {
             get { return m_episodeFile; }
-            set 
-            {
-                m_episodeFile = value;
-                if (m_episodePlayState == EpisodePlayStateEnum.Idle
-                    && String.IsNullOrEmpty(EpisodeFile) == false)
-                {
-                    EpisodePlayState = EpisodePlayStateEnum.Downloaded;
-                    EpisodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
-                }
-
-            }
+            set { m_episodeFile = value; }
         }
 
         private String m_episodeFileMimeType = "";
@@ -577,14 +567,13 @@ namespace Podcatcher.ViewModels
 
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
+                EpisodeFile = null;
+                EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
+                EpisodePlayState = EpisodePlayStateEnum.Idle;
+
                 if (episodeStore.FileExists(EpisodeFile) == false)
                 {
-                    // If we cannot find the episode file to delete, then we at least have to reset the episode state 
-                    // back to idle.
                     Debug.WriteLine("WARNING: Could not find downloaded episode to delete. Name: " + EpisodeFile);
-                    EpisodeFile = null;
-                    EpisodePlayState = EpisodePlayStateEnum.Idle;
-                    EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                     return;
                 }
 
@@ -593,12 +582,9 @@ namespace Podcatcher.ViewModels
                 try
                 {
                     episodeStore.DeleteFile(EpisodeFile);
-                    EpisodeFile = null;
                     SavedPlayPos = 0;
                     TotalLengthTicks = 0;
 
-                    EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
-                    EpisodePlayState = EpisodePlayStateEnum.Idle;
                     PodcastSubscription.UnplayedEpisodes--;
                 }
                 catch (IsolatedStorageException)
@@ -609,7 +595,7 @@ namespace Podcatcher.ViewModels
 
                     toast.Show();
                 }
-                catch (NullReferenceException nullEx)
+                catch (NullReferenceException)
                 {
                     Debug.WriteLine("Got NULL pointer exception when deleting episode.");
                 }
