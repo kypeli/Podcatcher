@@ -22,6 +22,7 @@
       <DefaultTask Name="_default" NavigationPage="Views/MainView.xaml" />
       <ExtendedTask Name="BackgroundTask">
         <BackgroundServiceAgent Specifier="AudioPlayerAgent" Name="PodcastAudioAgent" Source="PodcastAudioAgent" Type="PodcastAudioAgent.AudioPlayer" />
+        <BackgroundServiceAgent Specifier="ScheduledTaskAgent" Name="PodcatcherBackgroundService" Source="PodcatcherBackgroundService" Type="PodcatcherBackgroundService.ScheduledAgent" />
       </ExtendedTask>
     </Tasks>
     <Tokens>

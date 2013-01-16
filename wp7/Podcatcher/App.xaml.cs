@@ -33,6 +33,8 @@ using Microsoft.Phone.Marketplace;
 using System.Diagnostics;
 using Coding4Fun.Phone.Controls;
 using System.Windows.Media;
+using Microsoft.Phone.Scheduler;
+using System;
 
 namespace Podcatcher
 {
@@ -55,13 +57,19 @@ namespace Podcatcher
         // Key for determining how many restarts there's been since installing the app.
         public const string LSKEY_PODCATCHER_STARTS                 = "podcatcher_starts";
         public const int PODCATCHER_NEW_STARTS_BEFORE_SHOWING_REVIEW = 10;
+        // Root key name for storing episode information for background service.
+        public const string LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE    = "bg_subscription_latest_episode";
         
-        public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR = "dl_withCellular";
-        public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI = "dl_withWifi";
-        public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER = 104857600;
-        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD =       20971520;
+        public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR  = "dl_withCellular";
+        public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI      = "dl_withWifi";
+        public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER       = 104857600;
+        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD            = 20971520;
 
+        // Client ID for Live services. Currently we only use SkyDrive
         public const string LSKEY_LIVE_CLIENT_ID                    = "00000000400E9C91";
+
+        // Name of our background task that checks for new episodes for pinned subscriptions
+        public const string BGTASK_NEW_EPISODES                     = "SubscriptionsChecker";
         
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
@@ -223,6 +231,32 @@ namespace Podcatcher
 
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
+
+            // Start our background agent.
+            PeriodicTask backgroundTask = new PeriodicTask(BGTASK_NEW_EPISODES);
+            backgroundTask.Description ="Podcatcher's background task that checks if new episodes have arrived for pinned subscriptions";
+
+            try
+            {
+                if (ScheduledActionService.Find(BGTASK_NEW_EPISODES) != null)
+                {
+                    ScheduledActionService.Remove(BGTASK_NEW_EPISODES);
+                }
+
+                ScheduledActionService.Add(backgroundTask);
+#if DEBUG
+                Debug.WriteLine("Starting background task.");
+                ScheduledActionService.LaunchForTest(BGTASK_NEW_EPISODES, TimeSpan.FromSeconds(5));
+#endif
+            }
+            catch (InvalidOperationException e)
+            {
+                if (e.Message.Contains("BNS Error: The action is disabled"))
+                {
+                    App.showNotificationToast("Background tasks have been disabled from\nsystem settings.");
+                }
+            }
+            catch (Exception) { /* In case we get some other scheduler related exception. But we are not interested. */ }
         }
 
         // Do not add any additional code to this method

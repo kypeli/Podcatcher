@@ -39,6 +39,7 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Collections.ObjectModel;
+using Microsoft.Phone.Shell;
 
 namespace Podcatcher.Views
 {
@@ -59,6 +60,31 @@ namespace Podcatcher.Views
             m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
             this.EpisodeList.ItemsSource = new ObservableCollection<PodcastEpisodeModel>(m_podcastSqlModel.episodesForSubscription(m_subscription));
             this.DataContext = m_subscription;
+
+            bool forceUpdate = false;
+            try
+            {
+                forceUpdate = String.IsNullOrEmpty(NavigationContext.QueryString["forceUpdate"]) == false
+                    && bool.Parse(NavigationContext.QueryString["forceUpdate"]);
+            }
+            catch (KeyNotFoundException)
+            {
+                forceUpdate = false;
+            }
+                         
+            if (forceUpdate)
+            {
+                ShellTile pinnedSubscriptionTile = ShellTile.ActiveTiles.FirstOrDefault(tile => tile.NavigationUri.ToString().Contains("podcastId=" + podcastId)) as ShellTile;
+                if (pinnedSubscriptionTile != null)
+                {
+                    StandardTileData tileData = new StandardTileData();
+                    tileData.Count = 0;
+                    tileData.BackTitle = "";
+                    pinnedSubscriptionTile.Update(tileData);
+                }
+            }            
+
+
         }
 
         /************************************* Priovate implementations *******************************/

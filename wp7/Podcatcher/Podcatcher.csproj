@@ -325,6 +325,10 @@
       <Project>{F97A569F-32A5-4533-9F6A-355D8CE418E1}</Project>
       <Name>PodcastAudioAgent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PodcatcherBackgroundService\PodcatcherBackgroundService.csproj">
+      <Project>{0854E1EB-7C0E-418A-A309-ED5CBFA85B87}</Project>
+      <Name>PodcatcherBackgroundService</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

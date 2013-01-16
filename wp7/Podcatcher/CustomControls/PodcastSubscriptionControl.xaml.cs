@@ -86,12 +86,26 @@ namespace Podcatcher
             tileData.BackgroundImage = new Uri("isostore:/" + tileImageLocation, UriKind.Absolute);
             tileData.Title = m_subscription.PodcastName;
 
-            Uri tileUri = new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", m_subscription.PodcastId), UriKind.Relative);
-
-            Debug.WriteLine(string.Format("Pinning to start: Image: {0} Title: {1} Navigation uri: {2}", tileData.BackgroundImage, tileData.Title, tileUri));
+            // Store information about the subscription for the background agent.
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            String subscriptionLatestEpisodeKey = App.LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + m_subscription.PodcastId;
+            if (settings.Contains(subscriptionLatestEpisodeKey)) 
+            {
+                settings.Remove(subscriptionLatestEpisodeKey);
+            }
+            
+            String subscriptionData = String.Format("{0}|{1}|{2}",
+                                                    m_subscription.PodcastId,
+                                                    m_subscription.Episodes[0].EpisodePublished.ToString("r"),
+                                                    m_subscription.PodcastRSSUrl);
+            settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
+            settings.Save();
+            Debug.WriteLine("Storing latest episode publish date for subscription as: " + m_subscription.Episodes[0].EpisodePublished.ToString("r"));
 
             try
             {
+                Uri tileUri = new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}&forceUpdate=true", m_subscription.PodcastId), UriKind.Relative);
+                Debug.WriteLine(string.Format("Pinning to start: Image: {0} Title: {1} Navigation uri: {2}", tileData.BackgroundImage, tileData.Title, tileUri));
                 ShellTile.Create(tileUri, tileData);
             }
             catch (InvalidOperationException)

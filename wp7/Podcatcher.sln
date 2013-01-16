@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Podcatcher", "Podcatcher\Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PodcastAudioAgent", "PodcastAudioAgent\PodcastAudioAgent.csproj", "{F97A569F-32A5-4533-9F6A-355D8CE418E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PodcatcherBackgroundService", "PodcatcherBackgroundService\PodcatcherBackgroundService.csproj", "{0854E1EB-7C0E-418A-A309-ED5CBFA85B87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F97A569F-32A5-4533-9F6A-355D8CE418E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F97A569F-32A5-4533-9F6A-355D8CE418E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F97A569F-32A5-4533-9F6A-355D8CE418E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0854E1EB-7C0E-418A-A309-ED5CBFA85B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0854E1EB-7C0E-418A-A309-ED5CBFA85B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0854E1EB-7C0E-418A-A309-ED5CBFA85B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0854E1EB-7C0E-418A-A309-ED5CBFA85B87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

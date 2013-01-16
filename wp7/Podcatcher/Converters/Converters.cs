@@ -137,7 +137,6 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-//            string playImageSource = "/Podcatcher;component/Images/" + App.CurrentTheme + "/play_episode.png";
             string playImageSource = "/Images/" + App.CurrentTheme + "/play_episode.png";
 
             PodcastEpisodeModel.EpisodePlayStateEnum episodeState = (PodcastEpisodeModel.EpisodePlayStateEnum)value;
