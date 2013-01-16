@@ -17,14 +17,38 @@ namespace Podcatcher.Views
 {
     public partial class SettingsView : PhoneApplicationPage
     {
+        private static bool initialized = false;
+        private SettingsModel m_settings = null;
+
         public SettingsView()
         {
             InitializeComponent();
+            initialized = true;
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            this.DataContext = PodcastSqlModel.getInstance().settings();
+
+            m_settings = PodcastSqlModel.getInstance().settings();
+            this.DataContext = m_settings;
+            this.DeleteEpisodeThreshold.Value = m_settings.ListenedThreashold;
+            this.DeleteThresholdPercent.Text = String.Format("{0} %", this.DeleteEpisodeThreshold.Value.ToString());
+        }
+
+        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            PodcastSqlModel.getInstance().SubmitChanges();
+        }
+        
+        private void DeleteEpisodeThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!initialized)
+            {
+                return;
+            }
+
+            this.DeleteThresholdPercent.Text = String.Format("{0} %", ((int)e.NewValue).ToString());
+            m_settings.ListenedThreashold = (int)e.NewValue;
         }
     }
 }

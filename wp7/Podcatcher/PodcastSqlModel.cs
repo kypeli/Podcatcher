@@ -41,7 +41,7 @@ namespace Podcatcher
 {
     public class PodcastSqlModel : DataContext, INotifyPropertyChanged
     {
-        private const int DB_VERSION = 6;
+        private const int DB_VERSION = 7;
 
         /************************************* Public properties *******************************/
 
@@ -395,6 +395,11 @@ namespace Podcatcher
                     updater.AddColumn<SettingsModel>("SelectedExportIndex");
                 }
 
+                if (updater.DatabaseSchemaVersion < 7)
+                {
+                    updater.AddColumn<SettingsModel>("ListenedThreashold");
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
@@ -462,11 +467,13 @@ namespace Podcatcher
         private void oldEpisodeCleanup(object sender, DoWorkEventArgs args)
         {
             PodcastSubscriptionModel subscription = args.Argument as PodcastSubscriptionModel;
+            float listenedEpisodeThreshold = (float)PodcastSqlModel.getInstance().settings().ListenedThreashold / (float)100.0;
+
             var queryDelEpisodes = from episode in Episodes
                                    where (episode.PodcastId.Equals(subscription.PodcastId)      
                                           && episode.EpisodeFile != ""
                                           && (episode.TotalLengthTicks > 0 && episode.SavedPlayPos > 0)
-                                          && ((float)((float)episode.SavedPlayPos/(float)episode.TotalLengthTicks) > 0.9 ))
+                                          && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) > listenedEpisodeThreshold))
                                    select episode;
 
             foreach (var episode in queryDelEpisodes)

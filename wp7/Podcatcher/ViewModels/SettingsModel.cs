@@ -104,6 +104,24 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_listenedThreashold = 90;
+        [Column(DbType = "INT DEFAULT 90 NOT NULL")]
+        public int ListenedThreashold 
+        {
+            get
+            {
+                return m_listenedThreashold;
+            }
+
+            set
+            {
+                if (m_listenedThreashold != value)
+                {
+                    m_listenedThreashold = value;
+                }
+            }
+        }
+
         // Version column aids update performance.
         [Column(IsVersion = true)]
         private Binary version;

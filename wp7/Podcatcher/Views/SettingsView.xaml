@@ -39,13 +39,6 @@
                             </StackPanel>
                             <TextBlock TextWrapping="Wrap" Text="Normally Podcatcher asks if you want to continue from your previous saved position. If you turn this on, Podcatcher will automatically continue from the last saved position." Style="{StaticResource PhoneTextSubtleStyle}"/>
                         </StackPanel>
-                        <StackPanel Margin="0,9,12,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock TextWrapping="Wrap" Text="Delete listened episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDelete, Mode=TwoWay}" Content="ToggleSwitchButton"/>
-                            </StackPanel>
-                            <TextBlock TextWrapping="Wrap" Text="If you turn this on, Podcatcher will delete previously listened episodes when you start playing a new episode." Style="{StaticResource PhoneTextSubtleStyle}"/>
-                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </controls:PivotItem>
@@ -76,6 +69,31 @@
                     </StackPanel>
                 </ScrollViewer>
             </controls:PivotItem>
+
+            <!-- Episode maintenance settings -->
+            <controls:PivotItem Header="cleanup">
+                <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
+                    <StackPanel Margin="0,0,8,8">
+                        <StackPanel Margin="0,9,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock TextWrapping="Wrap" Text="Delete listened episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDelete, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="If you turn this on, Podcatcher will delete previously listened episodes when you start playing a new episode." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0,9,12,0">
+                            <TextBlock TextWrapping="Wrap" Text="Listened episode threshold"  Width="413" Style="{StaticResource PhoneTextLargeStyle}"/>
+                            <StackPanel Orientation="Horizontal" Width="413">
+                                <Slider x:Name="DeleteEpisodeThreshold" Value="{Binding ListenedThreashold}" Margin="0" Width="318" ValueChanged="DeleteEpisodeThreshold_ValueChanged" Height="82" Maximum="100" Minimum="1" SmallChange="1"/>
+                            	<TextBlock x:Name="DeleteThresholdPercent" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,30" Style="{StaticResource PhoneTextGroupHeaderStyle}"/>
+                            </StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="This setting affects when the episode is automatically deleted, if delete listened episodes is enabled." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </controls:PivotItem>
+
 
         </controls:Pivot>
 

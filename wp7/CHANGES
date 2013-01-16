@@ -2,6 +2,7 @@
 ----------
  * Generate unique file names for episodes so that we don't rely on unique file names from the stream.
  * Add possibility to delete all downloaded episodes in a subscription.
+ * Add setting to control the threshold when an episode has been listened to.
 
 2.1.0.0
 ----------
