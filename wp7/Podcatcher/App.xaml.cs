@@ -70,6 +70,11 @@ namespace Podcatcher
 
         // Name of our background task that checks for new episodes for pinned subscriptions
         public const string BGTASK_NEW_EPISODES                     = "SubscriptionsChecker";
+
+        // Keys for storing episode location from AudioAgent.
+        public const string LSKEY_AA_STORED_EPISODE_POSITION       = "aa_episode_position";
+        public const string LSKEY_AA_EPISODE_PLAY_TITLE            = "aa_episode_title";
+
         
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;

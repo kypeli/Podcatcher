@@ -77,6 +77,8 @@ namespace Podcatcher
                 initializePlayerUI();
                 m_instance = this;
             }
+
+            updateEpisodePositionsFromAudioAgent();
         }
 
         public void initializePlayerUI()
@@ -712,6 +714,29 @@ namespace Podcatcher
         private void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
         {
             PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
+        }
+
+        private void updateEpisodePositionsFromAudioAgent()
+        {
+            if (m_appSettings.Contains(App.LSKEY_AA_EPISODE_PLAY_TITLE)
+                && m_appSettings.Contains(App.LSKEY_AA_STORED_EPISODE_POSITION))
+            {
+                PodcastEpisodeModel episodeToUpdate = PodcastSqlModel.getInstance().episodesForTitle(m_appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
+                if (episodeToUpdate == null)
+                {
+                    Debug.WriteLine("Warning: Episode to update is null!");
+                    return;
+                }
+
+                episodeToUpdate.SavedPlayPos = (long)m_appSettings[App.LSKEY_AA_STORED_EPISODE_POSITION];
+
+                Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);                
+                PodcastSqlModel.getInstance().SubmitChanges();
+                
+                m_appSettings.Remove(App.LSKEY_AA_STORED_EPISODE_POSITION);
+                m_appSettings.Remove(App.LSKEY_AA_EPISODE_PLAY_TITLE);
+                m_appSettings.Save();
+            }
         }
     }
 }

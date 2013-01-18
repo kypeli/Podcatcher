@@ -493,6 +493,15 @@ namespace Podcatcher
             SubmitChanges();
         }
 
+        internal PodcastEpisodeModel episodesForTitle(String episodeTitle)
+        {
+            PodcastEpisodeModel episode = (from   e in Episodes
+                                           where  e.EpisodeName == episodeTitle
+                                           select e).FirstOrDefault();
+
+            return episode;
+        }
+
         private void episodesModelChanged()
         {
             SubmitChanges();
@@ -511,5 +520,6 @@ namespace Podcatcher
         }
         #endregion
         #endregion
+
     }
 }

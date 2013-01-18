@@ -35,6 +35,9 @@ namespace PodcastAudioAgent
 {
     public class AudioPlayer : AudioPlayerAgent
     {
+        private const string LSKEY_AA_STORED_EPISODE_POSITION = "aa_episode_position";
+        private const string LSKEY_AA_EPISODE_PLAY_TITLE = "aa_episode_title";
+
         private static volatile bool _classInitialized;
 
         /// <remarks>
@@ -160,6 +163,7 @@ namespace PodcastAudioAgent
                     {
                         if (player.PlayerState != PlayState.Stopped) {    
                             player.Stop();
+                            saveEpisodePositionToISO(player);
                             Debug.WriteLine("User.Action: Stop");
                         }
                     } 
@@ -176,6 +180,7 @@ namespace PodcastAudioAgent
                         if (player.PlayerState == PlayState.Playing)
                         {
                             player.Pause();
+                            saveEpisodePositionToISO(player);
                         }
                     }
                     catch (InvalidOperationException e)
@@ -222,6 +227,24 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
+        }
+
+        private void saveEpisodePositionToISO(BackgroundAudioPlayer player)
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE)) 
+            {
+                settings.Remove(LSKEY_AA_EPISODE_PLAY_TITLE);
+            }
+
+            if (settings.Contains(LSKEY_AA_STORED_EPISODE_POSITION)) 
+            {
+                settings.Remove(LSKEY_AA_STORED_EPISODE_POSITION);
+            }
+
+            settings.Add(LSKEY_AA_STORED_EPISODE_POSITION, player.Position.Ticks);
+            settings.Add(LSKEY_AA_EPISODE_PLAY_TITLE, player.Track.Title);
+            settings.Save();
         }
 
         /// <summary>
