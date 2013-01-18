@@ -446,13 +446,17 @@ namespace Podcatcher.ViewModels
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
                 case "audio/x-m4a":
+                case "audio/mpegaudio":
+                case "audio/m4a":
                 case "audio/x-mpeg":
                     playable = true;
                     break;
 
                 case "video/mp4":
                 case "video/x-mp4":
+                case "video/x-mpeg":
                 case "video/x-m4v":
+                case "video/m4v":
                 case "video/mpeg":
                 case "video/vnd.objectvideo":
                     playable = true;
@@ -602,8 +606,6 @@ namespace Podcatcher.ViewModels
                 EpisodeFile = null;
                 EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                 EpisodePlayState = EpisodePlayStateEnum.Idle;
-
-                PodcastSqlModel.getInstance().SubmitChanges();
             }
         }
 
