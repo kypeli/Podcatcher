@@ -586,9 +586,11 @@ namespace Podcatcher
 
             Debug.WriteLine(" * Downloaded file name: " + episode.EpisodeFile);
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-            Debug.WriteLine(" * Episode state: " + episode.EpisodeDownloadState.ToString());
-            episode.PodcastSubscription.unplayedEpisodesChanged();
+            Debug.WriteLine(" * Episode download state: " + episode.EpisodeDownloadState.ToString());
+            Debug.WriteLine(" * Episode play state: " + episode.EpisodePlayState.ToString());
+            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
             Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.NumberOfEpisodesText);
+            episode.PodcastSubscription.unplayedEpisodesChanged();
             PodcastSqlModel.getInstance().SubmitChanges();
         }
 

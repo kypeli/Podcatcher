@@ -398,6 +398,8 @@ namespace Podcatcher
                 if (updater.DatabaseSchemaVersion < 7)
                 {
                     updater.AddColumn<SettingsModel>("ListenedThreashold");
+                    updater.AddColumn<PodcastEpisodeModel>("EpisodeDownloadState");
+                    updater.AddColumn<PodcastEpisodeModel>("EpisodePlayState");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;

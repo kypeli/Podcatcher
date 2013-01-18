@@ -254,17 +254,10 @@ namespace Podcatcher.ViewModels
 
 
         private EpisodeDownloadStateEnum m_episodeDownloadState;
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public EpisodeDownloadStateEnum EpisodeDownloadState
         {
-            get 
-            {
-                if (String.IsNullOrEmpty(m_episodeFile) == false)
-                {
-                    m_episodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
-                }
-
-                return m_episodeDownloadState; 
-            }
+            get { return m_episodeDownloadState; }
 
             set
             {
@@ -284,17 +277,10 @@ namespace Podcatcher.ViewModels
         }
 
         private EpisodePlayStateEnum m_episodePlayState;
+        [Column(UpdateCheck = UpdateCheck.Never)]
         public EpisodePlayStateEnum EpisodePlayState
         {
-            get 
-            {
-                if (String.IsNullOrEmpty(m_episodeFile) == false)
-                {
-                    m_episodePlayState = EpisodePlayStateEnum.Downloaded;
-                }
-
-                return m_episodePlayState; 
-            }
+            get { return m_episodePlayState; }
 
             set
             {
