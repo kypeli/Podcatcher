@@ -3,8 +3,9 @@
  * Generate unique file names for episodes so that we don't rely on unique file names from the stream.
  * Add possibility to delete all downloaded episodes in a subscription.
  * Add setting to control the threshold when an episode has been listened to.
+ * Resume paused episode playback also from the episode listing.
  * Fix storing episode play position when pausing/stopping the episode when Podcatcher is not running.
-
+ 
 2.1.0.0
 ----------
  * Podcast subscriptions export via email or SkyDrive in OPML format.

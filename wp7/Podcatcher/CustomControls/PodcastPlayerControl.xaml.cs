@@ -172,36 +172,17 @@ namespace Podcatcher
 
         private void audioPlayback(PodcastEpisodeModel episodeModel)
         {
-            // Save the state for the previously playing podcast episode. 
-            if (m_currentEpisode != null)
+            if (m_currentEpisode != null
+                && m_currentEpisode == episodeModel
+                && BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
             {
-                saveEpisodePlayPosition(m_currentEpisode);
-                saveEpisodeState(m_currentEpisode);
-            }
-
-            m_currentEpisode = episodeModel;
-            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
-            m_appSettings.Save();
-
-            setupPlayerUIContent(m_currentEpisode);
-            showPlayerLayout();
-
-            if (m_currentEpisode.SavedPlayPos > 0)
-            {
-                bool alwaysContinuePlayback = PodcastSqlModel.getInstance().settings().IsAutomaticContinuedPlayback;
-                if (alwaysContinuePlayback)
-                {
-                    startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos));
-                }
-                else
-                {
-                    askForContinueEpisodePlaying();
-                }
+                BackgroundAudioPlayer.Instance.Play();
+                setupUIForEpisodePlaying();
+                PodcastPlayerStarted(this, new EventArgs());
             }
             else
             {
-                startPlayback();
+                startNewPlayback(episodeModel);
             }
         }
 
@@ -337,6 +318,41 @@ namespace Podcatcher
 
             this.NoPlayingLayout.Visibility = Visibility.Collapsed;
             this.PlayingLayout.Visibility = Visibility.Visible;
+        }
+
+        private void startNewPlayback(PodcastEpisodeModel episodeModel)
+        {
+            // Save the state for the previously playing podcast episode. 
+            if (m_currentEpisode != null)
+            {
+                saveEpisodePlayPosition(m_currentEpisode);
+                saveEpisodeState(m_currentEpisode);
+            }
+
+            m_currentEpisode = episodeModel;
+            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+            m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.PodcastId);
+            m_appSettings.Save();
+
+            setupPlayerUIContent(m_currentEpisode);
+            showPlayerLayout();
+
+            if (m_currentEpisode.SavedPlayPos > 0)
+            {
+                bool alwaysContinuePlayback = PodcastSqlModel.getInstance().settings().IsAutomaticContinuedPlayback;
+                if (alwaysContinuePlayback)
+                {
+                    startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos));
+                }
+                else
+                {
+                    askForContinueEpisodePlaying();
+                }
+            }
+            else
+            {
+                startPlayback();
+            }
         }
 
         private void startPlayback()

@@ -142,7 +142,6 @@ namespace Podcatcher.Converters
             PodcastEpisodeModel.EpisodePlayStateEnum episodeState = (PodcastEpisodeModel.EpisodePlayStateEnum)value;
             switch (episodeState)
             {
-                case PodcastEpisodeModel.EpisodePlayStateEnum.Paused:
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Playing:
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Streaming:
                     playImageSource = "/Images/" + App.CurrentTheme + "/play_episode_disabled.png";
@@ -194,7 +193,6 @@ namespace Podcatcher.Converters
             switch (episodeState)
             {
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Playing:
-                case PodcastEpisodeModel.EpisodePlayStateEnum.Paused:
                 case PodcastEpisodeModel.EpisodePlayStateEnum.Streaming:
                     isActive = false;
                     break;
