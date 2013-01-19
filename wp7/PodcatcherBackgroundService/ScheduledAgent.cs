@@ -59,6 +59,13 @@ namespace PodcatcherBackgroundService
         {
             Debug.WriteLine("Starting background task.");
 
+#if DEBUG
+            ShellToast toast = new ShellToast();
+            toast.Title = "Background task invoked.";
+            toast.NavigationUri = new Uri("/Views/MainView.xaml", UriKind.Relative);
+            toast.Show();
+#endif
+
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
             var pinnedSubscriptionTiles = ShellTile.ActiveTiles.Where(tile => tile.NavigationUri.ToString().Contains("podcastId="));
             foreach (ShellTile tile in pinnedSubscriptionTiles)
