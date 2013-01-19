@@ -253,7 +253,7 @@ namespace Podcatcher
                 ScheduledActionService.Add(backgroundTask);
 #if DEBUG
                 Debug.WriteLine("Adding background service....");
-                ScheduledActionService.LaunchForTest(BGTASK_NEW_EPISODES, TimeSpan.FromSeconds(5));
+                ScheduledActionService.LaunchForTest(BGTASK_NEW_EPISODES, TimeSpan.FromSeconds(10));
 #endif
             }
             catch (InvalidOperationException e)

@@ -9,6 +9,7 @@ using System.Net;
 using System.Collections.Generic;
 using System;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace PodcatcherBackgroundService
 {
@@ -59,13 +60,6 @@ namespace PodcatcherBackgroundService
         {
             Debug.WriteLine("Starting background task.");
 
-#if DEBUG
-            ShellToast toast = new ShellToast();
-            toast.Title = "Background task invoked.";
-            toast.NavigationUri = new Uri("/Views/MainView.xaml", UriKind.Relative);
-            toast.Show();
-#endif
-
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
             var pinnedSubscriptionTiles = ShellTile.ActiveTiles.Where(tile => tile.NavigationUri.ToString().Contains("podcastId="));
             foreach (ShellTile tile in pinnedSubscriptionTiles)
@@ -93,6 +87,11 @@ namespace PodcatcherBackgroundService
                 web.DownloadStringCompleted += new DownloadStringCompletedEventHandler(web_DownloadStringCompleted);
                 web.DownloadStringAsync(new Uri(podcastUrl), subscriptionData);
                 startedRequest();
+            }
+
+            if (m_requestsStarted == 0)
+            {
+                NotifyComplete();
             }
         }
 
@@ -136,6 +135,7 @@ namespace PodcatcherBackgroundService
                 updatePinnedSubscription(subscriptionData, newEpisodes);
             }
 
+            Debug.WriteLine("Updating tile with: {0} new episode{1}, data {2} ", newEpisodes, (newEpisodes > 1 ? "s" : ""), subscriptionData);
             finishedRequest();
         }
 
@@ -155,7 +155,7 @@ namespace PodcatcherBackgroundService
             String timestamp = subscriptionData.Split('|')[1];
             DateTime latestEpisodeDateTime = DateTime.Parse(timestamp);
             var query = from episode in podcastRssXmlDoc.Descendants("item")
-                        where (DateTime.Parse(episode.Element("pubDate").Value) > latestEpisodeDateTime)
+                        where (parsePubDate(episode.Element("pubDate").Value) > latestEpisodeDateTime)
                         select episode;
 
             Debug.WriteLine("Got new episodes: " + query.Count());
@@ -176,6 +176,99 @@ namespace PodcatcherBackgroundService
             tileData.BackTitle = String.Format("{0} new episode{1}", newEpisodes, (newEpisodes > 1 ? "s" : ""));
             tileData.Count = newEpisodes;
             pinnedSubscriptionTile.Update(tileData);
+        }
+
+        private static DateTime parsePubDate(string pubDateString)
+        {
+            DateTime resultDateTime = new DateTime();
+
+            if (String.IsNullOrEmpty(pubDateString))
+            {
+                Debug.WriteLine("WARNING: Empty pubDate string given. Cannot parse it...");
+                return resultDateTime;
+            }
+
+            // pubDateString is e.g. 'Mon, 25 Jun 2012 11:53:25 -0700'
+            int indexOfComma = pubDateString.IndexOf(',');
+            if (indexOfComma >= 0)
+            {
+                pubDateString = pubDateString.Substring(indexOfComma + 2);                      // Find the ',' and remove 'Mon, '
+            }
+
+            // Next we try to parse the date string field in various formats that 
+            // can be found in podcast RSS feeds.
+            resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm:ss", pubDateString, "dd MMM yyyy HH:mm:ss".Length);      // Parse as 25 Jun 2012 11:53:25
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Empty DateTime returned.
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("d MMM yyyy HH:mm:ss", pubDateString, "d MMM yyyy HH:mm:ss".Length);   // Parse as 2 Jun 2012 11:53:25
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Empty DateTime returned.
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("dd MMMM yyyy HH:mm:ss GMT", pubDateString, pubDateString.Length);   // Parse as 2 December 2012 11:53:23 GMT
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Empty DateTime returned.
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("dd MMM yyyy HH:mm", pubDateString, "dd MMM yyyy HH:mm".Length);   // Parse as 2 Jun 2012 11:53
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Empty DateTime returned again. This is for you, Hacker Public Radio and the Economist!.
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("yyyy-MM-dd", pubDateString, "yyyy-MM-dd".Length);            // Parse as 2012-06-25
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Talk Radio 702 - The Week That Wasn't
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("yyyy/MM/dd HH:mm:ss", pubDateString, "yyyy/MM/dd HH:mm:ss".Length);  // Parse as 2012/12/17 03:18:16 PM
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // The Dan Patrick Show: Podcast
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("d MMMM yyyy HH:mm:ss EST", pubDateString, pubDateString.Length);  // Parse as 11 January 2013 10:10:10 EST
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                Debug.WriteLine("ERROR: Could not parse pub date!");
+            }
+
+            return resultDateTime;
+        }
+
+        private static DateTime getDateTimeWithFormat(string dateFormat, string pubDateString, int parseLength)
+        {
+            DateTime result = new DateTime();
+            if (parseLength > pubDateString.Length)
+            {
+                Debug.WriteLine("Cannot parse pub date as its length doesn't match the format length we are looking for. Returning.");
+                return result;
+            }
+
+            pubDateString = pubDateString.Substring(0, parseLength);
+            if (DateTime.TryParseExact(pubDateString,
+                                       dateFormat,
+                                       new CultureInfo("en-US"),
+                // CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None,
+                                       out result) == false)
+            {
+                //  Debug.WriteLine("Warning: Cannot parse feed's pubDate: '" + pubDateString + "', format: " + dateFormat);
+            }
+
+            return result;
         }
 
         void startedRequest()
