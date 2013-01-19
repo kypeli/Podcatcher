@@ -591,6 +591,7 @@ namespace Podcatcher
             episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
             Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.NumberOfEpisodesText);
             episode.PodcastSubscription.unplayedEpisodesChanged();
+
             PodcastSqlModel.getInstance().SubmitChanges();
         }
 

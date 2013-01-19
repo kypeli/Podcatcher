@@ -82,6 +82,8 @@ namespace Podcatcher.Views
                     tileData.BackTitle = "";
                     pinnedSubscriptionTile.Update(tileData);
                 }
+
+                m_subscription.EpisodesManager.updatePodcastEpisodes();
             }            
 
 

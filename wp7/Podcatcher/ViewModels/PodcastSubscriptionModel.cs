@@ -39,6 +39,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Phone.Shell;
 
 namespace Podcatcher.ViewModels
 {
@@ -425,6 +426,13 @@ namespace Podcatcher.ViewModels
 
         public void cleanupForDeletion()
         {
+            ShellTile tile = getSubscriptionsLiveTile();
+            if (tile != null)
+            {
+                Debug.WriteLine("Deleted subscription's live tile.");
+                tile.Delete();
+            }
+
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(backgroundCleanupWork);
             worker.RunWorkerAsync();
@@ -465,6 +473,11 @@ namespace Podcatcher.ViewModels
         public void addNumOfNewEpisodes(int newPodcastEpisodes)
         {
             NewEpisodesCount = m_newEpisodesCount + newPodcastEpisodes;
+        }
+
+        public ShellTile getSubscriptionsLiveTile()
+        {
+            return ShellTile.ActiveTiles.FirstOrDefault(tile => tile.NavigationUri.ToString().Contains("podcastId=" + m_podcastId)) as ShellTile;
         }
 
         /************************************* Private implementation *******************************/
@@ -622,6 +635,32 @@ namespace Podcatcher.ViewModels
                         PodcastEpisodesDownloadManager.getInstance().addEpisodesToDownloadQueue(newPodcastEpisodes);
                     });
                 }
+
+                // Update subscription's information if it's pinned to home screen.
+                updatePinnedInformation();
+            }
+
+            public void updatePinnedInformation()
+            {
+                // Store information about the subscription for the background agent.
+                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+                String subscriptionLatestEpisodeKey = App.LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + m_subscriptionModel.PodcastId;
+                if (settings.Contains(subscriptionLatestEpisodeKey) == false)
+                {
+                    return;
+                }
+                else
+                {
+                    settings.Remove(subscriptionLatestEpisodeKey);
+                }
+
+                String subscriptionData = String.Format("{0}|{1}|{2}",
+                                                        m_subscriptionModel.PodcastId,
+                                                        m_subscriptionModel.Episodes[0].EpisodePublished.ToString("r"),
+                                                        m_subscriptionModel.PodcastRSSUrl);
+                settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
+                settings.Save();
+                Debug.WriteLine("Storing latest episode publish date for subscription as: " + m_subscriptionModel.Episodes[0].EpisodePublished.ToString("r"));
             }
         }
         #endregion

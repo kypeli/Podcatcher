@@ -61,7 +61,7 @@ namespace Podcatcher.CustomControls
                 Debug.WriteLine("Fetching popular podcasts XML from gPodder.net.");
                 WebClient wc = new WebClient();
                 wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadTopPodcastsXMLCompleted);
-                wc.DownloadStringAsync(new Uri("http://gpodder.net/toplist/15.xml"));
+                wc.DownloadStringAsync(new Uri("https://gpodder.net/toplist/15.xml"));
             }
             else
             {
@@ -74,7 +74,7 @@ namespace Podcatcher.CustomControls
         {
             if (e.Error != null)
             {
-                Debug.WriteLine("ERROR: 'http://gpodder.net/toplist/15.xml' did not respond.");
+                Debug.WriteLine("ERROR: 'https://gpodder.net/toplist/15.xml' did not respond.");
                 this.LoadingText.Text = "Error receiving top list. Sorry about that... Please try again in a few moments.";
                 return;
             }

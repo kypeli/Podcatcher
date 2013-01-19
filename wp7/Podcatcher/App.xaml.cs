@@ -237,20 +237,22 @@ namespace Podcatcher
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
 
-            // Start our background agent.
-            PeriodicTask backgroundTask = new PeriodicTask(BGTASK_NEW_EPISODES);
-            backgroundTask.Description ="Podcatcher's background task that checks if new episodes have arrived for pinned subscriptions";
-
             try
             {
-                if (ScheduledActionService.Find(BGTASK_NEW_EPISODES) != null)
+                PeriodicTask backgroundTask = null;
+                backgroundTask = ScheduledActionService.Find(BGTASK_NEW_EPISODES) as PeriodicTask;
+                if (backgroundTask != null)
                 {
-                    ScheduledActionService.Remove(BGTASK_NEW_EPISODES);
+                    ScheduledActionService.Remove(backgroundTask.Name);
                 }
+
+                // Start our background agent.
+                backgroundTask = new PeriodicTask(BGTASK_NEW_EPISODES);
+                backgroundTask.Description = "Podcatcher's background task that checks if new episodes have arrived for pinned subscriptions";
 
                 ScheduledActionService.Add(backgroundTask);
 #if DEBUG
-                Debug.WriteLine("Starting background task.");
+                Debug.WriteLine("Adding background service....");
                 ScheduledActionService.LaunchForTest(BGTASK_NEW_EPISODES, TimeSpan.FromSeconds(5));
 #endif
             }

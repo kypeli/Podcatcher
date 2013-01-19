@@ -86,21 +86,14 @@ namespace Podcatcher
             tileData.BackgroundImage = new Uri("isostore:/" + tileImageLocation, UriKind.Absolute);
             tileData.Title = m_subscription.PodcastName;
 
-            // Store information about the subscription for the background agent.
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
             String subscriptionLatestEpisodeKey = App.LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + m_subscription.PodcastId;
-            if (settings.Contains(subscriptionLatestEpisodeKey)) 
+            if (settings.Contains(subscriptionLatestEpisodeKey) == false)
             {
-                settings.Remove(subscriptionLatestEpisodeKey);
+                settings.Add(subscriptionLatestEpisodeKey, ""); // Create empty key so we know the subscription is pinned.
             }
-            
-            String subscriptionData = String.Format("{0}|{1}|{2}",
-                                                    m_subscription.PodcastId,
-                                                    m_subscription.Episodes[0].EpisodePublished.ToString("r"),
-                                                    m_subscription.PodcastRSSUrl);
-            settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
-            settings.Save();
-            Debug.WriteLine("Storing latest episode publish date for subscription as: " + m_subscription.Episodes[0].EpisodePublished.ToString("r"));
+
+            m_subscription.EpisodesManager.updatePinnedInformation();
 
             try
             {
