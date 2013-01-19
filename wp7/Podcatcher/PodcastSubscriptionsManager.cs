@@ -212,6 +212,13 @@ namespace Podcatcher
             refreshNextSubscription();
         }
 
+        public void refreshSubscription(PodcastSubscriptionModel subscription)
+        {
+            m_subscriptions = new List<PodcastSubscriptionModel>();
+            m_subscriptions.Add(subscription);
+            refreshNextSubscription();
+        }
+
         public void importFromGpodderWithCredentials(NetworkCredential nc)
         {
             if (String.IsNullOrEmpty(nc.Password) || String.IsNullOrEmpty(nc.UserName))
@@ -396,6 +403,11 @@ namespace Podcatcher
         {
             if (m_subscriptions.Count < 1)
             {
+                if (OnPodcastSubscriptionsChanged == null)
+                {
+                    return;
+                }
+                
                 Debug.WriteLine("No more episodes to refresh. Done.");
                 stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
                 OnPodcastSubscriptionsChanged(this, stateChangedArgs);
@@ -416,7 +428,7 @@ namespace Podcatcher
 
             NetworkCredential nc = null;
             if (String.IsNullOrEmpty(subscription.Username) == false)
-            {
+            { 
                 nc = new NetworkCredential();
                 nc.UserName = subscription.Username;
                 Debug.WriteLine("Using username to refresh subscription: {0}", nc.UserName);

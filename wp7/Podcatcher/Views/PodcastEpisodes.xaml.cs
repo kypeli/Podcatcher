@@ -74,7 +74,7 @@ namespace Podcatcher.Views
                          
             if (forceUpdate)
             {
-                ShellTile pinnedSubscriptionTile = ShellTile.ActiveTiles.FirstOrDefault(tile => tile.NavigationUri.ToString().Contains("podcastId=" + podcastId)) as ShellTile;
+                ShellTile pinnedSubscriptionTile = m_subscription.getSubscriptionsLiveTile();                
                 if (pinnedSubscriptionTile != null)
                 {
                     StandardTileData tileData = new StandardTileData();
@@ -83,10 +83,8 @@ namespace Podcatcher.Views
                     pinnedSubscriptionTile.Update(tileData);
                 }
 
-                m_subscription.EpisodesManager.updatePodcastEpisodes();
+                PodcastSubscriptionsManager.getInstance().refreshSubscription(m_subscription);
             }            
-
-
         }
 
         /************************************* Priovate implementations *******************************/
