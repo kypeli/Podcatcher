@@ -389,6 +389,13 @@ namespace Podcatcher
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {
+                // gPodder test feed
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("ddd MMM dd HH:mm:ss yyyy", pubDateString, pubDateString.Length);  // Parse as Fri Jan 11 14:40:38 2013
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
                 Debug.WriteLine("ERROR: Could not parse pub date!");
             }
 
