@@ -654,13 +654,14 @@ namespace Podcatcher.ViewModels
                     settings.Remove(subscriptionLatestEpisodeKey);
                 }
 
+                DateTime newestEpisodeTimestamp = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel)[0].EpisodePublished;
                 String subscriptionData = String.Format("{0}|{1}|{2}",
                                                         m_subscriptionModel.PodcastId,
-                                                        m_subscriptionModel.Episodes[0].EpisodePublished.ToString("r"),
+                                                        newestEpisodeTimestamp.ToString("r"),
                                                         m_subscriptionModel.PodcastRSSUrl);
                 settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
                 settings.Save();
-                Debug.WriteLine("Storing latest episode publish date for subscription as: " + m_subscriptionModel.Episodes[0].EpisodePublished.ToString("r"));
+                Debug.WriteLine("Storing latest episode publish date for subscription as: " + newestEpisodeTimestamp.ToString("r"));
             }
         }
         #endregion
