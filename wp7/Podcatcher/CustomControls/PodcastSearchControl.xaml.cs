@@ -103,23 +103,29 @@ namespace Podcatcher.CustomControls
             foreach (var result in query)
             {
                 GPodderResultModel resultModel = new GPodderResultModel();
-                
-                XElement logoElement = result.Element("logo_url");
-
-                if (logoElement == null 
-                    || String.IsNullOrEmpty(logoElement.Value))
+                try
                 {
-                    logoElement = result.Element("scaled_logo_url");
-                }
+                    XElement logoElement = result.Element("logo_url");
 
-                if (logoElement != null
-                    && String.IsNullOrEmpty(logoElement.Value) == false)
-                {
-                    resultModel.PodcastLogoUrl = new Uri(logoElement.Value);
+                    if (logoElement == null
+                        || String.IsNullOrEmpty(logoElement.Value))
+                    {
+                        logoElement = result.Element("scaled_logo_url");
+                    }
+
+                    if (logoElement != null
+                        && String.IsNullOrEmpty(logoElement.Value) == false)
+                    {
+                        resultModel.PodcastLogoUrl = new Uri(logoElement.Value);
+                    }
+
+                    resultModel.PodcastName = result.Element("title").Value;
+                    resultModel.PodcastUrl = result.Element("url").Value;
                 }
-                
-                resultModel.PodcastName = result.Element("title").Value;
-                resultModel.PodcastUrl = result.Element("url").Value;
+                catch (UriFormatException)
+                {
+                    Debug.WriteLine("Could not parse logo from the feed.");
+                }
 
                 results.Add(resultModel);
             }
