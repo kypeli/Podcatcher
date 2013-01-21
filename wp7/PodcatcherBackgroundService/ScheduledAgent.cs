@@ -18,8 +18,10 @@ namespace PodcatcherBackgroundService
         // Root key name for storing episode information for background service.
         private const string LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE = "bg_subscription_latest_episode";
         private int m_requestsStarted = 0;
+        private Queue<ShellTile> m_pinnedSubscriptions = null;
 
         private static volatile bool _classInitialized;
+        IsolatedStorageSettings m_settings;
 
         /// <remarks>
         /// ScheduledAgent constructor, initializes the UnhandledException handler
@@ -34,6 +36,9 @@ namespace PodcatcherBackgroundService
                 {
                     Application.Current.UnhandledException += ScheduledAgent_UnhandledException;
                 });
+
+                m_settings = IsolatedStorageSettings.ApplicationSettings;
+
             }
         }
 
@@ -60,41 +65,51 @@ namespace PodcatcherBackgroundService
         {
             Debug.WriteLine("Starting background task.");
 
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            var pinnedSubscriptionTiles = ShellTile.ActiveTiles.Where(tile => tile.NavigationUri.ToString().Contains("podcastId="));
-            foreach (ShellTile tile in pinnedSubscriptionTiles)
+            m_pinnedSubscriptions = new Queue<ShellTile>(ShellTile.ActiveTiles.Where(tile => tile.NavigationUri.ToString().Contains("podcastId=")));
+            if (m_pinnedSubscriptions.Count > 0)
             {
-                Debug.WriteLine("Found a pinned subscription: " + tile.NavigationUri);
-
-                String subscriptionId = getSubscriptionIdForTile(tile);
-
-                if (subscriptionId == "") 
-                {
-                    Debug.WriteLine("Could not parse the subscription ID from tile navigation URL!");
-                    NotifyComplete();
-                    return;
-                }
-
-                if (settings.Contains(LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId) == false) 
-                {
-                    Debug.WriteLine("Could not open subscription meta data! Key: " + LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId);
-                    NotifyComplete();
-                    return;
-                }
-
-                String subscriptionData = settings[LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId] as String;
-                String podcastUrl = subscriptionData.Split('|')[2];
-
-                WebClient web = new WebClient();
-                web.DownloadStringCompleted += new DownloadStringCompletedEventHandler(web_DownloadStringCompleted);
-                web.DownloadStringAsync(new Uri(podcastUrl), subscriptionData);
-                startedRequest();
+                refreshPinnedSubscription(m_pinnedSubscriptions);
             }
-
-            if (m_requestsStarted == 0)
+            else
             {
                 NotifyComplete();
             }
+        }
+
+        private void refreshPinnedSubscription(Queue<ShellTile> tiles)
+        {
+            ShellTile tile = null;
+            if (tiles.Count > 0) 
+            {
+                tile = tiles.Dequeue();
+            } else 
+            {
+                Debug.WriteLine("All pinned subscriptions refreshed.");
+                NotifyComplete();
+                return;
+            }
+
+            Debug.WriteLine("Found a pinned subscription: " + tile.NavigationUri);
+
+            String subscriptionId = getSubscriptionIdForTile(tile);
+            if (subscriptionId == "")
+            {
+                Debug.WriteLine("Could not parse the subscription ID from tile navigation URL!");
+                refreshPinnedSubscription(m_pinnedSubscriptions);
+            }
+
+            if (m_settings.Contains(LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId) == false)
+            {
+                Debug.WriteLine("Could not open subscription meta data! Key: " + LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId);
+                refreshPinnedSubscription(m_pinnedSubscriptions);
+            }
+
+            String subscriptionData = m_settings[LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId] as String;
+            String podcastUrl = subscriptionData.Split('|')[2];
+
+            WebClient web = new WebClient();
+            web.DownloadStringCompleted += new DownloadStringCompletedEventHandler(web_DownloadStringCompleted);
+            web.DownloadStringAsync(new Uri(podcastUrl), subscriptionData);
         }
 
         private static String getSubscriptionIdForTile(ShellTile tile)
@@ -138,7 +153,8 @@ namespace PodcatcherBackgroundService
             }
 
             Debug.WriteLine("Updating tile with: {0} new episode{1}, data {2} ", newEpisodes, (newEpisodes > 1 ? "s" : ""), subscriptionData);
-            finishedRequest();
+
+            refreshPinnedSubscription(m_pinnedSubscriptions);
         }
 
         private int getNumOfNewEpisodes(String subscriptionData, String podcastRss)
