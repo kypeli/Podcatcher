@@ -72,12 +72,14 @@ namespace PodcatcherBackgroundService
                 {
                     Debug.WriteLine("Could not parse the subscription ID from tile navigation URL!");
                     NotifyComplete();
+                    return;
                 }
 
                 if (settings.Contains(LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId) == false) 
                 {
                     Debug.WriteLine("Could not open subscription meta data! Key: " + LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId);
                     NotifyComplete();
+                    return;
                 }
 
                 String subscriptionData = settings[LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId] as String;
