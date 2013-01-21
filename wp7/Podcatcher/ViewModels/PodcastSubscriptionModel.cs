@@ -310,14 +310,29 @@ namespace Podcatcher.ViewModels
         [Association(Storage = "m_podcastEpisodes", ThisKey = "PodcastId", OtherKey = "PodcastId")]
         public EntitySet<PodcastEpisodeModel> Episodes
         {
-            get {
-                return m_podcastEpisodes;
-            }
+            get { return m_podcastEpisodes; }
 
             set {
                 NotifyPropertyChanging();
                 m_podcastEpisodes.Assign(value);
                 NotifyPropertyChanged("Episodes");
+            }
+        }
+
+        public List<PodcastEpisodeModel> EpisodesPublishedDescending
+        {
+            get
+            {
+                var query = from PodcastEpisodeModel episode in Episodes
+                            orderby episode.EpisodePublished descending
+                            select episode;
+
+                return new List<PodcastEpisodeModel>(query);
+            }
+
+            set
+            {
+                NotifyPropertyChanged("EpisodesPublishedDescending");
             }
         }
 
@@ -636,8 +651,18 @@ namespace Podcatcher.ViewModels
                     });
                 }
 
-                // Update subscription's information if it's pinned to home screen.
-                updatePinnedInformation();
+                if (newPodcastEpisodes.Count > 0)
+                {
+                    // Update subscription's information if it's pinned to home screen.
+                    updatePinnedInformation();
+
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        // This will call the setter for episode model in the UI that will notify the UI that the content has changed.
+                        m_subscriptionModel.EpisodesPublishedDescending = new List<PodcastEpisodeModel>();
+                    });
+                }
+
             }
 
             public void updatePinnedInformation()
@@ -661,6 +686,7 @@ namespace Podcatcher.ViewModels
                                                         m_subscriptionModel.PodcastRSSUrl);
                 settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
                 settings.Save();
+
                 Debug.WriteLine("Storing latest episode publish date for subscription as: " + newestEpisodeTimestamp.ToString("r"));
             }
         }

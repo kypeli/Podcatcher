@@ -58,7 +58,6 @@ namespace Podcatcher.Views
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
-            this.EpisodeList.ItemsSource = new ObservableCollection<PodcastEpisodeModel>(m_podcastSqlModel.episodesForSubscription(m_subscription));
             this.DataContext = m_subscription;
 
             bool forceUpdate = false;
