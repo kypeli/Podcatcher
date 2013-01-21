@@ -44,19 +44,10 @@ namespace Podcatcher
 {
     public partial class PodcastSubscriptionControl : UserControl
     {
-        private PodcastSubscriptionModel m_subscription;
-
         public PodcastSubscriptionControl()
         {
             // Required to initialize variables
             InitializeComponent();
-
-            Loaded += new RoutedEventHandler(PodcastSubscriptionControl_Loaded);
-        }
-
-        void PodcastSubscriptionControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            m_subscription = DataContext as PodcastSubscriptionModel;
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
@@ -70,13 +61,15 @@ namespace Podcatcher
 
         private void MenuItemPin_Click(object sender, RoutedEventArgs e)
         {
+            PodcastSubscriptionModel subscriptionToPin = (sender as MenuItem).DataContext as PodcastSubscriptionModel;
+
             // Copy the logo file to tile's shared location.
-            String tileImageLocation = "Shared/ShellContent/" + m_subscription.PodcastLogoLocalLocation.Split('/')[1];
+            String tileImageLocation = "Shared/ShellContent/" + subscriptionToPin.PodcastLogoLocalLocation.Split('/')[1];
             using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 if (myIsolatedStorage.FileExists(tileImageLocation) == false)
                 {
-                    myIsolatedStorage.CopyFile(m_subscription.PodcastLogoLocalLocation,
+                    myIsolatedStorage.CopyFile(subscriptionToPin.PodcastLogoLocalLocation,
                                                tileImageLocation);
                 }
             }
@@ -84,20 +77,20 @@ namespace Podcatcher
             // Setup data for the live tile.
             StandardTileData tileData = new StandardTileData();
             tileData.BackgroundImage = new Uri("isostore:/" + tileImageLocation, UriKind.Absolute);
-            tileData.Title = m_subscription.PodcastName;
+            tileData.Title = subscriptionToPin.PodcastName;
 
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            String subscriptionLatestEpisodeKey = App.LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + m_subscription.PodcastId;
+            String subscriptionLatestEpisodeKey = App.LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionToPin.PodcastId;
             if (settings.Contains(subscriptionLatestEpisodeKey) == false)
             {
                 settings.Add(subscriptionLatestEpisodeKey, ""); // Create empty key so we know the subscription is pinned.
             }
 
-            m_subscription.EpisodesManager.updatePinnedInformation();
+            subscriptionToPin.EpisodesManager.updatePinnedInformation();
 
             try
             {
-                Uri tileUri = new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}&forceUpdate=true", m_subscription.PodcastId), UriKind.Relative);
+                Uri tileUri = new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}&forceUpdate=true", subscriptionToPin.PodcastId), UriKind.Relative);
                 Debug.WriteLine(string.Format("Pinning to start: Image: {0} Title: {1} Navigation uri: {2}", tileData.BackgroundImage, tileData.Title, tileUri));
                 ShellTile.Create(tileUri, tileData);
             }
