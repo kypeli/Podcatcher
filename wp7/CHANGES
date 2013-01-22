@@ -1,10 +1,11 @@
 2.2.0.0
 ----------
- * Generate unique file names for episodes so that we don't rely on unique file names from the stream.
+ * Pin subscriptions to start screen to add live tiles that shows number of new episodes for them.
+ * Fix storing episode play position when pausing/stopping the episode when Podcatcher is not running.
  * Add possibility to delete all downloaded episodes in a subscription.
  * Add setting to control the threshold when an episode has been listened to.
  * Resume paused episode playback also from the episode listing.
- * Fix storing episode play position when pausing/stopping the episode when Podcatcher is not running.
+ * Generate unique file names for episodes so that we don't rely on unique file names from the stream.
  
 2.1.0.0
 ----------

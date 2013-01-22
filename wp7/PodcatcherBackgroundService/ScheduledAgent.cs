@@ -96,12 +96,14 @@ namespace PodcatcherBackgroundService
             {
                 Debug.WriteLine("Could not parse the subscription ID from tile navigation URL!");
                 refreshPinnedSubscription(m_pinnedSubscriptions);
+                return;
             }
 
             if (m_settings.Contains(LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId) == false)
             {
                 Debug.WriteLine("Could not open subscription meta data! Key: " + LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId);
                 refreshPinnedSubscription(m_pinnedSubscriptions);
+                return;
             }
 
             String subscriptionData = m_settings[LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId] as String;
@@ -172,8 +174,11 @@ namespace PodcatcherBackgroundService
 
             String timestamp = subscriptionData.Split('|')[1];
             DateTime latestEpisodeDateTime = DateTime.Parse(timestamp);
+
+            Debug.WriteLine("latestEpisode, universal: " + latestEpisodeDateTime.ToUniversalTime());
+
             var query = from episode in podcastRssXmlDoc.Descendants("item")
-                        where (parsePubDate(episode.Element("pubDate").Value) > latestEpisodeDateTime)
+                        where (parsePubDate(episode.Element("pubDate").Value).ToUniversalTime() > latestEpisodeDateTime.ToUniversalTime())
                         select episode;
 
             Debug.WriteLine("Got new episodes: " + query.Count());
