@@ -137,7 +137,7 @@ namespace Podcatcher
                 && episode.EpisodeDownloadSize > App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD)
             {
 
-                if (MessageBox.Show("You are about to download a file over 20 MB in size. Please " +
+                if (MessageBox.Show("You are about to download a file over 50 MB in size. Please " +
                                     "note that Windows Phone allows downloading this kind of files only if you are " +
                                     "connected to a WiFi network.",
                     "Attention",

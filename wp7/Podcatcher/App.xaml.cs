@@ -63,7 +63,7 @@ namespace Podcatcher
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR  = "dl_withCellular";
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI      = "dl_withWifi";
         public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER       = 104857600;
-        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD            = 20971520;
+        public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD            = 50000000;
 
         // Client ID for Live services. Currently we only use SkyDrive
         public const string LSKEY_LIVE_CLIENT_ID                    = "00000000400E9C91";
