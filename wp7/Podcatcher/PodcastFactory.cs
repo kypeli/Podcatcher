@@ -238,7 +238,7 @@ namespace Podcatcher
                     }
                     else
                     {
-                        episodeModel.EpisodeFileMimeType = "-ERROR-";
+                        episodeModel.EpisodeFileMimeType = "";
                         Debug.WriteLine("WARNING: Null element: enclosure");
                     }
 

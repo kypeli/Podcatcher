@@ -179,13 +179,19 @@ namespace Podcatcher.ViewModels
             get { return m_episodeFileMimeType; }
             set { 
                 m_episodeFileMimeType = value;
-                if (isPlayable() == false)
+                if (String.IsNullOrEmpty(m_episodeFileMimeType))
+                {
+                    EpisodePlayState = EpisodePlayStateEnum.NoMedia;
+                    EpisodeDownloadState = EpisodeDownloadStateEnum.NoMedia;
+                } 
+                else if (isPlayable() == false)
                 {
                     EpisodePlayState = EpisodePlayStateEnum.UnsupportedFormat;
                     EpisodeDownloadState = EpisodeDownloadStateEnum.UnsupportedFormat;
-                    NotifyPropertyChanged("EpisodePlayState");
-                    NotifyPropertyChanged("EpisodeDownloadState");
                 }
+
+                NotifyPropertyChanged("EpisodePlayState");
+                NotifyPropertyChanged("EpisodeDownloadState");
             }
         }
         
@@ -238,7 +244,8 @@ namespace Podcatcher.ViewModels
             Playing,
             Paused,
             Streaming,
-            UnsupportedFormat
+            UnsupportedFormat,
+            NoMedia
         };
 
         public enum EpisodeDownloadStateEnum
@@ -249,7 +256,8 @@ namespace Podcatcher.ViewModels
             Downloaded,
             WaitingForWiFi,
             WaitingForWifiAndPower,
-            UnsupportedFormat
+            UnsupportedFormat,
+            NoMedia
         };
 
 
@@ -395,7 +403,8 @@ namespace Podcatcher.ViewModels
 
             get
             {
-                m_shouldShowPlayButton = EpisodePlayState != EpisodePlayStateEnum.UnsupportedFormat ?
+                m_shouldShowPlayButton = EpisodePlayState != EpisodePlayStateEnum.UnsupportedFormat
+                                         && EpisodePlayState != EpisodePlayStateEnum.NoMedia ?
                                          Visibility.Visible                                         :
                                          Visibility.Collapsed;
 
