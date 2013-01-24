@@ -52,7 +52,6 @@ namespace Podcatcher.Views
             InitializeComponent();
             m_podcastSqlModel = PodcastSqlModel.getInstance();
         }
-
         
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
@@ -70,10 +69,10 @@ namespace Podcatcher.Views
             {
                 forceUpdate = false;
             }
-                         
+
             if (forceUpdate)
             {
-                ShellTile pinnedSubscriptionTile = m_subscription.getSubscriptionsLiveTile();                
+                ShellTile pinnedSubscriptionTile = m_subscription.getSubscriptionsLiveTile();
                 if (pinnedSubscriptionTile != null)
                 {
                     StandardTileData tileData = new StandardTileData();
@@ -83,7 +82,14 @@ namespace Podcatcher.Views
                 }
 
                 PodcastSubscriptionsManager.getInstance().refreshSubscription(m_subscription);
-            }            
+            }
+            else
+            {
+                if (m_podcastSqlModel.settings().keepNumEpisodes() != SettingsModel.KEEP_ALL_EPISODES)
+                {
+                    m_subscription.cleanOldEpisodes(m_podcastSqlModel.settings().keepNumEpisodes());
+                }
+            }
         }
 
         /************************************* Priovate implementations *******************************/

@@ -569,6 +569,11 @@ namespace Podcatcher.ViewModels
 
         public void deleteDownloadedEpisode()
         {
+            if (String.IsNullOrEmpty(EpisodeFile))
+            {
+                return;
+            }
+
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 try
@@ -603,7 +608,6 @@ namespace Podcatcher.ViewModels
                 EpisodePlayState = EpisodePlayStateEnum.Idle;
             }
         }
-
 
         /************************************* Private implementations *******************************/
         #region private

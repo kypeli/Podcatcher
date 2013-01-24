@@ -510,6 +510,27 @@ namespace Podcatcher.ViewModels
             return ShellTile.ActiveTiles.FirstOrDefault(tile => tile.NavigationUri.ToString().Contains("podcastId=" + m_podcastId)) as ShellTile;
         }
 
+        public void cleanOldEpisodes(int keepEpisodes, bool deleteUnplayed = false)
+        {
+            if (keepEpisodes >= Episodes.Count)
+            {
+                return;
+            }
+
+            var query = (from episode in Episodes
+                         select episode).Skip(keepEpisodes);
+
+            List<PodcastEpisodeModel> episodesToClean = query.ToList();
+            foreach (PodcastEpisodeModel e in episodesToClean)
+            {
+                e.deleteDownloadedEpisode();
+            }
+
+            PodcastSqlModel.getInstance().deleteEpisodesPerQuery(query);
+
+            NotifyPropertyChanged("EpisodesText");
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations        
         private PodcastEpisodesManager  m_podcastEpisodesManager;

@@ -400,6 +400,8 @@ namespace Podcatcher
                     updater.AddColumn<SettingsModel>("ListenedThreashold");
                     updater.AddColumn<PodcastEpisodeModel>("EpisodeDownloadState");
                     updater.AddColumn<PodcastEpisodeModel>("EpisodePlayState");
+                    updater.AddColumn<SettingsModel>("SelectedKeepNumEpisodesIndex");
+                    updater.AddColumn<SettingsModel>("IsDeleteUnplayedEpisodes");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;
@@ -504,6 +506,12 @@ namespace Podcatcher
             return episode;
         }
 
+        public void deleteEpisodesPerQuery(IEnumerable<PodcastEpisodeModel> query)
+        {
+            Episodes.DeleteAllOnSubmit(query);
+            SubmitChanges();
+        }
+
         private void episodesModelChanged()
         {
             SubmitChanges();
@@ -522,6 +530,7 @@ namespace Podcatcher
         }
         #endregion
         #endregion
+
 
     }
 }

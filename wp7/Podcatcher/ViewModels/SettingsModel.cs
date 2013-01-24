@@ -18,6 +18,8 @@ namespace Podcatcher.ViewModels
     [Table]
     public class SettingsModel
     {
+        public const int KEEP_ALL_EPISODES = 9999;
+
         public enum ExportMode
         {
             ExportToSkyDrive,
@@ -119,6 +121,60 @@ namespace Podcatcher.ViewModels
                 {
                     m_listenedThreashold = value;
                 }
+            }
+        }
+
+        private int m_SelectedKeepNumEpisodesIndex = 0;
+        [Column(DbType = "INT DEFAULT 0 NOT NULL")]
+        public int SelectedKeepNumEpisodesIndex
+        {
+            get
+            {
+                return m_SelectedKeepNumEpisodesIndex;
+            }
+
+            set
+            {
+                if (m_SelectedKeepNumEpisodesIndex != value)
+                {
+                    m_SelectedKeepNumEpisodesIndex = value;
+                }
+            }
+        }
+
+        private bool m_IsDeleteUnplayedEpisodes = false;
+        [Column]
+        public Boolean IsDeleteUnplayedEpisodes
+        {
+            get
+            {
+                return m_IsDeleteUnplayedEpisodes;
+            }
+
+            set
+            {
+                if (m_IsDeleteUnplayedEpisodes != value)
+                {
+                    m_IsDeleteUnplayedEpisodes = value;
+                }
+            }
+        }
+
+        public int keepNumEpisodes()
+        {
+            switch (m_SelectedKeepNumEpisodesIndex)
+            {
+                case 1:
+                    return 5;
+                case 2:
+                    return 10;
+                case 3:
+                    return 25;
+                case 4:
+                    return 50;
+                case 0:
+                default:
+                    return 9999;
             }
         }
 
