@@ -582,13 +582,11 @@ namespace Podcatcher.ViewModels
                     if (episodeStore.FileExists(EpisodeFile))
                     {
                         episodeStore.DeleteFile(EpisodeFile);
-                    } else {
+                    }
+                    else
+                    {
                         Debug.WriteLine("Warning: Cannot delete episode with file: " + EpisodeFile);
                     }
-
-                    SavedPlayPos = 0;
-                    TotalLengthTicks = 0;
-                    PodcastSubscription.UnplayedEpisodes--;
                 }
                 catch (IsolatedStorageException)
                 {
@@ -601,6 +599,12 @@ namespace Podcatcher.ViewModels
                 catch (NullReferenceException)
                 {
                     Debug.WriteLine("Got NULL pointer exception when deleting episode.");
+                }
+                finally
+                {
+                    SavedPlayPos = 0;
+                    TotalLengthTicks = 0;
+                    PodcastSubscription.UnplayedEpisodes--;
                 }
 
                 EpisodeFile = null;

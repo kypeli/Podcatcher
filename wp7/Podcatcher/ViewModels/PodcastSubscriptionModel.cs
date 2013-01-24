@@ -517,8 +517,20 @@ namespace Podcatcher.ViewModels
                 return;
             }
 
-            var query = (from episode in Episodes
+            IEnumerable<PodcastEpisodeModel> query = null;
+            bool deleteUnplayedEpisodes = PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+
+            if (deleteUnplayedEpisodes)
+            {
+                query = (from episode in Episodes
                          select episode).Skip(keepEpisodes);
+            }
+            else
+            {
+                query = (from episode in Episodes
+                         where (String.IsNullOrEmpty(episode.EpisodeFile) && episode.SavedPlayPos > 0)
+                         select episode).Skip(keepEpisodes);
+            }
 
             List<PodcastEpisodeModel> episodesToClean = query.ToList();
             foreach (PodcastEpisodeModel e in episodesToClean)
