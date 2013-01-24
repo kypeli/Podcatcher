@@ -190,23 +190,13 @@ namespace Podcatcher
             }
             else
             {
-                startNewPlayback(episodeModel);
+                startNewLocalPlayback(episodeModel);
             }
         }
 
         public void streamEpisode(PodcastEpisodeModel episodeModel)
         {
-            saveEpisodePlayPosition(m_currentEpisode);
-            addEpisodeToPlayHistory(m_currentEpisode);
-            saveEpisodeState(m_currentEpisode);
-
-            StopPlayback();
-
-            m_currentEpisode = episodeModel;
-            startPlayback(TimeSpan.Zero, true);
-            setupUIForEpisodePlaying();
-            setupPlayerUIContent(episodeModel);
-            showPlayerLayout();
+            startNewRemotePlayback(episodeModel);
         }
 
         public void StopPlayback()
@@ -328,13 +318,24 @@ namespace Podcatcher
             this.PlayingLayout.Visibility = Visibility.Visible;
         }
 
-        private void startNewPlayback(PodcastEpisodeModel episodeModel)
+        private void startNewLocalPlayback(PodcastEpisodeModel episodeModel)
+        {
+            startNewPlayback(episodeModel, false);
+        }
+
+        private void startNewRemotePlayback(PodcastEpisodeModel episodeModel)
+        {
+            startNewPlayback(episodeModel, true);
+        }
+
+        private void startNewPlayback(PodcastEpisodeModel episodeModel, bool streaming)
         {
             // Save the state for the previously playing podcast episode. 
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
                 saveEpisodeState(m_currentEpisode);
+                addEpisodeToPlayHistory(m_currentEpisode);
             }
 
             m_currentEpisode = episodeModel;
@@ -345,27 +346,22 @@ namespace Podcatcher
             setupPlayerUIContent(m_currentEpisode);
             showPlayerLayout();
 
-            if (m_currentEpisode.SavedPlayPos > 0)
+            if (!streaming && episodeModel.SavedPlayPos > 0)
             {
                 bool alwaysContinuePlayback = PodcastSqlModel.getInstance().settings().IsAutomaticContinuedPlayback;
                 if (alwaysContinuePlayback)
                 {
-                    startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos));
+                    startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos), streaming);
                 }
                 else
                 {
-                    askForContinueEpisodePlaying();
+                    askForContinueEpisodePlaying(streaming);
                 }
             }
             else
             {
-                startPlayback();
+                startPlayback(TimeSpan.Zero, streaming);
             }
-        }
-
-        private void startPlayback()
-        {
-            startPlayback(TimeSpan.Zero);
         }
 
         private void startPlayback(TimeSpan position, bool streamEpisode = false)
@@ -434,7 +430,7 @@ namespace Podcatcher
             }
         }
 
-        private void askForContinueEpisodePlaying()
+        private void askForContinueEpisodePlaying(bool streaming)
         {
             MessageBoxButton messageButtons = MessageBoxButton.OKCancel;
             MessageBoxResult messageBoxResult = MessageBox.Show("You have previously played this episode. Do you wish to continue from the previous position?",
@@ -442,11 +438,11 @@ namespace Podcatcher
                                                                 messageButtons);
             if (messageBoxResult == MessageBoxResult.OK)
             {
-                startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos));
+                startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos), streaming);
             }
             else
             {
-                startPlayback(new TimeSpan(0));
+                startPlayback(new TimeSpan(0), streaming);
             }
         }
 
@@ -499,9 +495,15 @@ namespace Podcatcher
 
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
-            m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-
-            m_appSettings.Save();
+            try
+            {
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                m_appSettings.Save();
+            }
+            catch (IsolatedStorageException e)
+            {
+                Debug.WriteLine("Could not use isolated storage at this moment so store episode information! Error: " + e.Message);
+            }
         }
 
         private void saveEpisodeState(PodcastEpisodeModel episode)
