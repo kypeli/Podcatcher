@@ -42,7 +42,8 @@ namespace Podcatcher.Views
         
         private void DeleteEpisodeThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!initialized)
+            if (!initialized
+                || this.DeleteEpisodeThreshold == null)
             {
                 return;
             }

@@ -604,7 +604,7 @@ namespace Podcatcher.ViewModels
                 {
                     SavedPlayPos = 0;
                     TotalLengthTicks = 0;
-                    PodcastSubscription.UnplayedEpisodes--;
+                    PodcastSubscription.unplayedEpisodesChanged();
                 }
 
                 EpisodeFile = null;

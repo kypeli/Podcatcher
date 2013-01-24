@@ -402,6 +402,8 @@ namespace Podcatcher
                     updater.AddColumn<PodcastEpisodeModel>("EpisodePlayState");
                     updater.AddColumn<SettingsModel>("SelectedKeepNumEpisodesIndex");
                     updater.AddColumn<SettingsModel>("IsDeleteUnplayedEpisodes");
+                    updater.AddColumn<PodcastSubscriptionModel>("SubscriptionSelectedKeepNumEpisodesIndex");
+                    updater.AddColumn<PodcastSubscriptionModel>("SubscriptionIsDeleteUnplayedEpisodes");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;
