@@ -355,7 +355,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        // I should do this in a Converter from XAML, but as this is dependant of two properties,
+        // I should do this in a Converter from XAML, but as this is dependant of multiple properties,
         // it's just easier to do it this way. 
         private Visibility m_progressBarIsVisible = Visibility.Collapsed;
         public Visibility ProgressBarIsVisible

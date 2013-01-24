@@ -25,7 +25,8 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="480" Height="760">
             <TextBlock Text="{Binding PodcastName}" TextWrapping="Wrap" FontSize="23" Margin="20,0,12,0"/>
-        	<controls:Pivot x:Name="NavigationPivot" SelectionChanged="NavigationPivot_SelectionChanged" Height="762" Margin="0">
+            <TextBlock Text="{Binding EpisodesText}" TextWrapping="Wrap" FontSize="23" Margin="20,0,12,0"/>
+            <controls:Pivot x:Name="NavigationPivot" SelectionChanged="NavigationPivot_SelectionChanged" Height="762" Margin="0">
             <!--Episodes listing -->
         		<controls:PivotItem Header="episodes" Margin="12,8,12,0">
         			<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="640"  Width="456">
