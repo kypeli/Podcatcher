@@ -320,6 +320,43 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_SelectedKeepNumEpisodesIndex = PodcastSqlModel.getInstance().settings().SelectedKeepNumEpisodesIndex;
+        [Column(DbType = "INT DEFAULT 0 NOT NULL")]
+        public int SubscriptionSelectedKeepNumEpisodesIndex
+        {
+            get
+            {
+                return m_SelectedKeepNumEpisodesIndex;
+            }
+
+            set
+            {
+                if (m_SelectedKeepNumEpisodesIndex != value)
+                {
+                    m_SelectedKeepNumEpisodesIndex = value;
+                }
+            }
+        }
+
+        private bool m_IsDeleteUnplayedEpisodes = PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+        [Column]
+        public Boolean SubscriptionIsDeleteUnplayedEpisodes
+        {
+            get
+            {
+                return m_IsDeleteUnplayedEpisodes;
+            }
+
+            set
+            {
+                if (m_IsDeleteUnplayedEpisodes != value)
+                {
+                    m_IsDeleteUnplayedEpisodes = value;
+                }
+            }
+        }
+
+
         public List<PodcastEpisodeModel> EpisodesPublishedDescending
         {
             get
@@ -528,7 +565,7 @@ namespace Podcatcher.ViewModels
             else
             {
                 query = (from episode in Episodes
-                         where (String.IsNullOrEmpty(episode.EpisodeFile) && episode.SavedPlayPos > 0)
+                         where (String.IsNullOrEmpty(episode.EpisodeFile) || (String.IsNullOrEmpty(episode.EpisodeFile) == false && episode.SavedPlayPos > 0))
                          select episode).Skip(keepEpisodes);
             }
 
