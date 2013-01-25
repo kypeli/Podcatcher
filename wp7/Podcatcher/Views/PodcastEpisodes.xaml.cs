@@ -101,9 +101,9 @@ namespace Podcatcher.Views
             }
             else
             {
-                if (m_podcastSqlModel.settings().keepNumEpisodes() != SettingsModel.KEEP_ALL_EPISODES)
+                if (SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex) != SettingsModel.KEEP_ALL_EPISODES)
                 {
-                    m_subscription.cleanOldEpisodes(m_podcastSqlModel.settings().keepNumEpisodes());
+                    m_subscription.cleanOldEpisodes(SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex));
                 }
             }
         }

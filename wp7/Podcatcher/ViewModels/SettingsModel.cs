@@ -160,9 +160,9 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        public int keepNumEpisodes()
+        public static int keepNumEpisodesForSelectedIndex(int index)
         {
-            switch (m_SelectedKeepNumEpisodesIndex)
+            switch (index)
             {
                 case 1:
                     return 5;

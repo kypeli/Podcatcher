@@ -595,7 +595,7 @@ namespace Podcatcher.ViewModels
             PodcastCleanStarted();
 
             IEnumerable<PodcastEpisodeModel> query = null;
-            bool deleteUnplayedEpisodes = PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+            bool deleteUnplayedEpisodes = SubscriptionIsDeleteUnplayedEpisodes;
 
             if (deleteUnplayedEpisodes)
             {
