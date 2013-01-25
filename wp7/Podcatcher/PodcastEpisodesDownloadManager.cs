@@ -192,6 +192,15 @@ namespace Podcatcher
                 int downloadingEpisodeId = (int)m_applicationSettings[App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID];
                 m_currentEpisodeDownload = PodcastSqlModel.getInstance().episodeForEpisodeId(downloadingEpisodeId);
 
+                if (m_currentEpisodeDownload == null)
+                {
+                    Debug.WriteLine("Something went wrong. Got NULL episode when asking for episode id " + downloadingEpisodeId);
+
+                    m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
+                    m_applicationSettings.Save();
+                    return;
+                }
+
                 if (BackgroundTransferService.Requests.Count() > 0)
                 {
                     // Found an ongoing request.
@@ -214,6 +223,7 @@ namespace Podcatcher
                     Debug.WriteLine("Found a completed request.");
                     updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
                     m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
+                    m_applicationSettings.Save();
                 }
             }
         }

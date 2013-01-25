@@ -9,6 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:c="clr-namespace:Podcatcher.Converters"
     xmlns:pc="clr-namespace:Podcatcher"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:c4f="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -81,6 +83,17 @@
 
         	</controls:Pivot>
         </StackPanel>
+
+        <c4f:ProgressOverlay Name="cleanProgressOverlay" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="Cleaning..." HorizontalAlignment="Center"/>
+                <toolkit:PerformanceProgressBar 
+                        IsIndeterminate="True"
+                        Foreground="Green"
+                    />
+            </StackPanel>
+        </c4f:ProgressOverlay>
+
     </Grid>
 
 

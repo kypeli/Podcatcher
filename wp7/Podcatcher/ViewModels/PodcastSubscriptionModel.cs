@@ -482,7 +482,11 @@ namespace Podcatcher.ViewModels
         #endregion
 
         /************************************* Public implementations *******************************/
-        
+
+        public event SubscriptionModelHandler PodcastCleanStarted;
+        public event SubscriptionModelHandler PodcastCleanFinished;
+        public delegate void SubscriptionModelHandler();
+
         public PodcastSubscriptionModel()
         {
             m_podcastEpisodesManager = new PodcastEpisodesManager(this);
@@ -554,6 +558,8 @@ namespace Podcatcher.ViewModels
                 return;
             }
 
+            PodcastCleanStarted();
+
             IEnumerable<PodcastEpisodeModel> query = null;
             bool deleteUnplayedEpisodes = PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
 
@@ -569,6 +575,15 @@ namespace Podcatcher.ViewModels
                          select episode).Skip(keepEpisodes);
             }
 
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(workerCleanSubscriptions);
+            worker.RunWorkerAsync(query);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerCleanSubscriptionsCompleted);
+        }
+
+        private void workerCleanSubscriptions(object sender, DoWorkEventArgs args)
+        {
+            IEnumerable<PodcastEpisodeModel> query = args.Argument as IEnumerable<PodcastEpisodeModel>;
             List<PodcastEpisodeModel> episodesToClean = query.ToList();
             foreach (PodcastEpisodeModel e in episodesToClean)
             {
@@ -576,8 +591,13 @@ namespace Podcatcher.ViewModels
             }
 
             PodcastSqlModel.getInstance().deleteEpisodesPerQuery(query);
+        }
 
+        private void workerCleanSubscriptionsCompleted(object sender, RunWorkerCompletedEventArgs e) 
+        {
+            PodcastCleanFinished();
             NotifyPropertyChanged("EpisodesText");
+            NotifyPropertyChanged("EpisodesPublishedDescending");
         }
 
         /************************************* Private implementation *******************************/

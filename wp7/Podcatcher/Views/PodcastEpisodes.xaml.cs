@@ -52,12 +52,28 @@ namespace Podcatcher.Views
             InitializeComponent();
             m_podcastSqlModel = PodcastSqlModel.getInstance();
         }
+
+        void m_subscription_PodcastCleanStarted()
+        {
+            cleanProgressOverlay.Visibility = Visibility.Visible;
+        }
+
+        void m_subscription_PodcastCleanFinished()
+        {
+            cleanProgressOverlay.Visibility = Visibility.Collapsed;
+        }
         
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
             this.DataContext = m_subscription;
+
+            m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
+            m_subscription.PodcastCleanFinished -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
+
+            m_subscription.PodcastCleanStarted += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
+            m_subscription.PodcastCleanFinished += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
 
             bool forceUpdate = false;
             try
