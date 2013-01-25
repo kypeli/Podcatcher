@@ -45,7 +45,14 @@ namespace Podcatcher.ViewModels
 {
     [Table]
     public class PodcastSubscriptionModel : INotifyPropertyChanged
-    {        
+    {
+        private enum SubscriptionSettingDeleteUnplayed
+        {
+            Unset,
+            True,
+            False
+        }
+
         /************************************* Public properties *******************************/
         #region properties
         private int m_podcastId;
@@ -320,13 +327,21 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_SelectedKeepNumEpisodesIndex = PodcastSqlModel.getInstance().settings().SelectedKeepNumEpisodesIndex;
+        private int m_SelectedKeepNumEpisodesIndex = -1;
         [Column(DbType = "INT DEFAULT 0 NOT NULL")]
         public int SubscriptionSelectedKeepNumEpisodesIndex
         {
             get
             {
-                return m_SelectedKeepNumEpisodesIndex;
+                if (m_SelectedKeepNumEpisodesIndex < 0)
+                {
+                    return PodcastSqlModel.getInstance().settings().SelectedKeepNumEpisodesIndex; 
+                }
+                else
+                {
+
+                    return m_SelectedKeepNumEpisodesIndex;
+                }
             }
 
             set
@@ -338,20 +353,39 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private bool m_IsDeleteUnplayedEpisodes = PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+        private int m_IsDeleteUnplayedEpisodes = (int)SubscriptionSettingDeleteUnplayed.Unset;
         [Column]
-        public Boolean SubscriptionIsDeleteUnplayedEpisodes
+        public bool SubscriptionIsDeleteUnplayedEpisodes
         {
             get
             {
-                return m_IsDeleteUnplayedEpisodes;
+                if (m_IsDeleteUnplayedEpisodes == (int)SubscriptionSettingDeleteUnplayed.Unset)
+                {
+                    return PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+                }
+                else
+                {
+                    switch (m_IsDeleteUnplayedEpisodes)
+                    {
+                        case (int)SubscriptionSettingDeleteUnplayed.True:
+                            return true;
+                        case (int)SubscriptionSettingDeleteUnplayed.False:
+                            return false;
+                    }
+                }
+
+                return PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
             }
 
             set
             {
-                if (m_IsDeleteUnplayedEpisodes != value)
+                if (value == true)
                 {
-                    m_IsDeleteUnplayedEpisodes = value;
+                    m_IsDeleteUnplayedEpisodes = (int)SubscriptionSettingDeleteUnplayed.True;
+                }
+                else
+                {
+                    m_IsDeleteUnplayedEpisodes = (int)SubscriptionSettingDeleteUnplayed.False;
                 }
             }
         }
