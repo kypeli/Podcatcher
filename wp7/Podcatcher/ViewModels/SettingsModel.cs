@@ -142,20 +142,20 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private bool m_IsDeleteUnplayedEpisodes = false;
+        private bool m_IsDeleteEpisodes = false;
         [Column]
-        public Boolean IsDeleteUnplayedEpisodes
+        public Boolean IsDeleteEpisodes
         {
             get
             {
-                return m_IsDeleteUnplayedEpisodes;
+                return m_IsDeleteEpisodes;
             }
 
             set
             {
-                if (m_IsDeleteUnplayedEpisodes != value)
+                if (m_IsDeleteEpisodes != value)
                 {
-                    m_IsDeleteUnplayedEpisodes = value;
+                    m_IsDeleteEpisodes = value;
                 }
             }
         }

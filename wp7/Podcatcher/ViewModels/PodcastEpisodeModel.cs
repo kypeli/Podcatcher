@@ -607,7 +607,7 @@ namespace Podcatcher.ViewModels
                     PodcastSubscription.unplayedEpisodesChanged();
                 }
 
-                EpisodeFile = null;
+                EpisodeFile = "";
                 EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                 EpisodePlayState = EpisodePlayStateEnum.Idle;
             }

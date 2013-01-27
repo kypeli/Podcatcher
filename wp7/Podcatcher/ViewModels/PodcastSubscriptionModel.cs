@@ -46,7 +46,7 @@ namespace Podcatcher.ViewModels
     [Table]
     public class PodcastSubscriptionModel : INotifyPropertyChanged
     {
-        private enum SubscriptionSettingDeleteUnplayed
+        private enum SubscriptionSettingDeleteEpisodes
         {
             Unset,
             True,
@@ -353,39 +353,39 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_IsDeleteUnplayedEpisodes = (int)SubscriptionSettingDeleteUnplayed.Unset;
+        private int m_IsDeleteEpisodes = (int)SubscriptionSettingDeleteEpisodes.Unset;
         [Column]
-        public bool SubscriptionIsDeleteUnplayedEpisodes
+        public bool SubscriptionIsDeleteEpisodes
         {
             get
             {
-                if (m_IsDeleteUnplayedEpisodes == (int)SubscriptionSettingDeleteUnplayed.Unset)
+                if (m_IsDeleteEpisodes == (int)SubscriptionSettingDeleteEpisodes.Unset)
                 {
-                    return PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+                    return PodcastSqlModel.getInstance().settings().IsDeleteEpisodes;
                 }
                 else
                 {
-                    switch (m_IsDeleteUnplayedEpisodes)
+                    switch (m_IsDeleteEpisodes)
                     {
-                        case (int)SubscriptionSettingDeleteUnplayed.True:
+                        case (int)SubscriptionSettingDeleteEpisodes.True:
                             return true;
-                        case (int)SubscriptionSettingDeleteUnplayed.False:
+                        case (int)SubscriptionSettingDeleteEpisodes.False:
                             return false;
                     }
                 }
 
-                return PodcastSqlModel.getInstance().settings().IsDeleteUnplayedEpisodes;
+                return PodcastSqlModel.getInstance().settings().IsDeleteEpisodes;
             }
 
             set
             {
                 if (value == true)
                 {
-                    m_IsDeleteUnplayedEpisodes = (int)SubscriptionSettingDeleteUnplayed.True;
+                    m_IsDeleteEpisodes = (int)SubscriptionSettingDeleteEpisodes.True;
                 }
                 else
                 {
-                    m_IsDeleteUnplayedEpisodes = (int)SubscriptionSettingDeleteUnplayed.False;
+                    m_IsDeleteEpisodes = (int)SubscriptionSettingDeleteEpisodes.False;
                 }
             }
         }
@@ -445,8 +445,8 @@ namespace Podcatcher.ViewModels
             get
             {
                 var query = from episode in Episodes
-                            where (String.IsNullOrEmpty(episode.EpisodeFile) == false
-                                 && episode.SavedPlayPos > 0)
+                            where episode.EpisodeFile != ""
+                                  && episode.SavedPlayPos > 0
                             select episode;
 
                 return query.Count();
@@ -595,9 +595,9 @@ namespace Podcatcher.ViewModels
             PodcastCleanStarted();
 
             IEnumerable<PodcastEpisodeModel> query = null;
-            bool deleteUnplayedEpisodes = SubscriptionIsDeleteUnplayedEpisodes;
+            bool deleteEpisodes = SubscriptionIsDeleteEpisodes;
 
-            if (deleteUnplayedEpisodes)
+            if (deleteEpisodes)
             {
                 query = (from episode in Episodes
                          select episode).Skip(keepEpisodes);
@@ -605,7 +605,7 @@ namespace Podcatcher.ViewModels
             else
             {
                 query = (from episode in Episodes
-                         where (String.IsNullOrEmpty(episode.EpisodeFile) || (String.IsNullOrEmpty(episode.EpisodeFile) == false && episode.SavedPlayPos > 0))
+                         where (String.IsNullOrEmpty(episode.EpisodeFile))
                          select episode).Skip(keepEpisodes);
             }
 

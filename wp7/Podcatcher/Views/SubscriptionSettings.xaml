@@ -69,8 +69,8 @@
 
             		<StackPanel Margin="0,9,12,0">
             			<StackPanel Orientation="Horizontal">
-            				<TextBlock TextWrapping="Wrap" Text="Delete unplayed episodes for this subscription" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-            				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding SubscriptionIsDeleteUnplayedEpisodes, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+            				<TextBlock TextWrapping="Wrap" Text="Delete downloaded episodes for this subscription" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+            				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding SubscriptionIsDeleteEpisodes, Mode=TwoWay}" Content="ToggleSwitchButton"/>
             			</StackPanel>
             			<TextBlock TextWrapping="Wrap" Text="If you turn this on, episodes that have been downloaded but not listened to will also be deleted when cleaning episodes as set in the setting above. By default this is the same value as the global setting." Style="{StaticResource PhoneTextSubtleStyle}"/>
             		</StackPanel>

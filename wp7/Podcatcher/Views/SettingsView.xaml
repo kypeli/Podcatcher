@@ -27,7 +27,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <controls:Pivot x:Name="NavigationPivot" Grid.Row="1">
+        <controls:Pivot x:Name="NavigationPivot" Grid.Row="1" SelectionChanged="NavigationPivot_SelectionChanged">
             <!-- Player settings -->
             <controls:PivotItem Header="player">
                 <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
@@ -90,10 +90,10 @@
 
                         <StackPanel Margin="0,9,12,0">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock TextWrapping="Wrap" Text="Delete unplayed episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsDeleteUnplayedEpisodes, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                                <TextBlock TextWrapping="Wrap" Text="Delete downloaded episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsDeleteEpisodes, Mode=TwoWay}" Content="ToggleSwitchButton"/>
                             </StackPanel>
-                            <TextBlock TextWrapping="Wrap" Text="If you turn this on, episodes that have been downloaded but not listened to will also be deleted when cleaning episodes as set in the setting above." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Text="If you turn this on, episodes that have been downloaded will also be deleted when cleaning episodes as set in the setting above." Style="{StaticResource PhoneTextSubtleStyle}"/>
                         </StackPanel>
 
                         <StackPanel Margin="0,9,12,0">
@@ -120,8 +120,9 @@
             <controls:PivotItem Header="usage">
                 <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
                     <StackPanel Margin="0,0,8,8">
-                    	<TextBlock TextWrapping="Wrap" Text="Here you can see how much space your downloaded episodes take on your phone." Width="447"/>
-                    	<Button Content="Delete all"/>
+                    	<TextBlock TextWrapping="Wrap" Text="Your podcast downloads use this much space:" Width="447"/>
+                        <TextBlock TextWrapping="Wrap" x:Name="UsageText" Margin="0,20" HorizontalAlignment="Center" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                        <Button Tap="DeleteAllButton_Tap" Content="Delete all downloaded podcasts"/>
                     </StackPanel>
                 </ScrollViewer>
             </controls:PivotItem>

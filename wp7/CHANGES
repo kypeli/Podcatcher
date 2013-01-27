@@ -2,6 +2,7 @@
 ----------
  * Pin subscriptions to start screen to add live tiles that shows number of new episodes for them.
  * Add global and subscription specific maintenance options for subscriptions; how many episodes to keep and if deleting unplayed episodes.
+ * Add usage information to settings with the option to delete all downloaded episodes.
  * Fix storing episode play position when pausing/stopping the episode when Podcatcher is not running.
  * Change the episode text on the main page to include info about the play state for episodes. 
  * Move total number of episodes information to subscriptions view.

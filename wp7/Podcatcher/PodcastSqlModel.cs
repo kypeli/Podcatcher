@@ -268,6 +268,15 @@ namespace Podcatcher
             return model;
         }
 
+        public List<PodcastEpisodeModel> allEpisodes()
+        {
+            var query = from PodcastEpisodeModel episode in Episodes
+                        where episode.EpisodeFile != ""
+                        select episode;
+
+            return query.ToList<PodcastEpisodeModel>();
+        }
+
         public SettingsModel settings()
         {
             SettingsModel settingsModel = (from SettingsModel s in Settings
@@ -401,9 +410,9 @@ namespace Podcatcher
                     updater.AddColumn<PodcastEpisodeModel>("EpisodeDownloadState");
                     updater.AddColumn<PodcastEpisodeModel>("EpisodePlayState");
                     updater.AddColumn<SettingsModel>("SelectedKeepNumEpisodesIndex");
-                    updater.AddColumn<SettingsModel>("IsDeleteUnplayedEpisodes");
+                    updater.AddColumn<SettingsModel>("IsDeleteEpisodes");
                     updater.AddColumn<PodcastSubscriptionModel>("SubscriptionSelectedKeepNumEpisodesIndex");
-                    updater.AddColumn<PodcastSubscriptionModel>("SubscriptionIsDeleteUnplayedEpisodes");
+                    updater.AddColumn<PodcastSubscriptionModel>("SubscriptionIsDeleteEpisodes");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;
