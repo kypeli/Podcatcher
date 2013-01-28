@@ -587,24 +587,34 @@ namespace Podcatcher.ViewModels
 
         public void cleanOldEpisodes(int keepEpisodes, bool deleteUnplayed = false)
         {
-            if (keepEpisodes >= Episodes.Count)
+            IEnumerable<PodcastEpisodeModel> query = null;
+            bool deleteDownloads = SubscriptionIsDeleteEpisodes;
+            int keepDownloads = 0;
+
+            if (!deleteDownloads)
+            {
+                keepDownloads = (from episode in Episodes
+                                 where String.IsNullOrEmpty(episode.EpisodeFile) == false
+                                 select episode).ToList().Count;
+            }
+
+            if (keepEpisodes + keepDownloads >= Episodes.Count)
             {
                 return;
             }
 
             PodcastCleanStarted();
 
-            IEnumerable<PodcastEpisodeModel> query = null;
-            bool deleteEpisodes = SubscriptionIsDeleteEpisodes;
-
-            if (deleteEpisodes)
+            if (deleteDownloads)
             {
                 query = (from episode in Episodes
+                         orderby episode.EpisodePublished descending
                          select episode).Skip(keepEpisodes);
             }
             else
             {
                 query = (from episode in Episodes
+                         orderby episode.EpisodePublished descending
                          where (String.IsNullOrEmpty(episode.EpisodeFile))
                          select episode).Skip(keepEpisodes);
             }
