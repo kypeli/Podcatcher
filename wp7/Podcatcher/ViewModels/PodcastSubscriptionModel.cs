@@ -436,7 +436,11 @@ namespace Podcatcher.ViewModels
 
             set
             {
-                NotifyPropertyChanged("NumberOfEpisodesText");
+                Deployment.Current.Dispatcher.BeginInvoke(() =>
+                {
+
+                    NotifyPropertyChanged("NumberOfEpisodesText");
+                });
             }
         }
 
