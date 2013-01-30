@@ -78,10 +78,17 @@ namespace Podcatcher.Views
                 IsolatedStorageFileStream fileStream = null;
                 foreach (String filename in m_fileList)
                 {
-                    fileStream = storage.OpenFile(App.PODCAST_DL_DIR + "/" + filename, System.IO.FileMode.Open);
-                    Debug.WriteLine("File: {0}, Size: {1}", filename, fileStream.Length);
-                    usedBytes += fileStream.Length;
-                    fileStream.Close();
+                    try
+                    {
+                        fileStream = storage.OpenFile(App.PODCAST_DL_DIR + "/" + filename, System.IO.FileMode.Open);
+                        Debug.WriteLine("File: {0}, Size: {1}", filename, fileStream.Length);
+                        usedBytes += fileStream.Length;
+                        fileStream.Close();
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        App.showNotificationToast("Notice: Could not read all files.");
+                    }
                 }
             }
 
