@@ -567,7 +567,7 @@ namespace Podcatcher.ViewModels
         {
         }
 
-        public void deleteDownloadedEpisode()
+        public void deleteDownloadedEpisode() 
         {
             if (String.IsNullOrEmpty(EpisodeFile))
             {
