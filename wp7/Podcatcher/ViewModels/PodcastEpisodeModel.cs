@@ -124,12 +124,13 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
-                if (m_published == null)
+                String published = "";
+                if (m_published != null)
                 {
-                    return "";
+                    published = m_published.ToString("d"); 
                 }
 
-                return m_published.ToString("d"); 
+                return published;
             }
         }
         
@@ -517,9 +518,15 @@ namespace Podcatcher.ViewModels
                 {
                     case EpisodePlayStateEnum.Idle:
                     case EpisodePlayStateEnum.Downloaded:
+                        String size = "";
+                        if (m_episodeDownloadSize > 0)
+                        {
+                            size += ((float)m_episodeDownloadSize / (float)(1024 * 1000)).ToString("0.00");
+                        }
+
                         if (String.IsNullOrEmpty(m_episodeRunningTime) == false)
                         {
-                            text = String.Format("Duration: {0}", m_episodeRunningTime);
+                            text = String.Format("Duration: {0}, {1} MB", m_episodeRunningTime, size);
                         }
                         break;                        
                     case EpisodePlayStateEnum.Playing:
