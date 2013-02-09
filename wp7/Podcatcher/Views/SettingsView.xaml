@@ -79,10 +79,10 @@
                                 <TextBlock TextWrapping="Wrap" Text="Keep episodes per subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
                                 <toolkit:ListPicker SelectedIndex="{Binding SelectedKeepNumEpisodesIndex, Mode=TwoWay}">
                                     <toolkit:ListPickerItem>All</toolkit:ListPickerItem>
+                                    <toolkit:ListPickerItem>1</toolkit:ListPickerItem>
                                     <toolkit:ListPickerItem>5</toolkit:ListPickerItem>
                                     <toolkit:ListPickerItem>10</toolkit:ListPickerItem>
-                                    <toolkit:ListPickerItem>25</toolkit:ListPickerItem>
-                                    <toolkit:ListPickerItem>50</toolkit:ListPickerItem>
+                                    <toolkit:ListPickerItem>20</toolkit:ListPickerItem>
                                 </toolkit:ListPicker>
                             </StackPanel>
                             <TextBlock TextWrapping="Wrap" Text="You may define how may episodes per subscription to keep on the phone and the rest will be deleted automatically. This specifies how many episodes to keep per subscription." Style="{StaticResource PhoneTextSubtleStyle}"/>

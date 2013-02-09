@@ -58,10 +58,10 @@
             				<TextBlock TextWrapping="Wrap" Text="Keep episodes for this subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
             				<toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding SubscriptionSelectedKeepNumEpisodesIndex, Mode=TwoWay}">
                                 <toolkit:ListPickerItem>All</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem>1</toolkit:ListPickerItem>
                                 <toolkit:ListPickerItem>5</toolkit:ListPickerItem>
                                 <toolkit:ListPickerItem>10</toolkit:ListPickerItem>
-                                <toolkit:ListPickerItem>25</toolkit:ListPickerItem>
-                                <toolkit:ListPickerItem>50</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem>20</toolkit:ListPickerItem>
                             </toolkit:ListPicker>
             			</StackPanel>
             			<TextBlock TextWrapping="Wrap" Text="This specifies how many episodes to keep for this subscription. By default this value is the same as the global setting." Style="{StaticResource PhoneTextSubtleStyle}"/>
