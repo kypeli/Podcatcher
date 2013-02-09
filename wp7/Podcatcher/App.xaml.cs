@@ -28,6 +28,8 @@ using Coding4Fun.Phone.Controls;
 using System.Windows.Media;
 using Microsoft.Phone.Scheduler;
 using System;
+using System.IO.IsolatedStorage;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher
 {
@@ -141,6 +143,30 @@ namespace Podcatcher
             m_licenseInfo = new LicenseInformation();
 
             detectCurrentTheme();
+            checkPlayerEpisodeState();
+        }
+
+        public void checkPlayerEpisodeState()
+        {
+            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
+            if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+            {
+                int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
+                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+                if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+                {
+                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                }
+                else
+                {
+                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                }
+
+                appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                appSettings.Save();
+            }
         }
 
         // Code to execute when the application is launching (eg, from Start)

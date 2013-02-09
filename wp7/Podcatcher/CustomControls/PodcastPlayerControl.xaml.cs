@@ -84,15 +84,6 @@ namespace Podcatcher
             }
             else
             {
-                if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
-                {
-                    int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                    PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-
-                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                }
-
                 showNoPlayerLayout();
             }
         }
