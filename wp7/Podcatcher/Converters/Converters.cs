@@ -224,7 +224,7 @@ namespace Podcatcher.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int episodeId = (int)value;
-            ShellTile TileToFind = ShellTile.ActiveTiles.FirstOrDefault(x => x.NavigationUri.ToString().Contains("podcastId=" + episodeId));
+            ShellTile TileToFind = ShellTile.ActiveTiles.FirstOrDefault(x => x.NavigationUri.ToString().Contains("podcastId=" + episodeId + "&"));
             if (TileToFind == null)
             {
                 return Visibility.Visible;
