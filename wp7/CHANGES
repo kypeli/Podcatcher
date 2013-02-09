@@ -10,6 +10,7 @@
  * Add setting to control the threshold when an episode has been listened to.
  * Resume paused episode playback also from the episode listing.
  * Generate unique file names for episodes so that we don't rely on unique file names from the stream.
+ * Show episode download size in episode listing.
  
 2.1.0.0
 ----------
