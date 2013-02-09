@@ -16,8 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -442,8 +440,7 @@ namespace Podcatcher.ViewModels
             get
             {
                 var query = from episode in Episodes
-                            where episode.EpisodeFile != ""
-                                  && episode.SavedPlayPos > 0
+                            where episode.SavedPlayPos > 0
                             select episode;
 
                 return query.Count();

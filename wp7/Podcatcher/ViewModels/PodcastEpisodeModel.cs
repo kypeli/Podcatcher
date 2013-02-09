@@ -350,19 +350,11 @@ namespace Podcatcher.ViewModels
 
         // I should do this in a Converter from XAML, but as this is dependant of multiple properties,
         // it's just easier to do it this way. 
-        private Visibility m_progressBarIsVisible = Visibility.Collapsed;
         public Visibility ProgressBarIsVisible
         {
             get
             {
-                m_progressBarIsVisible = (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
-                                          || m_episodePlayState == EpisodePlayStateEnum.Downloaded
-                                          || m_episodePlayState == EpisodePlayStateEnum.Paused
-                                          || m_episodePlayState == EpisodePlayStateEnum.Playing) ?
-                                          Visibility.Visible :
-                                          Visibility.Collapsed;
-
-                return m_progressBarIsVisible;
+                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading || ProgressBarValue > 0 ? Visibility.Visible : Visibility.Collapsed);
             }
 
             private set { }
@@ -468,17 +460,14 @@ namespace Podcatcher.ViewModels
                 {
                     return DownloadPercentage;
                 }
-                else if (m_episodePlayState == EpisodePlayStateEnum.Downloaded)
-                {
-                    if (SavedPlayPos > 0 && TotalLengthTicks > 0)
-                    {
-                        return (((double)SavedPlayPos / (double)TotalLengthTicks) * (double)100);
-                    }
-                }
                 else if (m_episodePlayState == EpisodePlayStateEnum.Playing
                          || m_episodePlayState == EpisodePlayStateEnum.Streaming)
                 {
                     return m_progressBarValue * 100;
+                }
+                else if (SavedPlayPos > 0 && TotalLengthTicks > 0)
+                {
+                    return (((double)SavedPlayPos / (double)TotalLengthTicks) * (double)100);
                 }
 
                 return 0.0;
