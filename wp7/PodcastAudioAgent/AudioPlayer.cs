@@ -27,8 +27,10 @@ namespace PodcastAudioAgent
 {
     public class AudioPlayer : AudioPlayerAgent
     {
-        private const string LSKEY_AA_STORED_EPISODE_POSITION = "aa_episode_position";
         private const string LSKEY_AA_EPISODE_PLAY_TITLE = "aa_episode_title";
+        private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS = "aa_episode_play_lastknownpos";
+        private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
+        private const string LSKEY_AA_EPISODE_STOP_TIMESTAMP = "aa_episode_play_stoptime";
 
         private static volatile bool _classInitialized;
 
@@ -91,12 +93,16 @@ namespace PodcastAudioAgent
                     Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
+                    saveEpisodeStoptime();
                     Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
+                    saveEpisodeStoptime();
                     Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
+                    saveEpisodeStartinfo(player);
+                    updateLastKnownPos(player);
                     Debug.WriteLine("Play state: Playing");
                     break;
                 case PlayState.BufferingStarted:
@@ -110,6 +116,48 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
+        }
+
+        private void updateLastKnownPos(BackgroundAudioPlayer player)
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_POS))
+            {
+                settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_POS);
+            }
+
+            if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP))
+            {
+                settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
+            }
+
+            settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP, DateTime.Now.ToString());
+            settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_POS, player.Position.Ticks);
+            settings.Save();
+        }
+
+        private void saveEpisodeStoptime()
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            if (settings.Contains(LSKEY_AA_EPISODE_STOP_TIMESTAMP))
+            {
+                settings.Remove(LSKEY_AA_EPISODE_STOP_TIMESTAMP);
+            }
+
+            settings.Add(LSKEY_AA_EPISODE_STOP_TIMESTAMP, DateTime.Now.ToString());
+            settings.Save();
+        }
+
+        private void saveEpisodeStartinfo(BackgroundAudioPlayer player)
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE))
+            {
+                settings.Remove(LSKEY_AA_EPISODE_PLAY_TITLE);
+            }
+
+            settings.Add(LSKEY_AA_EPISODE_PLAY_TITLE, player.Track.Title);
+            settings.Save();
         }
 
 
@@ -155,7 +203,6 @@ namespace PodcastAudioAgent
                     {
                         if (player.PlayerState != PlayState.Stopped) {    
                             player.Stop();
-                            saveEpisodePositionToISO(player);
                             Debug.WriteLine("User.Action: Stop");
                         }
                     } 
@@ -172,7 +219,6 @@ namespace PodcastAudioAgent
                         if (player.PlayerState == PlayState.Playing)
                         {
                             player.Pause();
-                            saveEpisodePositionToISO(player);
                         }
                     }
                     catch (InvalidOperationException e)
@@ -187,6 +233,7 @@ namespace PodcastAudioAgent
                         if (player.PlayerState == PlayState.Playing)
                         {
                             player.Position = (TimeSpan)param;
+                            updateLastKnownPos(player);
                         }
                     }
                     catch (InvalidOperationException e)
@@ -219,24 +266,6 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
-        }
-
-        private void saveEpisodePositionToISO(BackgroundAudioPlayer player)
-        {
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE)) 
-            {
-                settings.Remove(LSKEY_AA_EPISODE_PLAY_TITLE);
-            }
-
-            if (settings.Contains(LSKEY_AA_STORED_EPISODE_POSITION)) 
-            {
-                settings.Remove(LSKEY_AA_STORED_EPISODE_POSITION);
-            }
-
-            settings.Add(LSKEY_AA_STORED_EPISODE_POSITION, player.Position.Ticks);
-            settings.Add(LSKEY_AA_EPISODE_PLAY_TITLE, player.Track.Title);
-            settings.Save();
         }
 
         /// <summary>

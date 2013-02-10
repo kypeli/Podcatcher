@@ -67,9 +67,10 @@ namespace Podcatcher
         public const string BGTASK_NEW_EPISODES                     = "SubscriptionsChecker";
 
         // Keys for storing episode location from AudioAgent.
-        public const string LSKEY_AA_STORED_EPISODE_POSITION       = "aa_episode_position";
         public const string LSKEY_AA_EPISODE_PLAY_TITLE            = "aa_episode_title";
-
+        private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS       = "aa_episode_play_lastknownpos";
+        private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
+        private const string LSKEY_AA_EPISODE_STOP_TIMESTAMP       = "aa_episode_play_stoptime";
         
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
@@ -144,6 +145,7 @@ namespace Podcatcher
 
             detectCurrentTheme();
             checkPlayerEpisodeState();
+            updateEpisodePositionsFromAudioAgent();
         }
 
         public void checkPlayerEpisodeState()
@@ -168,6 +170,55 @@ namespace Podcatcher
                 appSettings.Save();
             }
         }
+
+        private void updateEpisodePositionsFromAudioAgent()
+        {
+            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
+            if (appSettings.Contains(App.LSKEY_AA_EPISODE_PLAY_TITLE)
+                && appSettings.Contains(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP)
+                && appSettings.Contains(App.LSKEY_AA_EPISODE_LAST_KNOWN_POS)
+                && appSettings.Contains(App.LSKEY_AA_EPISODE_STOP_TIMESTAMP))
+            {
+                Debug.WriteLine("Updating episode position from background agent.");
+
+                PodcastEpisodeModel episodeToUpdate = PodcastSqlModel.getInstance().episodesForTitle(appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
+                if (episodeToUpdate == null)
+                {
+                    Debug.WriteLine("Warning: Episode to update is null!");
+                    return;
+                }
+
+                String stop = appSettings[App.LSKEY_AA_EPISODE_STOP_TIMESTAMP] as String;
+                String lastTimestamp = appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP] as String;
+                if (String.IsNullOrEmpty(lastTimestamp) || String.IsNullOrEmpty(stop))
+                {
+                    Debug.WriteLine("Warning: Start or stop timestamp is null.");
+                    return;
+                }
+
+                long lastPosTick = (long)appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_POS];
+                DateTime startTime = DateTime.Parse(lastTimestamp);
+                DateTime stopTime = DateTime.Parse(stop);
+                long deltaTicks = stopTime.Ticks - startTime.Ticks;
+
+                if (lastPosTick + deltaTicks >= episodeToUpdate.TotalLengthTicks) 
+                {
+                    deltaTicks = episodeToUpdate.TotalLengthTicks - lastPosTick;
+                }
+
+                episodeToUpdate.SavedPlayPos = lastPosTick + deltaTicks;
+
+                Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
+                PodcastSqlModel.getInstance().SubmitChanges();
+
+                appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
+                appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_POS);
+                appSettings.Remove(App.LSKEY_AA_EPISODE_STOP_TIMESTAMP);
+                appSettings.Remove(App.LSKEY_AA_EPISODE_PLAY_TITLE);
+                appSettings.Save();
+            }
+        }
+
 
         // Code to execute when the application is launching (eg, from Start)
         // This code will not execute when the application is reactivated

@@ -70,8 +70,6 @@ namespace Podcatcher
                 initializePlayerUI();
                 m_instance = this;
             }
-
-            updateEpisodePositionsFromAudioAgent();
         }
 
         public void initializePlayerUI()
@@ -401,7 +399,6 @@ namespace Podcatcher
             try
             {
                 m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-                m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
                 PodcastSqlModel.getInstance().SubmitChanges();
             }
             catch (NullReferenceException)
@@ -658,6 +655,11 @@ namespace Podcatcher
                 duration = BackgroundAudioPlayer.Instance.Track.Duration;
                 position = BackgroundAudioPlayer.Instance.Position;
 
+                if (m_currentEpisode.TotalLengthTicks == 0)
+                {
+                    m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+                }
+
                 this.CurrentPositionText.Text = position.ToString("hh\\:mm\\:ss");
                 this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
             }
@@ -726,27 +728,5 @@ namespace Podcatcher
             PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
         }
 
-        private void updateEpisodePositionsFromAudioAgent()
-        {
-            if (m_appSettings.Contains(App.LSKEY_AA_EPISODE_PLAY_TITLE)
-                && m_appSettings.Contains(App.LSKEY_AA_STORED_EPISODE_POSITION))
-            {
-                PodcastEpisodeModel episodeToUpdate = PodcastSqlModel.getInstance().episodesForTitle(m_appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
-                if (episodeToUpdate == null)
-                {
-                    Debug.WriteLine("Warning: Episode to update is null!");
-                    return;
-                }
-
-                episodeToUpdate.SavedPlayPos = (long)m_appSettings[App.LSKEY_AA_STORED_EPISODE_POSITION];
-
-                Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);                
-                PodcastSqlModel.getInstance().SubmitChanges();
-                
-                m_appSettings.Remove(App.LSKEY_AA_STORED_EPISODE_POSITION);
-                m_appSettings.Remove(App.LSKEY_AA_EPISODE_PLAY_TITLE);
-                m_appSettings.Save();
-            }
-        }
     }
 }
