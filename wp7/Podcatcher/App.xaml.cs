@@ -30,6 +30,7 @@ using Microsoft.Phone.Scheduler;
 using System;
 using System.IO.IsolatedStorage;
 using Podcatcher.ViewModels;
+using Microsoft.Phone.BackgroundAudio;
 
 namespace Podcatcher
 {
@@ -155,19 +156,39 @@ namespace Podcatcher
             {
                 int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
                 PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-                if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+
+                if (BackgroundAudioPlayer.Instance.Track != null)
                 {
-                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                    // Podcast is playing - let's update episode with that.
+                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                    }
+                    else
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+                    }
+
+                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
                 }
                 else
                 {
-                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
-                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                    // Episode is not playing anymore. So let's clean up the state. 
+                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                    }
+                    else
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                    }
+
+                    appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                    appSettings.Save();
                 }
 
-                appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                appSettings.Save();
             }
         }
 
