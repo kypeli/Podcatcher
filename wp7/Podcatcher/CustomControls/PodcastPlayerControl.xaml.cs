@@ -505,6 +505,8 @@ namespace Podcatcher
                 episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                 episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
             }
+
+            PodcastSqlModel.getInstance().SubmitChanges();
         }
 
         private void setupUIForEpisodePaused()

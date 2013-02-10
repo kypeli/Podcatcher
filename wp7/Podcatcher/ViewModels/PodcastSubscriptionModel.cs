@@ -439,8 +439,10 @@ namespace Podcatcher.ViewModels
         {
             get
             {
+                float listenedEpisodeThreshold = (float)PodcastSqlModel.getInstance().settings().ListenedThreashold / (float)100.0;
                 var query = from episode in Episodes
-                            where episode.SavedPlayPos > 0
+                            where (episode.SavedPlayPos > 0
+                                  && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
                             select episode;
 
                 return query.Count();
