@@ -125,7 +125,6 @@ namespace Podcatcher
         {
             // Hook data contextes.
             DataContext = m_podcastsModel;
-            this.SubscriptionsList.ItemsSource = m_podcastsModel.PodcastSubscriptions;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
         }
