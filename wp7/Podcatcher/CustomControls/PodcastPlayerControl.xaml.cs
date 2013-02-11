@@ -31,6 +31,8 @@ using Microsoft.Phone.Tasks;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Navigation;
+using Microsoft.Phone.Controls;
 
 
 namespace Podcatcher
@@ -581,6 +583,12 @@ namespace Podcatcher
             }
 
             showNoPlayerLayout();
+
+            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+            if (rootFrame.CanGoBack)
+            {
+                rootFrame.GoBack();
+            }
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
