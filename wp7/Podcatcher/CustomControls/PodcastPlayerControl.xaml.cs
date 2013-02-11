@@ -544,7 +544,10 @@ namespace Podcatcher
 
         private void rewButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            BackgroundAudioPlayer.Instance.SkipPrevious();
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                BackgroundAudioPlayer.Instance.SkipPrevious();
+            }
         }
 
         private void playButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
@@ -582,7 +585,10 @@ namespace Podcatcher
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            BackgroundAudioPlayer.Instance.SkipNext();
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                BackgroundAudioPlayer.Instance.SkipNext();
+            }
         }
 
         private AudioTrack getAudioTrackForEpisode(PodcastEpisodeModel m_currentEpisode)
