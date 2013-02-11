@@ -169,7 +169,19 @@ namespace Podcatcher
                         episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     }
 
-                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                    switch (BackgroundAudioPlayer.Instance.PlayerState)
+                    {
+                        case PlayState.Playing:
+                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                            break;
+                        case PlayState.Paused:
+                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
+                            break;
+                        default:
+                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                            break;
+                    }
+
                 }
                 else
                 {
