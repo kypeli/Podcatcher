@@ -161,7 +161,7 @@ namespace Podcatcher.ViewModels
         }
 
         private bool m_IsDeleteEpisodes = false;
-        [Column]
+        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
         public Boolean IsDeleteEpisodes
         {
             get

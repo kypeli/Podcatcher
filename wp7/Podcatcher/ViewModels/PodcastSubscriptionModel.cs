@@ -319,7 +319,7 @@ namespace Podcatcher.ViewModels
         }
 
         private int m_SelectedKeepNumEpisodesIndex = -1;
-        [Column(DbType = "INT DEFAULT 0 NOT NULL")]
+        [Column(DbType = "SMALLINT DEFAULT -1 NOT NULL")]
         public int SubscriptionSelectedKeepNumEpisodesIndex
         {
             get
@@ -345,7 +345,7 @@ namespace Podcatcher.ViewModels
         }
 
         private int m_IsDeleteEpisodes = (int)SubscriptionSettingDeleteEpisodes.Unset;
-        [Column]
+        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
         public bool SubscriptionIsDeleteEpisodes
         {
             get
