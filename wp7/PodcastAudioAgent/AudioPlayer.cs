@@ -83,11 +83,12 @@ namespace PodcastAudioAgent
             switch (playState)
             {
                 case PlayState.TrackEnded:
+                    saveEpisodeStoptime();
                     break;
                 case PlayState.TrackReady:
                     break;
                 case PlayState.Shutdown:
-                    // TODO: Handle the shutdown state here (e.g. save state)
+                    saveEpisodeStoptime();
                     break;
                 case PlayState.Unknown:
                     Debug.WriteLine("Play state: Unkown");
