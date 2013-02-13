@@ -199,6 +199,8 @@ namespace Podcatcher
 
                     appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     appSettings.Save();
+
+                    PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
                 }
 
             }
