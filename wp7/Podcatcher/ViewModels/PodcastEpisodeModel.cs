@@ -255,11 +255,19 @@ namespace Podcatcher.ViewModels
         };
 
 
-        private EpisodeDownloadStateEnum m_episodeDownloadState;
+        private EpisodeDownloadStateEnum m_episodeDownloadState = EpisodeDownloadStateEnum.Idle;
         [Column(DbType = "INT DEFAULT 0")]
         public EpisodeDownloadStateEnum EpisodeDownloadState
         {
-            get { return m_episodeDownloadState; }
+            get {
+                if (m_episodeDownloadState == EpisodeDownloadStateEnum.Idle 
+                    && String.IsNullOrEmpty(m_episodeFile) == false)
+                {
+                    m_episodeDownloadState = EpisodeDownloadStateEnum.Downloaded;
+                }
+
+                return m_episodeDownloadState; 
+            }
 
             set
             {
