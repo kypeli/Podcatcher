@@ -67,7 +67,6 @@ namespace Podcatcher
             m_subscriptionsManager.OnOPMLExportToSkydriveChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnOPMLExportToSkydriveChanged);
 
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
-            this.PlayHistoryList.DataContext = m_podcastsModel;
 
             // Hook to the event when the podcast player starts playing. 
             m_playerControl = PodcastPlayerControl.getIntance();
@@ -125,8 +124,28 @@ namespace Podcatcher
         {
             // Hook data contextes.
             DataContext = m_podcastsModel;
+            this.PlayHistoryList.DataContext = m_podcastsModel;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
+
+            if (PodcastSqlModel.getInstance().PlayHistoryListCount == 0)
+            {
+                this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
+
+                if (m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+                {
+                    this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
+                }
+                else
+                {
+                    this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Visible;
+                }
+            }
+            else
+            {
+                this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
+                this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
+            }
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
@@ -191,25 +210,6 @@ namespace Podcatcher
             if (this.NavigationPivot.SelectedIndex == 2)
             {
                 this.NowPlaying.SetupNowPlayingView();
-
-                if (PodcastSqlModel.getInstance().PlayHistoryListCount == 0)
-                {
-                    this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
-
-                    if (m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
-                    {
-                        this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Visible;
-                    }
-                } 
-                else 
-                {
-                    this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
-                    this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
-                }
             }
         }
 
