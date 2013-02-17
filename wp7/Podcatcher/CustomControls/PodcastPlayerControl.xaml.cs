@@ -548,12 +548,6 @@ namespace Podcatcher
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 m_appSettings.Save();
             }
-
-            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
-            if (rootFrame.CanGoBack)
-            {
-                rootFrame.GoBack();
-            }
         }
 
         private void saveEpisodeState(PodcastEpisodeModel episode)
@@ -647,6 +641,12 @@ namespace Podcatcher
             else
             {
                 StopPlayback();
+            }
+
+            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+            if (rootFrame.CanGoBack)
+            {
+                rootFrame.GoBack();
             }
 
             showNoPlayerLayout();
