@@ -120,7 +120,9 @@ namespace Podcatcher
             catch (UriFormatException)
             {
                 Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
-                OnPodcastChannelAddFinishedWithError(this, null);
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "Malformed URL";
+                OnPodcastChannelAddFinishedWithError(this, args);
                 return;
             }
 
