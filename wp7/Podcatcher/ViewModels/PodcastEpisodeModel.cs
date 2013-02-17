@@ -256,7 +256,7 @@ namespace Podcatcher.ViewModels
 
 
         private EpisodeDownloadStateEnum m_episodeDownloadState = EpisodeDownloadStateEnum.Idle;
-        [Column(DbType = "INT DEFAULT 0")]
+        [Column(DbType = "INT DEFAULT 0 NOT NULL", UpdateCheck = UpdateCheck.Never)]
         public EpisodeDownloadStateEnum EpisodeDownloadState
         {
             get {
@@ -287,7 +287,7 @@ namespace Podcatcher.ViewModels
         }
 
         private EpisodePlayStateEnum m_episodePlayState;
-        [Column(DbType = "INT DEFAULT 0")]
+        [Column(DbType = "INT DEFAULT 0 NOT NULL", UpdateCheck = UpdateCheck.Never)]
         public EpisodePlayStateEnum EpisodePlayState
         {
             get { return m_episodePlayState; }
