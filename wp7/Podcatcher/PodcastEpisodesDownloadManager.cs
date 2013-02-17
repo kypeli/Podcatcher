@@ -521,8 +521,8 @@ namespace Podcatcher
                (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206))
             {
 #if DEBUG
-                MessageBox.Show("Downloaded bytes: " + transferRequest.BytesReceived,
-                                "Completed", MessageBoxButton.OK);
+//                MessageBox.Show("Downloaded bytes: " + transferRequest.BytesReceived,
+//                                "Completed", MessageBoxButton.OK);
 #endif
 
                 Debug.WriteLine("Transfer request completed succesfully.");

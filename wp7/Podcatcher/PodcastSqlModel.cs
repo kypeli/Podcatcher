@@ -307,7 +307,6 @@ namespace Podcatcher
                 return;
             }
 
-            Debug.WriteLine("Play history count: " + PlayHistory.Count());
             // Clean old history items (if we have more than 10).
             if (PlayHistory.Count() >= 10)
             {
