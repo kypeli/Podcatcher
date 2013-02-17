@@ -145,65 +145,7 @@ namespace Podcatcher
             m_licenseInfo = new LicenseInformation();
 
             detectCurrentTheme();
-            checkPlayerEpisodeState();
             updateEpisodePositionsFromAudioAgent();
-        }
-
-        public void checkPlayerEpisodeState()
-        {
-            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
-            if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
-            {
-                int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
-
-                if (BackgroundAudioPlayer.Instance.Track != null)
-                {
-                    // Podcast is playing - let's update episode with that.
-                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                    }
-                    else
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
-                    }
-
-                    switch (BackgroundAudioPlayer.Instance.PlayerState)
-                    {
-                        case PlayState.Playing:
-                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
-                            break;
-                        case PlayState.Paused:
-                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
-                            break;
-                        default:
-                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
-                            break;
-                    }
-
-                }
-                else
-                {
-                    // Episode is not playing anymore. So let's clean up the state. 
-                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                    }
-                    else
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
-                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
-                    }
-
-                    appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                    appSettings.Save();
-
-                    PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
-                }
-
-            }
         }
 
         private void updateEpisodePositionsFromAudioAgent()
@@ -359,8 +301,13 @@ namespace Podcatcher
 
                 ScheduledActionService.Add(backgroundTask);
 #if DEBUG
+                // Disable lock screen.
+                PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
+
+                // Start background agent updates.
                 Debug.WriteLine("Adding background service....");
                 ScheduledActionService.LaunchForTest(BGTASK_NEW_EPISODES, TimeSpan.FromSeconds(10));
+
 #endif
             }
             catch (InvalidOperationException e)

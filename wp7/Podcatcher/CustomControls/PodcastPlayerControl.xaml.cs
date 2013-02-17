@@ -70,6 +70,7 @@ namespace Podcatcher
             if (m_instance == null) 
             {
                 initializePlayerUI();
+                checkPlayerEpisodeState();
                 m_instance = this;
             }
         }
@@ -268,6 +269,63 @@ namespace Podcatcher
             }
         }
 
+        public void checkPlayerEpisodeState()
+        {
+            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
+            if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+            {
+                int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
+                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+
+                if (BackgroundAudioPlayer.Instance.Track != null)
+                {
+                    // Podcast is playing - let's update episode with that.
+                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                    }
+                    else
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+                    }
+
+                    switch (BackgroundAudioPlayer.Instance.PlayerState)
+                    {
+                        case PlayState.Playing:
+                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                            break;
+                        case PlayState.Paused:
+                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
+                            break;
+                        default:
+                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                            break;
+                    }
+
+                }
+                else
+                {
+                    // Episode is not playing anymore. So let's clean up the state. 
+                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                    }
+                    else
+                    {
+                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                    }
+
+                    appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                    appSettings.Save();
+
+                    PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
+                }
+
+            }
+        }
+
         private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
         {
             this.PodcastLogo.Source = currentEpisode.PodcastSubscription.PodcastLogo;
@@ -431,6 +489,12 @@ namespace Podcatcher
 
         void PlayStateChanged(object sender, EventArgs e)
         {
+            if (BackgroundAudioPlayer.Instance.Error != null)
+            {
+                Debug.WriteLine("PlayStateChanged: Podcast player is no longer available.");
+                return;
+            }
+
             switch (BackgroundAudioPlayer.Instance.PlayerState)
             {
                 case PlayState.Playing:
@@ -478,14 +542,17 @@ namespace Podcatcher
 
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
-            try
+
+            lock (m_appSettings)
             {
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 m_appSettings.Save();
             }
-            catch (IsolatedStorageException e)
+
+            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+            if (rootFrame.CanGoBack)
             {
-                Debug.WriteLine("Could not use isolated storage at this moment so store episode information! Error: " + e.Message);
+                rootFrame.GoBack();
             }
         }
 
@@ -583,12 +650,6 @@ namespace Podcatcher
             }
 
             showNoPlayerLayout();
-
-            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
-            if (rootFrame.CanGoBack)
-            {
-                rootFrame.GoBack();
-            }
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
