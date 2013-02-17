@@ -31,6 +31,7 @@ namespace PodcastAudioAgent
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS = "aa_episode_play_lastknownpos";
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
         private const string LSKEY_AA_EPISODE_STOP_TIMESTAMP = "aa_episode_play_stoptime";
+        private IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
         private static volatile bool _classInitialized;
 
@@ -91,6 +92,7 @@ namespace PodcastAudioAgent
                     saveEpisodeStoptime();
                     break;
                 case PlayState.Unknown:
+                    saveEpisodeStoptime();
                     Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
@@ -121,44 +123,77 @@ namespace PodcastAudioAgent
 
         private void updateLastKnownPos(BackgroundAudioPlayer player)
         {
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_POS))
+            lock (settings)
             {
-                settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_POS);
-            }
+                if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_POS))
+                {
+                    settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_POS);
+                }
 
-            if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP))
-            {
-                settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
-            }
+                if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP))
+                {
+                    settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
+                }
 
-            settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP, DateTime.Now.ToString());
-            settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_POS, player.Position.Ticks);
-            settings.Save();
+                try
+                {
+                    settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP, DateTime.Now.ToString());
+                    settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_POS, player.Position.Ticks);
+                }
+                catch (InvalidOperationException e)
+                {
+                    Debug.WriteLine("AudioPlayer:updateLastKnownPos - Player no longer available. Error:  " + e.Message);
+                    return;
+                }
+
+                settings.Save();
+            }
         }
 
         private void saveEpisodeStoptime()
         {
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            if (settings.Contains(LSKEY_AA_EPISODE_STOP_TIMESTAMP))
+            lock (settings)
             {
-                settings.Remove(LSKEY_AA_EPISODE_STOP_TIMESTAMP);
-            }
+                if (settings.Contains(LSKEY_AA_EPISODE_STOP_TIMESTAMP))
+                {
+                    settings.Remove(LSKEY_AA_EPISODE_STOP_TIMESTAMP);
+                }
 
-            settings.Add(LSKEY_AA_EPISODE_STOP_TIMESTAMP, DateTime.Now.ToString());
-            settings.Save();
+                settings.Add(LSKEY_AA_EPISODE_STOP_TIMESTAMP, DateTime.Now.ToString());
+                settings.Save();
+            }
         }
 
         private void saveEpisodeStartinfo(BackgroundAudioPlayer player)
         {
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE))
+            if (player.Error != null)
             {
-                settings.Remove(LSKEY_AA_EPISODE_PLAY_TITLE);
+                Debug.WriteLine("AudioPlayer:saveEpisodeStartinfo - Player no longer available.");
+                return;
             }
 
-            settings.Add(LSKEY_AA_EPISODE_PLAY_TITLE, player.Track.Title);
-            settings.Save();
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            lock (settings)
+            {
+
+                if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE))
+                {
+                    settings.Remove(LSKEY_AA_EPISODE_PLAY_TITLE);
+                }
+
+                try
+                {
+                    settings.Add(LSKEY_AA_EPISODE_PLAY_TITLE, player.Track.Title);
+                }
+                catch (InvalidOperationException e)
+                {
+                    Debug.WriteLine("AudioPlayer:saveEpisodeStartinfo - Player no longer available. Error:  " + e.Message);
+                    return;
+                }
+
+                settings.Save();
+            }
         }
 
 

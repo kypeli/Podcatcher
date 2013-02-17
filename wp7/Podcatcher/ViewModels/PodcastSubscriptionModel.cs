@@ -396,6 +396,7 @@ namespace Podcatcher.ViewModels
             set
             {
                 NotifyPropertyChanged("EpisodesPublishedDescending");
+                NotifyPropertyChanged("EpisodesText");
             }
         }
 
@@ -829,8 +830,10 @@ namespace Podcatcher.ViewModels
                                                         m_subscriptionModel.PodcastId,
                                                         newestEpisodeTimestamp.ToString("r"),
                                                         m_subscriptionModel.PodcastRSSUrl);
-                settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
-                settings.Save();
+                lock (typeof(IsolatedStorageSettings)) {
+                    settings.Add(subscriptionLatestEpisodeKey, subscriptionData);
+                    settings.Save();
+                }
 
                 Debug.WriteLine("Storing latest episode publish date for subscription as: " + newestEpisodeTimestamp.ToString("r"));
             }

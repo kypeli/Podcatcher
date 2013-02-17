@@ -55,7 +55,10 @@ namespace PodcatcherBackgroundService
                     Application.Current.UnhandledException += ScheduledAgent_UnhandledException;
                 });
 
-                m_settings = IsolatedStorageSettings.ApplicationSettings;
+                lock (typeof(IsolatedStorageSettings))
+                {
+                    m_settings = IsolatedStorageSettings.ApplicationSettings;
+                }
 
             }
         }
@@ -117,19 +120,28 @@ namespace PodcatcherBackgroundService
                 return;
             }
 
-            if (m_settings.Contains(LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId) == false)
+            String pinnedSubscriptionData = "";
+            lock (IsolatedStorageSettings.ApplicationSettings)
+            {
+                if (m_settings.Contains(LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId))
+                {
+                    pinnedSubscriptionData = m_settings[LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId] as String;
+                } 
+
+            }
+
+            if (String.IsNullOrEmpty(pinnedSubscriptionData))
             {
                 Debug.WriteLine("Could not open subscription meta data! Key: " + LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId);
                 refreshPinnedSubscription(m_pinnedSubscriptions);
                 return;
             }
 
-            String subscriptionData = m_settings[LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE + subscriptionId] as String;
-            String podcastUrl = subscriptionData.Split('|')[2];
+            String podcastUrl = pinnedSubscriptionData.Split('|')[2];
 
             WebClient web = new WebClient();
             web.DownloadStringCompleted += new DownloadStringCompletedEventHandler(web_DownloadStringCompleted);
-            web.DownloadStringAsync(new Uri(podcastUrl), subscriptionData);
+            web.DownloadStringAsync(new Uri(podcastUrl), pinnedSubscriptionData);
         }
 
         private static String getSubscriptionIdForTile(ShellTile tile)
