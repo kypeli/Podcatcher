@@ -93,6 +93,13 @@ namespace Podcatcher.Views
                 PodcastSubscriptionsManager.getInstance().refreshSubscription(m_subscription);
             }
 
+            // Delete listened episodes.
+            if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
+            {
+                PodcastSqlModel.getInstance().startOldEpisodeCleanup(PodcastPlayerControl.getIntance().PlayingEpisode.PodcastSubscription);
+            }
+
+            // Clean old episodes from the listing.
             if (SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex) != SettingsModel.KEEP_ALL_EPISODES)
             {
                 m_subscription.cleanOldEpisodes(SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex));

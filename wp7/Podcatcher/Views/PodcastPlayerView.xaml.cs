@@ -42,10 +42,6 @@ namespace Podcatcher.Views
         {
             this.PodcastPlayer.initializePlayerUI();
 
-            if (this.PodcastPlayer.PlayingEpisode != null && PodcastSqlModel.getInstance().settings().IsAutoDelete)
-            {
-                PodcastSqlModel.getInstance().startOldEpisodeCleanup(PodcastPlayerControl.getIntance().PlayingEpisode.PodcastSubscription);
-            }
 
         }
     }
