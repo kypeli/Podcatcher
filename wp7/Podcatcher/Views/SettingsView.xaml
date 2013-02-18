@@ -75,28 +75,6 @@
                 <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
                     <StackPanel Margin="0,0,8,8">
                         <StackPanel Margin="0,9,12,0">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock TextWrapping="Wrap" Text="Keep episodes per subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                <toolkit:ListPicker SelectedIndex="{Binding SelectedKeepNumEpisodesIndex, Mode=TwoWay}">
-                                    <toolkit:ListPickerItem>All</toolkit:ListPickerItem>
-                                    <toolkit:ListPickerItem>1</toolkit:ListPickerItem>
-                                    <toolkit:ListPickerItem>5</toolkit:ListPickerItem>
-                                    <toolkit:ListPickerItem>10</toolkit:ListPickerItem>
-                                    <toolkit:ListPickerItem>20</toolkit:ListPickerItem>
-                                </toolkit:ListPicker>
-                            </StackPanel>
-                            <TextBlock TextWrapping="Wrap" Text="You may define how may episodes per subscription to keep on the phone and the rest will be deleted automatically. This specifies how many episodes to keep per subscription." Style="{StaticResource PhoneTextSubtleStyle}"/>
-                        </StackPanel>
-
-                        <StackPanel Margin="0,9,12,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock TextWrapping="Wrap" Text="Delete downloaded episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-                                <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsDeleteEpisodes, Mode=TwoWay}" Content="ToggleSwitchButton"/>
-                            </StackPanel>
-                            <TextBlock TextWrapping="Wrap" Text="If you turn this on, episodes that have been downloaded will also be deleted when cleaning episodes as set in the setting above." Style="{StaticResource PhoneTextSubtleStyle}"/>
-                        </StackPanel>
-
-                        <StackPanel Margin="0,9,12,0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap" Text="Delete listened episodes" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
                                 <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDelete, Mode=TwoWay}" Content="ToggleSwitchButton"/>

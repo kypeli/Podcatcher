@@ -318,21 +318,13 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_SelectedKeepNumEpisodesIndex = -1;
-        [Column(DbType = "SMALLINT DEFAULT -1 NOT NULL")]
+        private int m_SelectedKeepNumEpisodesIndex = 0;
+        [Column(DbType = "SMALLINT DEFAULT 0 NOT NULL")]
         public int SubscriptionSelectedKeepNumEpisodesIndex
         {
             get
             {
-                if (m_SelectedKeepNumEpisodesIndex < 0)
-                {
-                    return PodcastSqlModel.getInstance().settings().SelectedKeepNumEpisodesIndex; 
-                }
-                else
-                {
-
                     return m_SelectedKeepNumEpisodesIndex;
-                }
             }
 
             set
@@ -350,22 +342,15 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                if (m_IsDeleteEpisodes == (int)SubscriptionSettingDeleteEpisodes.Unset)
+                switch (m_IsDeleteEpisodes)
                 {
-                    return PodcastSqlModel.getInstance().settings().IsDeleteEpisodes;
+                    case (int)SubscriptionSettingDeleteEpisodes.True:
+                        return true;
+                    case (int)SubscriptionSettingDeleteEpisodes.False:
+                        return false;
+                    default:
+                        return false;
                 }
-                else
-                {
-                    switch (m_IsDeleteEpisodes)
-                    {
-                        case (int)SubscriptionSettingDeleteEpisodes.True:
-                            return true;
-                        case (int)SubscriptionSettingDeleteEpisodes.False:
-                            return false;
-                    }
-                }
-
-                return PodcastSqlModel.getInstance().settings().IsDeleteEpisodes;
             }
 
             set

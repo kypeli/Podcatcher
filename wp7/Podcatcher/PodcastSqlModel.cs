@@ -401,8 +401,6 @@ namespace Podcatcher
                     updater.AddColumn<SettingsModel>("ListenedThreashold");
                     updater.AddColumn<PodcastEpisodeModel>("EpisodeDownloadState");
                     updater.AddColumn<PodcastEpisodeModel>("EpisodePlayState");
-                    updater.AddColumn<SettingsModel>("SelectedKeepNumEpisodesIndex");
-                    updater.AddColumn<SettingsModel>("IsDeleteEpisodes");
                     updater.AddColumn<PodcastSubscriptionModel>("SubscriptionSelectedKeepNumEpisodesIndex");
                     updater.AddColumn<PodcastSubscriptionModel>("SubscriptionIsDeleteEpisodes");
                 }

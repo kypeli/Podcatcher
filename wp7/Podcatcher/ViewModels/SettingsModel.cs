@@ -142,42 +142,6 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_SelectedKeepNumEpisodesIndex = 0;
-        [Column(DbType = "INT DEFAULT 0 NOT NULL")]
-        public int SelectedKeepNumEpisodesIndex
-        {
-            get
-            {
-                return m_SelectedKeepNumEpisodesIndex;
-            }
-
-            set
-            {
-                if (m_SelectedKeepNumEpisodesIndex != value)
-                {
-                    m_SelectedKeepNumEpisodesIndex = value;
-                }
-            }
-        }
-
-        private bool m_IsDeleteEpisodes = false;
-        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
-        public Boolean IsDeleteEpisodes
-        {
-            get
-            {
-                return m_IsDeleteEpisodes;
-            }
-
-            set
-            {
-                if (m_IsDeleteEpisodes != value)
-                {
-                    m_IsDeleteEpisodes = value;
-                }
-            }
-        }
-
         public static int keepNumEpisodesForSelectedIndex(int index)
         {
             switch (index)
