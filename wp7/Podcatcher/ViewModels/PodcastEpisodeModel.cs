@@ -226,7 +226,6 @@ namespace Podcatcher.ViewModels
                     m_savedPlayPos = value;
 
                     NotifyPropertyChanged("ProgressBarIsVisible");
-                    NotifyPropertyChanged("NumberOfEpisodesText");
                 }
             }
         }

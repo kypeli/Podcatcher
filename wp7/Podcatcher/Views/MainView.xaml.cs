@@ -122,6 +122,7 @@ namespace Podcatcher
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             // Hook data contextes.
+            DataContext = null;
             DataContext = m_podcastsModel;
             this.PlayHistoryList.DataContext = m_podcastsModel;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
