@@ -365,7 +365,11 @@ namespace Podcatcher.ViewModels
 
             set
             {
-                m_newEpisodeVisibility = value;
+                if (m_newEpisodeVisibility != value) 
+                {
+                    m_newEpisodeVisibility = value;
+                    NotifyPropertyChanged("NewEpisodeVisibility");
+                }
             }
         }
 
