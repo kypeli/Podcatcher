@@ -89,7 +89,6 @@ namespace Podcatcher
             if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionFinished)
             {
                 deleteProgressOverlay.Visibility = Visibility.Collapsed;
-                this.SubscriptionsList.ItemsSource = m_podcastsModel.PodcastSubscriptions;
             }
         }
 
