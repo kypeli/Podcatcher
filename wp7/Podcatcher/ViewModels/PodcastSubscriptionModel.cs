@@ -405,6 +405,7 @@ namespace Podcatcher.ViewModels
             {
                 var query = from episode in Episodes
                             where (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
+                                 && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
                                  && episode.SavedPlayPos == 0)
                             select episode;
 
@@ -427,8 +428,9 @@ namespace Podcatcher.ViewModels
             {
                 float listenedEpisodeThreshold = (float)PodcastSqlModel.getInstance().settings().ListenedThreashold / (float)100.0;
                 var query = from episode in Episodes
-                            where (episode.SavedPlayPos > 0
-                                  && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
+                            where (episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened 
+                                   && episode.SavedPlayPos > 0
+                                   && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
                             select episode;
 
                 return query.Count();
@@ -453,6 +455,12 @@ namespace Podcatcher.ViewModels
                     PartiallyPlayedEpisodes > 0 ? PartiallyPlayedEpisodes + " partially played" : "",
                     (UnplayedEpisodes > 0 || PartiallyPlayedEpisodes > 0) ? "episode" + (plural ? "s" : "") : "");
             }
+
+            set
+            {
+                NotifyPropertyChanged("NumberOfEpisodesText");
+            }
+
         }
 
         public String NewEpisodesText 

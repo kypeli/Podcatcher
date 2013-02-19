@@ -220,7 +220,18 @@ namespace Podcatcher.ViewModels
         public long SavedPlayPos
         {
             get { return m_savedPlayPos; }
-            set { m_savedPlayPos = value; }
+            set {
+                if (m_savedPlayPos != value)
+                {
+                    m_savedPlayPos = value;
+                    if (PodcastSubscription != null)
+                    {
+                        PodcastSubscription.NumberOfEpisodesText = ""; // Reset the value
+                    }
+
+                    NotifyPropertyChanged("ProgressBarIsVisible");
+                }
+            }
         }
 
         private long m_totalLengthTicks = 0;
@@ -239,7 +250,8 @@ namespace Podcatcher.ViewModels
             Paused,
             Streaming,
             UnsupportedFormat,
-            NoMedia
+            NoMedia,
+            Listened
         };
 
         public enum EpisodeDownloadStateEnum
@@ -363,7 +375,8 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading || ProgressBarValue > 0 ? Visibility.Visible : Visibility.Collapsed);
+                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading 
+                        || ((ProgressBarValue > 0) && EpisodePlayState != EpisodePlayStateEnum.Listened) ? Visibility.Visible : Visibility.Collapsed);
             }
 
             private set { }
@@ -644,6 +657,12 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        internal void markAsListened()
+        {
+            SavedPlayPos = 0;
+            EpisodePlayState = EpisodePlayStateEnum.Listened;
+        }
+
         void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.WriteLine("Episode written to disk. Filename: {0}", EpisodeFile);
@@ -666,5 +685,6 @@ namespace Podcatcher.ViewModels
             }
         }
         #endregion
+
     }
 }

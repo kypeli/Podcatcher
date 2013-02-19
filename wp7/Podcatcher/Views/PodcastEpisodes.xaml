@@ -102,6 +102,7 @@
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Opacity="0.7">
             <shell:ApplicationBarIconButton IconUri="/Images/settings.png" Text="Settings" Click="ApplicationBarSettingsButton_Click" />
             <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="Mark all as listened" Click="MarkAllListened_Click" />
                 <shell:ApplicationBarMenuItem Text="Delete all downloads" Click="DeleteAllDownloads_Click" />
             <!--            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
                 <shell:ApplicationBarMenuItem Text="MenuItem 1"/>

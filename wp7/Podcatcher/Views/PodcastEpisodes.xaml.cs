@@ -124,11 +124,29 @@ namespace Podcatcher.Views
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
         }
 
+        private void MarkAllListened_Click(object sender, EventArgs e) 
+        {
+            if (MessageBox.Show("Are you sure you want to mark all episodes as listened?",
+                            "Are you sure?",
+                            MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                List<PodcastEpisodeModel> episodes = m_podcastSqlModel.episodesForSubscription(m_subscription);
+                foreach (PodcastEpisodeModel episode in episodes)
+                {
+                    if (episode.SavedPlayPos > 0)
+                    {
+                        episode.markAsListened();
+                    }
+                }
+                m_podcastSqlModel.SubmitChanges();
+            }
+        }
+
         private void DeleteAllDownloads_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to delete all downloaded episodes in this subscription?",
                     "Delete?",
-                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)                
             {
                 List<PodcastEpisodeModel> episodes = m_podcastSqlModel.episodesForSubscription(m_subscription);
                 foreach (PodcastEpisodeModel episode in episodes)
@@ -138,6 +156,7 @@ namespace Podcatcher.Views
                         episode.deleteDownloadedEpisode();
                     }
                 }
+                m_podcastSqlModel.SubmitChanges();
             }
         }
     }
