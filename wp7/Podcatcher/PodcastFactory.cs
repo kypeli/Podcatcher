@@ -75,8 +75,7 @@ namespace Podcatcher
 
             if (String.IsNullOrEmpty(query.Link))
             {
-                Debug.WriteLine("ERROR: Podcast URL is empty in RSS feed.");
-                validFeed = false;
+                Debug.WriteLine("Warning: Podcast URL is empty in RSS feed.");
             }
 
             string imageUrl = "";
@@ -132,7 +131,12 @@ namespace Podcatcher
             {
                 podcastModel.PodcastLogoUrl = new Uri(imageUrl, UriKind.Absolute);
             }
+
             podcastModel.PodcastShowLink        = query.Link;
+            if (string.IsNullOrEmpty(query.Link))
+            {
+                podcastModel.PodcastShowLink = query.Title;
+            }
 
             Debug.WriteLine("Got podcast subscription:"
                             + "\n\t* Name:\t\t\t\t\t"       + podcastModel.PodcastName
@@ -385,6 +389,13 @@ namespace Podcatcher
                 // gPodder test feed
                 Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
                 resultDateTime = getDateTimeWithFormat("ddd MMM dd HH:mm:ss yyyy", pubDateString, pubDateString.Length);  // Parse as Fri Jan 11 14:40:38 2013
+            }
+
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // gPodder test feed
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("d MMM yyyy HH:mm", pubDateString, "d MMM yyyy HH:mm".Length);  // Parse as Mon, 4 Feb 2013 11:00 GMT
             }
 
             if (resultDateTime.Equals(DateTime.MinValue))
