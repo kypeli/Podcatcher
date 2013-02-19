@@ -224,12 +224,9 @@ namespace Podcatcher.ViewModels
                 if (m_savedPlayPos != value)
                 {
                     m_savedPlayPos = value;
-                    if (PodcastSubscription != null)
-                    {
-                        PodcastSubscription.NumberOfEpisodesText = ""; // Reset the value
-                    }
 
                     NotifyPropertyChanged("ProgressBarIsVisible");
+                    NotifyPropertyChanged("NumberOfEpisodesText");
                 }
             }
         }
