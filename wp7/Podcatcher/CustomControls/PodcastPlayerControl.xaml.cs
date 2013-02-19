@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
 
 
 namespace Podcatcher
@@ -387,6 +388,7 @@ namespace Podcatcher
 
             setupPlayerUIContent(m_currentEpisode);
             showPlayerLayout();
+            updatePrimary(m_currentEpisode);
 
             if (!streaming && episodeModel.SavedPlayPos > 0)
             {
@@ -532,6 +534,31 @@ namespace Podcatcher
                     break;
 
             }
+        }
+
+        private void updatePrimary(PodcastEpisodeModel currentEpisode)
+        {
+            ShellTile PrimaryTile = ShellTile.ActiveTiles.First();
+
+            if (PrimaryTile != null)
+            {
+                StandardTileData tile = new StandardTileData();
+
+                // Copy the logo file to tile's shared location.
+                String tileImageLocation = "Shared/ShellContent/" + currentEpisode.PodcastSubscription.PodcastLogoLocalLocation.Split('/')[1];
+                using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if (myIsolatedStorage.FileExists(tileImageLocation) == false)
+                    {
+                        myIsolatedStorage.CopyFile(currentEpisode.PodcastSubscription.PodcastLogoLocalLocation,
+                                                   tileImageLocation);
+                    }
+                }
+
+                tile.BackBackgroundImage = new Uri("isostore:/" + tileImageLocation, UriKind.Absolute); 
+                tile.BackTitle = currentEpisode.PodcastSubscription.PodcastName;
+                PrimaryTile.Update(tile);
+            } 
         }
 
         private void playbackStopped()

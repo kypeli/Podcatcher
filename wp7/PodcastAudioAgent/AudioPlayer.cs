@@ -22,6 +22,9 @@ using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
 using System.Diagnostics;
 using System.IO.IsolatedStorage;
+using Microsoft.Phone.Shell;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PodcastAudioAgent
 {
@@ -97,6 +100,7 @@ namespace PodcastAudioAgent
                     break;
                 case PlayState.Stopped:
                     saveEpisodeStoptime();
+                    clearPrimaryTile();
                     Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
@@ -119,6 +123,19 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
+        }
+
+        private void clearPrimaryTile()
+        {
+            ShellTile PrimaryTile = ShellTile.ActiveTiles.First();
+
+            if (PrimaryTile != null)
+            {
+                StandardTileData tile = new StandardTileData();
+                tile.BackBackgroundImage = new Uri("appdata:Background.png");
+                tile.BackTitle = string.Empty;
+                PrimaryTile.Update(tile);
+            }
         }
 
         private void updateLastKnownPos(BackgroundAudioPlayer player)
