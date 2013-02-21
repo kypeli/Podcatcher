@@ -293,7 +293,10 @@ namespace Podcatcher
                     switch (BackgroundAudioPlayer.Instance.PlayerState)
                     {
                         case PlayState.Playing:
-                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                            PodcastEpisodeModel.EpisodePlayStateEnum state;
+                            state = String.IsNullOrEmpty(episode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming 
+                                                                              : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                            episode.EpisodePlayState = state;
                             break;
                         case PlayState.Paused:
                             episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
