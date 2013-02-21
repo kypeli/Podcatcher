@@ -662,6 +662,12 @@ namespace Podcatcher
                 StopPlayback();
             }
 
+            lock (m_appSettings)
+            {
+                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                m_appSettings.Save();
+            }
+
             PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
             if (rootFrame.CanGoBack)
             {
