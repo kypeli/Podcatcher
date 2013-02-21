@@ -186,6 +186,14 @@ namespace Podcatcher
                 episodeToUpdate.SavedPlayPos = lastPosTick + deltaTicks;
 
                 Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
+
+                if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID) == false)
+                {
+                    // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
+                    // playing ID. This means the track in question isn't playing anymore, so let's update the state.
+                    episodeToUpdate.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                }
+
                 PodcastSqlModel.getInstance().SubmitChanges();
 
                 appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);

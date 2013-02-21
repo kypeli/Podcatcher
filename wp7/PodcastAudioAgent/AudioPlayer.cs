@@ -30,6 +30,7 @@ namespace PodcastAudioAgent
 {
     public class AudioPlayer : AudioPlayerAgent
     {
+        private const string LSKEY_PODCAST_EPISODE_PLAYING_ID = "playing_episodeId";
         private const string LSKEY_AA_EPISODE_PLAY_TITLE = "aa_episode_title";
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS = "aa_episode_play_lastknownpos";
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
@@ -88,11 +89,13 @@ namespace PodcastAudioAgent
             {
                 case PlayState.TrackEnded:
                     saveEpisodeStoptime();
+                    clearPlayHistory();
                     break;
                 case PlayState.TrackReady:
                     break;
                 case PlayState.Shutdown:
                     saveEpisodeStoptime();
+                    clearPlayHistory();
                     break;
                 case PlayState.Unknown:
                     saveEpisodeStoptime();
@@ -101,6 +104,7 @@ namespace PodcastAudioAgent
                 case PlayState.Stopped:
                     saveEpisodeStoptime();
                     clearPrimaryTile();
+                    clearPlayHistory();
                     Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
@@ -123,6 +127,15 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
+        }
+
+        private void clearPlayHistory()
+        {
+            lock (settings)
+            {
+                settings.Remove(LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                settings.Save();
+            }
         }
 
         private void clearPrimaryTile()
