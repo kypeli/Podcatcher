@@ -96,7 +96,7 @@ namespace Podcatcher.Views
             // Delete listened episodes.
             if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
             {
-                PodcastSqlModel.getInstance().startOldEpisodeCleanup(PodcastPlayerControl.getIntance().PlayingEpisode.PodcastSubscription);
+                PodcastSqlModel.getInstance().startOldEpisodeCleanup(m_subscription);
             }
 
             // Clean old episodes from the listing.
