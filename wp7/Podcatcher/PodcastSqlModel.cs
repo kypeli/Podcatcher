@@ -58,42 +58,40 @@ namespace Podcatcher
         {
             get
             {
-                var query = from LastPlayedEpisodeModel e in PlayHistory
-                            orderby e.TimeStamp descending
-                            select e;
-
-                m_playHistory.Clear();
-                int itemsCount = 0;
-                foreach (LastPlayedEpisodeModel e in query)
-                {
-                    PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
-                    if (episode == null)
-                    {
-                        Debug.WriteLine("Got NULL episode for play history. This probably means the subscription has been deleted.");
-                        continue;
-                    }
-
-                    m_playHistory.Add(episode);
-                    
-                    itemsCount++;
-                    if (itemsCount >= 4)
-                    {
-                        break;
-                    }
-                }
-
-                return m_playHistory;
+                return new ObservableCollection<PodcastEpisodeModel>(createPlayHistory());
             }
 
             private set { }
         }
 
-        public int PlayHistoryListCount
+        private List<PodcastEpisodeModel> createPlayHistory()
         {
-            get
+            List<PodcastEpisodeModel> playHistory = new List<PodcastEpisodeModel>();
+
+            var query = from LastPlayedEpisodeModel e in PlayHistory
+                        orderby e.TimeStamp descending
+                        select e;
+
+            int itemsCount = 0;
+            foreach (LastPlayedEpisodeModel e in query)
             {
-                return m_playHistory.Count();
+                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(e.LastPlayedEpisodeId);
+                if (episode == null)
+                {
+                    Debug.WriteLine("Got NULL episode for play history. This probably means the subscription has been deleted.");
+                    continue;
+                }
+
+                playHistory.Add(episode);
+
+                itemsCount++;
+                if (itemsCount >= 4)
+                {
+                    break;
+                }
             }
+
+            return playHistory;
         }
 
         /************************************* Public implementations *******************************/
