@@ -99,6 +99,7 @@ namespace PodcastAudioAgent
                     break;
                 case PlayState.Unknown:
                     saveEpisodeStoptime();
+                    clearPlayHistory();
                     Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
@@ -109,6 +110,7 @@ namespace PodcastAudioAgent
                     break;
                 case PlayState.Paused:
                     saveEpisodeStoptime();
+                    clearPlayHistory();
                     Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
