@@ -548,6 +548,13 @@ namespace Podcatcher
                 String tileImageLocation = "Shared/ShellContent/" + currentEpisode.PodcastSubscription.PodcastLogoLocalLocation.Split('/')[1];
                 using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
+                    if (myIsolatedStorage.FileExists(currentEpisode.PodcastSubscription.PodcastLogoLocalLocation) == false)
+                    {
+                        // Cover art does not exist, we cannot do anything. Give up, don't put it to Live tile.
+                        Debug.WriteLine("Podcasts cover art not found.");
+                        return;
+                    }
+
                     if (myIsolatedStorage.FileExists(tileImageLocation) == false)
                     {
                         myIsolatedStorage.CopyFile(currentEpisode.PodcastSubscription.PodcastLogoLocalLocation,
