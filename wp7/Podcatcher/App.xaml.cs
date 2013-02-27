@@ -322,7 +322,7 @@ namespace Podcatcher
             {
                 if (e.Message.Contains("BNS Error: The action is disabled"))
                 {
-                    App.showNotificationToast("Background tasks have been disabled from\nsystem settings.");
+                    Debug.WriteLine("Background agent disabled.");
                 }
             }
             catch (Exception) { /* In case we get some other scheduler related exception. But we are not interested. */ }
