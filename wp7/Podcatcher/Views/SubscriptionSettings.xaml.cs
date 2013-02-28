@@ -38,17 +38,19 @@ namespace Podcatcher.Views
         public SubscriptionSettings()
         {
             InitializeComponent();
-            m_podcastSqlModel = PodcastSqlModel.getInstance();
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
-            PodcastSubscriptionModel subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
+            PodcastSubscriptionModel subscription = null;
+            using (var db = new PodcastSqlModel()) 
+            {
+                subscription = db.subscriptionModelForIndex(podcastId);
+            }
+
             this.DataContext = subscription;
         }
 
-        /************************************* Priovate implementations *******************************/
-        private PodcastSqlModel m_podcastSqlModel;
     }
 }

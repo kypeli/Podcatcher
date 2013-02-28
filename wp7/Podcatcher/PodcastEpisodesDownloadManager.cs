@@ -183,7 +183,11 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Found a episode download that we need to process.");
                 int downloadingEpisodeId = (int)m_applicationSettings[App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID];
-                m_currentEpisodeDownload = PodcastSqlModel.getInstance().episodeForEpisodeId(downloadingEpisodeId);
+                m_currentEpisodeDownload = null;
+                using (var db = new PodcastSqlModel())
+                {
+                    m_currentEpisodeDownload = db.episodeForEpisodeId(downloadingEpisodeId);
+                }
 
                 if (m_currentEpisodeDownload == null)
                 {
@@ -236,7 +240,6 @@ namespace Podcatcher
             }
 
             List<string> episodeIds = queuedSettingsString.Split(',').ToList();
-            PodcastSqlModel sqlModel = PodcastSqlModel.getInstance();
             foreach(string episodeIdStr in episodeIds) 
             {
                 if (String.IsNullOrEmpty(episodeIdStr))
@@ -247,7 +250,11 @@ namespace Podcatcher
                 try
                 {
                     int episodeId = Int16.Parse(episodeIdStr);
-                    PodcastEpisodeModel episode = sqlModel.episodeForEpisodeId(episodeId);
+                    PodcastEpisodeModel episode = null;
+                    using (var db = new PodcastSqlModel())
+                    {
+                        episode = db.episodeForEpisodeId(episodeId);
+                    }
                     if (episode == null)
                     {
                         Debug.WriteLine("Warning: Got NULL episode when processing stored queued download episodes!");
@@ -377,8 +384,14 @@ namespace Podcatcher
                 } 
                 else if (canAllowCellularDownload(m_currentEpisodeDownload))
                 {
-                    bool settingsAllowCellular = PodcastSqlModel.getInstance().settings().IsUseCellularData;
+                    bool settingsAllowCellular = false;
+                    using (var db = new PodcastSqlModel())
+                    {
+                        settingsAllowCellular =  db.settings().IsUseCellularData;
+                    }
+
                     Debug.WriteLine("Settings: Allow cellular download: " + settingsAllowCellular);
+                    
                     if (settingsAllowCellular && canDownloadOverCellular())
                     {
                         m_currentBackgroundTransfer.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
@@ -520,11 +533,6 @@ namespace Podcatcher
             if (transferRequest.TransferError == null && 
                (transferRequest.StatusCode == 200 || transferRequest.StatusCode == 206))
             {
-#if DEBUG
-//                MessageBox.Show("Downloaded bytes: " + transferRequest.BytesReceived,
-//                                "Completed", MessageBoxButton.OK);
-#endif
-
                 Debug.WriteLine("Transfer request completed succesfully.");
                 updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
             }
@@ -587,15 +595,23 @@ namespace Podcatcher
         {
             Debug.WriteLine("Updating episode information for episode when download completed: " + episode.EpisodeName);
 
-            Debug.WriteLine(" * Downloaded file name: " + episode.EpisodeFile);
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-            Debug.WriteLine(" * Episode download state: " + episode.EpisodeDownloadState.ToString());
-            Debug.WriteLine(" * Episode play state: " + episode.EpisodePlayState.ToString());
-            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-            Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.NumberOfEpisodesText);
-            episode.PodcastSubscription.unplayedEpisodesChanged();
 
-            PodcastSqlModel.getInstance().SubmitChanges();
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel e = db.episodeForEpisodeId(episode.EpisodeId);
+
+                e.EpisodeFile = episode.EpisodeFile;
+                Debug.WriteLine(" * Downloaded file name: " + episode.EpisodeFile);
+                e.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                Debug.WriteLine(" * Episode download state: " + episode.EpisodeDownloadState.ToString());
+                Debug.WriteLine(" * Episode play state: " + episode.EpisodePlayState.ToString());
+                e.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.NumberOfEpisodesText);
+                e.PodcastSubscription.unplayedEpisodesChanged();
+
+                db.SubmitChanges();
+            }
         }
 
         private void cleanupEpisodeDownload(BackgroundTransferRequest transferRequest)

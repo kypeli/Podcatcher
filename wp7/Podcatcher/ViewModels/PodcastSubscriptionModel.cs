@@ -293,7 +293,11 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                m_episodesCount = Episodes.Count();
+                using (var db = new PodcastSqlModel())
+                {
+                    m_episodesCount = db.episodesForSubscription(this).Count;
+                }
+
                 return String.Format("{0} episodes", m_episodesCount);
             }
 
@@ -371,11 +375,14 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                var query = from PodcastEpisodeModel episode in Episodes
+/*                var query = from PodcastEpisodeModel episode in Episodes
                             orderby episode.EpisodePublished descending
                             select episode;
-
-                return new List<PodcastEpisodeModel>(query);
+                */
+                using (var db = new PodcastSqlModel())
+                {
+                    return db.episodesForSubscription(this);
+                }
             }
 
             set
@@ -399,21 +406,21 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_unplayedEpisodes = 0;
         public int UnplayedEpisodes
         {
             get
             {
-                var query = from episode in Episodes
-                            where (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
-                                 && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
-                                 && episode.SavedPlayPos == 0)
-                            select episode;
-
-                return query.Count();
+                return m_unplayedEpisodes;
             }
 
             set
             {
+                using (var db = new PodcastSqlModel())
+                {
+                    m_unplayedEpisodes = db.unplayedEpisodesForSubscription(this).Count;
+                }
+
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
 
@@ -422,22 +429,29 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_partiallyPlayedEpisodes = 0;
         public int PartiallyPlayedEpisodes
         {
             get
             {
-                float listenedEpisodeThreshold = (float)PodcastSqlModel.getInstance().settings().ListenedThreashold / (float)100.0;
-                var query = from episode in Episodes
-                            where (episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened 
-                                   && episode.SavedPlayPos > 0
-                                   && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
-                            select episode;
-
-                return query.Count();
+                return m_partiallyPlayedEpisodes;
             }
 
             set
             {
+                float listenedEpisodeThreshold = 0.0F;
+                using (var db = new PodcastSqlModel())
+                {
+                    listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
+                }
+                var query = from episode in Episodes
+                            where (episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
+                                   && episode.SavedPlayPos > 0
+                                   && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
+                            select episode;
+
+                m_partiallyPlayedEpisodes = query.Count();
+
                 NotifyPropertyChanged("PartiallyPlayedEpisodes");
             }
         }
@@ -482,15 +496,10 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                var query = from PodcastEpisodeModel episode in Episodes
-                            where (String.IsNullOrEmpty(episode.EpisodeFile) == false
-                                   && (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded 
-                                   || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing    
-                                   || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused))
-                            orderby episode.EpisodePublished descending
-                            select episode;
-
-                return new List<PodcastEpisodeModel>(query);
+                using (var db = new PodcastSqlModel())
+                {
+                    return db.playableEpisodesForSubscription(this);
+                }
             }
 
             set
@@ -624,7 +633,10 @@ namespace Podcatcher.ViewModels
                 e.deleteDownloadedEpisode();
             }
 
-            PodcastSqlModel.getInstance().deleteEpisodesPerQuery(query);
+            using (var db = new PodcastSqlModel()) 
+            {
+                db.deleteEpisodesPerQuery(query);
+            }
         }
 
         private void workerCleanSubscriptionsCompleted(object sender, RunWorkerCompletedEventArgs e) 
@@ -688,6 +700,7 @@ namespace Podcatcher.ViewModels
             // Local cache has been updated - notify the UI that the logo property has changed.
             // and the new logo can be fetched to the UI. 
             NotifyPropertyChanged("PodcastLogo");
+            App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
         }
 
         #region propertyChanged
@@ -717,12 +730,10 @@ namespace Podcatcher.ViewModels
         public class PodcastEpisodesManager
         {
             private PodcastSubscriptionModel m_subscriptionModel;
-            private PodcastSqlModel m_podcastsSqlModel;
 
             public PodcastEpisodesManager(PodcastSubscriptionModel subscriptionModel)
             {
                 m_subscriptionModel = subscriptionModel;
-                m_podcastsSqlModel = PodcastSqlModel.getInstance();
             }
 
             public void updatePodcastEpisodes()
@@ -731,7 +742,12 @@ namespace Podcatcher.ViewModels
 
                 bool subscriptionAddedNow = true;
 
-                List<PodcastEpisodeModel> episodes = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel);
+                List<PodcastEpisodeModel> episodes = null;
+                using (var db = new PodcastSqlModel())
+                {
+                    episodes = db.episodesForSubscription(m_subscriptionModel);
+                }
+
                 DateTime latestEpisodePublishDate = new DateTime();
 
                 if (episodes.Count > 0)
@@ -756,7 +772,10 @@ namespace Podcatcher.ViewModels
                     return;
                 }
 
-                m_podcastsSqlModel.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
+                using (var db = new PodcastSqlModel())
+                {
+                    db.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
+                }
 
                 // Indicate new episodes to the UI only when we are not adding the feed. 
                 // I.e. we want to show new episodes only when we refresh the feed at restart.
@@ -818,7 +837,11 @@ namespace Podcatcher.ViewModels
                     settings.Remove(subscriptionLatestEpisodeKey);
                 }
 
-                DateTime newestEpisodeTimestamp = m_podcastsSqlModel.episodesForSubscription(m_subscriptionModel)[0].EpisodePublished;
+                DateTime newestEpisodeTimestamp;
+                using (var db = new PodcastSqlModel())
+                {
+                    newestEpisodeTimestamp = db.episodesForSubscription(m_subscriptionModel)[0].EpisodePublished;
+                } 
                 String subscriptionData = String.Format("{0}|{1}|{2}",
                                                         m_subscriptionModel.PodcastId,
                                                         newestEpisodeTimestamp.ToString("r"),

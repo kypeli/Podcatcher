@@ -76,6 +76,8 @@ namespace Podcatcher
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
 
+        public static MainViewModels mainViewModels = new MainViewModels();
+
         public static bool IsTrial
         {
             get
@@ -158,7 +160,11 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Updating episode position from background agent.");
 
-                PodcastEpisodeModel episodeToUpdate = PodcastSqlModel.getInstance().episodesForTitle(appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
+                PodcastEpisodeModel episodeToUpdate = null;
+                using (var db = new PodcastSqlModel())
+                {
+                    episodeToUpdate = db.episodesForTitle(appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
+                }
                 if (episodeToUpdate == null)
                 {
                     Debug.WriteLine("Warning: Episode to update is null!");
@@ -194,8 +200,6 @@ namespace Podcatcher
                     episodeToUpdate.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
                 }
 
-                PodcastSqlModel.getInstance().SubmitChanges();
-
                 appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
                 appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_POS);
                 appSettings.Remove(App.LSKEY_AA_EPISODE_STOP_TIMESTAMP);
@@ -210,6 +214,11 @@ namespace Podcatcher
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
             //          IsolatedStorageExplorer.Explorer.Start("192.168.0.6");
+            using (var db = new PodcastSqlModel())
+            {
+                db.createDB();
+            }
+
             CheckLicense();
         }
         // Code to execute when the application is activated (brought to foreground)
@@ -224,14 +233,20 @@ namespace Podcatcher
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
-            PodcastSqlModel.getInstance().SubmitChanges();
+            using (var db = new PodcastSqlModel())
+            {
+                db.SubmitChanges();
+            }
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-            PodcastSqlModel.getInstance().SubmitChanges();
+            using (var db = new PodcastSqlModel())
+            {
+                db.SubmitChanges();
+            }
         }
 
         // Code to execute if a navigation fails

@@ -57,7 +57,10 @@ namespace Podcatcher
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            m_episodeModel = this.DataContext as PodcastEpisodeModel;
+            using (var db = new PodcastSqlModel())
+            {
+                m_episodeModel = db.episodeForEpisodeId(m_episodeModel.EpisodeId);
+            }
 
             // Play locally from a downloaded file.
             if (m_episodeModel.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)

@@ -241,7 +241,11 @@ namespace Podcatcher
             if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                m_currentEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+                using (var db = new PodcastSqlModel())
+                {
+                    m_currentEpisode = db.episodeForEpisodeId(episodeId);
+                }
+
                 if (m_currentEpisode == null)
                 {
                     // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
@@ -276,7 +280,11 @@ namespace Podcatcher
             if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                PodcastEpisodeModel episode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+                PodcastEpisodeModel episode = null;
+                using (var db = new PodcastSqlModel())
+                {
+                    episode = db.episodeForEpisodeId(episodeId);
+                }
 
                 if (BackgroundAudioPlayer.Instance.Track != null)
                 {
@@ -324,7 +332,10 @@ namespace Podcatcher
                     appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     appSettings.Save();
 
-                    PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
+                    using (var db = new PodcastSqlModel())
+                    {
+                        db.addEpisodeToPlayHistory(episode);
+                    }
                 }
 
             }
@@ -392,7 +403,12 @@ namespace Podcatcher
 
             if (!streaming && episodeModel.SavedPlayPos > 0)
             {
-                bool alwaysContinuePlayback = PodcastSqlModel.getInstance().settings().IsAutomaticContinuedPlayback;
+                bool alwaysContinuePlayback = false;
+                using (var db = new PodcastSqlModel())
+                {
+                    alwaysContinuePlayback = db.settings().IsAutomaticContinuedPlayback;
+                }
+
                 if (alwaysContinuePlayback)
                 {
                     startPlayback(new TimeSpan(m_currentEpisode.SavedPlayPos), streaming);
@@ -461,15 +477,28 @@ namespace Podcatcher
             try
             {
                 m_currentEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-                PodcastSqlModel.getInstance().SubmitChanges();
             }
             catch (NullReferenceException)
             {
                 Debug.WriteLine("BackgroundAudioPlayer returned NULL. Player didn't probably have a track that it was playing.");
             }
-            catch (SystemException syse)
+            catch (SystemException)
             {
                 Debug.WriteLine("Got system exception when trying to save position.");
+            }
+
+            updateEpisodeToDB(m_currentEpisode);
+        }
+
+        private void updateEpisodeToDB(PodcastEpisodeModel episode)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel e = db.episodeForEpisodeId(episode.EpisodeId);
+                e.EpisodePlayState = episode.EpisodePlayState;
+                e.SavedPlayPos = episode.SavedPlayPos;
+
+                db.SubmitChanges();
             }
         }
 
@@ -597,7 +626,7 @@ namespace Podcatcher
                 episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
             }
 
-            PodcastSqlModel.getInstance().SubmitChanges();
+            updateEpisodeToDB(episode);
         }
 
         private void setupUIForEpisodePaused()
@@ -834,7 +863,10 @@ namespace Podcatcher
 
         private void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
         {
-            PodcastSqlModel.getInstance().addEpisodeToPlayHistory(episode);
+            using (var db = new PodcastSqlModel())
+            {
+                db.addEpisodeToPlayHistory(episode);
+            }
         }
 
     }

@@ -43,7 +43,6 @@ namespace Podcatcher.Views
         public PodcastEpisodes()
         {
             InitializeComponent();
-            m_podcastSqlModel = PodcastSqlModel.getInstance();
         }
 
         void m_subscription_PodcastCleanStarted()
@@ -59,7 +58,11 @@ namespace Podcatcher.Views
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
-            m_subscription = m_podcastSqlModel.subscriptionModelForIndex(podcastId);
+            using (var db = new PodcastSqlModel())
+            {
+                m_subscription = db.subscriptionModelForIndex(podcastId);
+            }
+
             this.DataContext = m_subscription;
 
             m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
@@ -94,9 +97,12 @@ namespace Podcatcher.Views
             }
 
             // Delete listened episodes.
-            if (PodcastSqlModel.getInstance().settings().IsAutoDelete)
+            using (var db = new PodcastSqlModel())
             {
-                PodcastSqlModel.getInstance().startOldEpisodeCleanup(m_subscription);
+                if (db.settings().IsAutoDelete)
+                {
+                    db.startOldEpisodeCleanup(m_subscription);
+                }
             }
 
             // Clean old episodes from the listing.
@@ -109,7 +115,6 @@ namespace Podcatcher.Views
         /************************************* Priovate implementations *******************************/
         #region private
 
-        private PodcastSqlModel m_podcastSqlModel;
         private PodcastSubscriptionModel m_subscription;
         
         #endregion
@@ -130,15 +135,20 @@ namespace Podcatcher.Views
                             "Are you sure?",
                             MessageBoxButton.OKCancel) == MessageBoxResult.OK)
             {
-                List<PodcastEpisodeModel> episodes = m_podcastSqlModel.episodesForSubscription(m_subscription);
-                foreach (PodcastEpisodeModel episode in episodes)
+                List<PodcastEpisodeModel> episodes = null;
+                using (var db = new PodcastSqlModel())
                 {
-                    if (episode.SavedPlayPos > 0)
+                    episodes = db.episodesForSubscription(m_subscription);
+                    foreach (PodcastEpisodeModel episode in episodes)
                     {
-                        episode.markAsListened();
+                        if (episode.SavedPlayPos > 0)
+                        {
+                            episode.markAsListened();
+                        }
                     }
+                    db.SubmitChanges();
                 }
-                m_podcastSqlModel.SubmitChanges();
+
             }
         }
 
@@ -148,15 +158,19 @@ namespace Podcatcher.Views
                     "Delete?",
                     MessageBoxButton.OKCancel) == MessageBoxResult.OK)                
             {
-                List<PodcastEpisodeModel> episodes = m_podcastSqlModel.episodesForSubscription(m_subscription);
-                foreach (PodcastEpisodeModel episode in episodes)
+                List<PodcastEpisodeModel> episodes = null;
+                using (var db = new PodcastSqlModel())
                 {
-                    if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
+                    episodes = db.episodesForSubscription(m_subscription);
+                    foreach (PodcastEpisodeModel episode in episodes)
                     {
-                        episode.deleteDownloadedEpisode();
+                        if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
+                        {
+                            episode.deleteDownloadedEpisode();
+                        }
                     }
+                    db.SubmitChanges();
                 }
-                m_podcastSqlModel.SubmitChanges();
             }
         }
     }

@@ -44,7 +44,6 @@ namespace Podcatcher
         private const int PODCAST_PLAYER_PIVOR_INDEX = 2;
         private const int TRIAL_SUBSCRIPTION_LIMIT   = 2;
         
-        private PodcastSqlModel m_podcastsModel = PodcastSqlModel.getInstance();
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
         private PodcastPlayerControl m_playerControl;
@@ -53,6 +52,7 @@ namespace Podcatcher
         public MainView()
         {
             InitializeComponent();
+            DataContext = App.mainViewModels;
 
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
@@ -73,7 +73,7 @@ namespace Podcatcher
             m_playerControl.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
 
             // Hook to SQL events.
-            PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
+            // TODO: PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
 
             handleShowReviewPopup();
         }
@@ -121,11 +121,9 @@ namespace Podcatcher
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            ObservableCollection<PodcastEpisodeModel> playHistory = m_podcastsModel.PlayHistoryListProperty;
+            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
 
             // Hook data contextes.
-            DataContext = null;
-            DataContext = m_podcastsModel;
             this.PlayHistoryList.ItemsSource = playHistory;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
@@ -177,7 +175,7 @@ namespace Podcatcher
             bool allowAddSubscription = true;
             if (App.IsTrial)
             {
-                if (m_podcastsModel.PodcastSubscriptions.Count >= TRIAL_SUBSCRIPTION_LIMIT)
+                if (App.mainViewModels.PodcastSubscriptions.Count >= TRIAL_SUBSCRIPTION_LIMIT)
                 {
                     allowAddSubscription = false;
                 }
@@ -255,13 +253,16 @@ namespace Podcatcher
         private void ExportSubscriptionsMenuItem_Click(object sender, EventArgs e)
         {
             String exportNotificationText = "";
-            if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive) 
+            using (var db = new PodcastSqlModel())
             {
-                exportNotificationText = "This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?";
-            }
-            else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
-            {
-                exportNotificationText = "This will export your podcast subscriptions information in OPML format via email. Do you want to continue?";
+                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                {
+                    exportNotificationText = "This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?";
+                }
+                else if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+                {
+                    exportNotificationText = "This will export your podcast subscriptions information in OPML format via email. Do you want to continue?";
+                }
             }
 
             if (MessageBox.Show(exportNotificationText,

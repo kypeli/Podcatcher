@@ -48,18 +48,21 @@ namespace Podcatcher.Views
             try
             {
                 int podcastEpisodeId = int.Parse(NavigationContext.QueryString["episodeId"]);
-                m_podcastEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(podcastEpisodeId);
-                if (m_podcastEpisode != null)
+                using (var db = new PodcastSqlModel())
                 {
-                    this.DataContext = m_podcastEpisode;
-                    if (m_podcastEpisode.isPlayable() && String.IsNullOrEmpty(m_podcastEpisode.EpisodeFile))
+                    m_podcastEpisode = db.episodeForEpisodeId(podcastEpisodeId);
+                    if (m_podcastEpisode != null)
                     {
-                        this.DownloadButton.Visibility = System.Windows.Visibility.Visible;
+                        this.DataContext = m_podcastEpisode;
+                        if (m_podcastEpisode.isPlayable() && String.IsNullOrEmpty(m_podcastEpisode.EpisodeFile))
+                        {
+                            this.DownloadButton.Visibility = System.Windows.Visibility.Visible;
+                        }
                     }
-                }
-                else
-                {
-                    Debug.WriteLine("Episode model is null. Cannot show description.");
+                    else
+                    {
+                        Debug.WriteLine("Episode model is null. Cannot show description.");
+                    }
                 }
             }
             catch (Exception e)

@@ -50,7 +50,6 @@ namespace Podcatcher.Views
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
 
-            m_settings = PodcastSqlModel.getInstance().settings();
             this.DataContext = m_settings;
             this.DeleteEpisodeThreshold.Value = m_settings.ListenedThreashold;
             this.DeleteThresholdPercent.Text = String.Format("{0} %", this.DeleteEpisodeThreshold.Value.ToString());
@@ -58,7 +57,10 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
         {
-            PodcastSqlModel.getInstance().SubmitChanges();
+            using (var db = new PodcastSqlModel()) 
+            {
+                db.SubmitChanges();
+            }
         }
         
         private void DeleteEpisodeThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -135,7 +137,12 @@ namespace Podcatcher.Views
                 return;
             }
 
-            List<PodcastEpisodeModel> episodes = PodcastSqlModel.getInstance().allEpisodes();
+            List<PodcastEpisodeModel> episodes = null;
+            using (var db = new PodcastSqlModel())
+            {
+                episodes = db.allEpisodes();
+            }
+
             foreach (PodcastEpisodeModel episode in episodes)
             {
                 episode.deleteDownloadedEpisode();

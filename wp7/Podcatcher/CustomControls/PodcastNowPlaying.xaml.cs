@@ -47,7 +47,11 @@ namespace Podcatcher
             if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                m_playingEpisode = PodcastSqlModel.getInstance().episodeForEpisodeId(episodeId);
+                using (var db = new PodcastSqlModel())
+                {
+                    m_playingEpisode = db.episodeForEpisodeId(episodeId);
+                }
+
                 if (m_playingEpisode != null)
                 {
                     this.Visibility = Visibility.Visible;

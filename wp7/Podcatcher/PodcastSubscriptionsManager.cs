@@ -195,7 +195,12 @@ namespace Podcatcher
         public void deleteSubscription(PodcastSubscriptionModel podcastSubscriptionModel)
         {
             podcastSubscriptionModel.cleanupForDeletion();
-            m_podcastsSqlModel.deleteSubscription(podcastSubscriptionModel);
+            using (var db = new PodcastSqlModel())
+            {
+                db.deleteSubscription(podcastSubscriptionModel);
+            }
+
+            App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
         }
 
         public void refreshSubscriptions()
@@ -203,7 +208,7 @@ namespace Podcatcher
             stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.StartedRefreshing;
             OnPodcastSubscriptionsChanged(this, stateChangedArgs);
 
-            m_subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+            m_subscriptions = new MainViewModels().PodcastSubscriptions;
             refreshNextSubscription();
         }
 
@@ -240,7 +245,7 @@ namespace Podcatcher
 
         public void exportSubscriptions()
         {
-            List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+            List<PodcastSubscriptionModel> subscriptions = new MainViewModels().PodcastSubscriptions;
             if (subscriptions.Count == 0)
             {
                 MessageBox.Show("No subscriptions to export.");
@@ -248,27 +253,29 @@ namespace Podcatcher
             }
 
 
-            if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+            using (var db = new PodcastSqlModel())
             {
-                if (liveConnect == null)
+                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
                 {
-                    loginUserToSkyDrive();
+                    if (liveConnect == null)
+                    {
+                        loginUserToSkyDrive();
+                    }
+                    else
+                    {
+                        DoOPMLExport();
+                    }
                 }
-                else
+                else if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
                 {
                     DoOPMLExport();
                 }
-            }
-            else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
-            {
-                DoOPMLExport();
             }
         }
 
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
-        private PodcastSqlModel m_podcastsSqlModel            = null;
         private Random m_random                               = null;
         private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
         private List<PodcastSubscriptionModel> m_subscriptions = null;
@@ -277,7 +284,6 @@ namespace Podcatcher
 
         private PodcastSubscriptionsManager()
         {
-            m_podcastsSqlModel = PodcastSqlModel.getInstance();
             m_random = new Random();
 
             // Hook a callback method to the signal that we emit when the subscription has been added.
@@ -340,8 +346,14 @@ namespace Podcatcher
             AddSubscriptionOptions options = e.UserState as AddSubscriptionOptions;
             string rssUrl = options.rssUrl;
             bool importingFromGpodder = options.isImportingFromGpodder;
+            bool isPodcastInDB = false;
 
-            if (m_podcastsSqlModel.isPodcastInDB(rssUrl))
+            using (var db = new PodcastSqlModel())
+            {
+                isPodcastInDB = db.isPodcastInDB(rssUrl);
+            }
+
+            if (isPodcastInDB)
             {
                 if (!importingFromGpodder)
                 {
@@ -373,7 +385,10 @@ namespace Podcatcher
                 podcastModel.Password = options.password;
             }
 
-            m_podcastsSqlModel.addSubscription(podcastModel);
+            using (var db = new PodcastSqlModel())
+            {
+                db.addSubscription(podcastModel);
+            }
 
             podcastModel.fetchChannelLogo();
 
@@ -473,10 +488,7 @@ namespace Podcatcher
         {
             PodcastSubscriptionModel subscription = args.Argument as PodcastSubscriptionModel;
             Debug.WriteLine("Starting refreshing episodes for " + subscription.PodcastName);
-            lock (subscription)
-            {
-                subscription.EpisodesManager.updatePodcastEpisodes();
-            }
+            subscription.EpisodesManager.updatePodcastEpisodes();
 
             Debug.WriteLine("Done.");
         }
@@ -500,6 +512,8 @@ namespace Podcatcher
                     OnGPodderImportFinished(this, null);
                 }
             }
+
+            App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
         }
 
         private void PodcastSubscriptionFailedWithMessage(string message)
@@ -647,7 +661,7 @@ namespace Podcatcher
                     /** Body */
                     writer.WriteStartElement("body");
                     // Each outline
-                    List<PodcastSubscriptionModel> subscriptions = m_podcastsSqlModel.PodcastSubscriptions;
+                    List<PodcastSubscriptionModel> subscriptions = new MainViewModels().PodcastSubscriptions;
                     foreach (PodcastSubscriptionModel s in subscriptions)
                     {
                         writer.WriteStartElement("outline");
@@ -667,17 +681,20 @@ namespace Podcatcher
 
                 isoStream.Seek(0, SeekOrigin.Begin);
 
-                if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                using (var db = new PodcastSqlModel())
                 {
-                    SubscriptionManagerArgs args = new SubscriptionManagerArgs();
-                    args.state = SubscriptionsState.StartedSkydriveExport;
-                    OnOPMLExportToSkydriveChanged(this, args);
+                    if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                    {
+                        SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                        args.state = SubscriptionsState.StartedSkydriveExport;
+                        OnOPMLExportToSkydriveChanged(this, args);
 
-                    exportToSkyDrive(opmlExportFileName, isoStream);
-                }
-                else if (PodcastSqlModel.getInstance().settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
-                {
-                    exportViaEmail(isoStream);
+                        exportToSkyDrive(opmlExportFileName, isoStream);
+                    }
+                    else if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
+                    {
+                        exportViaEmail(isoStream);
+                    }
                 }
             }
         }
