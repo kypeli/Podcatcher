@@ -60,9 +60,24 @@ namespace Podcatcher.Views
             using (var db = new PodcastSqlModel())
             {
                 m_subscription = db.subscriptionModelForIndex(podcastId);
-            }
+                this.DataContext = m_subscription;
+                this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
 
-            this.DataContext = m_subscription;
+                // Update playing episode in this subscription, if we have one.
+                if (App.currentlyPlayingEpisodeId > 0)
+                {
+                    PodcastEpisodeModel playingEpisode = m_subscription.Episodes.Where(ep => ep.EpisodeId == App.currentlyPlayingEpisodeId).FirstOrDefault();
+                    if (playingEpisode != null)
+                    {
+                        playingEpisode.setPlaying();
+                    }
+                }
+
+                if (db.settings().IsAutoDelete)
+                {
+                    db.startOldEpisodeCleanup(m_subscription);
+                }
+            }
 
             m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
             m_subscription.PodcastCleanFinished -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
@@ -93,15 +108,6 @@ namespace Podcatcher.Views
                 }
 
                 PodcastSubscriptionsManager.getInstance().refreshSubscription(m_subscription);
-            }
-
-            // Delete listened episodes.
-            using (var db = new PodcastSqlModel())
-            {
-                if (db.settings().IsAutoDelete)
-                {
-                    db.startOldEpisodeCleanup(m_subscription);
-                }
             }
 
             // Clean old episodes from the listing.

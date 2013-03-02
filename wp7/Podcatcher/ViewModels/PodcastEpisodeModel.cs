@@ -32,6 +32,8 @@ using System.IO.IsolatedStorage;
 using Microsoft.Phone.BackgroundTransfer;
 using System.Windows;
 using Coding4Fun.Phone.Controls;
+using Microsoft.Phone.BackgroundAudio;
+using System.Windows.Threading;
 
 namespace Podcatcher.ViewModels
 {
@@ -302,10 +304,16 @@ namespace Podcatcher.ViewModels
 
             set
             {
+                if (m_episodePlayState == value)
+                {
+                    return;
+                }
+
                 m_episodePlayState = value;
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("EpisodeStatusText");
+                
                 if (PodcastSubscription != null)
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
@@ -371,15 +379,25 @@ namespace Podcatcher.ViewModels
 
         // I should do this in a Converter from XAML, but as this is dependant of multiple properties,
         // it's just easier to do it this way. 
+        private Visibility m_ProgressBarIsVisible;
         public Visibility ProgressBarIsVisible
         {
             get
             {
-                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading 
-                        || ((ProgressBarValue > 0) && EpisodePlayState != EpisodePlayStateEnum.Listened) ? Visibility.Visible : Visibility.Collapsed);
+/*                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading 
+                        || ((ProgressBarValue > 0) && EpisodePlayState != EpisodePlayStateEnum.Listened) ? Visibility.Visible : Visibility.Collapsed);'
+ */
+                return m_ProgressBarIsVisible;
             }
 
-            private set { }
+            private set 
+            {
+                if (value != m_ProgressBarIsVisible)
+                {
+                    m_ProgressBarIsVisible = value;
+                    NotifyPropertyChanged("ProgressBarIsVisible");
+                }
+            }
         }
 
         // And this too.
@@ -477,8 +495,6 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                DebugOutputEpisode();
-
                 if (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
                     || m_episodeDownloadState == EpisodeDownloadStateEnum.Queued)
                 {
@@ -494,9 +510,7 @@ namespace Podcatcher.ViewModels
                     return (((double)SavedPlayPos / (double)TotalLengthTicks) * (double)100);
                 }
 
-
                 return 0.0;
-
             }
 
             set 
@@ -504,10 +518,8 @@ namespace Podcatcher.ViewModels
                 if (m_episodePlayState == EpisodePlayStateEnum.Playing 
                     || m_episodePlayState == EpisodePlayStateEnum.Streaming)
                 {
-                    DebugOutputEpisode();
-
+                    NotifyPropertyChanging("ProgressBarValue");
                     m_progressBarValue = value;
-                    NotifyPropertyChanged("EpisodesPublishedDescending");
                     NotifyPropertyChanged("ProgressBarValue");
                 }
             }
@@ -637,6 +649,9 @@ namespace Podcatcher.ViewModels
 
         /************************************* Private implementations *******************************/
         #region private
+        private BackgroundAudioPlayer m_player = null;
+        private static DispatcherTimer m_screenUpdateTimer = null;
+
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
         {
             BackgroundWorker bw = new BackgroundWorker();
@@ -683,11 +698,81 @@ namespace Podcatcher.ViewModels
             m_downloadStream = null;
         }
 
+        private void episodeStartedPlaying()
+        {
+            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
+
+            m_screenUpdateTimer = new DispatcherTimer();
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
+            m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
+            m_screenUpdateTimer.Start();
+        }
+
+        private void episodeStoppedPlaying()
+        {
+            m_screenUpdateTimer.Stop();
+            m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
+            m_screenUpdateTimer = null;
+
+            setNoPlaying();
+        }
+
+        private void episodePlayback_Tick(object sender, EventArgs e)
+        {
+            ProgressBarValue = PodcastPlayerControl.getEpisodePlayPosition();
+        }
+
+        private void PlayStateChanged(object sender, EventArgs e)
+        {
+            if (BackgroundAudioPlayer.Instance.Error != null)
+            {
+                Debug.WriteLine("PlayStateChanged: Podcast player is no longer available.");
+                return;
+            }
+
+            switch (BackgroundAudioPlayer.Instance.PlayerState)
+            {
+                case PlayState.Playing:
+                    Debug.WriteLine("Episode: Playing.");
+                    if (TotalLengthTicks == 0)
+                    {
+                        TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+                    }
+                    break;
+
+                case PlayState.Paused:
+                    Debug.WriteLine("Episode: Paused.");
+                    episodeStoppedPlaying();
+                    break;
+
+                case PlayState.Stopped:
+                    Debug.WriteLine("Episode: Stopped.");
+                    episodeStoppedPlaying();
+                    break;
+                
+                case PlayState.Shutdown:
+                    Debug.WriteLine("Episode: Shutdown.");
+                    episodeStoppedPlaying();
+                    break;
+            }
+        }
+
         #endregion
 
         #region propertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged; 
+        public event PropertyChangingEventHandler PropertyChanging;
         private Stream m_downloadStream;
+        private void NotifyPropertyChanging(String propertyName)
+        {
+            PropertyChangingEventHandler handler = PropertyChanging;
+            if (null != handler)
+            {
+                PropertyChangingEventArgs args = new PropertyChangingEventArgs(propertyName);
+                handler(this, args);
+            }
+        }
+
         private void NotifyPropertyChanged(String propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -698,5 +783,20 @@ namespace Podcatcher.ViewModels
         }
         #endregion
 
+
+        internal void setPlaying()
+        {
+            EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
+                                                                   : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+            episodeStartedPlaying();
+            ProgressBarIsVisible = Visibility.Visible;
+        }
+
+        internal void setNoPlaying()
+        {
+            EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
+                                                                   : PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+            ProgressBarIsVisible = Visibility.Collapsed;
+        }
     }
 }

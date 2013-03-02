@@ -378,17 +378,18 @@ namespace Podcatcher.ViewModels
 /*                var query = from PodcastEpisodeModel episode in Episodes
                             orderby episode.EpisodePublished descending
                             select episode;
-                */
+                
                 using (var db = new PodcastSqlModel())
                 {
-                    var query = from PodcastEpisodeModel episode in db.Episodes
+ */ 
+                    var query = from PodcastEpisodeModel episode in Episodes
                                 where episode.PodcastId == PodcastId
                                 orderby episode.EpisodePublished descending
                                 select episode;
 
                     return new List<PodcastEpisodeModel>(query);
                     // return db.episodesForSubscription(this);
-                }
+//                }
             }
 
             set

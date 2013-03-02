@@ -205,7 +205,7 @@ namespace Podcatcher
 
         private static PodcastPlayerControl m_instance = null;
         private static PodcastEpisodeModel m_currentEpisode = null;
-        private bool settingSliderFromPlay;
+        private static bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
         private static DispatcherTimer m_screenUpdateTimer = null;
 
@@ -244,6 +244,7 @@ namespace Podcatcher
                 using (var db = new PodcastSqlModel())
                 {
                     m_currentEpisode = db.episodeForEpisodeId(episodeId);
+                    App.currentlyPlayingEpisodeId = episodeId;
                 }
 
                 if (m_currentEpisode == null)
@@ -252,6 +253,7 @@ namespace Podcatcher
                     m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     m_appSettings.Save();
                     showNoPlayerLayout();
+                    App.currentlyPlayingEpisodeId = -1;
                     return;
                 }
 
@@ -301,10 +303,7 @@ namespace Podcatcher
                     switch (BackgroundAudioPlayer.Instance.PlayerState)
                     {
                         case PlayState.Playing:
-                            PodcastEpisodeModel.EpisodePlayStateEnum state;
-                            state = String.IsNullOrEmpty(episode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming 
-                                                                              : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
-                            episode.EpisodePlayState = state;
+                            episode.setPlaying();
                             break;
                         case PlayState.Paused:
                             episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
@@ -331,6 +330,7 @@ namespace Podcatcher
 
                     appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     appSettings.Save();
+                    App.currentlyPlayingEpisodeId = -1;
 
                     using (var db = new PodcastSqlModel())
                     {
@@ -452,6 +452,8 @@ namespace Podcatcher
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
+
+                App.currentlyPlayingEpisodeId = m_currentEpisode.EpisodeId;
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
                 // then for some reason it's not honored. 
@@ -702,6 +704,8 @@ namespace Podcatcher
                 rootFrame.GoBack();
             }
 
+            App.currentlyPlayingEpisodeId = -1;
+
             showNoPlayerLayout();
         }
 
@@ -771,8 +775,10 @@ namespace Podcatcher
                 return;
             }
 
+            this.PositionSlider.Value = 0;
             TimeSpan position = TimeSpan.Zero;
-            TimeSpan duration = TimeSpan.Zero;
+
+            settingSliderFromPlay = true;
 
             try
             {
@@ -782,16 +788,11 @@ namespace Podcatcher
                     return;
                 }
 
-                duration = BackgroundAudioPlayer.Instance.Track.Duration;
                 position = BackgroundAudioPlayer.Instance.Position;
-
-                if (m_currentEpisode.TotalLengthTicks == 0)
-                {
-                    m_currentEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
-                }
 
                 this.CurrentPositionText.Text = position.ToString("hh\\:mm\\:ss");
                 this.TotalDurationText.Text = BackgroundAudioPlayer.Instance.Track.Duration.ToString("hh\\:mm\\:ss");
+                this.PositionSlider.Value = getEpisodePlayPosition();
             }
             catch (InvalidOperationException ioe)
             {
@@ -806,19 +807,37 @@ namespace Podcatcher
                 return;
             }
 
-            settingSliderFromPlay = true;
-            if (duration.Ticks > 0)
+            settingSliderFromPlay = false;
+        }
+
+        public static double getEpisodePlayPosition() 
+        {
+            TimeSpan position = TimeSpan.Zero;
+            TimeSpan duration = TimeSpan.Zero;
+
+            try
             {
-                double playPosition = (double)position.Ticks / duration.Ticks;
-                this.PositionSlider.Value = playPosition;
-                m_currentEpisode.ProgressBarValue = playPosition;
+                if (BackgroundAudioPlayer.Instance.Track == null
+                    || BackgroundAudioPlayer.Instance.Position == null)
+                {
+                    return 0.0;
+                }
+
+                duration = BackgroundAudioPlayer.Instance.Track.Duration;
+                position = BackgroundAudioPlayer.Instance.Position;
             }
-            else
+            catch (InvalidOperationException ioe)
             {
-                this.PositionSlider.Value = 0;
+                Debug.WriteLine("Error when updating player: " + ioe.Message);
+                return 0.0;
             }
 
-            settingSliderFromPlay = false;
+            if (duration.Ticks > 0)
+            {
+                return (double)((double)position.Ticks / (double)duration.Ticks);
+            }
+            
+            return 0.0;
         }
 
         private void PositionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

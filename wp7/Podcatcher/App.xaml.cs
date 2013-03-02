@@ -78,6 +78,8 @@ namespace Podcatcher
 
         public static MainViewModels mainViewModels = new MainViewModels();
 
+        public static int currentlyPlayingEpisodeId = -1;
+
         public static bool IsTrial
         {
             get
@@ -384,7 +386,6 @@ namespace Podcatcher
         }
 
         #endregion
-
 
     }
 }
