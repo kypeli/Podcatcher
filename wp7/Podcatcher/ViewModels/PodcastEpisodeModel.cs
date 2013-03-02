@@ -227,7 +227,7 @@ namespace Podcatcher.ViewModels
                 {
                     m_savedPlayPos = value;
 
-                    NotifyPropertyChanged("ProgressBarIsVisible");
+                    NotifyPropertyChanged("ProgressBarValue");
                 }
             }
         }
@@ -398,29 +398,6 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        // I should do this in a Converter from XAML, but as this is dependant of multiple properties,
-        // it's just easier to do it this way. 
-        private Visibility m_ProgressBarIsVisible;
-        public Visibility ProgressBarIsVisible
-        {
-            get
-            {
-                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
-                        || isPlaying() ? Visibility.Visible : Visibility.Collapsed);
- 
-//                return m_ProgressBarIsVisible;
-            }
-
-            private set 
-            {
-                if (value != m_ProgressBarIsVisible)
-                {
-                    m_ProgressBarIsVisible = value;
-                    NotifyPropertyChanged("ProgressBarIsVisible");
-                }
-            }
-        }
-
         // And this too.
         private Visibility m_shouldShowDownloadButton = Visibility.Collapsed;
         public Visibility ShouldShowDownloadButton
@@ -511,6 +488,32 @@ namespace Podcatcher.ViewModels
             return playableMimeType(m_episodeFileMimeType);
         }
 
+        // I should do this in a Converter from XAML, but as this is dependant of multiple properties,
+        // it's just easier to do it this way. 
+        private Visibility m_ProgressBarIsVisible;
+        public Visibility ProgressBarIsVisible
+        {
+            get
+            {
+                Visibility visible = (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
+                        || isPlaying() 
+                        || SavedPlayPos > 0) ? Visibility.Visible : Visibility.Collapsed;
+
+                return visible;
+
+                //                return m_ProgressBarIsVisible;
+            }
+
+            private set
+            {
+                if (value != m_ProgressBarIsVisible)
+                {
+                    m_ProgressBarIsVisible = value;
+                    NotifyPropertyChanged("ProgressBarIsVisible");
+                }
+            }
+        }
+
         private double m_progressBarValue;
         public double ProgressBarValue
         {
@@ -539,7 +542,6 @@ namespace Podcatcher.ViewModels
                 if (m_episodePlayState == EpisodePlayStateEnum.Playing 
                     || m_episodePlayState == EpisodePlayStateEnum.Streaming)
                 {
-                    NotifyPropertyChanging("ProgressBarValue");
                     m_progressBarValue = value;
                     NotifyPropertyChanged("ProgressBarValue");
                 }
@@ -758,24 +760,35 @@ namespace Podcatcher.ViewModels
                     if (TotalLengthTicks == 0)
                     {
                         TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+                        using (var db = new PodcastSqlModel())
+                        {
+                            PodcastEpisodeModel episode = db.episodeForEpisodeId(EpisodeId);
+                            episode.TotalLengthTicks = TotalLengthTicks;
+                            db.SubmitChanges();
+                        }
                     }
                     break;
 
                 case PlayState.Paused:
                     Debug.WriteLine("Episode: Paused.");
+                    SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
                     episodeStoppedPlaying();
                     break;
 
                 case PlayState.Stopped:
                     Debug.WriteLine("Episode: Stopped.");
+                    SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
                     episodeStoppedPlaying();
                     break;
                 
                 case PlayState.Shutdown:
                     Debug.WriteLine("Episode: Shutdown.");
+                    SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
                     episodeStoppedPlaying();
                     break;
             }
+
+
         }
 
         #endregion

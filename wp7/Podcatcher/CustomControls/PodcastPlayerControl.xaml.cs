@@ -481,7 +481,6 @@ namespace Podcatcher
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
                     m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
-                    updateEpisodeToDB(m_currentEpisode);
                     setupUIForEpisodePlaying();
                     break;
 
@@ -490,7 +489,6 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is paused...");
                     saveEpisodePlayPosition(m_currentEpisode);
                     setupUIForEpisodePaused();
-                    updateEpisodeToDB(m_currentEpisode);
                     break;
 
                 case PlayState.Stopped:
@@ -546,6 +544,12 @@ namespace Podcatcher
 
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
+
+            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+            if (rootFrame.CanGoBack)
+            {
+                rootFrame.GoBack();
+            }
         }
 
         private void setupUIForEpisodePaused()
@@ -624,12 +628,6 @@ namespace Podcatcher
                     m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     m_appSettings.Save();
                 }
-            }
-
-            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
-            if (rootFrame.CanGoBack)
-            {
-                rootFrame.GoBack();
             }
 
             App.currentlyPlayingEpisodeId = -1;
@@ -814,6 +812,7 @@ namespace Podcatcher
             {
                 PodcastEpisodeModel e = db.Episodes.Single(ep => ep.EpisodeId == episode.EpisodeId);  // db.episodeForEpisodeId(episode.EpisodeId);
                 e.SavedPlayPos = episode.SavedPlayPos;
+                // e.TotalLengthTicks = episode.TotalLengthTicks;
 
                 db.SubmitChanges();
             }
