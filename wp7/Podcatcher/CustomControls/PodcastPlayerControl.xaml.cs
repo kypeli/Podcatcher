@@ -282,62 +282,22 @@ namespace Podcatcher
             if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                PodcastEpisodeModel episode = null;
-                using (var db = new PodcastSqlModel())
+
+                if (BackgroundAudioPlayer.Instance.Track == null)
                 {
-                    episode = db.episodeForEpisodeId(episodeId);
-                }
-
-                if (BackgroundAudioPlayer.Instance.Track != null)
-                {
-                    // Podcast is playing - let's update episode with that.
-                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                    }
-                    else
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
-                    }
-
-                    switch (BackgroundAudioPlayer.Instance.PlayerState)
-                    {
-                        case PlayState.Playing:
-                            episode.setPlaying();
-                            break;
-                        case PlayState.Paused:
-                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
-                            break;
-                        default:
-                            episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
-                            break;
-                    }
-
-                }
-                else
-                {
-                    // Episode is not playing anymore. So let's clean up the state. 
-                    if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                    }
-                    else
-                    {
-                        episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
-                        episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
-                    }
-
                     appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     appSettings.Save();
                     App.currentlyPlayingEpisodeId = -1;
 
                     using (var db = new PodcastSqlModel())
                     {
-                        db.addEpisodeToPlayHistory(episode);
+                        PodcastEpisodeModel episode = db.episodeForEpisodeId(episodeId);
+                        if (episode != null)
+                        {
+                            db.addEpisodeToPlayHistory(episode);
+                        }
                     }
                 }
-
             }
         }
 
@@ -391,7 +351,6 @@ namespace Podcatcher
             if (m_currentEpisode != null)
             {
                 saveEpisodePlayPosition(m_currentEpisode);
-                saveEpisodeState(m_currentEpisode);
                 addEpisodeToPlayHistory(m_currentEpisode);
             }
 
@@ -521,14 +480,6 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    if (BackgroundAudioPlayer.Instance.Track.Source.ToString().IndexOf("http") > -1)
-                    {
-                        m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
-                    }
-                    else
-                    {
-                        m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
-                    }
                     m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
                     updateEpisodeToDB(m_currentEpisode);
                     setupUIForEpisodePlaying();
@@ -537,7 +488,6 @@ namespace Podcatcher
                 case PlayState.Paused:
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused...");
-                    m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
                     setupUIForEpisodePaused();
                     updateEpisodeToDB(m_currentEpisode);
@@ -592,32 +542,10 @@ namespace Podcatcher
         {
             saveEpisodePlayPosition(m_currentEpisode);
             addEpisodeToPlayHistory(m_currentEpisode);
-            saveEpisodeState(m_currentEpisode);
             updateEpisodeToDB(m_currentEpisode);
 
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
-        }
-
-        private void saveEpisodeState(PodcastEpisodeModel episode)
-        {
-            if (episode == null)
-            {
-                Debug.WriteLine("Warning: Trying to save NULL episode's state.");
-                return;
-            }
-
-            if (String.IsNullOrEmpty(episode.EpisodeFile) == false)
-            {
-                episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-            }
-            else
-            {
-                episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
-                episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
-            }
-
         }
 
         private void setupUIForEpisodePaused()
@@ -885,7 +813,6 @@ namespace Podcatcher
             using (var db = new PodcastSqlModel())
             {
                 PodcastEpisodeModel e = db.Episodes.Single(ep => ep.EpisodeId == episode.EpisodeId);  // db.episodeForEpisodeId(episode.EpisodeId);
-                e.EpisodePlayState = episode.EpisodePlayState;
                 e.SavedPlayPos = episode.SavedPlayPos;
 
                 db.SubmitChanges();
