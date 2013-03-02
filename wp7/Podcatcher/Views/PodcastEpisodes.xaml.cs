@@ -60,8 +60,6 @@ namespace Podcatcher.Views
             using (var db = new PodcastSqlModel())
             {
                 m_subscription = db.subscriptionModelForIndex(podcastId);
-                this.DataContext = m_subscription;
-                this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
 
                 // Update playing episode in this subscription, if we have one.
                 if (App.currentlyPlayingEpisodeId > 0)
@@ -72,6 +70,9 @@ namespace Podcatcher.Views
                         playingEpisode.setPlaying();
                     }
                 }
+
+                this.DataContext = m_subscription;
+                this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
 
                 if (db.settings().IsAutoDelete)
                 {

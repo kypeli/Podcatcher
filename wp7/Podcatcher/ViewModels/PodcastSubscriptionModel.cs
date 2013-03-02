@@ -370,26 +370,22 @@ namespace Podcatcher.ViewModels
             }
         }
 
-
+        private List<PodcastEpisodeModel> m_episodes = null;
         public List<PodcastEpisodeModel> EpisodesPublishedDescending
         {
             get
             {
-/*                var query = from PodcastEpisodeModel episode in Episodes
-                            orderby episode.EpisodePublished descending
-                            select episode;
-                
-                using (var db = new PodcastSqlModel())
+                if (m_episodes == null)
                 {
- */ 
                     var query = from PodcastEpisodeModel episode in Episodes
                                 where episode.PodcastId == PodcastId
                                 orderby episode.EpisodePublished descending
                                 select episode;
 
-                    return new List<PodcastEpisodeModel>(query);
-                    // return db.episodesForSubscription(this);
-//                }
+                    m_episodes = new List<PodcastEpisodeModel>(query);
+                }
+
+                return m_episodes;
             }
 
             set
@@ -531,7 +527,6 @@ namespace Podcatcher.ViewModels
         {
             m_podcastEpisodesManager = new PodcastEpisodesManager(this);
             m_isolatedFileStorage = IsolatedStorageFile.GetUserStoreForApplication();
-
             createLogoCacheDirs();
         }
 

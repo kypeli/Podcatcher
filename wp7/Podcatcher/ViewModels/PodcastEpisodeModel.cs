@@ -296,20 +296,28 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private EpisodePlayStateEnum m_episodePlayState;
+        private EpisodePlayStateEnum m_episodePlayState = EpisodePlayStateEnum.Idle;
         [Column(DbType = "INT DEFAULT 0 NOT NULL", UpdateCheck = UpdateCheck.Never)]
         public EpisodePlayStateEnum EpisodePlayState
         {
-            get { return m_episodePlayState; }
+            get 
+            {
+                m_episodePlayState = EpisodePlayStateEnum.Idle;
+                if (m_isPlaying)
+                {
+                    m_episodePlayState = EpisodePlayStateEnum.Playing;
+
+                    if (String.IsNullOrEmpty(EpisodeFile))
+                    {
+                        m_episodePlayState = EpisodePlayStateEnum.Streaming;
+                    }
+                }
+
+                return m_episodePlayState;
+            }
 
             set
             {
-                if (m_episodePlayState == value)
-                {
-                    return;
-                }
-
-                m_episodePlayState = value;
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("EpisodeStatusText");
@@ -319,6 +327,19 @@ namespace Podcatcher.ViewModels
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
                     PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
                 }
+
+/*                if (m_episodePlayState == value)
+                {
+                    return;
+                }
+
+                m_episodePlayState = value;
+                
+                if (PodcastSubscription != null)
+                {
+                    // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
+                    PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
+                }*/
             }
         }
 
@@ -384,10 +405,10 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-/*                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading 
-                        || ((ProgressBarValue > 0) && EpisodePlayState != EpisodePlayStateEnum.Listened) ? Visibility.Visible : Visibility.Collapsed);'
- */
-                return m_ProgressBarIsVisible;
+                return (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
+                        || isPlaying() ? Visibility.Visible : Visibility.Collapsed);
+ 
+//                return m_ProgressBarIsVisible;
             }
 
             private set 
@@ -649,7 +670,7 @@ namespace Podcatcher.ViewModels
 
         /************************************* Private implementations *******************************/
         #region private
-        private BackgroundAudioPlayer m_player = null;
+        private bool m_isPlaying = false;
         private static DispatcherTimer m_screenUpdateTimer = null;
 
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
@@ -790,6 +811,7 @@ namespace Podcatcher.ViewModels
                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             episodeStartedPlaying();
             ProgressBarIsVisible = Visibility.Visible;
+            m_isPlaying = true;
         }
 
         internal void setNoPlaying()
@@ -797,6 +819,13 @@ namespace Podcatcher.ViewModels
             EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
             ProgressBarIsVisible = Visibility.Collapsed;
+            m_isPlaying = false;
         }
+
+        private bool isPlaying()
+        {
+            return EpisodePlayState == EpisodePlayStateEnum.Playing || EpisodePlayState == EpisodePlayStateEnum.Streaming;
+        }
+
     }
 }
