@@ -477,6 +477,8 @@ namespace Podcatcher.ViewModels
         {
             get
             {
+                DebugOutputEpisode();
+
                 if (m_episodeDownloadState == EpisodeDownloadStateEnum.Downloading
                     || m_episodeDownloadState == EpisodeDownloadStateEnum.Queued)
                 {
@@ -492,7 +494,9 @@ namespace Podcatcher.ViewModels
                     return (((double)SavedPlayPos / (double)TotalLengthTicks) * (double)100);
                 }
 
+
                 return 0.0;
+
             }
 
             set 
@@ -500,10 +504,18 @@ namespace Podcatcher.ViewModels
                 if (m_episodePlayState == EpisodePlayStateEnum.Playing 
                     || m_episodePlayState == EpisodePlayStateEnum.Streaming)
                 {
+                    DebugOutputEpisode();
+
                     m_progressBarValue = value;
+                    NotifyPropertyChanged("EpisodesPublishedDescending");
                     NotifyPropertyChanged("ProgressBarValue");
                 }
             }
+        }
+
+        private void DebugOutputEpisode()
+        {
+            Debug.WriteLine("Object: " + GetHashCode() + " Episode ID: " + EpisodeId);
         }
 
         public String EpisodeStatusText

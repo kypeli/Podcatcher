@@ -490,18 +490,6 @@ namespace Podcatcher
             updateEpisodeToDB(m_currentEpisode);
         }
 
-        private void updateEpisodeToDB(PodcastEpisodeModel episode)
-        {
-            using (var db = new PodcastSqlModel())
-            {
-                PodcastEpisodeModel e = db.episodeForEpisodeId(episode.EpisodeId);
-                e.EpisodePlayState = episode.EpisodePlayState;
-                e.SavedPlayPos = episode.SavedPlayPos;
-
-                db.SubmitChanges();
-            }
-        }
-
         private void askForContinueEpisodePlaying(bool streaming)
         {
             MessageBoxButton messageButtons = MessageBoxButton.OKCancel;
@@ -540,6 +528,7 @@ namespace Podcatcher
                         m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
                     }
                     m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
+                    updateEpisodeToDB(m_currentEpisode);
                     setupUIForEpisodePlaying();
                     break;
 
@@ -549,6 +538,7 @@ namespace Podcatcher
                     m_currentEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
                     saveEpisodePlayPosition(m_currentEpisode);
                     setupUIForEpisodePaused();
+                    updateEpisodeToDB(m_currentEpisode);
                     break;
 
                 case PlayState.Stopped:
@@ -561,7 +551,6 @@ namespace Podcatcher
                     playbackStopped();
                     Debug.WriteLine("Podcast player shut down.");
                     break;
-
             }
         }
 
@@ -602,6 +591,7 @@ namespace Podcatcher
             saveEpisodePlayPosition(m_currentEpisode);
             addEpisodeToPlayHistory(m_currentEpisode);
             saveEpisodeState(m_currentEpisode);
+            updateEpisodeToDB(m_currentEpisode);
 
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
@@ -626,7 +616,6 @@ namespace Podcatcher
                 episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
             }
 
-            updateEpisodeToDB(episode);
         }
 
         private void setupUIForEpisodePaused()
@@ -700,8 +689,11 @@ namespace Podcatcher
 
             lock (m_appSettings)
             {
-                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                m_appSettings.Save();
+                if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID)) 
+                {
+                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
+                    m_appSettings.Save();
+                }
             }
 
             PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
@@ -868,6 +860,19 @@ namespace Podcatcher
                 db.addEpisodeToPlayHistory(episode);
             }
         }
+
+        private void updateEpisodeToDB(PodcastEpisodeModel episode)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel e = db.Episodes.Single(ep => ep.EpisodeId == episode.EpisodeId);  // db.episodeForEpisodeId(episode.EpisodeId);
+                e.EpisodePlayState = episode.EpisodePlayState;
+                e.SavedPlayPos = episode.SavedPlayPos;
+
+                db.SubmitChanges();
+            }
+        }
+
 
     }
 }

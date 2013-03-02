@@ -381,7 +381,13 @@ namespace Podcatcher.ViewModels
                 */
                 using (var db = new PodcastSqlModel())
                 {
-                    return db.episodesForSubscription(this);
+                    var query = from PodcastEpisodeModel episode in db.Episodes
+                                where episode.PodcastId == PodcastId
+                                orderby episode.EpisodePublished descending
+                                select episode;
+
+                    return new List<PodcastEpisodeModel>(query);
+                    // return db.episodesForSubscription(this);
                 }
             }
 
@@ -590,52 +596,77 @@ namespace Podcatcher.ViewModels
             bool deleteDownloads = SubscriptionIsDeleteEpisodes;
             int keepDownloads = 0;
 
-            if (!deleteDownloads)
+            using (var db = new PodcastSqlModel())
             {
-                keepDownloads = (from episode in Episodes
-                                 where String.IsNullOrEmpty(episode.EpisodeFile) == false
-                                 select episode).ToList().Count;
+                PodcastSubscriptionModel e = db.subscriptionModelForIndex(PodcastId);
+
+                if (!deleteDownloads)
+                {
+                    keepDownloads = (from episode in e.Episodes
+                                     where (episode.EpisodeFile != null && episode.EpisodeFile != "")
+                                     select episode).ToList().Count;
+                }                
+
+                if (keepEpisodes + keepDownloads >= e.Episodes.Count)
+                {
+                    return;
+                }
+
+                PodcastCleanStarted();
+
+                if (deleteDownloads)
+                {
+                    query = (from episode in e.Episodes
+                             orderby episode.EpisodePublished descending
+                             select episode).Skip(keepEpisodes);
+                }
+                else
+                {
+                    query = (from episode in e.Episodes
+                             orderby episode.EpisodePublished descending
+                             where (episode.EpisodeFile == null && episode.EpisodeFile != "")
+                             select episode).Skip(keepEpisodes);
+                }
+
+ /*               List<PodcastEpisodeModel> episodesToClean = query.ToList();
+                foreach (PodcastEpisodeModel ep in episodesToClean)
+                {
+                    ep.deleteDownloadedEpisode();
+                }
+
+                db.deleteEpisodesPerQuery(query);
+   */         
             }
 
-            if (keepEpisodes + keepDownloads >= Episodes.Count)
-            {
-                return;
-            }
-
-            PodcastCleanStarted();
-
-            if (deleteDownloads)
-            {
-                query = (from episode in Episodes
-                         orderby episode.EpisodePublished descending
-                         select episode).Skip(keepEpisodes);
-            }
-            else
-            {
-                query = (from episode in Episodes
-                         orderby episode.EpisodePublished descending
-                         where (String.IsNullOrEmpty(episode.EpisodeFile))
-                         select episode).Skip(keepEpisodes);
-            }
-
+/*            PodcastCleanFinished();
+            NotifyPropertyChanged("EpisodesText");
+            NotifyPropertyChanged("EpisodesPublishedDescending");
+            */
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(workerCleanSubscriptions);
             worker.RunWorkerAsync(query);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerCleanSubscriptionsCompleted);
+ 
         }
 
         private void workerCleanSubscriptions(object sender, DoWorkEventArgs args)
         {
             IEnumerable<PodcastEpisodeModel> query = args.Argument as IEnumerable<PodcastEpisodeModel>;
             List<PodcastEpisodeModel> episodesToClean = query.ToList();
-            foreach (PodcastEpisodeModel e in episodesToClean)
-            {
-                e.deleteDownloadedEpisode();
-            }
+            PodcastEpisodeModel episode = null;
 
             using (var db = new PodcastSqlModel()) 
             {
-                db.deleteEpisodesPerQuery(query);
+                PodcastSubscriptionModel s = db.subscriptionModelForIndex(PodcastId);
+                foreach (PodcastEpisodeModel e in episodesToClean)
+                {
+                    episode = db.episodeForEpisodeId(e.EpisodeId);
+                    episode.deleteDownloadedEpisode();
+                    db.Episodes.DeleteOnSubmit(episode);
+                }
+
+                db.SubmitChanges();
+//                db.deleteEpisodesPerQuery(query);
             }
         }
 

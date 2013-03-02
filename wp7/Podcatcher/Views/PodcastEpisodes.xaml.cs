@@ -38,7 +38,6 @@ namespace Podcatcher.Views
 {
     public partial class PodcastEpisodes : PhoneApplicationPage
     {
-
         /************************************* Public implementations *******************************/
         public PodcastEpisodes()
         {

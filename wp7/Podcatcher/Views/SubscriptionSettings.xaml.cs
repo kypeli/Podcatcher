@@ -35,6 +35,8 @@ namespace Podcatcher.Views
 {
     public partial class SubscriptionSettings : PhoneApplicationPage
     {
+        private int m_podcastId = 0;
+
         public SubscriptionSettings()
         {
             InitializeComponent();
@@ -42,15 +44,24 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
+            m_podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             PodcastSubscriptionModel subscription = null;
             using (var db = new PodcastSqlModel()) 
             {
-                subscription = db.subscriptionModelForIndex(podcastId);
+                subscription = db.subscriptionModelForIndex(m_podcastId);
+                this.DataContext = subscription;
             }
-
-            this.DataContext = subscription;
         }
 
+        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            PodcastSubscriptionModel subscription = null;
+            using (var db = new PodcastSqlModel())
+            {
+                subscription = db.subscriptionModelForIndex(m_podcastId);
+                subscription.SubscriptionSelectedKeepNumEpisodesIndex = (this.DataContext as PodcastSubscriptionModel).SubscriptionSelectedKeepNumEpisodesIndex;
+                db.SubmitChanges();
+            }
+        }
     }
 }
