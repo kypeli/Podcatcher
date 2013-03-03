@@ -313,7 +313,7 @@ namespace Podcatcher
         public SettingsModel settings()
         {
             SettingsModel settingsModel = (from SettingsModel s in Settings
-                                     select s).FirstOrDefault();
+                                           select s).FirstOrDefault();
 
             if (settingsModel == null)
             {
@@ -403,27 +403,16 @@ namespace Podcatcher
             SubmitChanges();
         }
 
-        internal void startOldEpisodeCleanup(PodcastSubscriptionModel podcastSubscriptionModel)
+        internal void cleanListenedEpisodes(PodcastSubscriptionModel podcastSubscriptionModel)
         {
-/*            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(oldEpisodeCleanup);
-            worker.RunWorkerAsync(podcastSubscriptionModel);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(oldEpisodeCleanupCompleted);
- **/ 
-        }
-
-        private void oldEpisodeCleanup(object sender, DoWorkEventArgs args)
-        {
-            PodcastSubscriptionModel subscription = args.Argument as PodcastSubscriptionModel;
             float listenedEpisodeThreshold = 0.0F;
-            using (var db = new PodcastSqlModel()) 
+            using (var db = new PodcastSqlModel())
             {
                 listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
             }
 
-            var queryDelEpisodes = from episode in Episodes
-                                   where (episode.PodcastId.Equals(subscription.PodcastId)      
-                                          && episode.EpisodeFile != ""
+            var queryDelEpisodes = from episode in podcastSubscriptionModel.Episodes
+                                   where (episode.EpisodeFile != ""
                                           && (episode.TotalLengthTicks > 0 && episode.SavedPlayPos > 0)
                                           && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) > listenedEpisodeThreshold))
                                    select episode;
@@ -432,17 +421,10 @@ namespace Podcatcher
             {
                 if (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded)
                 {
-                    Deployment.Current.Dispatcher.BeginInvoke(() =>
-                            {
-                                episode.deleteDownloadedEpisode();
-                            });
+                    episode.deleteDownloadedEpisode();
+                    SubmitChanges();
                 }
             }
-        }
-
-        private void oldEpisodeCleanupCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            SubmitChanges();
         }
 
         internal PodcastEpisodeModel episodesForTitle(String episodeTitle)

@@ -55,11 +55,16 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
         {
+            PodcastSubscriptionModel subscriptionDataContext = this.DataContext as PodcastSubscriptionModel;
             PodcastSubscriptionModel subscription = null;
             using (var db = new PodcastSqlModel())
             {
                 subscription = db.subscriptionModelForIndex(m_podcastId);
-                subscription.SubscriptionSelectedKeepNumEpisodesIndex = (this.DataContext as PodcastSubscriptionModel).SubscriptionSelectedKeepNumEpisodesIndex;
+                subscription.SubscriptionSelectedKeepNumEpisodesIndex = subscriptionDataContext.SubscriptionSelectedKeepNumEpisodesIndex;
+                subscription.IsSubscribed = subscriptionDataContext.IsSubscribed;
+                subscription.IsAutoDownload = subscriptionDataContext.IsAutoDownload;
+                subscription.SubscriptionIsDeleteEpisodes = subscriptionDataContext.SubscriptionIsDeleteEpisodes;
+
                 db.SubmitChanges();
             }
         }

@@ -69,7 +69,7 @@ namespace Podcatcher.Views
 
                 if (db.settings().IsAutoDelete)
                 {
-                    db.startOldEpisodeCleanup(m_subscription);
+                    db.cleanListenedEpisodes(m_subscription);
                 }
             }
 

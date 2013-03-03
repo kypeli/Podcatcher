@@ -45,11 +45,11 @@ namespace Podcatcher.Views
         {
             InitializeComponent();
             initialized = true;
+            m_settings = new PodcastSqlModel().settings();
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-
             this.DataContext = m_settings;
             this.DeleteEpisodeThreshold.Value = m_settings.ListenedThreashold;
             this.DeleteThresholdPercent.Text = String.Format("{0} %", this.DeleteEpisodeThreshold.Value.ToString());
@@ -59,6 +59,14 @@ namespace Podcatcher.Views
         {
             using (var db = new PodcastSqlModel()) 
             {
+                SettingsModel s = db.settings();
+
+                s.IsAutomaticContinuedPlayback = m_settings.IsAutomaticContinuedPlayback;
+                s.IsAutoDelete = m_settings.IsAutoDelete;
+                s.IsUseCellularData = m_settings.IsUseCellularData;
+                s.SelectedExportIndex = m_settings.SelectedExportIndex;
+                s.ListenedThreashold = m_settings.ListenedThreashold;
+
                 db.SubmitChanges();
             }
         }
