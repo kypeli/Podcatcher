@@ -377,12 +377,25 @@ namespace Podcatcher.ViewModels
             {
                 if (m_episodes == null)
                 {
-                    var query = from PodcastEpisodeModel episode in Episodes
-                                where episode.PodcastId == PodcastId
-                                orderby episode.EpisodePublished descending
-                                select episode;
+                    using (var db = new PodcastSqlModel())
+                    {
+                        var query = from PodcastEpisodeModel episode in db.Episodes
+                                    where episode.PodcastId == PodcastId
+                                    orderby episode.EpisodePublished descending
+                                    select episode;
 
-                    m_episodes = new List<PodcastEpisodeModel>(query);
+                        m_episodes = new List<PodcastEpisodeModel>(query);
+
+                        // Update playing episode in this subscription, if we have one.
+                        if (App.currentlyPlayingEpisodeId > 0)
+                        {
+                            PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == App.currentlyPlayingEpisodeId).FirstOrDefault();
+                            if (playingEpisode != null)
+                            {
+                                playingEpisode.setPlaying();
+                            }
+                        }
+                    }
                 }
 
                 return m_episodes;

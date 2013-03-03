@@ -38,6 +38,7 @@ namespace Podcatcher.Views
 {
     public partial class PodcastEpisodes : PhoneApplicationPage
     {
+        private int m_podcastId = 0;
         /************************************* Public implementations *******************************/
         public PodcastEpisodes()
         {
@@ -52,33 +53,27 @@ namespace Podcatcher.Views
         void m_subscription_PodcastCleanFinished()
         {
             cleanProgressOverlay.Visibility = Visibility.Collapsed;
+            using (var db = new PodcastSqlModel()) {
+                m_subscription = db.subscriptionModelForIndex(m_podcastId);
+            }
+            this.DataContext = m_subscription;
+            this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
         }
         
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
+            m_podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             using (var db = new PodcastSqlModel())
             {
-                m_subscription = db.subscriptionModelForIndex(podcastId);
-
-                // Update playing episode in this subscription, if we have one.
-                if (App.currentlyPlayingEpisodeId > 0)
-                {
-                    PodcastEpisodeModel playingEpisode = m_subscription.Episodes.Where(ep => ep.EpisodeId == App.currentlyPlayingEpisodeId).FirstOrDefault();
-                    if (playingEpisode != null)
-                    {
-                        playingEpisode.setPlaying();
-                    }
-                }
-
-                this.DataContext = m_subscription;
-                this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
+                m_subscription = db.subscriptionModelForIndex(m_podcastId);
 
                 if (db.settings().IsAutoDelete)
                 {
                     db.startOldEpisodeCleanup(m_subscription);
                 }
             }
+
+            this.DataContext = m_subscription;
 
             m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
             m_subscription.PodcastCleanFinished -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);

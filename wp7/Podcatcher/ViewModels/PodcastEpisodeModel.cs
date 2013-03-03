@@ -733,9 +733,12 @@ namespace Podcatcher.ViewModels
 
         private void episodeStoppedPlaying()
         {
-            m_screenUpdateTimer.Stop();
-            m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
-            m_screenUpdateTimer = null;
+            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
+            {
+                m_screenUpdateTimer.Stop();
+                m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
+                m_screenUpdateTimer = null;
+            }
 
             setNoPlaying();
         }
