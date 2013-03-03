@@ -38,7 +38,8 @@ namespace Podcatcher.Views
 {
     public partial class PodcastEpisodes : PhoneApplicationPage
     {
-        private int m_podcastId = 0;
+        private int m_podcastId = 0;        
+
         /************************************* Public implementations *******************************/
         public PodcastEpisodes()
         {
@@ -73,13 +74,10 @@ namespace Podcatcher.Views
                 }
             }
 
+            m_playableEpisodes = m_subscription.PlayableEpisodes;
             this.DataContext = m_subscription;
 
-            m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
-            m_subscription.PodcastCleanFinished -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
-
-            m_subscription.PodcastCleanStarted += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
-            m_subscription.PodcastCleanFinished += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
+            PodcastEpisodesDownloadManager.getInstance().NewPlayableEpisode += new PodcastEpisodesDownloadManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
             
             bool forceUpdate = false;
             try
@@ -106,6 +104,12 @@ namespace Podcatcher.Views
                 PodcastSubscriptionsManager.getInstance().refreshSubscription(m_subscription);
             }
 
+            m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
+            m_subscription.PodcastCleanFinished -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
+
+            m_subscription.PodcastCleanStarted += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
+            m_subscription.PodcastCleanFinished += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
+
             // Clean old episodes from the listing.
             if (SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex) != SettingsModel.KEEP_ALL_EPISODES)
             {
@@ -113,12 +117,29 @@ namespace Podcatcher.Views
             }
         }
 
-        /************************************* Priovate implementations *******************************/
-        #region private
+        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            PodcastEpisodesDownloadManager.getInstance().NewPlayableEpisode -= new PodcastEpisodesDownloadManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
+        }
 
+        /************************************* Priovate implementations *******************************/
         private PodcastSubscriptionModel m_subscription;
         
-        #endregion
+        private void m_subscription_NewPlayableEpisode(PodcastEpisodeModel e)
+        {
+            addEpisodeToPlayableList(e);
+        }
+
+        private ObservableCollection<PodcastEpisodeModel> m_playableEpisodes = null;
+        private void addEpisodeToPlayableList(PodcastEpisodeModel episode)
+        {
+            List<PodcastEpisodeModel> tmpList = m_playableEpisodes.ToList();
+            tmpList.Add(episode);
+            tmpList.Sort(CompareEpisodesByPublishDate);
+
+            m_playableEpisodes = new ObservableCollection<PodcastEpisodeModel>(tmpList);
+            m_subscription.PlayableEpisodes = m_playableEpisodes;
+        }
 
         private void ApplicationBarSettingsButton_Click(object sender, EventArgs e)
         {
@@ -128,6 +149,18 @@ namespace Podcatcher.Views
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+        }
+
+        private int CompareEpisodesByPublishDate(PodcastEpisodeModel e1, PodcastEpisodeModel e2) 
+        {
+            if (e1.EpisodePublished > e2.EpisodePublished)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         private void MarkAllListened_Click(object sender, EventArgs e) 
@@ -150,6 +183,8 @@ namespace Podcatcher.Views
                     db.SubmitChanges();
                 }
 
+                this.DataContext = null;
+                this.DataContext = m_subscription;
             }
         }
 
@@ -172,6 +207,9 @@ namespace Podcatcher.Views
                     }
                     db.SubmitChanges();
                 }
+
+                this.DataContext = null;
+                this.DataContext = m_subscription;
             }
         }
     }

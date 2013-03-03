@@ -33,7 +33,7 @@ using Microsoft.Phone.Info;
 namespace Podcatcher
 {
     public delegate void PodcastDownloadManagerHandler(object source, PodcastDownloadManagerArgs args);
-
+    
     public class PodcastDownloadManagerArgs : EventArgs
     {
         public int episodeId;
@@ -41,6 +41,9 @@ namespace Podcatcher
 
     public class PodcastEpisodesDownloadManager
     {
+        public event EpisodesEventHandler NewPlayableEpisode;
+        public delegate void EpisodesEventHandler(PodcastEpisodeModel e);
+
         public ObservableQueue<PodcastEpisodeModel> EpisodeDownloadQueue
         {
             get
@@ -551,6 +554,11 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Transfer request completed succesfully.");
                 updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
+
+                if (NewPlayableEpisode != null)
+                {
+                    NewPlayableEpisode(m_currentEpisodeDownload);
+                }
             }
             else
             {

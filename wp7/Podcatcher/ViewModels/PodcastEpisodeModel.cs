@@ -322,11 +322,6 @@ namespace Podcatcher.ViewModels
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("ProgressBarValue");
                 NotifyPropertyChanged("EpisodeStatusText");
-                if (PodcastSubscription != null)
-                {
-                    // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
-                    PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
-                }
 
                 if (m_episodeDownloadState != EpisodeDownloadStateEnum.Downloading
                     && m_downloadRequest != null)
@@ -356,12 +351,6 @@ namespace Podcatcher.ViewModels
 
                 m_episodePlayState = value;
                 
-                if (PodcastSubscription != null)
-                {
-                    // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
-                    PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
-                }
-
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("EpisodeStatusText");

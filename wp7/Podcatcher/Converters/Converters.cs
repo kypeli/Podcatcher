@@ -34,6 +34,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using Microsoft.Phone.Shell;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace Podcatcher.Converters
 {
@@ -61,7 +62,7 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            List<PodcastEpisodeModel> model = value as List<PodcastEpisodeModel>;
+            ObservableCollection<PodcastEpisodeModel> model = value as ObservableCollection<PodcastEpisodeModel>;
             if (model == null
                 || model.Count < 1)
             {

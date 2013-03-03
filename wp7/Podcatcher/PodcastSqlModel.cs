@@ -131,18 +131,6 @@ namespace Podcatcher
             }
         }
 
-        public delegate void PodcastSqlHandler(object source, PodcastSqlHandlerArgs e);
-        public class PodcastSqlHandlerArgs
-        {
-            public enum SqlOperation
-            {
-                DeleteSubscriptionStarted,
-                DeleteSubscriptionFinished
-            }
-
-            public SqlOperation operationStatus;
-        }
-
         public PodcastSubscriptionModel subscriptionModelForIndex(int index)
         {
             PodcastSubscriptionModel model = (from s in Subscriptions
@@ -249,7 +237,7 @@ namespace Podcatcher
             return new List<PodcastEpisodeModel>(query);
         }
 
-        public List<PodcastEpisodeModel> playableEpisodesForSubscription(PodcastSubscriptionModel subscription)
+        public ObservableCollection<PodcastEpisodeModel> playableEpisodesForSubscription(PodcastSubscriptionModel subscription)
         {
             var query = from PodcastEpisodeModel episode in Episodes
                         where (episode.PodcastId == subscription.PodcastId
@@ -260,7 +248,7 @@ namespace Podcatcher
                         orderby episode.EpisodePublished descending
                         select episode;
 
-            return new List<PodcastEpisodeModel>(query);
+            return new ObservableCollection<PodcastEpisodeModel>(query);
         }
 
         public List<PodcastEpisodeModel> unplayedEpisodesForSubscription(PodcastSubscriptionModel subscription)

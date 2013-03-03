@@ -31,6 +31,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Phone.Shell;
+using System.Collections.ObjectModel;
 
 namespace Podcatcher.ViewModels
 {
@@ -507,18 +508,28 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        public List<PodcastEpisodeModel> PlayableEpisodes
+        private ObservableCollection<PodcastEpisodeModel> m_playableEpisodes = null;
+        public ObservableCollection<PodcastEpisodeModel> PlayableEpisodes
         {
             get
             {
-                using (var db = new PodcastSqlModel())
+                if (m_playableEpisodes == null)
                 {
-                    return db.playableEpisodesForSubscription(this);
+                    using (var db = new PodcastSqlModel())
+                    {
+                        m_playableEpisodes = db.playableEpisodesForSubscription(this);
+                    }
                 }
+                return m_playableEpisodes;
             }
 
             set
             {
+                if (value != m_playableEpisodes)
+                {
+                    m_playableEpisodes = value;
+                }
+
                 NotifyPropertyChanged("PlayableEpisodes");
             }
         }

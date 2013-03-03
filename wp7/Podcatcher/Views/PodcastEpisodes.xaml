@@ -60,7 +60,7 @@
             <!--Episodes listing -->
         		<controls:PivotItem Header="downloaded" Margin="12,8,12,0">
         			<Grid Background="Transparent">
-        				<ListBox ItemsSource="{Binding PlayableEpisodes}" Grid.Row="2" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
+                        <ListBox Grid.Row="2" ItemsSource="{Binding PlayableEpisodes}" Grid.ColumnSpan="2" x:Name="DownloadedEpisodesList" Height="Auto" Margin="0,10,0,0">
         					<ListBox.ItemTemplate>
         						<DataTemplate>
         							<StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto">
