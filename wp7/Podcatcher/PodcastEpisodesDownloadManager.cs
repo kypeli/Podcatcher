@@ -41,8 +41,6 @@ namespace Podcatcher
 
     public class PodcastEpisodesDownloadManager
     {
-        public event PodcastDownloadManagerHandler OnEpisodeDownloadInitiated;
-
         public ObservableQueue<PodcastEpisodeModel> EpisodeDownloadQueue
         {
             get
@@ -67,6 +65,7 @@ namespace Podcatcher
             episode.DownloadPercentage = 0;
             m_episodeDownloadQueue.Enqueue(episode);
             pushToQueueCache(episode);
+            saveEpisodeInfoToDB(episode);
 
             if (m_currentEpisodeDownload == null)
             {
@@ -78,6 +77,7 @@ namespace Podcatcher
         {
             // Update new episode state.
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+            saveEpisodeInfoToDB(episode);
 
             // Get the transfer request that we should cancel. 
             BackgroundTransferRequest thisRequest = episode.DownloadRequest;
@@ -204,14 +204,15 @@ namespace Podcatcher
                     Debug.WriteLine("Found an ongoing transfer...");
                     m_currentBackgroundTransfer = BackgroundTransferService.Requests.ElementAt(0);
                     m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
-                    m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
-                    
+
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     m_currentEpisodeDownload.DownloadRequest = m_currentBackgroundTransfer;
                     
                     m_episodeDownloadQueue.Enqueue(m_currentEpisodeDownload);
                     
                     ProcessTransfer(m_currentBackgroundTransfer);
+
+                    saveEpisodeInfoToDB(m_currentEpisodeDownload);
                 }
                 else
                 {
@@ -222,6 +223,21 @@ namespace Podcatcher
                     m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
                     m_applicationSettings.Save();
                 }
+            }
+        }
+
+        private void saveEpisodeInfoToDB(PodcastEpisodeModel m_currentEpisodeDownload)
+        {
+            if (m_currentEpisodeDownload == null)             
+            {
+                return;
+            }
+
+            using (var db = new PodcastSqlModel()) 
+            {
+                PodcastEpisodeModel episode = db.Episodes.First(e => e.EpisodeId == m_currentEpisodeDownload.EpisodeId);
+                episode.EpisodeDownloadState = m_currentEpisodeDownload.EpisodeDownloadState;
+                db.SubmitChanges();
             }
         }
 
@@ -262,6 +278,8 @@ namespace Podcatcher
                     }
 
                     episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
+                    saveEpisodeInfoToDB(episode);
+
                     m_episodeDownloadQueue.Enqueue(episode);
                 }
                 catch (Exception e)
@@ -361,6 +379,7 @@ namespace Podcatcher
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_episodeDownloadQueue.Dequeue();
                     startNextEpisodeDownload();
+                    saveEpisodeInfoToDB(m_currentEpisodeDownload);
                     return;
                 }
 
@@ -372,6 +391,7 @@ namespace Podcatcher
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_episodeDownloadQueue.Dequeue();
                     startNextEpisodeDownload();
+                    saveEpisodeInfoToDB(m_currentEpisodeDownload);
                     return;
                 }
 
@@ -407,7 +427,6 @@ namespace Podcatcher
                 Debug.WriteLine("m_currentBackgroundTransfer.TransferPreferences = " + m_currentBackgroundTransfer.TransferPreferences.ToString());
 
                 m_currentBackgroundTransfer.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
-                m_currentBackgroundTransfer.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
 
                 // Store request to the episode.
                 m_currentEpisodeDownload.DownloadRequest = m_currentBackgroundTransfer;
@@ -467,11 +486,6 @@ namespace Podcatcher
             return false;
         }
 
-        void backgroundTransferProgressChanged(object sender, BackgroundTransferEventArgs e)
-        {
-            m_currentEpisodeDownload.DownloadPercentage = (int)(((float)e.Request.BytesReceived / (float)e.Request.TotalBytesToReceive) * 100);
-        }
-
         void backgroundTransferStatusChanged(object sender, BackgroundTransferEventArgs e)
         {
             ResetStatusFlags();
@@ -524,6 +538,8 @@ namespace Podcatcher
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     break;
             }
+
+            saveEpisodeInfoToDB(m_currentEpisodeDownload);
         }
 
         private void completePodcastDownload(BackgroundTransferRequest transferRequest)
@@ -585,8 +601,8 @@ namespace Podcatcher
                 }
             }
 
+            saveEpisodeInfoToDB(m_currentEpisodeDownload);
             cleanupEpisodeDownload(transferRequest);
-
             // And start a next round of downloading.
             startNextEpisodeDownload();
         }
@@ -599,15 +615,12 @@ namespace Podcatcher
 
             using (var db = new PodcastSqlModel())
             {
-                PodcastEpisodeModel e = db.episodeForEpisodeId(episode.EpisodeId);
-
-                e.EpisodeFile = episode.EpisodeFile;
                 Debug.WriteLine(" * Downloaded file name: " + episode.EpisodeFile);
+
+                PodcastEpisodeModel e = db.episodeForEpisodeId(episode.EpisodeId);
+                e.EpisodeFile = episode.EpisodeFile;
                 e.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
-                Debug.WriteLine(" * Episode download state: " + episode.EpisodeDownloadState.ToString());
                 e.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                Debug.WriteLine(" * Episode play state: " + episode.EpisodePlayState.ToString());
-//                Debug.WriteLine(" * Subscription unplayed episodes: " + episode.PodcastSubscription.NumberOfEpisodesText);
 
                 db.SubmitChanges();
             }
@@ -616,7 +629,6 @@ namespace Podcatcher
         private void cleanupEpisodeDownload(BackgroundTransferRequest transferRequest)
         {
             m_currentBackgroundTransfer.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferStatusChanged);
-            m_currentBackgroundTransfer.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(backgroundTransferProgressChanged);
 
             // Remove the transfer request in order to make room in the 
             // queue for more transfers. Transfers are not automatically

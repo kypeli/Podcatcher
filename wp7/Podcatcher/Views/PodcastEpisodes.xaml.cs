@@ -59,7 +59,7 @@ namespace Podcatcher.Views
             this.DataContext = m_subscription;
             this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
         }
-        
+      
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             m_podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
@@ -80,7 +80,7 @@ namespace Podcatcher.Views
 
             m_subscription.PodcastCleanStarted += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
             m_subscription.PodcastCleanFinished += new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanFinished);
-
+            
             bool forceUpdate = false;
             try
             {

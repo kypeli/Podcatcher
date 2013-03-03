@@ -68,7 +68,6 @@ namespace Podcatcher
                 PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                 player.playEpisode(m_episodeModel);
                 m_episodeModel.setPlaying();
-                m_episodeModel.PodcastSubscription.UnplayedEpisodes--;
             }
 
             // Stream it if not downloaded. 

@@ -422,7 +422,6 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_unplayedEpisodes = 0;
         public int UnplayedEpisodes
         {
             get
@@ -430,31 +429,13 @@ namespace Podcatcher.ViewModels
                 return unplayedEpisodesCount(PodcastId);
             }
 
-            set
-            {
-                Deployment.Current.Dispatcher.BeginInvoke(() =>
-                {
-  //                  NotifyPropertyChanged("PodcastSubscriptions");
-                });
-            }
         }
 
-//        private int m_partiallyPlayedEpisodes = 
         public int PartiallyPlayedEpisodes
         {
             get
             {
                 return partiallyPlayedEpisodesCount(PodcastId);
-            }
-
-            set
-            {
-
-//                m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
-                Deployment.Current.Dispatcher.BeginInvoke(() =>
-                {
-//                    NotifyPropertyChanged("PodcastSubscriptions");
-                });
             }
         }
 
@@ -913,10 +894,5 @@ namespace Podcatcher.ViewModels
             }
         }
         #endregion
-
-        internal void unplayedEpisodesChanged()
-        {
-            UnplayedEpisodes--;
-        }
     }
 }

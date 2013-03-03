@@ -480,7 +480,6 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-                    m_currentEpisode.PodcastSubscription.unplayedEpisodesChanged();
                     setupUIForEpisodePlaying();
                     break;
 

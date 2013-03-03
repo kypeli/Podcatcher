@@ -200,10 +200,18 @@ namespace Podcatcher.ViewModels
         }
 
         private int m_downloadPercentage;
+        private BackgroundTransferRequest m_downloadRequest = null;
         public int DownloadPercentage
         {
             get
             {
+                if (EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading
+                    && m_downloadRequest == null) 
+                {
+                    m_downloadRequest = BackgroundTransferService.Requests.ElementAt(0);
+                    m_downloadRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transferProgressChanged);
+                    m_downloadRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transferStatusChanged);
+                }
                 return m_downloadPercentage;
             }
 
@@ -216,6 +224,32 @@ namespace Podcatcher.ViewModels
                 }
             }
         }
+
+        private void transferProgressChanged(object sender, BackgroundTransferEventArgs e)
+        {
+            DownloadPercentage = (int)(((float)e.Request.BytesReceived / (float)e.Request.TotalBytesToReceive) * 100);
+        }
+
+        private void transferStatusChanged(object sender, BackgroundTransferEventArgs e)
+        {
+            switch (e.Request.TransferStatus)
+            {
+                case TransferStatus.Completed:
+                    // If the status code of a completed transfer is 200 or 206, the
+                    // transfer was successful
+                    if (e.Request.TransferError == null &&
+                       (e.Request.StatusCode == 200 || e.Request.StatusCode == 206))
+                    {
+                        Debug.WriteLine("Transfer request completed succesfully.");
+                        EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
+                        Debug.WriteLine(" * Episode download state: " + EpisodeDownloadState.ToString());
+                        EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                        Debug.WriteLine(" * Episode play state: " + EpisodePlayState.ToString());
+                    }
+                    break;
+            }
+        }
+
 
         private long m_savedPlayPos = 0;
         [Column(UpdateCheck = UpdateCheck.Never)]
@@ -293,6 +327,14 @@ namespace Podcatcher.ViewModels
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
                     PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
                 }
+
+                if (m_episodeDownloadState != EpisodeDownloadStateEnum.Downloading
+                    && m_downloadRequest != null)
+                {
+                    m_downloadRequest.TransferProgressChanged -= new EventHandler<BackgroundTransferEventArgs>(transferProgressChanged);
+                    m_downloadRequest.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(transferStatusChanged);
+                    m_downloadRequest = null;
+                }
             }
         }
 
@@ -302,33 +344,11 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
-/*                m_episodePlayState = EpisodePlayStateEnum.Idle;
-                if (String.IsNullOrEmpty(EpisodeFile) == false)
-                {
-                    m_episodePlayState = EpisodePlayStateEnum.Downloaded;
-                }
-
-                if (m_isPlaying)
-                {
-                    m_episodePlayState = EpisodePlayStateEnum.Playing;
-
-                    if (String.IsNullOrEmpty(EpisodeFile))
-                    {
-                        m_episodePlayState = EpisodePlayStateEnum.Streaming;
-                    }
-                }
-                */
                 return m_episodePlayState;
             }
 
             set
             {
-/*                if (PodcastSubscription != null)
-                {
-                    // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
-                    PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
-                }
-*/
                 if (m_episodePlayState == value)
                 {
                     return;
@@ -506,8 +526,6 @@ namespace Podcatcher.ViewModels
                         || SavedPlayPos > 0) ? Visibility.Visible : Visibility.Collapsed;
 
                 return visible;
-
-                //                return m_ProgressBarIsVisible;
             }
 
             private set
@@ -667,7 +685,6 @@ namespace Podcatcher.ViewModels
                 {
                     SavedPlayPos = 0;
                     TotalLengthTicks = 0;
-                    PodcastSubscription.unplayedEpisodesChanged();
                 }
 
                 EpisodeFile = "";
