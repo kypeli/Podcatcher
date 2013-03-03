@@ -66,6 +66,8 @@ namespace Podcatcher
 
         public event SubscriptionManagerHandler OnPodcastChannelAddStarted;
         public event SubscriptionManagerHandler OnPodcastChannelAddFinished;
+        public event SubscriptionManagerHandler OnPodcastChannelDeleteStarted;
+        public event SubscriptionManagerHandler OnPodcastChannelDeleteFinished;
         public event SubscriptionManagerHandler OnPodcastChannelAddFinishedWithError;
         public event SubscriptionManagerHandler OnPodcastChannelRequiresAuthentication;
 
@@ -196,14 +198,29 @@ namespace Podcatcher
 
         public void deleteSubscription(PodcastSubscriptionModel podcastSubscriptionModel)
         {
-            podcastSubscriptionModel.cleanupForDeletion();
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(deleteSubscriptionFromDB);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteSubscriptionFromDBCompleted);
+            worker.RunWorkerAsync(podcastSubscriptionModel);
+
+            OnPodcastChannelDeleteStarted(this, null);
+        }
+
+        void deleteSubscriptionFromDB(object sender, DoWorkEventArgs e)
+        {
+            PodcastSubscriptionModel podcastModel = e.Argument as PodcastSubscriptionModel;
             using (var db = new PodcastSqlModel())
             {
-                PodcastSubscriptionModel dbSubscription = db.Subscriptions.First(s => s.PodcastId == podcastSubscriptionModel.PodcastId);
+                PodcastSubscriptionModel dbSubscription = db.Subscriptions.First(s => s.PodcastId == podcastModel.PodcastId);
+                dbSubscription.cleanupForDeletion();
                 db.deleteSubscription(dbSubscription);
             }
+        }
 
+        void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
             App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
+            OnPodcastChannelDeleteFinished(this, null);
         }
 
         public void refreshSubscriptions()

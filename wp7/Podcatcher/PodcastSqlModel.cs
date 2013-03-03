@@ -143,18 +143,6 @@ namespace Podcatcher
             public SqlOperation operationStatus;
         }
 
-        public event PodcastSqlHandler OnPodcastSqlOperationChanged;
-
-/*        public static PodcastSqlModel getInstance()
-        {
-            if (m_instance == null)
-            {
-                m_instance = new PodcastSqlModel();
-            }
-
-            return m_instance;
-        }
-        */
         public PodcastSubscriptionModel subscriptionModelForIndex(int index)
         {
             PodcastSubscriptionModel model = (from s in Subscriptions
@@ -172,23 +160,6 @@ namespace Podcatcher
 
         public void deleteSubscription(PodcastSubscriptionModel podcastModel)
         {
-            PodcastSqlHandlerArgs args = new PodcastSqlHandlerArgs();
-            args.operationStatus = PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted;
-//            this.OnPodcastSqlOperationChanged(this, args);
-
-            deleteSubscriptionFromDB(podcastModel);
-/*            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(deleteSubscriptionFromDB);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteSubscriptionFromDBCompleted);
-            worker.RunWorkerAsync(podcastModel);
- */ 
-        }
-
-//        void deleteSubscriptionFromDB(object sender, DoWorkEventArgs e)
-        void deleteSubscriptionFromDB(PodcastSubscriptionModel podcastModel)
-        {
-//            PodcastSubscriptionModel podcastModel = e.Argument as PodcastSubscriptionModel;
-
             var queryDelEpisodes = from episode in Episodes
                                    where episode.PodcastId.Equals(podcastModel.PodcastId)
                                    select episode;
@@ -219,15 +190,6 @@ namespace Podcatcher
 
             Episodes.DeleteOnSubmit(queryDelEpisode);
             SubmitChanges();
-        }
-
-        void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            PodcastSqlHandlerArgs args = new PodcastSqlHandlerArgs();
-            args.operationStatus = PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionFinished;
-//            this.OnPodcastSqlOperationChanged(this, args);
-
-//            NotifyPropertyChanged("PodcastSubscriptions");
         }
 
         public bool isPodcastInDB(string subscriptionRssUrl)
@@ -268,11 +230,6 @@ namespace Podcatcher
 
         public List<PodcastEpisodeModel> episodesForSubscription(PodcastSubscriptionModel subscriptionModel)
         {
-/*            var query = from PodcastEpisodeModel episode in subscriptionModel.Episodes
-                        orderby episode.EpisodePublished descending
-                        select episode;
-
- */
             var query = from PodcastEpisodeModel episode in Episodes
                         where episode.PodcastId == subscriptionModel.PodcastId
                         orderby episode.EpisodePublished descending

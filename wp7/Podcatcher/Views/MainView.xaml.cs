@@ -71,24 +71,23 @@ namespace Podcatcher
             m_playerControl = PodcastPlayerControl.getIntance();
             m_playerControl.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
 
-            // Hook to SQL events.
-            // TODO: PodcastSqlModel.getInstance().OnPodcastSqlOperationChanged += new PodcastSqlModel.PodcastSqlHandler(MainView_OnPodcastSqlOperationChanged);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelDeleteStarted
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelDeleteStarted);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelDeleteFinished
+                += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelDeleteFinished);
 
             handleShowReviewPopup();
         }
 
-        void MainView_OnPodcastSqlOperationChanged(object source, PodcastSqlModel.PodcastSqlHandlerArgs e)
+        private void subscriptionManager_OnPodcastChannelDeleteStarted(object source, SubscriptionManagerArgs e)
         {
-            if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionStarted)
-            {
-                ProgressText.Text = "Unsubscribing";
-                deleteProgressOverlay.Visibility = Visibility.Visible;
-            }
-
-            if (e.operationStatus == PodcastSqlModel.PodcastSqlHandlerArgs.SqlOperation.DeleteSubscriptionFinished)
-            {
-                deleteProgressOverlay.Visibility = Visibility.Collapsed;
-            }
+            ProgressText.Text = "Unsubscribing";
+            deleteProgressOverlay.Visibility = Visibility.Visible;
+        }
+        
+        private void subscriptionManager_OnPodcastChannelDeleteFinished(object source, SubscriptionManagerArgs e)
+        {
+            deleteProgressOverlay.Visibility = Visibility.Collapsed;
         }
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)
