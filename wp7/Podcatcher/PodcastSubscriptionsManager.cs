@@ -36,6 +36,8 @@ using Microsoft.Phone.Tasks;
 using Microsoft.Live;
 using System.IO.IsolatedStorage;
 using System.IO;
+using System.Data.Linq;
+using System.Linq;
 
 namespace Podcatcher
 {
@@ -197,7 +199,8 @@ namespace Podcatcher
             podcastSubscriptionModel.cleanupForDeletion();
             using (var db = new PodcastSqlModel())
             {
-                db.deleteSubscription(podcastSubscriptionModel);
+                PodcastSubscriptionModel dbSubscription = db.Subscriptions.First(s => s.PodcastId == podcastSubscriptionModel.PodcastId);
+                db.deleteSubscription(dbSubscription);
             }
 
             App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();

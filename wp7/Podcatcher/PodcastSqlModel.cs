@@ -318,6 +318,18 @@ namespace Podcatcher
             return new List<PodcastEpisodeModel>(query);
         }
 
+        public List<PodcastEpisodeModel> unplayedEpisodesForSubscription(int subscriptionId)
+        {
+            var query = from episode in Episodes
+                        where (episode.PodcastId == subscriptionId
+                               && episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
+                               && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
+                               && episode.SavedPlayPos == 0)
+                        select episode;
+
+            return new List<PodcastEpisodeModel>(query);
+        }
+
         public PodcastEpisodeModel episodeForEpisodeId(int episodeId)
         {
             PodcastEpisodeModel model = (from PodcastEpisodeModel episode in Episodes

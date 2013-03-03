@@ -302,7 +302,12 @@ namespace Podcatcher.ViewModels
         {
             get 
             {
-                m_episodePlayState = EpisodePlayStateEnum.Idle;
+/*                m_episodePlayState = EpisodePlayStateEnum.Idle;
+                if (String.IsNullOrEmpty(EpisodeFile) == false)
+                {
+                    m_episodePlayState = EpisodePlayStateEnum.Downloaded;
+                }
+
                 if (m_isPlaying)
                 {
                     m_episodePlayState = EpisodePlayStateEnum.Playing;
@@ -312,23 +317,19 @@ namespace Podcatcher.ViewModels
                         m_episodePlayState = EpisodePlayStateEnum.Streaming;
                     }
                 }
-
+                */
                 return m_episodePlayState;
             }
 
             set
             {
-                NotifyPropertyChanged("EpisodePlayState");
-                NotifyPropertyChanged("ProgressBarIsVisible");
-                NotifyPropertyChanged("EpisodeStatusText");
-                
-                if (PodcastSubscription != null)
+/*                if (PodcastSubscription != null)
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
                     PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
                 }
-
-/*                if (m_episodePlayState == value)
+*/
+                if (m_episodePlayState == value)
                 {
                     return;
                 }
@@ -339,7 +340,12 @@ namespace Podcatcher.ViewModels
                 {
                     // No notify that the PlayableEpisodes list could have been chnaged, so it needs to be re-set.
                     PodcastSubscription.PlayableEpisodes = new List<PodcastEpisodeModel>();
-                }*/
+                }
+
+                NotifyPropertyChanged("EpisodePlayState");
+                NotifyPropertyChanged("ProgressBarIsVisible");
+                NotifyPropertyChanged("EpisodeStatusText");
+
             }
         }
 

@@ -52,7 +52,6 @@ namespace Podcatcher
         public MainView()
         {
             InitializeComponent();
-            DataContext = App.mainViewModels;
 
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
@@ -124,9 +123,12 @@ namespace Podcatcher
             ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
 
             // Hook data contextes.
+            this.DataContext = null;
+            this.DataContext = App.mainViewModels;
             this.PlayHistoryList.ItemsSource = playHistory;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
+
 
             if (playHistory.Count == 0)
             {

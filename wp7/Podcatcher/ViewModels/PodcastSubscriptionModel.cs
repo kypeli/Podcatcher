@@ -427,49 +427,67 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                return m_unplayedEpisodes;
+                return unplayedEpisodesCount(PodcastId);
             }
 
             set
             {
-                using (var db = new PodcastSqlModel())
-                {
-                    m_unplayedEpisodes = db.unplayedEpisodesForSubscription(this).Count;
-                }
-
                 Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
-
-                    NotifyPropertyChanged("NumberOfEpisodesText");
+  //                  NotifyPropertyChanged("PodcastSubscriptions");
                 });
             }
         }
 
-        private int m_partiallyPlayedEpisodes = 0;
+//        private int m_partiallyPlayedEpisodes = 
         public int PartiallyPlayedEpisodes
         {
             get
             {
-                return m_partiallyPlayedEpisodes;
+                return partiallyPlayedEpisodesCount(PodcastId);
             }
 
             set
             {
-                float listenedEpisodeThreshold = 0.0F;
-                using (var db = new PodcastSqlModel())
+
+//                m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
+                Deployment.Current.Dispatcher.BeginInvoke(() =>
                 {
-                    listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
-                }
-                var query = from episode in Episodes
-                            where (episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
+//                    NotifyPropertyChanged("PodcastSubscriptions");
+                });
+            }
+        }
+
+        private static int unplayedEpisodesCount(int subscriptionId)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                var query = from episode in db.Episodes
+                            where (episode.PodcastId == subscriptionId
+                                   && episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
+                                   && episode.SavedPlayPos == 0)
+                            select episode;
+                
+                int count = query.Count();
+                return count;
+            }
+        }
+
+        private static int partiallyPlayedEpisodesCount(int subscriptionId)
+        {
+            float listenedEpisodeThreshold = 0.0F;
+            using (var db = new PodcastSqlModel())
+            {
+                listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
+                var query = from episode in db.Episodes
+                            where (episode.PodcastId == subscriptionId
+                                   && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
                                    && episode.SavedPlayPos > 0
                                    && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
                             select episode;
-
-                m_partiallyPlayedEpisodes = query.Count();
-
-                NotifyPropertyChanged("PartiallyPlayedEpisodes");
+                return query.Count();
             }
+
         }
 
         public String NumberOfEpisodesText
