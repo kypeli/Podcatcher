@@ -183,6 +183,11 @@ namespace Podcatcher.Views
                     db.SubmitChanges();
                 }
 
+                using (var db = new PodcastSqlModel())
+                {
+                    m_subscription = db.subscriptionModelForIndex(m_podcastId);
+                }
+
                 this.DataContext = null;
                 this.DataContext = m_subscription;
             }
@@ -206,6 +211,11 @@ namespace Podcatcher.Views
                         }
                     }
                     db.SubmitChanges();
+                }
+
+                using (var db = new PodcastSqlModel())
+                {
+                    m_subscription = db.subscriptionModelForIndex(m_podcastId);
                 }
 
                 this.DataContext = null;
