@@ -42,7 +42,7 @@ namespace Podcatcher.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            List<PodcastSubscriptionModel> model = value as List<PodcastSubscriptionModel>;
+            ObservableCollection<PodcastSubscriptionModel> model = value as ObservableCollection<PodcastSubscriptionModel>;
             if (model == null
                 || model.Count < 1)
             {

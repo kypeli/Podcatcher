@@ -53,6 +53,8 @@ namespace Podcatcher
         {
             InitializeComponent();
 
+            this.DataContext = App.mainViewModels;
+
             // Hook to the event when the download list changes, so we can update the pivot header text for the 
             // download page. 
             ((INotifyCollectionChanged)EpisodeDownloadList.Items).CollectionChanged += downloadListChanged;
@@ -119,17 +121,15 @@ namespace Podcatcher
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
+//            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
 
             // Hook data contextes.
-            this.DataContext = null;
-            this.DataContext = App.mainViewModels;
-            this.PlayHistoryList.ItemsSource = playHistory;
+//            this.PlayHistoryList.ItemsSource = playHistory;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
 
 
-            if (playHistory.Count == 0)
+/*            if (playHistory.Count == 0)
             {
                 this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -147,6 +147,7 @@ namespace Podcatcher
                 this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
                 this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
             }
+ */
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)

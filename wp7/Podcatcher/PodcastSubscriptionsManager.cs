@@ -224,7 +224,7 @@ namespace Podcatcher
 
         void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
+            App.mainViewModels.PodcastSubscriptions = null;
             OnPodcastChannelDeleteFinished(this, null);
         }
 
@@ -233,7 +233,7 @@ namespace Podcatcher
             stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.StartedRefreshing;
             OnPodcastSubscriptionsChanged(this, stateChangedArgs);
 
-            m_subscriptions = new MainViewModels().PodcastSubscriptions;
+            m_subscriptions = App.mainViewModels.PodcastSubscriptions.ToList();
             refreshNextSubscription();
         }
 
@@ -270,7 +270,7 @@ namespace Podcatcher
 
         public void exportSubscriptions()
         {
-            List<PodcastSubscriptionModel> subscriptions = new MainViewModels().PodcastSubscriptions;
+            List<PodcastSubscriptionModel> subscriptions = App.mainViewModels.PodcastSubscriptions.ToList();
             if (subscriptions.Count == 0)
             {
                 MessageBox.Show("No subscriptions to export.");
@@ -554,7 +554,7 @@ namespace Podcatcher
                 }
             }
 
-            App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
+            App.mainViewModels.PodcastSubscriptions = null;
         }
 
         private void PodcastSubscriptionFailedWithMessage(string message)
@@ -702,7 +702,7 @@ namespace Podcatcher
                     /** Body */
                     writer.WriteStartElement("body");
                     // Each outline
-                    List<PodcastSubscriptionModel> subscriptions = new MainViewModels().PodcastSubscriptions;
+                    List<PodcastSubscriptionModel> subscriptions = App.mainViewModels.PodcastSubscriptions.ToList();
                     foreach (PodcastSubscriptionModel s in subscriptions)
                     {
                         writer.WriteStartElement("outline");

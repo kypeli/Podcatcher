@@ -423,20 +423,32 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_unplayedEpisodes = 0;
         public int UnplayedEpisodes
         {
             get
             {
-                return unplayedEpisodesCount(PodcastId);
+                return m_unplayedEpisodes;
+            }
+
+            set
+            {
+                m_unplayedEpisodes = unplayedEpisodesCount(PodcastId);
             }
 
         }
 
+        private int m_partiallyPlayedEpisodes = 0;
         public int PartiallyPlayedEpisodes
         {
             get
             {
-                return partiallyPlayedEpisodesCount(PodcastId);
+                return m_partiallyPlayedEpisodes;
+            }
+
+            set
+            {
+                m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
             }
         }
 
@@ -750,7 +762,7 @@ namespace Podcatcher.ViewModels
             // Local cache has been updated - notify the UI that the logo property has changed.
             // and the new logo can be fetched to the UI. 
             NotifyPropertyChanged("PodcastLogo");
-            App.mainViewModels.PodcastSubscriptions = new List<PodcastSubscriptionModel>();
+            App.mainViewModels.PodcastSubscriptions = null;
         }
 
         #region propertyChanged

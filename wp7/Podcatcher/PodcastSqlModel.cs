@@ -370,7 +370,7 @@ namespace Podcatcher
 
         private bool isValidSubscriptionModelIndex(int index)
         {
-            if (index > new MainViewModels().PodcastSubscriptions.Count)
+            if (index > App.mainViewModels.PodcastSubscriptions.Count)
             {
                 Debug.WriteLine("ERROR: Cannot fetch podcast subscription with index " + index);
                 return false;
