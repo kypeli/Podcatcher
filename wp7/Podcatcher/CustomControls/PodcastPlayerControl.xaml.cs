@@ -303,8 +303,12 @@ namespace Podcatcher
 
         private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
         {
-            this.PodcastLogo.Source = currentEpisode.PodcastSubscription.PodcastLogo;
-            this.PodcastEpisodeName.Text = currentEpisode.EpisodeName;
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel ep = db.Episodes.First(e => e.EpisodeId == currentEpisode.EpisodeId);
+                this.PodcastLogo.Source = ep.PodcastSubscription.PodcastLogo;
+                this.PodcastEpisodeName.Text = ep.EpisodeName;
+            }
         }
 
         private void showNoPlayerLayout()
@@ -510,27 +514,36 @@ namespace Podcatcher
             if (PrimaryTile != null)
             {
                 StandardTileData tile = new StandardTileData();
+                String tileImageLocation = "";
+                String podcastLogoLocalLocation = "";
 
-                // Copy the logo file to tile's shared location.
-                String tileImageLocation = "Shared/ShellContent/" + currentEpisode.PodcastSubscription.PodcastLogoLocalLocation.Split('/')[1];
+                // Copy the logo file to tile's shared location.               
                 using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    if (myIsolatedStorage.FileExists(currentEpisode.PodcastSubscription.PodcastLogoLocalLocation) == false)
+                    using (var db = new PodcastSqlModel())
+                    {
+                        PodcastSubscriptionModel sub = db.Subscriptions.First(s => s.PodcastId == currentEpisode.PodcastId);
+                        podcastLogoLocalLocation = sub.PodcastLogoLocalLocation;
+                        tile.BackTitle = sub.PodcastName;
+                    }
+
+                    if (myIsolatedStorage.FileExists(podcastLogoLocalLocation) == false)
                     {
                         // Cover art does not exist, we cannot do anything. Give up, don't put it to Live tile.
                         Debug.WriteLine("Podcasts cover art not found.");
                         return;
                     }
 
+                    tileImageLocation = "Shared/ShellContent/" + podcastLogoLocalLocation.Split('/')[1];
+
                     if (myIsolatedStorage.FileExists(tileImageLocation) == false)
                     {
-                        myIsolatedStorage.CopyFile(currentEpisode.PodcastSubscription.PodcastLogoLocalLocation,
+                        myIsolatedStorage.CopyFile(podcastLogoLocalLocation,
                                                    tileImageLocation);
                     }
                 }
 
                 tile.BackBackgroundImage = new Uri("isostore:/" + tileImageLocation, UriKind.Absolute); 
-                tile.BackTitle = currentEpisode.PodcastSubscription.PodcastName;
                 PrimaryTile.Update(tile);
             } 
         }
@@ -658,11 +671,15 @@ namespace Podcatcher
                 return null;
             }
 
-            return new AudioTrack(episodeLocation,
-                        m_currentEpisode.EpisodeName,
-                        m_currentEpisode.PodcastSubscription.PodcastName,
-                        "",
-                        new Uri(m_currentEpisode.PodcastSubscription.PodcastLogoLocalLocation, UriKind.Relative));
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel sub = db.Subscriptions.First(s => s.PodcastId == m_currentEpisode.PodcastId);
+                return new AudioTrack(episodeLocation,
+                            m_currentEpisode.EpisodeName,
+                            sub.PodcastName,
+                            "",
+                            new Uri(sub.PodcastLogoLocalLocation, UriKind.Relative));
+            }
         }
 
         private AudioTrack getAudioStreamForEpisode(PodcastEpisodeModel episode)
@@ -683,11 +700,16 @@ namespace Podcatcher
                 return null;
             }
 
-            return new AudioTrack(episodeLocation,
-                        m_currentEpisode.EpisodeName,
-                        m_currentEpisode.PodcastSubscription.PodcastName,
-                        "",
-                        new Uri(m_currentEpisode.PodcastSubscription.PodcastLogoLocalLocation, UriKind.Relative));
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel sub = db.Subscriptions.First(s => s.PodcastId == m_currentEpisode.PodcastId);
+
+                return new AudioTrack(episodeLocation,
+                            m_currentEpisode.EpisodeName,
+                            sub.PodcastName,
+                            "",
+                            new Uri(sub.PodcastLogoLocalLocation, UriKind.Relative));
+            }
         }
 
         void m_screenUpdateTimer_Tick(object sender, EventArgs e)

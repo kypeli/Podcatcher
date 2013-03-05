@@ -237,7 +237,7 @@ namespace Podcatcher
             return new List<PodcastEpisodeModel>(query);
         }
 
-        public ObservableCollection<PodcastEpisodeModel> playableEpisodesForSubscription(PodcastSubscriptionModel subscription)
+        public IEnumerable<PodcastEpisodeModel> playableEpisodesForSubscription(PodcastSubscriptionModel subscription)
         {
             var query = from PodcastEpisodeModel episode in Episodes
                         where (episode.PodcastId == subscription.PodcastId
@@ -248,7 +248,7 @@ namespace Podcatcher
                         orderby episode.EpisodePublished descending
                         select episode;
 
-            return new ObservableCollection<PodcastEpisodeModel>(query);
+            return query;
         }
 
         public List<PodcastEpisodeModel> unplayedEpisodesForSubscription(PodcastSubscriptionModel subscription)

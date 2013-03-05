@@ -42,13 +42,24 @@ namespace Podcatcher
         private void PlayHistoryItemTapped(object sender, System.Windows.Input.GestureEventArgs e)
         {
             PodcastEpisodeModel episode = DataContext as PodcastEpisodeModel;
-            if (episode == null || episode.PodcastSubscription == null)
+            if (episode == null)
             {
                 App.showNotificationToast("You don't subscribe to the podcast anymore.");
                 return;
             }
 
-            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", episode.PodcastSubscription.PodcastId), UriKind.Relative));
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel sub = db.Subscriptions.FirstOrDefault(s => s.PodcastId == episode.PodcastId);
+                if (sub == null)
+                {
+                    App.showNotificationToast("You don't subscribe to the podcast anymore.");
+                    return;
+                }
+            }
+
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", episode.PodcastId), UriKind.Relative));
+
         }
     }
 }

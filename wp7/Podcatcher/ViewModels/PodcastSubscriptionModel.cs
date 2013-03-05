@@ -517,7 +517,7 @@ namespace Podcatcher.ViewModels
                 {
                     using (var db = new PodcastSqlModel())
                     {
-                        m_playableEpisodes = db.playableEpisodesForSubscription(this);
+                        m_playableEpisodes = new ObservableCollection<PodcastEpisodeModel>(db.playableEpisodesForSubscription(this));
                     }
                 }
                 return m_playableEpisodes;

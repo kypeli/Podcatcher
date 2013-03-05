@@ -50,12 +50,13 @@ namespace Podcatcher
                 using (var db = new PodcastSqlModel())
                 {
                     m_playingEpisode = db.episodeForEpisodeId(episodeId);
-                }
 
-                if (m_playingEpisode != null)
-                {
-                    this.Visibility = Visibility.Visible;
-                    this.DataContext = m_playingEpisode;
+                    if (m_playingEpisode != null)
+                    {
+                        this.Visibility = Visibility.Visible;
+                        this.DataContext = m_playingEpisode;
+                        this.PodcastLogo.Source = m_playingEpisode.PodcastSubscription.PodcastLogo;
+                    }
                 }
             }
             else
