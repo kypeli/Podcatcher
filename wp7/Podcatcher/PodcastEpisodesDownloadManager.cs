@@ -41,9 +41,6 @@ namespace Podcatcher
 
     public class PodcastEpisodesDownloadManager
     {
-        public event EpisodesEventHandler NewPlayableEpisode;
-        public delegate void EpisodesEventHandler(PodcastEpisodeModel e);
-
         public ObservableQueue<PodcastEpisodeModel> EpisodeDownloadQueue
         {
             get
@@ -555,10 +552,7 @@ namespace Podcatcher
                 Debug.WriteLine("Transfer request completed succesfully.");
                 updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
 
-                if (NewPlayableEpisode != null)
-                {
-                    NewPlayableEpisode(m_currentEpisodeDownload);
-                }
+                PodcastSubscriptionsManager.getInstance().newPlayableEpisode(m_currentEpisodeDownload);
             }
             else
             {

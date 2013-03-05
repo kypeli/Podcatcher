@@ -60,6 +60,13 @@ namespace Podcatcher
             String tileImageLocation = "Shared/ShellContent/" + subscriptionToPin.PodcastLogoLocalLocation.Split('/')[1];
             using (IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
             {
+                if (myIsolatedStorage.FileExists(subscriptionToPin.PodcastLogoLocalLocation) == false) 
+                {
+                    Debug.WriteLine("Podcast logo not found. Cannot pin.");
+                    App.showNotificationToast("Podcast logo not found. Cannot pin.");
+                    return;
+                }
+
                 if (myIsolatedStorage.FileExists(tileImageLocation) == false)
                 {
                     myIsolatedStorage.CopyFile(subscriptionToPin.PodcastLogoLocalLocation,

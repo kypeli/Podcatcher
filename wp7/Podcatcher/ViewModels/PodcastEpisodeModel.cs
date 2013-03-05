@@ -698,6 +698,18 @@ namespace Podcatcher.ViewModels
                 EpisodeFile = "";
                 EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                 EpisodePlayState = EpisodePlayStateEnum.Idle;
+
+                using (var db = new PodcastSqlModel())
+                {
+                    PodcastEpisodeModel e = db.Episodes.First(ep => ep.EpisodeId == EpisodeId);
+                    e.SavedPlayPos = SavedPlayPos;
+                    e.TotalLengthTicks = TotalLengthTicks;
+                    e.EpisodeFile = EpisodeFile;
+                    e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
+                    e.EpisodePlayState = EpisodePlayStateEnum.Idle;
+
+                    db.SubmitChanges();
+                }
             }
         }
 

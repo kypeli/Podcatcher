@@ -154,6 +154,7 @@ namespace Podcatcher.Views
             foreach (PodcastEpisodeModel episode in episodes)
             {
                 episode.deleteDownloadedEpisode();
+                PodcastSubscriptionsManager.getInstance().removedPlayableEpisode(episode);
             }
 
             this.UsageText.Text = getUsageString();

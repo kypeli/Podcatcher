@@ -77,7 +77,8 @@ namespace Podcatcher.Views
             m_playableEpisodes = m_subscription.PlayableEpisodes;
             this.DataContext = m_subscription;
 
-            PodcastEpisodesDownloadManager.getInstance().NewPlayableEpisode += new PodcastEpisodesDownloadManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
+            PodcastSubscriptionsManager.getInstance().NewPlayableEpisode += new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
+            PodcastSubscriptionsManager.getInstance().RemovedPlayableEpisode += new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_RemovedPlayableEpisode);
             
             bool forceUpdate = false;
             try
@@ -119,7 +120,7 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
         {
-            PodcastEpisodesDownloadManager.getInstance().NewPlayableEpisode -= new PodcastEpisodesDownloadManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
+            PodcastSubscriptionsManager.getInstance().NewPlayableEpisode -= new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
         }
 
         /************************************* Priovate implementations *******************************/
@@ -130,11 +131,34 @@ namespace Podcatcher.Views
             addEpisodeToPlayableList(e);
         }
 
+        private void m_subscription_RemovedPlayableEpisode(PodcastEpisodeModel e)
+        {
+            removeEpisodeFromPlayableList(e);
+        }
+
         private ObservableCollection<PodcastEpisodeModel> m_playableEpisodes = null;
         private void addEpisodeToPlayableList(PodcastEpisodeModel episode)
         {
             List<PodcastEpisodeModel> tmpList = m_playableEpisodes.ToList();
             tmpList.Add(episode);
+            tmpList.Sort(CompareEpisodesByPublishDate);
+
+            m_playableEpisodes = new ObservableCollection<PodcastEpisodeModel>(tmpList);
+            m_subscription.PlayableEpisodes = m_playableEpisodes;
+        }
+
+        private void removeEpisodeFromPlayableList(PodcastEpisodeModel episode)
+        {
+            List<PodcastEpisodeModel> tmpList = m_playableEpisodes.ToList();
+            for (int i = 0; i<tmpList.Count; i++) 
+            {
+                if (tmpList[i].EpisodeId == episode.EpisodeId)
+                {
+                    tmpList.RemoveAt(i);
+                    break;
+                }
+            }
+
             tmpList.Sort(CompareEpisodesByPublishDate);
 
             m_playableEpisodes = new ObservableCollection<PodcastEpisodeModel>(tmpList);
@@ -208,9 +232,9 @@ namespace Podcatcher.Views
                         if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
                         {
                             episode.deleteDownloadedEpisode();
+                            PodcastSubscriptionsManager.getInstance().removedPlayableEpisode(episode);
                         }
                     }
-                    db.SubmitChanges();
                 }
 
                 using (var db = new PodcastSqlModel())

@@ -79,6 +79,11 @@ namespace Podcatcher
 
         public event SubscriptionManagerHandler OnOPMLExportToSkydriveChanged;
 
+        public event EpisodesEventHandler NewPlayableEpisode;
+        public event EpisodesEventHandler RemovedPlayableEpisode;
+        
+        public delegate void EpisodesEventHandler(PodcastEpisodeModel e);
+
         public enum SubscriptionsState
         {
             StartedRefreshing,
@@ -290,6 +295,22 @@ namespace Podcatcher
                 {
                     DoOPMLExport();
                 }
+            }
+        }
+
+        public void newPlayableEpisode(PodcastEpisodeModel e)
+        {
+            if (NewPlayableEpisode != null)
+            {
+                NewPlayableEpisode(e);
+            }
+        }
+
+        public void removedPlayableEpisode(PodcastEpisodeModel e)
+        {
+            if (RemovedPlayableEpisode != null)
+            {
+                RemovedPlayableEpisode(e);
             }
         }
 

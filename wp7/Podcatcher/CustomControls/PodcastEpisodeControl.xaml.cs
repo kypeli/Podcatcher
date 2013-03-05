@@ -114,6 +114,15 @@ namespace Podcatcher
         {
             PodcastEpisodeModel podcastEpisode = (sender as MenuItem).DataContext as PodcastEpisodeModel;
             podcastEpisode.deleteDownloadedEpisode();
+            PodcastSubscriptionsManager.getInstance().removedPlayableEpisode(podcastEpisode);
+
+            using (var db = new PodcastSqlModel())
+            {
+                m_episodeModel = db.episodeForEpisodeId(m_episodeModel.EpisodeId);
+            }
+
+            this.DataContext = null;
+            this.DataContext = m_episodeModel;
         }
 
         private void Episode_Tap(object sender, System.Windows.Input.GestureEventArgs e)

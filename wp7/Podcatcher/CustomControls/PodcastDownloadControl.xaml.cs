@@ -44,6 +44,7 @@ namespace Podcatcher
         void PodcastDownloadControl_Loaded(object sender, RoutedEventArgs e)
         {
             m_episodeModel = this.DataContext as PodcastEpisodeModel;
+            this.PodcastLogo.Source = m_episodeModel.PodcastLogo;
         }
 
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
