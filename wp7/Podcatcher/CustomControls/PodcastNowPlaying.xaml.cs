@@ -23,13 +23,14 @@ using System.IO.IsolatedStorage;
 using Podcatcher.ViewModels;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
+using System.Windows.Media.Imaging;
 
 namespace Podcatcher
 {
     public partial class PodcastNowPlaying : UserControl
     {
-        private IsolatedStorageSettings m_appSettings;
-        private PodcastEpisodeModel m_playingEpisode;
+        private static PodcastEpisodeModel currentlyPlayingEpisodeInPlayhistory = null;
+        private BitmapImage m_podcastLogo;
 
         public PodcastNowPlaying()
         {
@@ -43,26 +44,33 @@ namespace Podcatcher
 
         internal void SetupNowPlayingView()
         {
-            m_appSettings = IsolatedStorageSettings.ApplicationSettings;
-            if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+            if (App.currentlyPlayingEpisodeId > 0)
             {
-                int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                using (var db = new PodcastSqlModel())
-                {
-                    m_playingEpisode = db.episodeForEpisodeId(episodeId);
-
-                    if (m_playingEpisode != null)
-                    {
-                        this.Visibility = Visibility.Visible;
-                        this.DataContext = m_playingEpisode;
-                        this.PodcastLogo.Source = m_playingEpisode.PodcastSubscription.PodcastLogo;
-                    }
-                }
+                this.Visibility = Visibility.Visible;
             }
             else
             {
                 this.Visibility = Visibility.Collapsed;
+                return;
             }
+
+            if (currentlyPlayingEpisodeInPlayhistory == null
+                || App.currentlyPlayingEpisodeId != currentlyPlayingEpisodeInPlayhistory.EpisodeId)
+            {
+                using (var db = new PodcastSqlModel())
+                {
+                    currentlyPlayingEpisodeInPlayhistory = db.episodeForEpisodeId(App.currentlyPlayingEpisodeId);
+                    m_podcastLogo = currentlyPlayingEpisodeInPlayhistory.PodcastSubscription.PodcastLogo;
+                }
+            }
+
+            if (currentlyPlayingEpisodeInPlayhistory != null)
+            {
+                this.Visibility = Visibility.Visible;
+                this.DataContext = currentlyPlayingEpisodeInPlayhistory;
+                this.PodcastLogo.Source = m_podcastLogo;
+            }
+            
         }
 
         private void NowPlayingTapped(object sender, System.Windows.Input.GestureEventArgs e)
