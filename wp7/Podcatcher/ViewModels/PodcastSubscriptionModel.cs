@@ -669,21 +669,9 @@ namespace Podcatcher.ViewModels
                              where (episode.EpisodeFile == null && episode.EpisodeFile != "")
                              select episode).Skip(keepEpisodes);
                 }
-
- /*               List<PodcastEpisodeModel> episodesToClean = query.ToList();
-                foreach (PodcastEpisodeModel ep in episodesToClean)
-                {
-                    ep.deleteDownloadedEpisode();
-                }
-
                 db.deleteEpisodesPerQuery(query);
-   */         
             }
 
-/*            PodcastCleanFinished();
-            NotifyPropertyChanged("EpisodesText");
-            NotifyPropertyChanged("EpisodesPublishedDescending");
-            */
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(workerCleanSubscriptions);
             worker.RunWorkerAsync(query);
@@ -702,13 +690,11 @@ namespace Podcatcher.ViewModels
                 PodcastSubscriptionModel s = db.subscriptionModelForIndex(PodcastId);
                 foreach (PodcastEpisodeModel e in episodesToClean)
                 {
-                    episode = db.episodeForEpisodeId(e.EpisodeId);
+                    episode = db.Episodes.First(ep => ep.EpisodeId == e.EpisodeId);
                     episode.deleteDownloadedEpisode();
-                    db.Episodes.DeleteOnSubmit(episode);
                 }
 
                 db.SubmitChanges();
-//                db.deleteEpisodesPerQuery(query);
             }
         }
 
