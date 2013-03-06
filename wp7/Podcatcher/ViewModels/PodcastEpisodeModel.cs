@@ -658,17 +658,13 @@ namespace Podcatcher.ViewModels
 
         public void deleteDownloadedEpisode() 
         {
-            if (String.IsNullOrEmpty(EpisodeFile))
-            {
-                return;
-            }
-
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 try
                 {
                     Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
-                    if (episodeStore.FileExists(EpisodeFile))
+                    if (String.IsNullOrEmpty(EpisodeFile) == false 
+                        && episodeStore.FileExists(EpisodeFile))
                     {
                         episodeStore.DeleteFile(EpisodeFile);
                     }
@@ -707,6 +703,8 @@ namespace Podcatcher.ViewModels
                     e.EpisodeFile = EpisodeFile;
                     e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                     e.EpisodePlayState = EpisodePlayStateEnum.Idle;
+
+                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
 
                     db.SubmitChanges();
                 }

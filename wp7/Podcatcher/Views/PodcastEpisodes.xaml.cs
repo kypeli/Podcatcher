@@ -205,6 +205,8 @@ namespace Podcatcher.Views
                         }
                     }
                     db.SubmitChanges();
+
+                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(m_subscription);
                 }
 
                 using (var db = new PodcastSqlModel())

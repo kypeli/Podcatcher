@@ -142,15 +142,15 @@ namespace Podcatcher
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-//            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
+            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
 
             // Hook data contextes.
- //           this.PlayHistoryList.ItemsSource = playHistory;
+            this.PlayHistoryList.ItemsSource = playHistory;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
 
 
-/*            if (playHistory.Count == 0)
+            if (playHistory.Count == 0)
             {
                 this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -168,7 +168,6 @@ namespace Podcatcher
                 this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
                 this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
             }
- */
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
