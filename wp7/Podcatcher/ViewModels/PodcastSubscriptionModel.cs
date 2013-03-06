@@ -423,32 +423,43 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_unplayedEpisodes = 0;
+        private int m_unplayedEpisodes = -1;
         public int UnplayedEpisodes
         {
             get
             {
+                if (m_unplayedEpisodes < 0)
+                {
+                    m_unplayedEpisodes = unplayedEpisodesCount(PodcastId);
+                }
+
                 return m_unplayedEpisodes;
             }
 
             set
             {
                 m_unplayedEpisodes = unplayedEpisodesCount(PodcastId);
+                NotifyPropertyChanged("NumberOfEpisodesText");
             }
-
         }
 
-        private int m_partiallyPlayedEpisodes = 0;
+        private int m_partiallyPlayedEpisodes = -1;
         public int PartiallyPlayedEpisodes
         {
             get
             {
+                if (m_partiallyPlayedEpisodes < 0)
+                {
+                    m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
+                }
+
                 return m_partiallyPlayedEpisodes;
             }
 
             set
             {
                 m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
+                NotifyPropertyChanged("NumberOfEpisodesText");
             }
         }
 

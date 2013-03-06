@@ -625,6 +625,8 @@ namespace Podcatcher
                 e.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
 
                 db.SubmitChanges();
+
+                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
             }
         }
 

@@ -48,6 +48,7 @@ namespace Podcatcher
         private PodcastSubscriptionsManager m_subscriptionsManager;
         private PodcastPlayerControl m_playerControl;
         private IsolatedStorageSettings m_applicationSettings = null;
+        private ObservableCollection<PodcastSubscriptionModel> m_subscriptions = App.mainViewModels.PodcastSubscriptions;
 
         public MainView()
         {
@@ -78,6 +79,11 @@ namespace Podcatcher
             PodcastSubscriptionsManager.getInstance().OnPodcastChannelDeleteFinished
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelDeleteFinished);
 
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelPlayedCountChanged
+                += new SubscriptionChangedHandler(subscriptionManager_OnPodcastChannelPlayedCountChanged);
+
+            SubscriptionsList.ItemsSource = m_subscriptions;
+
             handleShowReviewPopup();
         }
 
@@ -90,6 +96,21 @@ namespace Podcatcher
         private void subscriptionManager_OnPodcastChannelDeleteFinished(object source, SubscriptionManagerArgs e)
         {
             deleteProgressOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void subscriptionManager_OnPodcastChannelPlayedCountChanged(PodcastSubscriptionModel s) 
+        {
+            Debug.WriteLine("Play status chnaged.");
+            List<PodcastSubscriptionModel> subs = m_subscriptions.ToList();
+            foreach (PodcastSubscriptionModel sub in subs) 
+            {
+                if (sub.PodcastId == s.PodcastId)
+                {
+                    sub.UnplayedEpisodes--;
+                    sub.PartiallyPlayedEpisodes--;
+                    break;
+                }
+            }
         }
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)
@@ -124,7 +145,7 @@ namespace Podcatcher
 //            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
 
             // Hook data contextes.
-//            this.PlayHistoryList.ItemsSource = playHistory;
+ //           this.PlayHistoryList.ItemsSource = playHistory;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
 

@@ -42,6 +42,8 @@ using System.Linq;
 namespace Podcatcher
 {
     public delegate void SubscriptionManagerHandler(object source, SubscriptionManagerArgs e);
+    
+    public delegate void SubscriptionChangedHandler(PodcastSubscriptionModel s);
 
     public class SubscriptionManagerArgs
     {
@@ -70,6 +72,7 @@ namespace Podcatcher
         public event SubscriptionManagerHandler OnPodcastChannelDeleteFinished;
         public event SubscriptionManagerHandler OnPodcastChannelAddFinishedWithError;
         public event SubscriptionManagerHandler OnPodcastChannelRequiresAuthentication;
+        
 
         public event SubscriptionManagerHandler OnGPodderImportStarted;
         public event SubscriptionManagerHandler OnGPodderImportFinished;
@@ -81,7 +84,9 @@ namespace Podcatcher
 
         public event EpisodesEventHandler NewPlayableEpisode;
         public event EpisodesEventHandler RemovedPlayableEpisode;
-        
+
+        public event SubscriptionChangedHandler OnPodcastChannelPlayedCountChanged;
+
         public delegate void EpisodesEventHandler(PodcastEpisodeModel e);
 
         public enum SubscriptionsState
@@ -311,6 +316,14 @@ namespace Podcatcher
             if (RemovedPlayableEpisode != null)
             {
                 RemovedPlayableEpisode(e);
+            }
+        }
+
+        public void podcastPlaystateChanged(PodcastSubscriptionModel s)
+        {
+            if (OnPodcastChannelPlayedCountChanged != null) 
+            {
+                OnPodcastChannelPlayedCountChanged(s);
             }
         }
 

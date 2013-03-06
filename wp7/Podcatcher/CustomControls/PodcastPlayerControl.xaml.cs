@@ -836,6 +836,8 @@ namespace Podcatcher
                 // e.TotalLengthTicks = episode.TotalLengthTicks;
 
                 db.SubmitChanges();
+
+                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
             }
         }
 

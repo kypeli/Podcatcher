@@ -37,7 +37,7 @@
             <!--Subscription listing -->
             <controls:PivotItem Header="subscriptions">                
                 <Grid x:Name="SubscriptionsRoot" Background="Transparent">
-                    <ListBox x:Name="SubscriptionsList" ItemsSource="{Binding PodcastSubscriptions}"  Grid.Row="0" Margin="0,0,0,0" SelectionChanged="ListBox_SelectionChanged">
+                    <ListBox x:Name="SubscriptionsList" Grid.Row="0" Margin="0,0,0,0" SelectionChanged="ListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Width="Auto" Height="Auto">
