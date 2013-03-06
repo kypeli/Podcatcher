@@ -119,8 +119,11 @@ namespace Podcatcher
             {
                 if (sub.PodcastId == s.PodcastId)
                 {
-                    sub.UnplayedEpisodes--;
-                    sub.PartiallyPlayedEpisodes--;
+                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        sub.UnplayedEpisodes--;
+                        sub.PartiallyPlayedEpisodes--;
+                    });
                     break;
                 }
             }
