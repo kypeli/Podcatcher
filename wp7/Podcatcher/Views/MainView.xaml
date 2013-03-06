@@ -20,11 +20,6 @@
     Style="{StaticResource TurnstilePage}"
     >
     
-    <phone:PhoneApplicationPage.Resources>
-        <c:NoSubscriptionsVisibilityConverter x:Name="emptyListNotificationVisibility"/>
-    </phone:PhoneApplicationPage.Resources>
-
-    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <toolkit:PerformanceProgressBar x:Name="UpdatingIndicator" Grid.Row="0"
@@ -47,9 +42,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <TextBlock Text="You have no podcast subscriptions.&#xd;&#xa;&#xd;&#xa;Why don't you add some..."
-                             Visibility="{Binding PodcastSubscriptions, 
-                                Converter={StaticResource emptyListNotificationVisibility}}" 
+                    <TextBlock x:Name="NoSubscriptionsLabel" Text="You have no podcast subscriptions.&#xd;&#xa;&#xd;&#xa;Why don't you add some..." 
                              VerticalAlignment="Center" 
                              HorizontalAlignment="Center" 
                              TextWrapping="Wrap" 

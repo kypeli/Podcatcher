@@ -86,6 +86,8 @@ namespace Podcatcher
         public event EpisodesEventHandler RemovedPlayableEpisode;
 
         public event SubscriptionChangedHandler OnPodcastChannelPlayedCountChanged;
+        public event SubscriptionChangedHandler OnPodcastChannelAdded;
+        public event SubscriptionChangedHandler OnPodcastChannelRemoved;
 
         public delegate void EpisodesEventHandler(PodcastEpisodeModel e);
 
@@ -225,12 +227,15 @@ namespace Podcatcher
                 dbSubscription.cleanupForDeletion();
                 db.deleteSubscription(dbSubscription);
             }
+
+            e.Result = podcastModel;
         }
 
         void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            App.mainViewModels.PodcastSubscriptions = null;
             OnPodcastChannelDeleteFinished(this, null);
+            PodcastSubscriptionModel s = e.Result as PodcastSubscriptionModel;
+            OnPodcastChannelRemoved(s);
         }
 
         public void refreshSubscriptions()
@@ -324,6 +329,14 @@ namespace Podcatcher
             if (OnPodcastChannelPlayedCountChanged != null) 
             {
                 OnPodcastChannelPlayedCountChanged(s);
+            }
+        }
+
+        public void podcastSubscriptionRemoved(PodcastSubscriptionModel s)
+        {
+            if (OnPodcastChannelRemoved != null)
+            {
+                OnPodcastChannelRemoved(s);
             }
         }
 
@@ -451,6 +464,8 @@ namespace Podcatcher
             addArgs.isImportingFromGpodder = importingFromGpodder;
 
             OnPodcastChannelAddFinished(this, addArgs);
+
+            OnPodcastChannelAdded(podcastModel);
         }
 
         private bool needsAuthentication(WebException e)
@@ -566,8 +581,6 @@ namespace Podcatcher
                     OnGPodderImportFinished(this, null);
                 }
             }
-
-            App.mainViewModels.PodcastSubscriptions = null;
         }
 
         private void PodcastSubscriptionFailedWithMessage(string message)

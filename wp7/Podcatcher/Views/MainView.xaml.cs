@@ -81,8 +81,21 @@ namespace Podcatcher
 
             PodcastSubscriptionsManager.getInstance().OnPodcastChannelPlayedCountChanged
                 += new SubscriptionChangedHandler(subscriptionManager_OnPodcastChannelPlayedCountChanged);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAdded
+                += new SubscriptionChangedHandler(subscriptionManager_OnPodcastChannelAdded);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelRemoved
+                += new SubscriptionChangedHandler(subscriptionManager_OnPodcastChannelRemoved);
 
             SubscriptionsList.ItemsSource = m_subscriptions;
+
+            if (m_subscriptions.Count > 0)
+            {
+                NoSubscriptionsLabel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                NoSubscriptionsLabel.Visibility = Visibility.Visible;
+            }
 
             handleShowReviewPopup();
         }
@@ -111,6 +124,53 @@ namespace Podcatcher
                     break;
                 }
             }
+        }
+
+        private void subscriptionManager_OnPodcastChannelRemoved(PodcastSubscriptionModel s) 
+        {
+            Debug.WriteLine("Subscription deleted.");
+
+            List<PodcastSubscriptionModel> subs = m_subscriptions.ToList();
+            for (int i = 0; i < subs.Count; i++)
+            {
+                if (subs[i].PodcastId == s.PodcastId)
+                {
+                    subs.RemoveAt(i);
+                    break;
+                }
+            }
+
+            m_subscriptions = new ObservableCollection<PodcastSubscriptionModel>(subs);
+            this.SubscriptionsList.ItemsSource = m_subscriptions;
+
+            if (m_subscriptions.Count > 0)
+            {
+                NoSubscriptionsLabel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                NoSubscriptionsLabel.Visibility = Visibility.Visible;
+            }
+
+        }
+
+        private int PodcastSubscriptionSortComparator(PodcastSubscriptionModel s1, PodcastSubscriptionModel s2)
+        {
+            return s1.PodcastName.CompareTo(s2.PodcastName);
+        }
+
+        private void subscriptionManager_OnPodcastChannelAdded(PodcastSubscriptionModel s) 
+        {
+            Debug.WriteLine("Subscription added");
+
+            List<PodcastSubscriptionModel> subs = m_subscriptions.ToList();
+            subs.Add(s);
+            subs.Sort(PodcastSubscriptionSortComparator);
+
+            m_subscriptions = new ObservableCollection<PodcastSubscriptionModel>(subs);
+            this.SubscriptionsList.ItemsSource = m_subscriptions;
+
+            NoSubscriptionsLabel.Visibility = Visibility.Collapsed;
         }
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)
@@ -168,6 +228,7 @@ namespace Podcatcher
                 this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
                 this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
             }
+ 
         }
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)

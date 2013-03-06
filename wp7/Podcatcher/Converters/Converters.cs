@@ -38,26 +38,6 @@ using System.Collections.ObjectModel;
 
 namespace Podcatcher.Converters
 {
-    public class NoSubscriptionsVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            ObservableCollection<PodcastSubscriptionModel> model = value as ObservableCollection<PodcastSubscriptionModel>;
-            if (model == null
-                || model.Count < 1)
-            {
-                return Visibility.Visible;
-            }
-
-            return Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
     public class NoDownloadedEpisodesVisible : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

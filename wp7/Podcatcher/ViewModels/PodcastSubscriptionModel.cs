@@ -847,6 +847,13 @@ namespace Podcatcher.ViewModels
 
                 using (var db = new PodcastSqlModel())
                 {
+                    PodcastSubscriptionModel sub = db.Subscriptions.FirstOrDefault(s => s.PodcastId == m_subscriptionModel.PodcastId);
+                    if (sub == null) 
+                    {
+                        Debug.WriteLine("Subscription NULL. Probably already deleted.");
+                        return;
+                    }
+
                     db.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
                 }
 

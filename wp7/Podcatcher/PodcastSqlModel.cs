@@ -154,10 +154,21 @@ namespace Podcatcher
 
             foreach (var episode in queryDelEpisodes)
             {
-                Deployment.Current.Dispatcher.BeginInvoke(() =>
+                using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    episode.deleteDownloadedEpisode();
-                });
+                    try
+                    {
+                        Debug.WriteLine("Deleting downloaded episode: " + episode.EpisodeFile);
+                        if (String.IsNullOrEmpty(episode.EpisodeFile) == false
+                            && episodeStore.FileExists(episode.EpisodeFile))
+                        {
+                            episodeStore.DeleteFile(episode.EpisodeFile);
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                    }
+                }
 
                 Episodes.DeleteOnSubmit(episode);
             }

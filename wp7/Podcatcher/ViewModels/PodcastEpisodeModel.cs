@@ -697,7 +697,13 @@ namespace Podcatcher.ViewModels
 
                 using (var db = new PodcastSqlModel())
                 {
-                    PodcastEpisodeModel e = db.Episodes.First(ep => ep.EpisodeId == EpisodeId);
+                    PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == EpisodeId);
+                    if (e == null)
+                    {
+                        Debug.WriteLine("Episode NULL. Probably alrady deleted.");
+                        return;
+                    }
+
                     e.SavedPlayPos = SavedPlayPos;
                     e.TotalLengthTicks = TotalLengthTicks;
                     e.EpisodeFile = EpisodeFile;
