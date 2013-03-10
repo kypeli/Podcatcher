@@ -387,6 +387,11 @@ namespace Podcatcher.ViewModels
 
                         m_episodes = new List<PodcastEpisodeModel>(query);
 
+                        for (int i = 0; i < NewEpisodesCount; i++)
+                        {
+                            m_episodes[i].NewEpisodeVisibility = Visibility.Visible;
+                        }
+
                         // Update playing episode in this subscription, if we have one.
                         if (App.currentlyPlayingEpisodeId > 0)
                         {
@@ -841,21 +846,24 @@ namespace Podcatcher.ViewModels
                     }
 
                     db.insertEpisodesForSubscription(m_subscriptionModel, newPodcastEpisodes);
-                }
 
-                // Indicate new episodes to the UI only when we are not adding the feed. 
-                // I.e. we want to show new episodes only when we refresh the feed at restart.
-                if (subscriptionAddedNow == false)
-                {
-                    int numOfNewPodcasts = newPodcastEpisodes.Count;
-
-                    Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);
-                    Deployment.Current.Dispatcher.BeginInvoke(() =>
+                    // Indicate new episodes to the UI only when we are not adding the feed. 
+                    // I.e. we want to show new episodes only when we refresh the feed at restart.
+                    if (subscriptionAddedNow == false)
                     {
-                        m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
-                    });
-                }
+                        int numOfNewPodcasts = newPodcastEpisodes.Count;
 
+                        Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            m_subscriptionModel.addNumOfNewEpisodes(numOfNewPodcasts);
+                        });
+
+                        sub.addNumOfNewEpisodes(numOfNewPodcasts);
+                        
+                        db.SubmitChanges();
+                    }
+                }
 
                 if (m_subscriptionModel.IsAutoDownload
                     && newPodcastEpisodes.Count > 0)

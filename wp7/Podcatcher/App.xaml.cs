@@ -163,44 +163,46 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Updating episode position from background agent.");
 
-                PodcastEpisodeModel episodeToUpdate = null;
                 using (var db = new PodcastSqlModel())
                 {
-                    episodeToUpdate = db.episodesForTitle(appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
-                }
-                if (episodeToUpdate == null)
-                {
-                    Debug.WriteLine("Warning: Episode to update is null!");
-                    return;
-                }
+                    PodcastEpisodeModel episodeToUpdate = db.episodesForTitle(appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
 
-                String stop = appSettings[App.LSKEY_AA_EPISODE_STOP_TIMESTAMP] as String;
-                String lastTimestamp = appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP] as String;
-                if (String.IsNullOrEmpty(lastTimestamp) || String.IsNullOrEmpty(stop))
-                {
-                    Debug.WriteLine("Warning: Start or stop timestamp is null.");
-                    return;
-                }
+                    if (episodeToUpdate == null)
+                    {
+                        Debug.WriteLine("Warning: Episode to update is null!");
+                        return;
+                    }
 
-                long lastPosTick = (long)appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_POS];
-                DateTime startTime = DateTime.Parse(lastTimestamp);
-                DateTime stopTime = DateTime.Parse(stop);
-                long deltaTicks = stopTime.Ticks - startTime.Ticks;
+                    String stop = appSettings[App.LSKEY_AA_EPISODE_STOP_TIMESTAMP] as String;
+                    String lastTimestamp = appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP] as String;
+                    if (String.IsNullOrEmpty(lastTimestamp) || String.IsNullOrEmpty(stop))
+                    {
+                        Debug.WriteLine("Warning: Start or stop timestamp is null.");
+                        return;
+                    }
 
-                if (lastPosTick + deltaTicks >= episodeToUpdate.TotalLengthTicks) 
-                {
-                    deltaTicks = episodeToUpdate.TotalLengthTicks - lastPosTick;
-                }
+                    long lastPosTick = (long)appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_POS];
+                    DateTime startTime = DateTime.Parse(lastTimestamp);
+                    DateTime stopTime = DateTime.Parse(stop);
+                    long deltaTicks = stopTime.Ticks - startTime.Ticks;
 
-                episodeToUpdate.SavedPlayPos = lastPosTick + deltaTicks;
+                    if (lastPosTick + deltaTicks >= episodeToUpdate.TotalLengthTicks)
+                    {
+                        deltaTicks = episodeToUpdate.TotalLengthTicks - lastPosTick;
+                    }
 
-                Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
+                    episodeToUpdate.SavedPlayPos = lastPosTick + deltaTicks;
 
-                if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID) == false)
-                {
-                    // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
-                    // playing ID. This means the track in question isn't playing anymore, so let's update the state.
-                    episodeToUpdate.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                    Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
+
+                    if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID) == false)
+                    {
+                        // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
+                        // playing ID. This means the track in question isn't playing anymore, so let's update the state.
+                        episodeToUpdate.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                    }
+
+                    db.SubmitChanges();
                 }
 
                 appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
