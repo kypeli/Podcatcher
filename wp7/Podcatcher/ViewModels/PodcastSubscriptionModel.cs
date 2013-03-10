@@ -645,7 +645,7 @@ namespace Podcatcher.ViewModels
                 if (!deleteDownloads)
                 {
                     keepDownloads = (from episode in e.Episodes
-                                     where (episode.EpisodeFile != null && episode.EpisodeFile != "")
+                                     where (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
                                      select episode).ToList().Count;
                 }                
 
@@ -666,7 +666,7 @@ namespace Podcatcher.ViewModels
                 {
                     query = (from episode in e.Episodes
                              orderby episode.EpisodePublished descending
-                             where (episode.EpisodeFile == null && episode.EpisodeFile != "")
+                             where (episode.EpisodeDownloadState != PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
                              select episode).Skip(keepEpisodes);
                 }
                 db.deleteEpisodesPerQuery(query);
@@ -847,15 +847,6 @@ namespace Podcatcher.ViewModels
                 // I.e. we want to show new episodes only when we refresh the feed at restart.
                 if (subscriptionAddedNow == false)
                 {
-                    // Set the visibility for new episodes.
-                    foreach (PodcastEpisodeModel e in newPodcastEpisodes)
-                    {
-                        Deployment.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            e.NewEpisodeVisibility = System.Windows.Visibility.Visible;
-                        });
-                    }
-
                     int numOfNewPodcasts = newPodcastEpisodes.Count;
 
                     Debug.WriteLine("Got {0} new episodes.", numOfNewPodcasts);

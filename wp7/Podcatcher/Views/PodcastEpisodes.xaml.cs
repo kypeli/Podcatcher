@@ -111,6 +111,12 @@ namespace Podcatcher.Views
                 m_subscription.cleanOldEpisodes(SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex));
             }
 
+            for (int i=0, j=this.EpisodeList.Items.Count; i < m_subscription.NewEpisodesCount; i++, j--)
+            {
+                PodcastEpisodeModel ep = this.EpisodeList.Items.ElementAt(j) as PodcastEpisodeModel;
+                ep.NewEpisodeVisibility = System.Windows.Visibility.Visible;
+            }
+
             using (var db = new PodcastSqlModel())
             {
                 PodcastSubscriptionModel sub = db.Subscriptions.First(s => s.PodcastId == m_subscription.PodcastId);
