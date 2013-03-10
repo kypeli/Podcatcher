@@ -844,16 +844,19 @@ namespace Podcatcher
 
         private void updateEpisodeToDB(PodcastEpisodeModel episode)
         {
+            PodcastSubscriptionModel sub = null;
             using (var db = new PodcastSqlModel())
             {
                 PodcastEpisodeModel e = db.Episodes.Single(ep => ep.EpisodeId == episode.EpisodeId);  // db.episodeForEpisodeId(episode.EpisodeId);
+                sub = e.PodcastSubscription;
+                
                 e.SavedPlayPos = episode.SavedPlayPos;
                 // e.TotalLengthTicks = episode.TotalLengthTicks;
 
                 db.SubmitChanges();
-
-                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
             }
+
+            PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(sub);
         }
 
 
