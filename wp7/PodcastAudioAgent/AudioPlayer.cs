@@ -171,14 +171,13 @@ namespace PodcastAudioAgent
                 {
                     settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP, DateTime.Now.ToString());
                     settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_POS, player.Position.Ticks);
+                    settings.Save();
                 }
                 catch (InvalidOperationException e)
                 {
                     Debug.WriteLine("AudioPlayer:updateLastKnownPos - Player no longer available. Error:  " + e.Message);
                     return;
                 }
-
-                settings.Save();
             }
         }
 

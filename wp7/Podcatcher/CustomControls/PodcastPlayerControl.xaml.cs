@@ -253,6 +253,7 @@ namespace Podcatcher
                     {
                         m_currentEpisode = db.episodeForEpisodeId(episodeId);
                         App.currentlyPlayingEpisode = m_currentEpisode;
+                        App.currentlyPlayingEpisode.setPlaying();
                     }
                 }
 
