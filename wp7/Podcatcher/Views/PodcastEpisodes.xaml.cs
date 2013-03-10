@@ -110,6 +110,13 @@ namespace Podcatcher.Views
             {
                 m_subscription.cleanOldEpisodes(SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex));
             }
+
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel sub = db.Subscriptions.First(s => s.PodcastId == m_subscription.PodcastId);
+                sub.NewEpisodesCount = 0;
+                db.SubmitChanges();
+            }                
         }
 
         protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
