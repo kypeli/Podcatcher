@@ -472,14 +472,21 @@ namespace Podcatcher.ViewModels
         {
             using (var db = new PodcastSqlModel())
             {
-                var query = from episode in db.Episodes
-                            where (episode.PodcastId == subscriptionId
-                                   && episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
-                                   && episode.SavedPlayPos == 0)
-                            select episode;
-                
-                int count = query.Count();
-                return count;
+                try
+                {
+                    var query = from episode in db.Episodes
+                                where (episode.PodcastId == subscriptionId
+                                       && episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
+                                       && episode.SavedPlayPos == 0)
+                                select episode;
+
+                    int count = query.Count();
+                    return count;
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
             }
         }
 
@@ -488,14 +495,23 @@ namespace Podcatcher.ViewModels
             float listenedEpisodeThreshold = 0.0F;
             using (var db = new PodcastSqlModel())
             {
-                listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
-                var query = from episode in db.Episodes
-                            where (episode.PodcastId == subscriptionId
-                                   && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
-                                   && episode.SavedPlayPos > 0
-                                   && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
-                            select episode;
-                return query.Count();
+                try
+                {
+                    listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
+                    var query = from episode in db.Episodes
+                                where (episode.PodcastId == subscriptionId
+                                       && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
+                                       && episode.SavedPlayPos > 0
+                                       && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
+                                select episode;
+
+                    return query.Count();
+                }
+                catch (Exception)
+                {
+                    // Something happened.
+                    return 0;
+                }
             }
 
         }
