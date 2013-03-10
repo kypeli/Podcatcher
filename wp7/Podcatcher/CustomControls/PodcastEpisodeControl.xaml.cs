@@ -75,8 +75,8 @@ namespace Podcatcher
             {
                 if (PodcastPlayerControl.isAudioPodcast(m_episodeModel))
                 {
-                    audioStreaming(m_episodeModel);
                     m_episodeModel.setPlaying();
+                    audioStreaming(m_episodeModel);
                 }
                 else
                 {

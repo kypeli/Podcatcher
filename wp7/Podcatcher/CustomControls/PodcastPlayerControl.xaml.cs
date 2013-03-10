@@ -241,10 +241,19 @@ namespace Podcatcher
             if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
             {
                 int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                using (var db = new PodcastSqlModel())
+                App.currentlyPlayingEpisodeId = episodeId;
+
+                if (App.currentlyPlayingEpisode != null)
                 {
-                    m_currentEpisode = db.episodeForEpisodeId(episodeId);
-                    App.currentlyPlayingEpisodeId = episodeId;
+                    m_currentEpisode = App.currentlyPlayingEpisode;
+                }
+                else
+                {
+                    using (var db = new PodcastSqlModel())
+                    {
+                        m_currentEpisode = db.episodeForEpisodeId(episodeId);
+                        App.currentlyPlayingEpisode = m_currentEpisode;
+                    }
                 }
 
                 if (m_currentEpisode == null)
@@ -254,6 +263,7 @@ namespace Podcatcher
                     m_appSettings.Save();
                     showNoPlayerLayout();
                     App.currentlyPlayingEpisodeId = -1;
+                    App.currentlyPlayingEpisode = null;
                     return;
                 }
 
@@ -288,6 +298,7 @@ namespace Podcatcher
                     appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                     appSettings.Save();
                     App.currentlyPlayingEpisodeId = -1;
+                    App.currentlyPlayingEpisode = null;
 
                     using (var db = new PodcastSqlModel())
                     {
@@ -311,7 +322,7 @@ namespace Podcatcher
             }
         }
 
-        private void showNoPlayerLayout()
+        public void showNoPlayerLayout()
         {
             if (m_screenUpdateTimer != null)
             {
@@ -359,6 +370,7 @@ namespace Podcatcher
             }
 
             m_currentEpisode = episodeModel;
+            App.currentlyPlayingEpisode = episodeModel;
 
             setupPlayerUIContent(m_currentEpisode);
             showPlayerLayout();
@@ -416,7 +428,8 @@ namespace Podcatcher
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
 
-                App.currentlyPlayingEpisodeId = m_currentEpisode.EpisodeId;
+//                App.currentlyPlayingEpisodeId = m_currentEpisode.EpisodeId;
+//                App.currentlyPlayingEpisode = m_currentEpisode;
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
                 // then for some reason it's not honored. 
@@ -643,6 +656,7 @@ namespace Podcatcher
             }
 
             App.currentlyPlayingEpisodeId = -1;
+            App.currentlyPlayingEpisode = null;
 
             showNoPlayerLayout();
         }

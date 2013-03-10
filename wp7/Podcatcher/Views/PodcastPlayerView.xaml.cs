@@ -41,8 +41,11 @@ namespace Podcatcher.Views
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             this.PodcastPlayer.initializePlayerUI();
+        }
 
-
+        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            this.PodcastPlayer.showNoPlayerLayout();
         }
     }
 }

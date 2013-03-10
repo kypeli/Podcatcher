@@ -21,14 +21,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Collections.ObjectModel;
@@ -36,7 +30,7 @@ using Microsoft.Phone.Shell;
 
 namespace Podcatcher.Views
 {
-    public partial class PodcastEpisodes : PhoneApplicationPage
+    public partial class PodcastEpisodes : PhoneApplicationPage 
     {
         private int m_podcastId = 0;        
 
@@ -213,8 +207,8 @@ namespace Podcatcher.Views
                     m_subscription = db.subscriptionModelForIndex(m_podcastId);
                 }
 
-                this.DataContext = null;
                 this.DataContext = m_subscription;
+                this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
             }
         }
 
@@ -242,10 +236,10 @@ namespace Podcatcher.Views
                 {
                     m_subscription = db.subscriptionModelForIndex(m_podcastId);
                 }
-
-                this.DataContext = null;
-                this.DataContext = m_subscription;
             }
+
+            this.DataContext = m_subscription;
+            this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
         }
     }
 }

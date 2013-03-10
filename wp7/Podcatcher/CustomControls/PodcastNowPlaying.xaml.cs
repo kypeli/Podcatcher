@@ -24,6 +24,9 @@ using Podcatcher.ViewModels;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using System.Windows.Media.Imaging;
+using Microsoft.Phone.BackgroundAudio;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Podcatcher
 {
@@ -44,7 +47,7 @@ namespace Podcatcher
 
         internal void SetupNowPlayingView()
         {
-            if (App.currentlyPlayingEpisodeId > 0)
+            if (App.currentlyPlayingEpisode != null)
             {
                 this.Visibility = Visibility.Visible;
             }
@@ -55,13 +58,15 @@ namespace Podcatcher
             }
 
             if (currentlyPlayingEpisodeInPlayhistory == null
-                || App.currentlyPlayingEpisodeId != currentlyPlayingEpisodeInPlayhistory.EpisodeId)
+                || App.currentlyPlayingEpisode.EpisodeId != currentlyPlayingEpisodeInPlayhistory.EpisodeId)
             {
                 using (var db = new PodcastSqlModel())
                 {
-                    currentlyPlayingEpisodeInPlayhistory = db.episodeForEpisodeId(App.currentlyPlayingEpisodeId);
-                    m_podcastLogo = currentlyPlayingEpisodeInPlayhistory.PodcastSubscription.PodcastLogo;
+                    PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == App.currentlyPlayingEpisode.PodcastId);
+                    m_podcastLogo = s.PodcastLogo;
                 }
+
+                currentlyPlayingEpisodeInPlayhistory = App.currentlyPlayingEpisode;
             }
 
             if (currentlyPlayingEpisodeInPlayhistory != null)
@@ -69,8 +74,7 @@ namespace Podcatcher
                 this.Visibility = Visibility.Visible;
                 this.DataContext = currentlyPlayingEpisodeInPlayhistory;
                 this.PodcastLogo.Source = m_podcastLogo;
-            }
-            
+            }            
         }
 
         private void NowPlayingTapped(object sender, System.Windows.Input.GestureEventArgs e)

@@ -618,6 +618,7 @@ namespace Podcatcher.ViewModels
                 {
                     case EpisodePlayStateEnum.Idle:
                     case EpisodePlayStateEnum.Downloaded:
+                    case EpisodePlayStateEnum.Listened:
                         String size = "";
                         if (m_episodeDownloadSize > 0)
                         {
