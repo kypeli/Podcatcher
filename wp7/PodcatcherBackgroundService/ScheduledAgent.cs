@@ -171,7 +171,7 @@ namespace PodcatcherBackgroundService
             if (e.Error != null)
             {
                 Debug.WriteLine("Error: " + e.Error);
-                finishedRequest();
+                refreshPinnedSubscription(m_pinnedSubscriptions);
                 return;
             }
 
@@ -322,20 +322,6 @@ namespace PodcatcherBackgroundService
             }
 
             return result;
-        }
-
-        void startedRequest()
-        {
-            m_requestsStarted++;
-        }
-
-        void finishedRequest()
-        {
-            m_requestsStarted--;
-            if (m_requestsStarted == 0)
-            {
-                NotifyComplete();
-            }
         }
     }
 }
