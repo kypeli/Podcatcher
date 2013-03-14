@@ -387,7 +387,7 @@ namespace Podcatcher.ViewModels
 
                         m_episodes = new List<PodcastEpisodeModel>(query);
 
-                        for (int i = 0; i < NewEpisodesCount; i++)
+                        for (int i = 0; i < m_episodes.Count && i < NewEpisodesCount; i++)
                         {
                             m_episodes[i].NewEpisodeVisibility = Visibility.Visible;
                         }
