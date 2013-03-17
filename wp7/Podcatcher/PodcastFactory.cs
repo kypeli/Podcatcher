@@ -317,6 +317,47 @@ namespace Podcatcher
             return podcastUrls;
         }
 
+        public static List<Uri> podcastUrlFromOPMLImport(string importRss)
+        {
+            if (String.IsNullOrEmpty(importRss))
+            {
+                Debug.WriteLine("ERROR: Import OPML file is empty. Cannot continue.");
+                return null;
+            }
+
+            XDocument podcastRssXmlDoc;
+            try
+            {
+                podcastRssXmlDoc = XDocument.Parse(importRss);
+            }
+            catch (System.Xml.XmlException e)
+            {
+                Debug.WriteLine("ERROR: Parse error when parsing imported subscriptions. Message: " + e.Message);
+                return null;
+            }
+
+            var podcastsQuery = from podcast in podcastRssXmlDoc.Descendants("outline")
+                                select podcast;
+
+            List<Uri> podcastUrls = new List<Uri>();
+            foreach (var podcast in podcastsQuery)
+            {
+                XAttribute type = podcast.Attribute("type");
+                XAttribute url = podcast.Attribute("xmlUrl");
+                if (type != null && type.Value == "rss")
+                {
+                    if (url != null
+                        && url.Value != null)
+                    {
+                        podcastUrls.Add(new Uri(url.Value));
+                        Debug.WriteLine("Got new URI from OPML: " + url.Value);
+                    }
+                }
+            }
+
+            return podcastUrls;
+        }
+
         private static XElement getChildElementByName(XElement episode, string name)
         {
             XElement element = episode.Element(name);

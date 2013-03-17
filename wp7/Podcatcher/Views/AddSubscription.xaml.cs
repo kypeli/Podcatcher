@@ -70,6 +70,11 @@ namespace Podcatcher.Views
                 this.gpodderPassword.IsEnabled = false;
                 this.gpodderUsername.IsEnabled = false;
                 this.importFromGpodderButton.IsEnabled = false;
+
+                this.opmlDisclaimer.Visibility = System.Windows.Visibility.Collapsed;
+                this.opmlNotAvailable.Visibility = System.Windows.Visibility.Visible;
+                this.opmlUrl.IsEnabled = false;
+                this.importFromOpmlUrl.IsEnabled = false;
             }
             else
             {
@@ -78,6 +83,11 @@ namespace Podcatcher.Views
                 this.gpodderPassword.IsEnabled = true;
                 this.gpodderUsername.IsEnabled = true;
                 this.importFromGpodderButton.IsEnabled = true;
+
+                this.opmlDisclaimer.Visibility = System.Windows.Visibility.Visible;
+                this.opmlNotAvailable.Visibility = System.Windows.Visibility.Collapsed;
+                this.opmlUrl.IsEnabled = true;
+                this.importFromOpmlUrl.IsEnabled = true;
             }
         }
 
@@ -157,5 +167,10 @@ namespace Podcatcher.Views
 
 
         #endregion
+
+        private void importFromOpmlUrl_Click(object sender, RoutedEventArgs e)
+        {
+            m_subscriptionManager.addSubscriptionFromOPMLFile(opmlUrl.Text);
+        }
     }
 }

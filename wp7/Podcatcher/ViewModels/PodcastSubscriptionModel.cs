@@ -371,8 +371,8 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private List<PodcastEpisodeModel> m_episodes = null;
-        public List<PodcastEpisodeModel> EpisodesPublishedDescending
+        private ObservableCollection<PodcastEpisodeModel> m_episodes = null;
+        public ObservableCollection<PodcastEpisodeModel> EpisodesPublishedDescending
         {
             get
             {
@@ -385,7 +385,7 @@ namespace Podcatcher.ViewModels
                                     orderby episode.EpisodePublished descending
                                     select episode;
 
-                        m_episodes = new List<PodcastEpisodeModel>(query);
+                        m_episodes = new ObservableCollection<PodcastEpisodeModel>(query);
 
                         for (int i = 0; i < m_episodes.Count && i < NewEpisodesCount; i++)
                         {
@@ -409,6 +409,7 @@ namespace Podcatcher.ViewModels
 
             set
             {
+                m_episodes = null;
                 NotifyPropertyChanged("EpisodesPublishedDescending");
                 NotifyPropertyChanged("EpisodesText");
             }
@@ -898,7 +899,7 @@ namespace Podcatcher.ViewModels
                     Deployment.Current.Dispatcher.BeginInvoke(() =>
                     {
                         // This will call the setter for episode model in the UI that will notify the UI that the content has changed.
-                        m_subscriptionModel.EpisodesPublishedDescending = new List<PodcastEpisodeModel>();
+                        m_subscriptionModel.EpisodesPublishedDescending = new ObservableCollection<PodcastEpisodeModel>();
                     });
                 }
 

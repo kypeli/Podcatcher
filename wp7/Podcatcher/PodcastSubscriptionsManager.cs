@@ -50,14 +50,14 @@ namespace Podcatcher
         public String message;
         public PodcastSubscriptionModel addedSubscription;
         public PodcastSubscriptionsManager.SubscriptionsState state;
-        public bool isImportingFromGpodder = false;
+        public bool isImportingFromExternalService = false;
         public Uri podcastFeedRSSUri;
     }
 
     internal class AddSubscriptionOptions
     {
         public String rssUrl = "";
-        public bool isImportingFromGpodder = false;
+        public bool isImportingFromExternalService = false;
         public String username = "";
         public String password = "";
     }
@@ -109,7 +109,7 @@ namespace Podcatcher
             return m_subscriptionManagerInstance;
         }
 
-        public void addSubscriptionFromURL(string podcastRss, bool importingFromGpodder = false)
+        public void addSubscriptionFromURL(string podcastRss, bool importingFromExternalService = false)
         {
 
             if (String.IsNullOrEmpty(podcastRss))
@@ -144,18 +144,18 @@ namespace Podcatcher
 
             AddSubscriptionOptions options = new AddSubscriptionOptions();
             options.rssUrl = podcastRss;
-            options.isImportingFromGpodder = importingFromGpodder;
+            options.isImportingFromExternalService = importingFromExternalService;
 
-            if (importingFromGpodder)
+            if (importingFromExternalService)
             {
-                m_activeGPodderImportsCount++;
+                m_activeExternalImportsCount++;
             }
 
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadPodcastRSSCompleted);
             wc.DownloadStringAsync(podcastRssUri, options);
 
-            if (!importingFromGpodder)
+            if (!importingFromExternalService)
             {
                 OnPodcastChannelAddStarted(this, null);
             }
@@ -189,7 +189,9 @@ namespace Podcatcher
             catch (UriFormatException)
             {
                 Debug.WriteLine("ERROR: Cannot add podcast from that URL.");
-                OnPodcastChannelAddFinishedWithError(this, null);
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "Malformed URL";
+                OnPodcastChannelAddFinishedWithError(this, args);
                 return;
             }
 
@@ -346,7 +348,7 @@ namespace Podcatcher
         private Random m_random                               = null;
         private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
         private List<PodcastSubscriptionModel> m_subscriptions = null;
-        int m_activeGPodderImportsCount                       = 0;
+        int m_activeExternalImportsCount                      = 0;
         private LiveConnectClient liveConnect                 = null;
 
         private PodcastSubscriptionsManager()
@@ -412,7 +414,7 @@ namespace Podcatcher
 
             AddSubscriptionOptions options = e.UserState as AddSubscriptionOptions;
             string rssUrl = options.rssUrl;
-            bool importingFromGpodder = options.isImportingFromGpodder;
+            bool importingFromExternalService = options.isImportingFromExternalService;
             bool isPodcastInDB = false;
 
             using (var db = new PodcastSqlModel())
@@ -422,15 +424,15 @@ namespace Podcatcher
 
             if (isPodcastInDB)
             {
-                if (!importingFromGpodder)
+                if (!importingFromExternalService)
                 {
                     PodcastSubscriptionFailedWithMessage("You have already subscribed to that podcast.");
                 }
 
-                if (importingFromGpodder)                    
+                if (importingFromExternalService)                    
                 {
-                    m_activeGPodderImportsCount--;
-                    if (m_activeGPodderImportsCount <= 0)
+                    m_activeExternalImportsCount--;
+                    if (m_activeExternalImportsCount <= 0)
                     {
                         OnGPodderImportFinished(this, null);
                     }
@@ -461,7 +463,7 @@ namespace Podcatcher
 
             SubscriptionManagerArgs addArgs = new SubscriptionManagerArgs();
             addArgs.addedSubscription = podcastModel;
-            addArgs.isImportingFromGpodder = importingFromGpodder;
+            addArgs.isImportingFromExternalService = importingFromExternalService;
 
             OnPodcastChannelAddFinished(this, addArgs);
 
@@ -489,7 +491,7 @@ namespace Podcatcher
                 
                 Debug.WriteLine("No more episodes to refresh. Done.");
                 stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
-                OnPodcastSubscriptionsChanged(this, stateChangedArgs);
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);                
                 return;
             }
 
@@ -573,10 +575,10 @@ namespace Podcatcher
             Debug.WriteLine("Podcast added successfully. Name: " + subscriptionModel.PodcastName);
 
             subscriptionModel.EpisodesManager.updatePodcastEpisodes();
-            if (e.isImportingFromGpodder)
+            if (e.isImportingFromExternalService)
             {
-                m_activeGPodderImportsCount--;
-                if (m_activeGPodderImportsCount <= 0)
+                m_activeExternalImportsCount--;
+                if (m_activeExternalImportsCount <= 0)
                 {
                     OnGPodderImportFinished(this, null);
                 }
@@ -648,13 +650,64 @@ namespace Podcatcher
 
             foreach(Uri subscription in subscriptions) 
             {
-                addSubscriptionFromGPodder(subscription.ToString());
+                addSubscriptionFromExterrnalService(subscription.ToString());
             }
         }
 
-        private void addSubscriptionFromGPodder(string podcastRss)
+        private void addSubscriptionFromExterrnalService(string podcastRss)
         {
             addSubscriptionFromURL(podcastRss, true);
+        }
+
+        public void addSubscriptionFromOPMLFile(string opmlFileUrl)
+        {
+            Uri uri = null;
+
+            bool valid = Uri.TryCreate(opmlFileUrl, System.UriKind.Absolute, out uri);
+            if (!valid)
+            {
+                App.showErrorToast("Cannot fetch OPML from that location.");
+                return;
+            }
+
+            MessageBox.Show("A blank screen may appear for a longer period of time. Please wait until the import has completed and do not exit the app.");
+
+            WebClient wc = new WebClient();
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadOPMLCompleted);
+            wc.DownloadStringAsync(uri);
+
+            OnPodcastChannelAddStarted(this, null);
+        }
+
+        void wc_DownloadOPMLCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                App.showErrorToast("Cannot fetch OPML from that location.");
+                
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "Cannot fetch OPML from that location.";
+                OnPodcastChannelAddFinishedWithError(this, args);
+                return;
+            }
+
+            String opml = e.Result as String;
+            List<Uri> subscriptions = PodcastFactory.podcastUrlFromOPMLImport(opml);
+            if (subscriptions == null
+                || subscriptions.Count < 1)
+            {
+                App.showNotificationToast("No subscriptions to import.");
+
+                SubscriptionManagerArgs args = new SubscriptionManagerArgs();
+                args.message = "No podcasts to import.";
+                OnPodcastChannelAddFinishedWithError(this, args);
+                return;
+            }
+
+            foreach (Uri subscription in subscriptions)
+            {
+                addSubscriptionFromURL(subscription.ToString(), true);
+            }
         }
 
         private void loginUserToSkyDrive()
