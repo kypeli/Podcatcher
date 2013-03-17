@@ -1,3 +1,14 @@
+2.2.2.0
+-------
+ * Import subscriptions from OPML file from an HTTP location.
+ * Fix crash on startup if a podcast has failed to download and the app was exited. 
+ * Fix background agent so it will run even when a request has failed.
+ * Add support for MIME type "media/mpeg" [sic] as audio podcast.
+ 
+2.2.1.0
+-------
+ * Rewrite LINQ-to-SQL to use DataContext explicitely when accessing the data. 
+
 2.2.0.0
 ----------
  * Pin subscriptions to start screen to add live tiles that shows number of new episodes for them.
