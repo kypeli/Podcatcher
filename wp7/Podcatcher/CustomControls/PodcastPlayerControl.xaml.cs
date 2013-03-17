@@ -123,6 +123,7 @@ namespace Podcatcher
                 case "audio/x-mpegaudio":
                 case "audio/x-m4a":
                 case "audio/x-mpeg":
+                case "media/mpeg":          // This is for The Money Pit who has wrong MIME type. http://www.moneypit.com/show/moneypit_podcast.xml
                     audio = true;
                     break;
             }
