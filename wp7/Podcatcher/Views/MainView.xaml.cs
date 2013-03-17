@@ -98,6 +98,10 @@ namespace Podcatcher
             }
 
             handleShowReviewPopup();
+
+            // This is the earliest place that we can initialize the download manager so it can show the error toast
+            // which is defined in App.
+            App.episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         }
 
         private void subscriptionManager_OnPodcastChannelDeleteStarted(object source, SubscriptionManagerArgs e)

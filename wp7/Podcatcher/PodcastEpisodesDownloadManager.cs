@@ -591,7 +591,7 @@ namespace Podcatcher
                         break;
 
                     default:
-                        App.showErrorToast("Could not download the episode from the server.");
+                        App.showErrorToast("Could not download the episode\nfrom the server.");
                         break;
                 }
 

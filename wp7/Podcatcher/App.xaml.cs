@@ -105,7 +105,8 @@ namespace Podcatcher
             }
         }
 
-        public static PodcastEpisodesDownloadManager episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
+        public static PodcastEpisodesDownloadManager episodeDownloadManager = null; 
+        
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
