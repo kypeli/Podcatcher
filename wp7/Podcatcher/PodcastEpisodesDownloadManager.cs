@@ -240,6 +240,7 @@ namespace Podcatcher
             {
                 PodcastEpisodeModel episode = db.Episodes.First(e => e.EpisodeId == m_currentEpisodeDownload.EpisodeId);
                 episode.EpisodeDownloadState = m_currentEpisodeDownload.EpisodeDownloadState;
+                episode.EpisodeFile = m_currentEpisodeDownload.EpisodeFile;
                 db.SubmitChanges();
             }
         }
