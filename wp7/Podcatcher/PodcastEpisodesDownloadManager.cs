@@ -101,7 +101,10 @@ namespace Podcatcher
         {
             foreach (PodcastEpisodeModel episode in newPodcastEpisodes)
             {
-                addEpisodeToDownloadQueue(episode);
+                if (episode.isPlayable())
+                {
+                    addEpisodeToDownloadQueue(episode);
+                }
             }
         }
 

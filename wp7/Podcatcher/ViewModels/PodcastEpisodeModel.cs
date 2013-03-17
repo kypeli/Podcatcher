@@ -472,8 +472,10 @@ namespace Podcatcher.ViewModels
 
         }
 
-        private bool playableMimeType(string episodeMimeType)
+        private bool playableMimeType()
         {
+            String episodeMimeType = EpisodeFileMimeType;
+
             if (episodeMimeType == "-ERROR-")
             {
                 return false;
@@ -519,7 +521,7 @@ namespace Podcatcher.ViewModels
         }
 
         public bool isPlayable() {
-            return playableMimeType(m_episodeFileMimeType);
+            return playableMimeType();
         }
 
         // I should do this in a Converter from XAML, but as this is dependant of multiple properties,
