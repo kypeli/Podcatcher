@@ -893,5 +893,20 @@ namespace Podcatcher.ViewModels
             return EpisodePlayState == EpisodePlayStateEnum.Playing || EpisodePlayState == EpisodePlayStateEnum.Streaming;
         }
 
+
+        internal void initializeState(PodcastEpisodeModel podcastEpisodeModel)
+        {
+            EpisodePlayState = podcastEpisodeModel.EpisodePlayState;
+            EpisodeDownloadState = podcastEpisodeModel.EpisodeDownloadState;
+
+            switch (podcastEpisodeModel.EpisodePlayState)
+            {
+                case EpisodePlayStateEnum.Playing:
+                case EpisodePlayStateEnum.Streaming:
+                    setPlaying();
+                    break;
+            }
+
+        }
     }
 }

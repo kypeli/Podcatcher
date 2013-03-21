@@ -255,6 +255,7 @@ namespace Podcatcher
                                && episode.EpisodeFile != ""
                                && (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
                                || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing
+                               || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened
                                || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused))
                         orderby episode.EpisodePublished descending
                         select episode;

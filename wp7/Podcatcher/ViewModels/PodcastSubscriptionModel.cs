@@ -393,12 +393,20 @@ namespace Podcatcher.ViewModels
                         }
 
                         // Update playing episode in this subscription, if we have one.
-                        if (App.currentlyPlayingEpisodeId > 0)
+/*                        if (App.currentlyPlayingEpisodeId > 0)
                         {
                             PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == App.currentlyPlayingEpisodeId).FirstOrDefault();
                             if (playingEpisode != null)
                             {
                                 playingEpisode.setPlaying();
+                            }
+                        }*/
+                        if (App.currentlyPlayingEpisode != null)
+                        {
+                            PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == App.currentlyPlayingEpisode.EpisodeId).FirstOrDefault();
+                            if (playingEpisode != null)
+                            {
+                                playingEpisode.initializeState(App.currentlyPlayingEpisode);
                             }
                         }
                     }
