@@ -366,6 +366,16 @@ namespace Podcatcher
 
         private void startNextEpisodeDownload(TransferPreferences useTransferPreferences = TransferPreferences.AllowCellularAndBattery)
         {
+            if (BackgroundTransferService.Requests.Count() > 0)
+            {
+                // For some reason there are still old requests in the background transfer service. 
+                // Let's clean everything and start over.
+                foreach (BackgroundTransferRequest t in BackgroundTransferService.Requests.AsEnumerable())
+                {
+                    BackgroundTransferService.Remove(t);
+                }
+            }
+            
             if (m_episodeDownloadQueue.Count > 0)
             {
                 popFromQueueCache();
