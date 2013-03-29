@@ -423,6 +423,13 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
+        public bool IsContinousPlayback
+        {
+            get;
+            set;
+        }
+
         public string CachedPodcastRSSFeed
         {
             get;
@@ -717,7 +724,7 @@ namespace Podcatcher.ViewModels
 
             using (var db = new PodcastSqlModel()) 
             {
-                PodcastSubscriptionModel s = db.subscriptionModelForIndex(PodcastId);
+//                PodcastSubscriptionModel s = db.subscriptionModelForIndex(PodcastId);
                 foreach (PodcastEpisodeModel e in episodesToClean)
                 {
                     episode = db.Episodes.First(ep => ep.EpisodeId == e.EpisodeId);

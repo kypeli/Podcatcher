@@ -109,6 +109,11 @@ namespace Podcatcher
                     updater.AddColumn<PodcastSubscriptionModel>("SubscriptionIsDeleteEpisodes");
                 }
 
+                if (updater.DatabaseSchemaVersion < 8)
+                {
+                    updater.AddColumn<PodcastSubscriptionModel>("IsContinousPlayback");
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
@@ -343,7 +348,6 @@ namespace Podcatcher
                 existingItem.TimeStamp = DateTime.Now;
                 existingItem.LastPlayedEpisodeId = episode.EpisodeId;
                 SubmitChanges();
-//                NotifyPropertyChanged("PlayHistoryListProperty");
                 return;
             }
 
@@ -370,15 +374,13 @@ namespace Podcatcher
 
             PlayHistory.InsertOnSubmit(newHistoryItem);
             SubmitChanges();
-
-//            NotifyPropertyChanged("PlayHistoryListProperty");
         }
 
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
-        private const int DB_VERSION = 7;
+        private const int DB_VERSION = 8;
 
         private bool isValidSubscriptionModelIndex(int index)
         {

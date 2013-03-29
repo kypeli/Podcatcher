@@ -25,6 +25,9 @@ using System.IO.IsolatedStorage;
 using Microsoft.Phone.Shell;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Linq;
+using Podcatcher.ViewModels;
+using Podcatcher;
 
 namespace PodcastAudioAgent
 {
@@ -38,6 +41,8 @@ namespace PodcastAudioAgent
         private IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
         private static volatile bool _classInitialized;
+
+        private Queue<PlaylistItem> m_playlist;
 
         /// <remarks>
         /// AudioPlayer instances can share the same process. 
@@ -254,6 +259,19 @@ namespace PodcastAudioAgent
                         {
                             Debug.WriteLine("User.Action: Play");
                             player.Play();
+
+                            m_playlist.Clear();
+                            using (var db = new PlaylistDBContext())
+                            {
+                                List<PlaylistItem> playlistItems = (from item in db.Playlist
+                                                                    orderby item.OrderNumber
+                                                                    select item).ToList();
+                                
+                                foreach (PlaylistItem item in playlistItems)
+                                {
+                                    m_playlist.Enqueue(item);
+                                }
+                            }
                         }
                     }
                     catch (InvalidOperationException e)
@@ -309,8 +327,15 @@ namespace PodcastAudioAgent
                     }
                     break;
 
-                case UserAction.FastForward:
                 case UserAction.SkipNext:
+                    PlaylistItem nextItem = m_playlist.Dequeue();
+                    player.Track = new AudioTrack(new Uri(nextItem.EpisodeFileLocation, UriKind.Absolute),
+                                                  nextItem.EpisodeName,
+                                                  nextItem.PodcastName,
+                                                  "",
+                                                  new Uri(nextItem.PodcastLogoLocation, UriKind.Absolute));
+                    break;
+                case UserAction.FastForward:
                     try
                     {
                         player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
@@ -320,8 +345,9 @@ namespace PodcastAudioAgent
                     }
                     break;
 
-                case UserAction.Rewind:
                 case UserAction.SkipPrevious:
+                    break;
+                case UserAction.Rewind:
                     try
                     {
                         player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);

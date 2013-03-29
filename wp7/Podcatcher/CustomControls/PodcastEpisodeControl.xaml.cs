@@ -60,6 +60,11 @@ namespace Podcatcher
             using (var db = new PodcastSqlModel())
             {
                 m_episodeModel = db.episodeForEpisodeId(m_episodeModel.EpisodeId);
+                PodcastSubscriptionModel subscription = m_episodeModel.PodcastSubscription;
+                if (subscription.IsContinousPlayback)
+                {
+
+                }
             }
 
             // Play locally from a downloaded file.

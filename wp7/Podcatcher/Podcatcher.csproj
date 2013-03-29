@@ -107,10 +107,12 @@
     <Compile Include="CustomControls\PopularPodcastsControl.xaml.cs">
       <DependentUpon>PopularPodcastsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PlaylistDBContext.cs" />
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="ViewModels\GPodderResultModel.cs" />
     <Compile Include="ViewModels\LastPlayedModel.cs" />
     <Compile Include="ViewModels\MainViewModels.cs" />
+    <Compile Include="ViewModels\PlaylistItem.cs" />
     <Compile Include="ViewModels\PodcastEpisodeModel.cs" />
     <Compile Include="PodcastFactory.cs" />
     <Compile Include="PodcastSubscriptionsManager.cs" />

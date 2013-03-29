@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Phone" />
+    <Reference Include="system.data.linq" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -51,6 +52,12 @@
     <Reference Include="mscorlib.extensions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Podcatcher\PlaylistDBContext.cs">
+      <Link>PlaylistDBContext.cs</Link>
+    </Compile>
+    <Compile Include="..\Podcatcher\ViewModels\PlaylistItem.cs">
+      <Link>PlaylistItem.cs</Link>
+    </Compile>
     <Compile Include="AudioPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
