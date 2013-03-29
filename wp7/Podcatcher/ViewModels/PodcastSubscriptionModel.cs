@@ -664,6 +664,7 @@ namespace Podcatcher.ViewModels
 
         public void cleanOldEpisodes(int keepEpisodes, bool deleteUnplayed = false)
         {
+            List<String> episodeFiles = new List<String>();
             IEnumerable<PodcastEpisodeModel> query = null;
             bool deleteDownloads = SubscriptionIsDeleteEpisodes;
             int keepDownloads = 0;
@@ -699,33 +700,51 @@ namespace Podcatcher.ViewModels
                              where (episode.EpisodeDownloadState != PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
                              select episode).Skip(keepEpisodes);
                 }
+
+                foreach (PodcastEpisodeModel de in query)
+                {
+                    if (!String.IsNullOrEmpty(de.EpisodeFile)) 
+                    {
+                        episodeFiles.Add(de.EpisodeFile);
+                    }
+                }
+
                 db.deleteEpisodesPerQuery(query);
             }
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += new DoWorkEventHandler(workerCleanSubscriptions);
-            worker.RunWorkerAsync(query);
+            worker.RunWorkerAsync(episodeFiles);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerCleanSubscriptionsCompleted);
  
         }
 
         private void workerCleanSubscriptions(object sender, DoWorkEventArgs args)
         {
-            IEnumerable<PodcastEpisodeModel> query = args.Argument as IEnumerable<PodcastEpisodeModel>;
-            List<PodcastEpisodeModel> episodesToClean = query.ToList();
-            PodcastEpisodeModel episode = null;
-
-            using (var db = new PodcastSqlModel()) 
+            List<String> filesToDelete = args.Argument as List<String>;
+            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                PodcastSubscriptionModel s = db.subscriptionModelForIndex(PodcastId);
-                foreach (PodcastEpisodeModel e in episodesToClean)
+                foreach (String filename in filesToDelete)
                 {
-                    episode = db.Episodes.First(ep => ep.EpisodeId == e.EpisodeId);
-                    episode.deleteDownloadedEpisode();
+                    try
+                    {
+                        Debug.WriteLine("Deleting downloaded episode: " + filename);
+                        if (episodeStore.FileExists(filename))
+                        {
+                            episodeStore.DeleteFile(filename);
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Warning: Cannot delete episode with file: " + filename);
+                        }
+                    }
+                    catch (IsolatedStorageException e)
+                    {
+                        Debug.WriteLine("Error: Exception occured while deleting episodes: " + e.Message);
+                    }
                 }
-
-                db.SubmitChanges();
             }
+
         }
 
         private void workerCleanSubscriptionsCompleted(object sender, RunWorkerCompletedEventArgs e) 
