@@ -381,7 +381,7 @@ namespace Podcatcher
             showPlayerLayout();
             updatePrimary(m_currentEpisode);
 
-            if (!streaming && episodeModel.SavedPlayPos > 0)
+            if (episodeModel.SavedPlayPos > 0)
             {
                 bool alwaysContinuePlayback = false;
                 using (var db = new PodcastSqlModel())
@@ -397,10 +397,6 @@ namespace Podcatcher
                 {
                     askForContinueEpisodePlaying(streaming);
                 }
-            }
-            else
-            {
-                startPlayback(TimeSpan.Zero, streaming);
             }
         }
 
@@ -432,9 +428,6 @@ namespace Podcatcher
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
-
-//                App.currentlyPlayingEpisodeId = m_currentEpisode.EpisodeId;
-//                App.currentlyPlayingEpisode = m_currentEpisode;
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
                 // then for some reason it's not honored. 
