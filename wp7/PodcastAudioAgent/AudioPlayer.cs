@@ -94,6 +94,14 @@ namespace PodcastAudioAgent
                 case PlayState.TrackEnded:
                     saveEpisodeStoptime();
                     clearPlayHistory();
+                    
+                    // Start playing next track if we have one.
+                    AudioTrack nextTrack = getNextPlaylistTrack();
+                    if (nextTrack != null)
+                    {
+                        player.Track = nextTrack;
+                        player.Play();
+                    }
                     break;
                 case PlayState.TrackReady:
                     break;

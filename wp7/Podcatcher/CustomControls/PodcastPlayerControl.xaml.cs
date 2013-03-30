@@ -83,6 +83,7 @@ namespace Podcatcher
                 Debug.WriteLine("Restoring UI for currently playing episode.");
 
                 App.currentlyPlayingEpisode = getCurrentlyPlayingEpisode();
+                App.currentlyPlayingEpisode.setPlaying();
                 showPlayerLayout();
                 restoreEpisodeToPlayerUI();
             }
@@ -503,6 +504,8 @@ namespace Podcatcher
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
                     setupUIForEpisodePlaying();
+                    initializePlayerUI();
+                    setupPlayerUIContent(App.currentlyPlayingEpisode);
                     break;
 
                 case PlayState.Paused:
@@ -521,6 +524,9 @@ namespace Podcatcher
                 case PlayState.Shutdown:
                     playbackStopped();
                     Debug.WriteLine("Podcast player shut down.");
+                    break;
+
+                case PlayState.TrackEnded:
                     break;
             }
         }
