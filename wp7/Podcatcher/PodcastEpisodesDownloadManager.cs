@@ -133,7 +133,7 @@ namespace Podcatcher
                 && episode.EpisodeDownloadSize > App.MAX_SIZE_FOR_CELLULAR_DOWNLOAD)
             {
 
-                if (MessageBox.Show("You are about to download a file over 50 MB in size. Please " +
+                if (MessageBox.Show("You are about to download a file over 20 MB in size. Please " +
                                     "note that Windows Phone allows downloading this kind of files only if you are " +
                                     "connected to a WiFi network.",
                     "Attention",
@@ -366,6 +366,16 @@ namespace Podcatcher
 
         private void startNextEpisodeDownload(TransferPreferences useTransferPreferences = TransferPreferences.AllowCellularAndBattery)
         {
+            if (BackgroundTransferService.Requests.Count() > 0)
+            {
+                // For some reason there are still old requests in the background transfer service. 
+                // Let's clean everything and start over.
+                foreach (BackgroundTransferRequest t in BackgroundTransferService.Requests.AsEnumerable())
+                {
+                    BackgroundTransferService.Remove(t);
+                }
+            }
+            
             if (m_episodeDownloadQueue.Count > 0)
             {
                 popFromQueueCache();

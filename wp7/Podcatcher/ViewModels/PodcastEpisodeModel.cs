@@ -481,40 +481,21 @@ namespace Podcatcher.ViewModels
                 return false;
             }
 
-            // Since we added the MIME type in version 2 of DB, we have to assume that if the 
-            // value is empty, we show the button.
-            if (String.IsNullOrEmpty(episodeMimeType))
+            bool playable = PodcastPlayerControl.isAudioPodcast(this);
+            if (!playable)
             {
-                return true;
-            }
-
-            bool playable = false;
-            switch (episodeMimeType)
-            {
-                case "audio/mpeg":
-                case "audio/mp3":
-                case "audio/x-mp3":
-                case "audio/mpeg3":
-                case "audio/x-mpeg3":
-                case "audio/mpg":
-                case "audio/x-mpg":
-                case "audio/x-mpegaudio":
-                case "audio/x-m4a":
-                case "audio/mpegaudio":
-                case "audio/m4a":
-                case "audio/x-mpeg":
-                    playable = true;
-                    break;
-
-                case "video/mp4":
-                case "video/x-mp4":
-                case "video/x-mpeg":
-                case "video/x-m4v":
-                case "video/m4v":
-                case "video/mpeg":
-                case "video/vnd.objectvideo":
-                    playable = true;
-                    break;
+                switch (episodeMimeType)
+                {
+                    case "video/mp4":
+                    case "video/x-mp4":
+                    case "video/x-mpeg":
+                    case "video/x-m4v":
+                    case "video/m4v":
+                    case "video/mpeg":
+                    case "video/vnd.objectvideo":
+                        playable = true;
+                        break;
+                }
             }
 
             return playable;

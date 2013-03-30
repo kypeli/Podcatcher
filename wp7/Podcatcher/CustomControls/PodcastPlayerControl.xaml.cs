@@ -122,8 +122,11 @@ namespace Podcatcher
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
                 case "audio/x-m4a":
+                case "audio/mpegaudio":
+                case "audio/m4a":
                 case "audio/x-mpeg":
-                case "media/mpeg":          // This is for The Money Pit who has wrong MIME type. http://www.moneypit.com/show/moneypit_podcast.xml
+                case "media/mpeg":
+                case "x-audio/mp3":
                     audio = true;
                     break;
             }
@@ -344,7 +347,7 @@ namespace Podcatcher
                 m_screenUpdateTimer = new DispatcherTimer();
             }
 
-            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000); // Fire the timer every second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
             m_screenUpdateTimer.Start();
 
@@ -378,7 +381,7 @@ namespace Podcatcher
             showPlayerLayout();
             updatePrimary(m_currentEpisode);
 
-            if (!streaming && episodeModel.SavedPlayPos > 0)
+            if (episodeModel.SavedPlayPos > 0)
             {
                 bool alwaysContinuePlayback = false;
                 using (var db = new PodcastSqlModel())
@@ -394,10 +397,6 @@ namespace Podcatcher
                 {
                     askForContinueEpisodePlaying(streaming);
                 }
-            }
-            else
-            {
-                startPlayback(TimeSpan.Zero, streaming);
             }
         }
 
@@ -429,9 +428,6 @@ namespace Podcatcher
                 m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
                 m_appSettings.Save();
-
-//                App.currentlyPlayingEpisodeId = m_currentEpisode.EpisodeId;
-//                App.currentlyPlayingEpisode = m_currentEpisode;
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
                 // then for some reason it's not honored. 

@@ -421,7 +421,7 @@ namespace Podcatcher
 
             foreach (var episode in queryDelEpisodes)
             {
-                if (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded)
+                if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
                 {
                     episode.deleteDownloadedEpisode();
                     SubmitChanges();
