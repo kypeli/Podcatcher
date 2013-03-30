@@ -83,6 +83,12 @@ namespace Podcatcher
                 Debug.WriteLine("Restoring UI for currently playing episode.");
 
                 App.currentlyPlayingEpisode = getCurrentlyPlayingEpisode();
+                if (App.currentlyPlayingEpisode == null)
+                {
+                    Debug.WriteLine("No playing episode in DB.");
+                    return;
+                }
+
                 App.currentlyPlayingEpisode.setPlaying();
                 showPlayerLayout();
                 restoreEpisodeToPlayerUI();
