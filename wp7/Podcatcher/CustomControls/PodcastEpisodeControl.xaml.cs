@@ -60,7 +60,7 @@ namespace Podcatcher
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            List<PodcastEpisodeModel> playlistItems = null;
+            List<PodcastEpisodeModel> playlistItems = new List<PodcastEpisodeModel>();
             PodcastSubscriptionModel subscription = null;
             using (var db = new PodcastSqlModel())
             {
@@ -68,35 +68,41 @@ namespace Podcatcher
                 subscription = m_episodeModel.PodcastSubscription;
                 if (subscription.IsContinuousPlayback)
                 {
-                    playlistItems = subscription.Episodes.Where(ep => ep.EpisodePublished < m_episodeModel.EpisodePublished).ToList();
+                    playlistItems = (from episode in subscription.Episodes
+                                     where episode.EpisodePublished <= m_episodeModel.EpisodePublished
+                                     orderby episode.EpisodePublished descending
+                                     select episode).ToList();
+                }
+                else
+                {
+                    playlistItems.Add(m_episodeModel);
                 }
             }
 
-            if (playlistItems != null)
+            using (var playlistDb = new Podcatcher.PlaylistDBContext())
             {
-                using (var playlistDb = new Podcatcher.PlaylistDBContext()) 
+                playlistDb.Playlist.DeleteAllOnSubmit(playlistDb.Playlist);
+                playlistDb.SubmitChanges();
+
+                int i = 0;
+                foreach (PodcastEpisodeModel ep in playlistItems)
                 {
-                    playlistDb.Playlist.DeleteAllOnSubmit(playlistDb.Playlist);
-                    playlistDb.SubmitChanges();
-
-                    int i = 0;
-                    foreach (PodcastEpisodeModel ep in playlistItems)
+                    playlistDb.Playlist.InsertOnSubmit(new PlaylistItem
                     {
-                        playlistDb.Playlist.InsertOnSubmit(new PlaylistItem
-                        {
-                            OrderNumber = i,
-                            PodcastName = subscription.PodcastName,
-                            PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
-                            EpisodeName = ep.EpisodeName,
-                            EpisodeLocation = (String.IsNullOrEmpty(ep.EpisodeFile)) ? ep.EpisodeDownloadUri : ep.EpisodeFile,
-                        });
+                        OrderNumber = i,
+                        PodcastName = subscription.PodcastName,
+                        PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
+                        EpisodeName = ep.EpisodeName,
+                        EpisodeLocation = (String.IsNullOrEmpty(ep.EpisodeFile)) ? ep.EpisodeDownloadUri : ep.EpisodeFile,
+                        EpisodeId = ep.EpisodeId,
+                        IsCurrent = (i == 0) ? true : false,        // First one is playing.
+                    });
 
-                        i++;
-                    }
+                    i++;
+                }
 
-                    playlistDb.SubmitChanges();
-                }                
-            }
+                playlistDb.SubmitChanges();
+            }                
 
             // Play locally from a downloaded file.
             if (m_episodeModel.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)

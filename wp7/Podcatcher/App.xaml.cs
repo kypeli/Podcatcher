@@ -42,7 +42,7 @@ namespace Podcatcher
 
         /** IsolatedSettings keys.  **/
         // Key for storing the episode ID of the currently playing episode.
-        public const string LSKEY_PODCAST_EPISODE_PLAYING_ID        = "playing_episodeId";
+//        public const string LSKEY_PODCAST_EPISODE_PLAYING_ID        = "playing_episodeId";
         // Key for storing the episode ID of the currently downloading episode.
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
         // Key for verifying user knows special requirements for D/L videos.
@@ -81,7 +81,7 @@ namespace Podcatcher
 
         public static MainViewModels mainViewModels = new MainViewModels();
 
-        public static int currentlyPlayingEpisodeId = -1;
+//        public static int currentlyPlayingEpisodeId = -1;
         public static PodcastEpisodeModel currentlyPlayingEpisode = null;
 
         public static bool IsTrial
@@ -204,7 +204,7 @@ namespace Podcatcher
 
                             Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
 
-                            if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID) == false)
+                            if (currentlyPlayingEpisode == null)
                             {
                                 // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
                                 // playing ID. This means the track in question isn't playing anymore, so let's update the state.
@@ -354,6 +354,8 @@ namespace Podcatcher
                 }
             }
             catch (Exception) { /* In case we get some other scheduler related exception. But we are not interested. */ }
+
+            currentlyPlayingEpisode = PodcastPlayerControl.getCurrentlyPlayingEpisode();
         }
 
         // Do not add any additional code to this method

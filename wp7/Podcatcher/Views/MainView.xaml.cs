@@ -221,7 +221,7 @@ namespace Podcatcher
             {
                 this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
 
-                if (m_applicationSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+                if (App.currentlyPlayingEpisode != null)
                 {
                     this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
                 }

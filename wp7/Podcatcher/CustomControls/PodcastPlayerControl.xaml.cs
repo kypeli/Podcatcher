@@ -81,6 +81,8 @@ namespace Podcatcher
             if (BackgroundAudioPlayer.Instance.Track != null)
             {
                 Debug.WriteLine("Restoring UI for currently playing episode.");
+
+                App.currentlyPlayingEpisode = getCurrentlyPlayingEpisode();
                 showPlayerLayout();
                 restoreEpisodeToPlayerUI();
             }
@@ -132,6 +134,23 @@ namespace Podcatcher
             }
 
             return audio;
+        }
+
+        public static PodcastEpisodeModel getCurrentlyPlayingEpisode()
+        {
+            using (var playlistDb = new PlaylistDBContext()) 
+            {
+                PlaylistItem plItem = playlistDb.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
+                if (plItem != null)
+                {
+                    using (var db = new PodcastSqlModel())
+                    {
+                        return db.Episodes.Where(ep => ep.EpisodeId == plItem.EpisodeId).FirstOrDefault();
+                    }
+                }
+            }
+
+            return null;
         }
 
         internal void playEpisode(PodcastEpisodeModel episodeModel)
@@ -242,11 +261,8 @@ namespace Podcatcher
         {
             // If we have an episodeId stored in local cache, this means we returned to the app and 
             // have that episode playing. Hence, here we need to reload the episode data from the SQL. 
-            if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+            if (App.currentlyPlayingEpisode != null)
             {
-                int episodeId = (int)m_appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-                App.currentlyPlayingEpisodeId = episodeId;
-
                 if (App.currentlyPlayingEpisode != null)
                 {
                     m_currentEpisode = App.currentlyPlayingEpisode;
@@ -255,7 +271,7 @@ namespace Podcatcher
                 {
                     using (var db = new PodcastSqlModel())
                     {
-                        m_currentEpisode = db.episodeForEpisodeId(episodeId);
+                        m_currentEpisode = db.episodeForEpisodeId(App.currentlyPlayingEpisode.EpisodeId);
                         App.currentlyPlayingEpisode = m_currentEpisode;
                         App.currentlyPlayingEpisode.setPlaying();
                     }
@@ -264,10 +280,7 @@ namespace Podcatcher
                 if (m_currentEpisode == null)
                 {
                     // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
-                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                    m_appSettings.Save();
                     showNoPlayerLayout();
-                    App.currentlyPlayingEpisodeId = -1;
                     App.currentlyPlayingEpisode = null;
                     return;
                 }
@@ -294,20 +307,13 @@ namespace Podcatcher
         public void checkPlayerEpisodeState()
         {
             IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
-            if (appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID))
+            if (App.currentlyPlayingEpisode != null)
             {
-                int episodeId = (int)appSettings[App.LSKEY_PODCAST_EPISODE_PLAYING_ID];
-
                 if (BackgroundAudioPlayer.Instance.Track == null)
                 {
-                    appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                    appSettings.Save();
-                    App.currentlyPlayingEpisodeId = -1;
-                    App.currentlyPlayingEpisode = null;
-
                     using (var db = new PodcastSqlModel())
                     {
-                        PodcastEpisodeModel episode = db.episodeForEpisodeId(episodeId);
+                        PodcastEpisodeModel episode = db.episodeForEpisodeId(App.currentlyPlayingEpisode.EpisodeId);
                         if (episode != null)
                         {
                             db.addEpisodeToPlayHistory(episode);
@@ -429,9 +435,6 @@ namespace Podcatcher
             try
             {
                 this.PlayButtonImage.Source = m_pauseButtonBitmap;
-                m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                m_appSettings.Add(App.LSKEY_PODCAST_EPISODE_PLAYING_ID, m_currentEpisode.EpisodeId);
-                m_appSettings.Save();
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
                 // then for some reason it's not honored. 
@@ -648,18 +651,7 @@ namespace Podcatcher
                 StopPlayback();
             }
 
-            lock (m_appSettings)
-            {
-                if (m_appSettings.Contains(App.LSKEY_PODCAST_EPISODE_PLAYING_ID)) 
-                {
-                    m_appSettings.Remove(App.LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                    m_appSettings.Save();
-                }
-            }
-
-            App.currentlyPlayingEpisodeId = -1;
             App.currentlyPlayingEpisode = null;
-
             showNoPlayerLayout();
         }
 

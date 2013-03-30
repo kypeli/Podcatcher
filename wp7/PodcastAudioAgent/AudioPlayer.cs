@@ -362,16 +362,30 @@ namespace PodcastAudioAgent
             AudioTrack track = null;
             using (var db = new Podcatcher.PlaylistDBContext())
             {
-                Podcatcher.ViewModels.PlaylistItem playlistItem = (from item in db.Playlist
+                Podcatcher.ViewModels.PlaylistItem currentTrack = (from item in db.Playlist
                                                                    orderby item.OrderNumber
                                                                    select item).FirstOrDefault();
-                track = new AudioTrack(new Uri(playlistItem.EpisodeLocation, UriKind.RelativeOrAbsolute),
-                                                          playlistItem.EpisodeName,
-                                                          playlistItem.PodcastName,
-                                                          "",
-                                                          new Uri(playlistItem.PodcastLogoLocation, UriKind.RelativeOrAbsolute));
 
-                db.Playlist.DeleteOnSubmit(playlistItem);
+                db.Playlist.DeleteOnSubmit(currentTrack);
+                db.SubmitChanges();
+
+                Podcatcher.ViewModels.PlaylistItem nextTrack = (from item in db.Playlist
+                                                                orderby item.OrderNumber
+                                                                select item).FirstOrDefault();
+
+                if (nextTrack == null)
+                {
+                    return null;
+                }
+
+                track = new AudioTrack(new Uri(nextTrack.EpisodeLocation, UriKind.RelativeOrAbsolute),
+                                               nextTrack.EpisodeName,
+                                               nextTrack.PodcastName,
+                                               "",
+                                               new Uri(nextTrack.PodcastLogoLocation, UriKind.RelativeOrAbsolute));
+
+                nextTrack.IsCurrent = true;
+
                 db.SubmitChanges();
             }
 
