@@ -797,6 +797,12 @@ namespace Podcatcher.ViewModels
                         using (var db = new PodcastSqlModel())
                         {
                             PodcastEpisodeModel episode = db.episodeForEpisodeId(EpisodeId);
+                            if (episode == null)
+                            {
+                                Debug.WriteLine("Warning: Got NULL episode from DB when trying to update this episode.");
+                                return;
+                            }
+
                             episode.TotalLengthTicks = TotalLengthTicks;
                             db.SubmitChanges();
                         }
