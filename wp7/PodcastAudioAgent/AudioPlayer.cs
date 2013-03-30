@@ -362,6 +362,12 @@ namespace PodcastAudioAgent
             AudioTrack track = null;
             using (var db = new Podcatcher.PlaylistDBContext())
             {
+                if (db.Playlist.Count() <= 1)
+                {
+                    // Only current item in the playlist. Cannot progress to next one.
+                    return null;
+                }
+
                 Podcatcher.ViewModels.PlaylistItem currentTrack = (from item in db.Playlist
                                                                    orderby item.OrderNumber
                                                                    select item).FirstOrDefault();

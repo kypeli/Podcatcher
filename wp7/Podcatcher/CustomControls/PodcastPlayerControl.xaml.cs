@@ -619,7 +619,7 @@ namespace Podcatcher
         {
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
-                BackgroundAudioPlayer.Instance.SkipPrevious();
+                BackgroundAudioPlayer.Instance.Rewind();
             }
         }
 
@@ -659,7 +659,7 @@ namespace Podcatcher
         {
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
-                BackgroundAudioPlayer.Instance.SkipNext();
+                BackgroundAudioPlayer.Instance.FastForward();
             }
         }
 
