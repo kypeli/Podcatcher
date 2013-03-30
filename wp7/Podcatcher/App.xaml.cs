@@ -208,7 +208,8 @@ namespace Podcatcher
                             {
                                 // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
                                 // playing ID. This means the track in question isn't playing anymore, so let's update the state.
-                                episodeToUpdate.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+                                episodeToUpdate.EpisodePlayState = String.IsNullOrEmpty(episodeToUpdate.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
+                                                                                                                       PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
                             }
 
                             db.SubmitChanges();
