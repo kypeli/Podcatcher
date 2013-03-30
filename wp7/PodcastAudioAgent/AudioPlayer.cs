@@ -25,6 +25,7 @@ using System.IO.IsolatedStorage;
 using Microsoft.Phone.Shell;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace PodcastAudioAgent
 {
@@ -36,6 +37,7 @@ namespace PodcastAudioAgent
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
         private const string LSKEY_AA_EPISODE_STOP_TIMESTAMP = "aa_episode_play_stoptime";
         private IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+        private const string LSKEY_PODCATCHER_MUTEX = "PodcatcherGlobalMutex";
 
         private static volatile bool _classInitialized;
 
@@ -133,10 +135,12 @@ namespace PodcastAudioAgent
 
         private void clearPlayHistory()
         {
-            lock (settings)
+            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
             {
+                mutex.WaitOne();
                 settings.Remove(LSKEY_PODCAST_EPISODE_PLAYING_ID);
                 settings.Save();
+                mutex.ReleaseMutex();
             }
         }
 
@@ -155,8 +159,9 @@ namespace PodcastAudioAgent
 
         private void updateLastKnownPos(BackgroundAudioPlayer player)
         {
-            lock (settings)
+            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
             {
+                mutex.WaitOne();
                 if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_POS))
                 {
                     settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_POS);
@@ -178,14 +183,16 @@ namespace PodcastAudioAgent
                     Debug.WriteLine("AudioPlayer:updateLastKnownPos - Player no longer available. Error:  " + e.Message);
                     return;
                 }
+                mutex.ReleaseMutex();
             }
         }
 
         private void saveEpisodeStoptime()
         {
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            lock (settings)
+            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
             {
+                mutex.WaitOne();
                 if (settings.Contains(LSKEY_AA_EPISODE_STOP_TIMESTAMP))
                 {
                     settings.Remove(LSKEY_AA_EPISODE_STOP_TIMESTAMP);
@@ -193,6 +200,7 @@ namespace PodcastAudioAgent
 
                 settings.Add(LSKEY_AA_EPISODE_STOP_TIMESTAMP, DateTime.Now.ToString());
                 settings.Save();
+                mutex.ReleaseMutex();
             }
         }
 
@@ -205,8 +213,9 @@ namespace PodcastAudioAgent
             }
 
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            lock (settings)
+            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
             {
+                mutex.WaitOne();
 
                 if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE))
                 {
@@ -224,6 +233,7 @@ namespace PodcastAudioAgent
                 }
 
                 settings.Save();
+                mutex.ReleaseMutex();
             }
         }
 
