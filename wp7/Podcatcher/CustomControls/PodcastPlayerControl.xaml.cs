@@ -122,8 +122,11 @@ namespace Podcatcher
                 case "audio/x-mpg":
                 case "audio/x-mpegaudio":
                 case "audio/x-m4a":
+                case "audio/mpegaudio":
+                case "audio/m4a":
                 case "audio/x-mpeg":
-                case "media/mpeg":          // This is for The Money Pit who has wrong MIME type. http://www.moneypit.com/show/moneypit_podcast.xml
+                case "media/mpeg":
+                case "x-audio/mp3":
                     audio = true;
                     break;
             }
@@ -344,7 +347,7 @@ namespace Podcatcher
                 m_screenUpdateTimer = new DispatcherTimer();
             }
 
-            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000); // Fire the timer every second.
             m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
             m_screenUpdateTimer.Start();
 
