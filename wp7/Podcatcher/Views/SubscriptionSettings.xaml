@@ -45,7 +45,8 @@
             			<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsSubscribed, Mode=TwoWay}" Content="ToggleSwitchButton" Margin="0" Width="180" d:LayoutOverrides="Height"/>
             		</StackPanel>
             		<TextBlock TextWrapping="Wrap" Text="By subscribing to a podcast you receive new episodes as they are published. Turn subscription off if you don't want new episodes." Style="{StaticResource PhoneTextSubtleStyle}"/>
-            		<StackPanel Margin="0,9,12,0">
+            		
+                    <StackPanel Margin="0,9,12,0">
             			<StackPanel Orientation="Horizontal">
             				<TextBlock TextWrapping="Wrap" Text="Auto-update" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
             				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDownload, Mode=TwoWay}" Content="ToggleSwitchButton"/>
@@ -53,7 +54,15 @@
             			<TextBlock TextWrapping="Wrap" Text="When auto-update is on, the new episodes for the subscription will be automatically downloaded to your device." Style="{StaticResource PhoneTextSubtleStyle}"/>
             		</StackPanel>
 
-            		<StackPanel Margin="0,9,12,0">
+                    <StackPanel Margin="0,9,12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock TextWrapping="Wrap" Text="Continuous playback" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+                            <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsContinuousPlayback, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Text="When continuous playback is enabled the playback will continue to the next episode in the subscription." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,9,12,0">
             			<StackPanel Orientation="Vertical">
             				<TextBlock TextWrapping="Wrap" Text="Keep episodes for this subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
             				<toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding SubscriptionSelectedKeepNumEpisodesIndex, Mode=TwoWay}">

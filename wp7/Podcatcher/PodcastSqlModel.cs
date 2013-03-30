@@ -111,7 +111,7 @@ namespace Podcatcher
 
                 if (updater.DatabaseSchemaVersion < 8)
                 {
-                    updater.AddColumn<PodcastSubscriptionModel>("IsContinousPlayback");
+                    updater.AddColumn<PodcastSubscriptionModel>("IsContinuousPlayback");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;

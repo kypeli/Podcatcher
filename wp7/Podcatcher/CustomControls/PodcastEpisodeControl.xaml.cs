@@ -32,6 +32,9 @@ using System.Diagnostics;
 using Podcatcher.ViewModels;
 using System.IO.IsolatedStorage;
 using Microsoft.Phone.Tasks;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 
 namespace Podcatcher
 {
@@ -57,14 +60,42 @@ namespace Podcatcher
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
+            List<PodcastEpisodeModel> playlistItems = null;
+            PodcastSubscriptionModel subscription = null;
             using (var db = new PodcastSqlModel())
             {
                 m_episodeModel = db.episodeForEpisodeId(m_episodeModel.EpisodeId);
-                PodcastSubscriptionModel subscription = m_episodeModel.PodcastSubscription;
-                if (subscription.IsContinousPlayback)
+                subscription = m_episodeModel.PodcastSubscription;
+                if (subscription.IsContinuousPlayback)
                 {
-
+                    playlistItems = subscription.Episodes.Where(ep => ep.EpisodePublished < m_episodeModel.EpisodePublished).ToList();
                 }
+            }
+
+            if (playlistItems != null)
+            {
+                using (var playlistDb = new Podcatcher.PlaylistDBContext()) 
+                {
+                    playlistDb.Playlist.DeleteAllOnSubmit(playlistDb.Playlist);
+                    playlistDb.SubmitChanges();
+
+                    int i = 0;
+                    foreach (PodcastEpisodeModel ep in playlistItems)
+                    {
+                        playlistDb.Playlist.InsertOnSubmit(new PlaylistItem
+                        {
+                            OrderNumber = i,
+                            PodcastName = subscription.PodcastName,
+                            PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
+                            EpisodeName = ep.EpisodeName,
+                            EpisodeLocation = (String.IsNullOrEmpty(ep.EpisodeFile)) ? ep.EpisodeDownloadUri : ep.EpisodeFile,
+                        });
+
+                        i++;
+                    }
+
+                    playlistDb.SubmitChanges();
+                }                
             }
 
             // Play locally from a downloaded file.

@@ -341,6 +341,25 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private bool m_isContinuousPlayback = false;
+        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
+        public bool IsContinuousPlayback
+        {
+            get
+            {
+                return m_isContinuousPlayback;
+            }
+
+            set
+            {
+                if (m_isContinuousPlayback != value)
+                {
+                    m_isContinuousPlayback = value;
+                    NotifyPropertyChanged("IsContinuousPlayback");
+                }
+            }
+        }
+
         private int m_IsDeleteEpisodes = (int)SubscriptionSettingDeleteEpisodes.Unset;
         [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
         public bool SubscriptionIsDeleteEpisodes
@@ -412,13 +431,6 @@ namespace Podcatcher.ViewModels
                 NotifyPropertyChanged("EpisodesPublishedDescending");
                 NotifyPropertyChanged("EpisodesText");
             }
-        }
-
-        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
-        public bool IsContinousPlayback
-        {
-            get;
-            set;
         }
 
         public string CachedPodcastRSSFeed

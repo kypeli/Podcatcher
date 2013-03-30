@@ -398,6 +398,10 @@ namespace Podcatcher
                     askForContinueEpisodePlaying(streaming);
                 }
             }
+            else
+            {
+                startPlayback(TimeSpan.Zero, streaming);
+            }
         }
 
         private void startPlayback(TimeSpan position, bool streamEpisode = false)

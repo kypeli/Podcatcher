@@ -26,8 +26,7 @@ using Microsoft.Phone.Shell;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Linq;
-using Podcatcher.ViewModels;
-using Podcatcher;
+using System.Linq.Expressions;
 using System.Threading;
 
 namespace PodcastAudioAgent
@@ -43,8 +42,6 @@ namespace PodcastAudioAgent
         private const string LSKEY_PODCATCHER_MUTEX = "PodcatcherGlobalMutex";
 
         private static volatile bool _classInitialized;
-
-        private Queue<PlaylistItem> m_playlist;
 
         /// <remarks>
         /// AudioPlayer instances can share the same process. 
@@ -269,19 +266,6 @@ namespace PodcastAudioAgent
                         {
                             Debug.WriteLine("User.Action: Play");
                             player.Play();
-
-                            m_playlist.Clear();
-                            using (var db = new PlaylistDBContext())
-                            {
-                                List<PlaylistItem> playlistItems = (from item in db.Playlist
-                                                                    orderby item.OrderNumber
-                                                                    select item).ToList();
-                                
-                                foreach (PlaylistItem item in playlistItems)
-                                {
-                                    m_playlist.Enqueue(item);
-                                }
-                            }
                         }
                     }
                     catch (InvalidOperationException e)
@@ -338,13 +322,15 @@ namespace PodcastAudioAgent
                     break;
 
                 case UserAction.SkipNext:
-                    PlaylistItem nextItem = m_playlist.Dequeue();
-                    player.Track = new AudioTrack(new Uri(nextItem.EpisodeFileLocation, UriKind.Absolute),
-                                                  nextItem.EpisodeName,
-                                                  nextItem.PodcastName,
-                                                  "",
-                                                  new Uri(nextItem.PodcastLogoLocation, UriKind.Absolute));
+                    Debug.WriteLine("Skip next.");
+                    AudioTrack nextTrack = getNextPlaylistTrack();
+                    if (nextTrack != null)
+                    {
+                        player.Track = nextTrack;
+                        player.Play();
+                    }
                     break;
+
                 case UserAction.FastForward:
                     try
                     {
@@ -369,6 +355,27 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
+        }
+
+        private AudioTrack getNextPlaylistTrack()
+        {
+            AudioTrack track = null;
+            using (var db = new Podcatcher.PlaylistDBContext())
+            {
+                Podcatcher.ViewModels.PlaylistItem playlistItem = (from item in db.Playlist
+                                                                   orderby item.OrderNumber
+                                                                   select item).FirstOrDefault();
+                track = new AudioTrack(new Uri(playlistItem.EpisodeLocation, UriKind.RelativeOrAbsolute),
+                                                          playlistItem.EpisodeName,
+                                                          playlistItem.PodcastName,
+                                                          "",
+                                                          new Uri(playlistItem.PodcastLogoLocation, UriKind.RelativeOrAbsolute));
+
+                db.Playlist.DeleteOnSubmit(playlistItem);
+                db.SubmitChanges();
+            }
+
+            return track;
         }
 
         /// <summary>
