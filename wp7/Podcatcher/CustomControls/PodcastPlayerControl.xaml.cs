@@ -82,13 +82,23 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Restoring UI for currently playing episode.");
 
-                App.currentlyPlayingEpisode = getCurrentlyPlayingEpisode();
-                if (App.currentlyPlayingEpisode == null)
+                PodcastEpisodeModel nextEpisode = getCurrentlyPlayingEpisode();
+                if (App.currentlyPlayingEpisode == null 
+                    || nextEpisode == null)
                 {
                     Debug.WriteLine("No playing episode in DB.");
                     return;
                 }
 
+                if (nextEpisode.EpisodeId != App.currentlyPlayingEpisode.EpisodeId)
+                {
+                    // If next episode is different from currently playing, the track changed.
+                    App.currentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
+                    addEpisodeToPlayHistory(App.currentlyPlayingEpisode);
+                    updateEpisodeToDB(App.currentlyPlayingEpisode);
+                }
+
+                App.currentlyPlayingEpisode = nextEpisode;
                 App.currentlyPlayingEpisode.setPlaying();
                 showPlayerLayout();
                 restoreEpisodeToPlayerUI();
@@ -516,7 +526,7 @@ namespace Podcatcher
 
                 case PlayState.Paused:
                     // Player is on pause
-                    Debug.WriteLine("Podcast player is paused...");
+                    Debug.WriteLine("Podcast player is paused.");
                     saveEpisodePlayPosition(m_currentEpisode);
                     setupUIForEpisodePaused();
                     break;
@@ -532,6 +542,7 @@ namespace Podcatcher
                     break;
 
                 case PlayState.TrackEnded:
+                    saveEpisodePlayPosition(m_currentEpisode);
                     break;
             }
         }
@@ -853,7 +864,12 @@ namespace Podcatcher
             PodcastSubscriptionModel sub = null;
             using (var db = new PodcastSqlModel())
             {
-                PodcastEpisodeModel e = db.Episodes.Single(ep => ep.EpisodeId == episode.EpisodeId);  // db.episodeForEpisodeId(episode.EpisodeId);
+                PodcastEpisodeModel e = db.Episodes.Where(ep => ep.EpisodeId == episode.EpisodeId).FirstOrDefault();  // db.episodeForEpisodeId(episode.EpisodeId);
+                if (e == null)
+                {
+                    return;
+                }
+
                 sub = e.PodcastSubscription;
                 
                 e.SavedPlayPos = episode.SavedPlayPos;

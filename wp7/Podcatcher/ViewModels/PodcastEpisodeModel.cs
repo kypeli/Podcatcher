@@ -261,7 +261,6 @@ namespace Podcatcher.ViewModels
                 if (m_savedPlayPos != value)
                 {
                     m_savedPlayPos = value;
-
                     NotifyPropertyChanged("ProgressBarValue");
                 }
             }
@@ -366,6 +365,11 @@ namespace Podcatcher.ViewModels
                 if (m_episodePlayState == value)
                 {
                     return;
+                }
+
+                if (m_episodePlayState == EpisodePlayStateEnum.Listened)
+                {
+                    SavedPlayPos = 0; // Let's start from the beginning if we are listened.
                 }
 
                 m_episodePlayState = value;
