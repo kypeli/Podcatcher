@@ -1,3 +1,11 @@
+2.3.0.0
+-------
+ * Implement continuous playback for subscriptions.
+ * Parse pub dates also as 28/3/2013 8:46:31
+ * Change how many episodes to keep to 3, 10, 20 and 30.
+ * Fix issue deleting episodes when auto-cleaning subscriptions.
+ * Fix cleaning of old episodes.
+
 2.2.2.0
 -------
  * Import subscriptions from OPML file from an HTTP location.
