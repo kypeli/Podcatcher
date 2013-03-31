@@ -665,6 +665,7 @@ namespace Podcatcher
             App.currentlyPlayingEpisode = null;
             showNoPlayerLayout();
             playbackStopped();
+            BackgroundAudioPlayer.Instance.Close();
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)

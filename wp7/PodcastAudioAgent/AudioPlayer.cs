@@ -336,7 +336,6 @@ namespace PodcastAudioAgent
                     if (nextTrack != null)
                     {
                         player.Track = nextTrack;
-//                        player.Play();
                     }
                     break;
 
