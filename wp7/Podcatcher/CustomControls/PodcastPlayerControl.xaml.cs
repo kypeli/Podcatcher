@@ -523,7 +523,6 @@ namespace Podcatcher
 
                 case PlayState.Stopped:
                     // Player stopped
-                    playbackStopped();
                     Debug.WriteLine("Podcast player stopped.");
                     break;
 
@@ -665,6 +664,7 @@ namespace Podcatcher
 
             App.currentlyPlayingEpisode = null;
             showNoPlayerLayout();
+            playbackStopped();
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
