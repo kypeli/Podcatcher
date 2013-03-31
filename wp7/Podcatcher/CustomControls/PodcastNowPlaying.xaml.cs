@@ -47,7 +47,8 @@ namespace Podcatcher
 
         internal void SetupNowPlayingView()
         {
-            if (App.currentlyPlayingEpisode != null)
+            if (BackgroundAudioPlayer.Instance != null 
+                && App.currentlyPlayingEpisode != null)
             {
                 this.Visibility = Visibility.Visible;
             }
