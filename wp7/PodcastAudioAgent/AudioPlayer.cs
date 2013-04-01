@@ -100,11 +100,11 @@ namespace PodcastAudioAgent
                     if (nextTrack != null)
                     {
                         player.Track = nextTrack;
-//                        player.Play();
+                        player.Play();
                     }
                     break;
                 case PlayState.TrackReady:
-                    player.Play();
+//                    player.Play();
                     break;
                 case PlayState.Shutdown:
                     saveEpisodeStoptime();
@@ -336,6 +336,7 @@ namespace PodcastAudioAgent
                     if (nextTrack != null)
                     {
                         player.Track = nextTrack;
+                        player.Play();
                     }
                     break;
 

@@ -864,6 +864,11 @@ namespace Podcatcher.ViewModels
 
         internal void setPlaying()
         {
+            if (m_isPlaying)
+            {
+                return;
+            }
+
             EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             episodeStartedPlaying();
