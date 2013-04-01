@@ -139,6 +139,11 @@ namespace Podcatcher
             PlaylistItem plItem = null;
             using (var playlistDb = new PlaylistDBContext()) 
             {
+                if (playlistDb.Playlist.Count() == 0)
+                {
+                    return null;
+                }
+
                 plItem = playlistDb.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
             }
 
@@ -592,6 +597,12 @@ namespace Podcatcher
             saveEpisodePlayPosition(m_currentEpisode);
             addEpisodeToPlayHistory(m_currentEpisode);
             updateEpisodeToDB(m_currentEpisode);
+
+            using (var db = new PlaylistDBContext()) 
+            {
+                db.Playlist.DeleteAllOnSubmit(db.Playlist);
+                db.SubmitChanges();
+            }
 
             m_currentEpisode = null;
             BackgroundAudioPlayer.Instance.Track = null;
