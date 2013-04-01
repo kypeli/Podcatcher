@@ -262,29 +262,11 @@ namespace Podcatcher
         {
             // If we have an episodeId stored in local cache, this means we returned to the app and 
             // have that episode playing. Hence, here we need to reload the episode data from the SQL. 
+            App.currentlyPlayingEpisode = getCurrentlyPlayingEpisode();
             if (App.currentlyPlayingEpisode != null)
             {
-                if (App.currentlyPlayingEpisode != null)
-                {
-                    m_currentEpisode = App.currentlyPlayingEpisode;
-                }
-                else
-                {
-                    using (var db = new PodcastSqlModel())
-                    {
-                        m_currentEpisode = db.episodeForEpisodeId(App.currentlyPlayingEpisode.EpisodeId);
-                        App.currentlyPlayingEpisode = m_currentEpisode;
-                        App.currentlyPlayingEpisode.setPlaying();
-                    }
-                }
-
-                if (m_currentEpisode == null)
-                {
-                    // Episode not in SQL anymore (maybe it was deleted). So clear up a bit...
-                    showNoPlayerLayout();
-                    App.currentlyPlayingEpisode = null;
-                    return;
-                }
+                m_currentEpisode = App.currentlyPlayingEpisode;
+                App.currentlyPlayingEpisode.setPlaying();
 
                 BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
                 BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
