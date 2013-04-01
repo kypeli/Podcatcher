@@ -758,8 +758,6 @@ namespace Podcatcher.ViewModels
 
         private void episodeStartedPlaying()
         {
-            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
-
             m_screenUpdateTimer = new DispatcherTimer();
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
             m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
@@ -874,6 +872,7 @@ namespace Podcatcher.ViewModels
             episodeStartedPlaying();
             ProgressBarIsVisible = Visibility.Visible;
             m_isPlaying = true;
+            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
         }
 
         internal void setNoPlaying()
@@ -882,6 +881,7 @@ namespace Podcatcher.ViewModels
                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
             ProgressBarIsVisible = Visibility.Collapsed;
             m_isPlaying = false;
+            BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
         }
 
         private bool isPlaying()

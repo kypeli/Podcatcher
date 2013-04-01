@@ -70,7 +70,6 @@ namespace Podcatcher
             setupPlayerUI();
             if (m_instance == null) 
             {
-                initializePlayerUI();
                 checkPlayerEpisodeState();
                 m_instance = this;
             }
@@ -289,6 +288,7 @@ namespace Podcatcher
 
                 BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
                 BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
+
                 setupPlayerUIContent(m_currentEpisode);
 
                 if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
@@ -396,7 +396,6 @@ namespace Podcatcher
             m_currentEpisode = episodeModel;
             App.currentlyPlayingEpisode = episodeModel;
 
-            showPlayerLayout();
             setupPlayerUIContent(m_currentEpisode);
             updatePrimary(m_currentEpisode);
 
@@ -441,6 +440,7 @@ namespace Podcatcher
                 return;
             }
 
+            BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
             BackgroundAudioPlayer.Instance.Track = playTrack;
             BackgroundAudioPlayer.Instance.Volume = 1.0;
@@ -529,12 +529,14 @@ namespace Podcatcher
                     {
                         // If next episode is different from currently playing, the track changed.
                         App.currentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
+                        App.currentlyPlayingEpisode.setNoPlaying();
+
                         addEpisodeToPlayHistory(App.currentlyPlayingEpisode);
                         updateEpisodeToDB(App.currentlyPlayingEpisode);
-                    }
 
-                    App.currentlyPlayingEpisode = nextEpisode;
-                    App.currentlyPlayingEpisode.setPlaying();
+                        App.currentlyPlayingEpisode = nextEpisode;
+                        App.currentlyPlayingEpisode.setPlaying();
+                    }
 
                     setupPlayerUIContent(App.currentlyPlayingEpisode);
                     break;
