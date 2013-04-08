@@ -41,14 +41,10 @@ namespace Podcatcher
         public const string PODCAST_DL_DIR   = "shared/transfers";
 
         /** IsolatedSettings keys.  **/
-        // Key for storing the episode ID of the currently playing episode.
-//        public const string LSKEY_PODCAST_EPISODE_PLAYING_ID        = "playing_episodeId";
         // Key for storing the episode ID of the currently downloading episode.
         public const string LSKEY_PODCAST_EPISODE_DOWNLOADING_ID    = "dl_episodeId";
         // Key for verifying user knows special requirements for D/L videos.
         public const string LSKEY_PODCAST_VIDEO_DOWNLOAD_WIFI_ID    = "dl_videoEPisodesNeedWifi";
-        // Key for storing the download queue information in.
-        public const string LSKEY_PODCAST_DOWNLOAD_QUEUE            = "dl_queue";
         // Key for storing the play history information in.
         public const string LSKEY_PODCAST_PLAY_HISTORY              = "play_history";
         // Key for determining how many restarts there's been since installing the app.

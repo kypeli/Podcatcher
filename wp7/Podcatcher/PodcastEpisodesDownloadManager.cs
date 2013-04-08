@@ -64,7 +64,6 @@ namespace Podcatcher
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
             episode.DownloadPercentage = 0;
             m_episodeDownloadQueue.Enqueue(episode);
-            pushToQueueCache(episode);
             saveEpisodeInfoToDB(episode);
 
             if (m_currentEpisodeDownload == null)
@@ -247,49 +246,15 @@ namespace Podcatcher
 
         private void processStoredQueuedTransfers()
         {
-            if (m_applicationSettings.Contains(App.LSKEY_PODCAST_DOWNLOAD_QUEUE) == false)
+            List<PodcastEpisodeModel> queuedEpisodes = new List<PodcastEpisodeModel>();
+            using (var db = new PodcastSqlModel())
             {
-                m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, "");        // Create empty setting if we don't have the key yet.
+                queuedEpisodes = db.Episodes.Where(ep => ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued).ToList();
             }
 
-            // This will return a comma separated list of episode IDs that are queued for downloading.
-            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
-            if (String.IsNullOrEmpty(queuedSettingsString))
+            foreach(PodcastEpisodeModel episode in queuedEpisodes)
             {
-                return;
-            }
-
-            List<string> episodeIds = queuedSettingsString.Split(',').ToList();
-            foreach(string episodeIdStr in episodeIds) 
-            {
-                if (String.IsNullOrEmpty(episodeIdStr))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    int episodeId = Int16.Parse(episodeIdStr);
-                    PodcastEpisodeModel episode = null;
-                    using (var db = new PodcastSqlModel())
-                    {
-                        episode = db.episodeForEpisodeId(episodeId);
-                    }
-                    if (episode == null)
-                    {
-                        Debug.WriteLine("Warning: Got NULL episode when processing stored queued download episodes!");
-                        return;
-                    }
-
-                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
-                    saveEpisodeInfoToDB(episode);
-
-                    m_episodeDownloadQueue.Enqueue(episode);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("Error: Could not parse queued episode ids. Message: " + e.Message);
-                }
+                m_episodeDownloadQueue.Enqueue(episode);
             }
 
             if (m_currentBackgroundTransfer == null && m_episodeDownloadQueue.Count > 0)
@@ -298,70 +263,11 @@ namespace Podcatcher
             }
         }
 
-        private void pushToQueueCache(PodcastEpisodeModel episode)
-        {
-            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
-            if (String.IsNullOrEmpty(queuedSettingsString) == false)
-            {
-                queuedSettingsString += ",";
-            }
-
-            queuedSettingsString += episode.EpisodeId.ToString();
-
-            m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
-            m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
-            m_applicationSettings.Save();
-        }
-
-        private void popFromQueueCache()
-        {
-            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
-            List<string> episodeIds = queuedSettingsString.Split(',').ToList();
-            queuedSettingsString = "";
-            for (int i = 1; i < episodeIds.Count; i++)
-            {
-                if (String.IsNullOrEmpty(queuedSettingsString) == false) 
-                {
-                    queuedSettingsString += ",";
-                }
-
-                queuedSettingsString += episodeIds[i];
-            }
-
-            m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
-            m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
-            m_applicationSettings.Save();
-        }
-
-        private void removeFromQueueCache(PodcastEpisodeModel episode) 
-        {
-            string queuedSettingsString = (string)m_applicationSettings[App.LSKEY_PODCAST_DOWNLOAD_QUEUE];
-            List<string> episodeIds = queuedSettingsString.Split(',').ToList();
-            queuedSettingsString = "";
-            for (int i = 0; i < episodeIds.Count; i++)
-            {
-                if (Int16.Parse(episodeIds[i]) == episode.EpisodeId)
-                {
-                    continue;
-                }
-
-                if (String.IsNullOrEmpty(queuedSettingsString) == false)
-                {
-                    queuedSettingsString += ",";
-                }
-
-                queuedSettingsString += episodeIds[i];
-            }
-
-            m_applicationSettings.Remove(App.LSKEY_PODCAST_DOWNLOAD_QUEUE);
-            m_applicationSettings.Add(App.LSKEY_PODCAST_DOWNLOAD_QUEUE, queuedSettingsString);
-            m_applicationSettings.Save();
-        }
-
         private void removeEpisodeFromDownloadQueue(PodcastEpisodeModel episode)
         {
             m_episodeDownloadQueue.RemoveItem(episode);
-            removeFromQueueCache(episode);
+            episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
+            saveEpisodeInfoToDB(episode);
         }
 
         private void startNextEpisodeDownload(TransferPreferences useTransferPreferences = TransferPreferences.AllowCellularAndBattery)
@@ -378,8 +284,6 @@ namespace Podcatcher
             
             if (m_episodeDownloadQueue.Count > 0)
             {
-                popFromQueueCache();
-
                 m_currentEpisodeDownload = m_episodeDownloadQueue.Peek();
                 Uri downloadUri;
                 try
