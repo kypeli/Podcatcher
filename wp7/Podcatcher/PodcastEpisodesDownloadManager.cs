@@ -249,7 +249,10 @@ namespace Podcatcher
             List<PodcastEpisodeModel> queuedEpisodes = new List<PodcastEpisodeModel>();
             using (var db = new PodcastSqlModel())
             {
-                queuedEpisodes = db.Episodes.Where(ep => ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued).ToList();
+                queuedEpisodes = db.Episodes.Where(ep => (ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued
+                                                          || ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi
+                                                          || ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower)
+                                                  ).ToList();
             }
 
             foreach(PodcastEpisodeModel episode in queuedEpisodes)
@@ -296,8 +299,8 @@ namespace Podcatcher
                     Debug.WriteLine("Cannot download the episode. URI exception: " + e.Message);
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_episodeDownloadQueue.Dequeue();
-                    startNextEpisodeDownload();
                     saveEpisodeInfoToDB(m_currentEpisodeDownload);
+                    startNextEpisodeDownload();
                     return;
                 }
 
@@ -308,8 +311,8 @@ namespace Podcatcher
                     Debug.WriteLine("Cannot download the episode. Episode file name is null or empty.");
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Idle;
                     m_episodeDownloadQueue.Dequeue();
-                    startNextEpisodeDownload();
                     saveEpisodeInfoToDB(m_currentEpisodeDownload);
+                    startNextEpisodeDownload();
                     return;
                 }
 
