@@ -48,7 +48,7 @@
             		
                     <StackPanel Margin="0,9,12,0">
             			<StackPanel Orientation="Horizontal">
-            				<TextBlock TextWrapping="Wrap" Text="Auto-update" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+            				<TextBlock TextWrapping="Wrap" Text="Auto-download" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
             				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDownload, Mode=TwoWay}" Content="ToggleSwitchButton"/>
             			</StackPanel>
             			<TextBlock TextWrapping="Wrap" Text="When auto-update is on, the new episodes for the subscription will be automatically downloaded to your device." Style="{StaticResource PhoneTextSubtleStyle}"/>
