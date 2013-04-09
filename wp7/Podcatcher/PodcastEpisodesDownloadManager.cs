@@ -253,12 +253,16 @@ namespace Podcatcher
                                                           || ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWiFi
                                                           || ep.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.WaitingForWifiAndPower)
                                                   ).ToList();
+                
+                foreach (PodcastEpisodeModel episode in queuedEpisodes)
+                {
+                    episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued;
+                    m_episodeDownloadQueue.Enqueue(episode);
+                }
+
+                db.SubmitChanges();
             }
 
-            foreach(PodcastEpisodeModel episode in queuedEpisodes)
-            {
-                m_episodeDownloadQueue.Enqueue(episode);
-            }
 
             if (m_currentBackgroundTransfer == null && m_episodeDownloadQueue.Count > 0)
             {

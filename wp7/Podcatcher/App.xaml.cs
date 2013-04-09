@@ -148,6 +148,7 @@ namespace Podcatcher
             }
             
             m_licenseInfo = new LicenseInformation();
+            episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
 
             detectCurrentTheme();
             updateEpisodePositionsFromAudioAgent();
