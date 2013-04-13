@@ -33,7 +33,6 @@ namespace PodcastAudioAgent
 {
     public class AudioPlayer : AudioPlayerAgent
     {
-        private const string LSKEY_PODCAST_EPISODE_PLAYING_ID = "playing_episodeId";
         private const string LSKEY_AA_EPISODE_PLAY_TITLE = "aa_episode_title";
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS = "aa_episode_play_lastknownpos";
         private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
@@ -93,7 +92,7 @@ namespace PodcastAudioAgent
             {
                 case PlayState.TrackEnded:
                     saveEpisodeStoptime();
-                    clearPlayHistory();
+                    setNoPlayingEpisode();
                     
                     // Start playing next track if we have one.
                     AudioTrack nextTrack = getNextPlaylistTrack();
@@ -108,22 +107,21 @@ namespace PodcastAudioAgent
                     break;
                 case PlayState.Shutdown:
                     saveEpisodeStoptime();
-                    clearPlayHistory();
+                    setNoPlayingEpisode();
                     break;
                 case PlayState.Unknown:
                     saveEpisodeStoptime();
-                    clearPlayHistory();
+                    setNoPlayingEpisode();
                     Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
                     saveEpisodeStoptime();
                     clearPrimaryTile();
-                    clearPlayHistory();
+                    setNoPlayingEpisode();
                     Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
                     saveEpisodeStoptime();
-                    clearPlayHistory();
                     Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
@@ -144,14 +142,19 @@ namespace PodcastAudioAgent
             NotifyComplete();
         }
 
-        private void clearPlayHistory()
+        private void setNoPlayingEpisode()
         {
-            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
+            using (var db = new Podcatcher.PlaylistDBContext())
             {
-                mutex.WaitOne();
-                settings.Remove(LSKEY_PODCAST_EPISODE_PLAYING_ID);
-                settings.Save();
-                mutex.ReleaseMutex();
+                Podcatcher.ViewModels.PlaylistItem currentlyPlaying = db.Playlist.FirstOrDefault(pl => pl.IsCurrent == true);
+                if (currentlyPlaying == null)
+                {
+                    Debug.WriteLine("An episode should be playing, but none set in the DB.");
+                    return;
+                }
+
+                currentlyPlaying.IsCurrent = false;
+                db.SubmitChanges();
             }
         }
 
