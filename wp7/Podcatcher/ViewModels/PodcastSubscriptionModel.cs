@@ -540,13 +540,11 @@ namespace Podcatcher.ViewModels
             get
             {
                 bool and    = (UnplayedEpisodes > 0 && PartiallyPlayedEpisodes > 0) ? true : false;
-                bool plural = (UnplayedEpisodes > 1 || PartiallyPlayedEpisodes > 1) ? true : false;
 
-                return String.Format("{0}{1}{2} {3}",
-                    UnplayedEpisodes > 0        ? UnplayedEpisodes + " unplayed"                : "",
-                    and                         ? " and "                                       : "",
-                    PartiallyPlayedEpisodes > 0 ? PartiallyPlayedEpisodes + " partially played" : "",
-                    (UnplayedEpisodes > 0 || PartiallyPlayedEpisodes > 0) ? "episode" + (plural ? "s" : "") : "");
+                return String.Format("{0}{1}{2}",
+                    UnplayedEpisodes > 0 ? UnplayedEpisodes + " unplayed" : "",
+                    and ? "\n" : "",
+                    PartiallyPlayedEpisodes > 0 ? PartiallyPlayedEpisodes + " partially played" : "");
             }
 
             set
@@ -562,7 +560,7 @@ namespace Podcatcher.ViewModels
             {
                 if (NewEpisodesCount > 0)
                 {
-                    return String.Format("{0} new episodes", NewEpisodesCount);
+                    return String.Format("{0} new", NewEpisodesCount);
                 }
                 else
                 {
