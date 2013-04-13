@@ -460,6 +460,7 @@ namespace Podcatcher
                     completePodcastDownload(backgroundTransferRequest);
                     break;
                 case TransferStatus.Transferring:
+                    Debug.WriteLine("Transferring...");
                     m_currentEpisodeDownload.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading;
                     break;
             }

@@ -87,6 +87,11 @@ namespace Podcatcher.Views
 
             if (forceUpdate)
             {
+                if (App.episodeDownloadManager == null)
+                {
+                    App.episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
+                }
+
                 ShellTile pinnedSubscriptionTile = m_subscription.getSubscriptionsLiveTile();
                 if (pinnedSubscriptionTile != null)
                 {
