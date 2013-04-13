@@ -351,7 +351,7 @@ namespace Podcatcher
             }
             catch (Exception) { /* In case we get some other scheduler related exception. But we are not interested. */ }
 
-            currentlyPlayingEpisode = PodcastPlayerControl.getCurrentlyPlayingEpisode();
+            PodcastPlayerControl.getIntance().initializeCurrentlyPlayingEpisode();
         }
 
         // Do not add any additional code to this method

@@ -264,7 +264,7 @@ namespace Podcatcher
             PrevButtonImage.Source = m_prevButtonBitmap;
         }
 
-        private void restoreEpisodeToPlayerUI()
+        public void initializeCurrentlyPlayingEpisode()
         {
             // If we have an episodeId stored in local cache, this means we returned to the app and 
             // have that episode playing. Hence, here we need to reload the episode data from the SQL. 
@@ -273,7 +273,14 @@ namespace Podcatcher
             {
                 m_currentEpisode = App.currentlyPlayingEpisode;
                 App.currentlyPlayingEpisode.setPlaying();
+            }
+        }
 
+        private void restoreEpisodeToPlayerUI()
+        {
+            initializeCurrentlyPlayingEpisode();
+            if (App.currentlyPlayingEpisode != null) 
+            {
                 BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
                 BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
 

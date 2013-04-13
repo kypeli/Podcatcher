@@ -32,7 +32,6 @@ namespace Podcatcher
 {
     public partial class PodcastNowPlaying : UserControl
     {
-        private static PodcastEpisodeModel currentlyPlayingEpisodeInPlayhistory = null;
         private BitmapImage m_podcastLogo;
 
         public PodcastNowPlaying()
@@ -47,8 +46,7 @@ namespace Podcatcher
 
         internal void SetupNowPlayingView()
         {
-            if (PodcastPlayerControl.getCurrentlyPlayingEpisode() != null
-                && App.currentlyPlayingEpisode != null)
+            if (App.currentlyPlayingEpisode != null)
             {
                 this.Visibility = Visibility.Visible;
             }
@@ -58,24 +56,14 @@ namespace Podcatcher
                 return;
             }
 
-            if (currentlyPlayingEpisodeInPlayhistory == null
-                || App.currentlyPlayingEpisode.EpisodeId != currentlyPlayingEpisodeInPlayhistory.EpisodeId)
+            using (var db = new PodcastSqlModel())
             {
-                using (var db = new PodcastSqlModel())
-                {
-                    PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == App.currentlyPlayingEpisode.PodcastId);
-                    m_podcastLogo = s.PodcastLogo;
-                }
-
-                currentlyPlayingEpisodeInPlayhistory = App.currentlyPlayingEpisode;
+                PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == App.currentlyPlayingEpisode.PodcastId);
+                m_podcastLogo = s.PodcastLogo;
             }
 
-            if (currentlyPlayingEpisodeInPlayhistory != null)
-            {
-                this.Visibility = Visibility.Visible;
-                this.DataContext = currentlyPlayingEpisodeInPlayhistory;
-                this.PodcastLogo.Source = m_podcastLogo;
-            }            
+            this.DataContext = App.currentlyPlayingEpisode;
+            this.PodcastLogo.Source = m_podcastLogo;
         }
 
         private void NowPlayingTapped(object sender, System.Windows.Input.GestureEventArgs e)

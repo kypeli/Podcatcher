@@ -125,6 +125,7 @@ namespace PodcastAudioAgent
                     Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
+                    setCurrentlyPlayingTrack(player.Track.Title);
                     saveEpisodeStartinfo(player);
                     updateLastKnownPos(player);
                     Debug.WriteLine("Play state: Playing");
@@ -367,6 +368,16 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
+        }
+
+        private void setCurrentlyPlayingTrack(string episodeName) 
+        {
+            using (var db = new Podcatcher.PlaylistDBContext())
+            {
+                Podcatcher.ViewModels.PlaylistItem current = db.Playlist.First(item => item.EpisodeName == episodeName);
+                current.IsCurrent = true;
+                db.SubmitChanges();
+            }
         }
 
         private AudioTrack getNextPlaylistTrack()

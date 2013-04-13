@@ -82,7 +82,6 @@ namespace Podcatcher
             using (var playlistDb = new Podcatcher.PlaylistDBContext())
             {
                 playlistDb.Playlist.DeleteAllOnSubmit(playlistDb.Playlist);
-                playlistDb.SubmitChanges();
 
                 int i = 0;
                 foreach (PodcastEpisodeModel ep in playlistItems)

@@ -15,7 +15,7 @@
                 <Image x:Name="PodcastLogo" Height="120" Width="120" HorizontalAlignment="Left"/>
     			<StackPanel Height="119" Margin="18,0,0,0" Width="325">
                     <TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Height="95" Style="{StaticResource PhoneTextTitle3Style}" FontSize="27"/>
-<!--                    <ProgressBar Value="{Binding ProgressBarValue}" Height="10" VerticalAlignment="Bottom" Maximum="100" Margin="0,10,0,0"/> -->
+                    <ProgressBar Value="{Binding ProgressBarValue}" Height="10" VerticalAlignment="Bottom" Maximum="100" Margin="0,10,0,0"/> 
     			</StackPanel>
     		</StackPanel>
     	</StackPanel>
