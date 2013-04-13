@@ -619,7 +619,10 @@ namespace Podcatcher
         private void setupUIForEpisodePaused()
         {
             App.currentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
-            m_screenUpdateTimer.Stop();                                                                                         
+            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
+            {
+                m_screenUpdateTimer.Stop();
+            }                                 
             PlayButtonImage.Source = m_playButtonBitmap;
         }
 
