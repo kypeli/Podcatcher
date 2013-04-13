@@ -87,11 +87,6 @@ namespace Podcatcher.Views
 
             if (forceUpdate)
             {
-                if (App.episodeDownloadManager == null)
-                {
-                    App.episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
-                }
-
                 ShellTile pinnedSubscriptionTile = m_subscription.getSubscriptionsLiveTile();
                 if (pinnedSubscriptionTile != null)
                 {
@@ -114,6 +109,24 @@ namespace Podcatcher.Views
             if (SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex) != SettingsModel.KEEP_ALL_EPISODES)
             {
                 m_subscription.cleanOldEpisodes(SettingsModel.keepNumEpisodesForSelectedIndex(m_subscription.SubscriptionSelectedKeepNumEpisodesIndex));
+            }
+
+            if (App.episodeDownloadManager == null)
+            {
+                App.episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
+            }
+
+            App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged -= new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
+            App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged += new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
+        }
+
+        void episodeDownloadManager_PodcastEpisodeDownloadStateChanged(object source, PodcastDownloadManagerArgs args)
+        {
+            int episodeId = args.episodeId;
+            PodcastEpisodeModel episode = this.EpisodeList.Items.Cast<PodcastEpisodeModel>().FirstOrDefault(e => e.EpisodeId == episodeId);
+            if (episode != null)
+            {
+                episode.EpisodeDownloadState = args.downloadState;
             }
         }
 

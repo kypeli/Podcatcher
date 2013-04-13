@@ -381,28 +381,6 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        public String EpisodeDownloadStatusText
-        {
-            get 
-            {
-                String statusText = "";
-                switch (m_episodeDownloadState)
-                {
-                    case EpisodeDownloadStateEnum.Downloading:
-                        statusText = "Downloading...";
-                        break;
-                    case EpisodeDownloadStateEnum.Idle:
-                        statusText = "";
-                        break;
-                    case EpisodeDownloadStateEnum.Queued:
-                        statusText = "Queued";
-                        break;
-                }
-
-                return statusText;
-            }
-        }
-
         private BackgroundTransferRequest m_transferRequest;
         public BackgroundTransferRequest DownloadRequest
         {

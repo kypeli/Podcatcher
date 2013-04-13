@@ -37,10 +37,13 @@ namespace Podcatcher
     public class PodcastDownloadManagerArgs : EventArgs
     {
         public int episodeId;
+        public PodcastEpisodeModel.EpisodeDownloadStateEnum downloadState;
     }
 
     public class PodcastEpisodesDownloadManager
     {
+        public event PodcastDownloadManagerHandler OnPodcastEpisodeDownloadStateChanged;
+    
         public ObservableQueue<PodcastEpisodeModel> EpisodeDownloadQueue
         {
             get
@@ -163,6 +166,12 @@ namespace Podcatcher
             createEpisodeDownloadDir();
 
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
+
+            if (BackgroundTransferService.Requests.Count() == 0)
+            {
+                m_applicationSettings.Remove(App.LSKEY_PODCAST_EPISODE_DOWNLOADING_ID);
+                m_currentBackgroundTransfer = null;
+            }
 
             processOngoingTransfer();
             processStoredQueuedTransfers();
@@ -465,7 +474,11 @@ namespace Podcatcher
                     break;
             }
 
-            saveEpisodeInfoToDB(m_currentEpisodeDownload);
+            if (m_currentEpisodeDownload != null)
+            {
+                sendDownloadStateChangedEvent(m_currentEpisodeDownload, m_currentEpisodeDownload.EpisodeDownloadState);
+                saveEpisodeInfoToDB(m_currentEpisodeDownload);
+            }
         }
 
         private void completePodcastDownload(BackgroundTransferRequest transferRequest)
@@ -533,6 +546,14 @@ namespace Podcatcher
             cleanupEpisodeDownload(transferRequest);
             // And start a next round of downloading.
             startNextEpisodeDownload();
+        }
+
+        private void sendDownloadStateChangedEvent(PodcastEpisodeModel episode, PodcastEpisodeModel.EpisodeDownloadStateEnum state)
+        {
+            if (OnPodcastEpisodeDownloadStateChanged != null)
+            {
+                this.OnPodcastEpisodeDownloadStateChanged(this, new PodcastDownloadManagerArgs() { downloadState = state, episodeId = episode.EpisodeId });
+            }
         }
 
         private void updateEpisodeWhenDownloaded(PodcastEpisodeModel episode)
