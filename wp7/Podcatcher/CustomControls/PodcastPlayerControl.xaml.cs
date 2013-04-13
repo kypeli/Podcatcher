@@ -428,13 +428,14 @@ namespace Podcatcher
                 return;
             }
 
-            BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
-            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
-            BackgroundAudioPlayer.Instance.Track = playTrack;
-            BackgroundAudioPlayer.Instance.Volume = 1.0;
 
             try
             {
+                BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
+                BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
+                BackgroundAudioPlayer.Instance.Track = playTrack;
+                BackgroundAudioPlayer.Instance.Volume = 1.0;
+
                 PlayButtonImage.Source = m_pauseButtonBitmap;
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
@@ -652,7 +653,7 @@ namespace Podcatcher
         {
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
-                BackgroundAudioPlayer.Instance.Rewind();
+                BackgroundAudioPlayer.Instance.Position = TimeSpan.FromSeconds(BackgroundAudioPlayer.Instance.Position.TotalSeconds - 30);
             }
         }
 
@@ -694,7 +695,7 @@ namespace Podcatcher
         {
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
             {
-                BackgroundAudioPlayer.Instance.FastForward();
+                BackgroundAudioPlayer.Instance.Position = TimeSpan.FromSeconds(BackgroundAudioPlayer.Instance.Position.TotalSeconds + 30);
             }
         }
 

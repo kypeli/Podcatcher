@@ -34,7 +34,7 @@
                 <!-- Play button-->
                 <Image Margin="0,0,65,0" x:Name="PlayButtonImage" Tap="playButtonClicked" Width="51"/>
                 <!-- Next button -->
-                <Image x:Name="NextButtonImage" Tap="ffButtonClicked" Width="52" Margin="0,0,65,0"/>
+                <Image x:Name="NextButtonImage" Tap="ffButtonClicked" Width="52" Margin="0,0,65,0" />
                 <!-- Stop button -->
                 <Image Width="54" x:Name="StopButtonImage" Tap="stopButtonClicked"/>                
     		</StackPanel>

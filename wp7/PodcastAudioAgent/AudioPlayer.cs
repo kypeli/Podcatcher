@@ -343,7 +343,7 @@ namespace PodcastAudioAgent
                 case UserAction.FastForward:
                     try
                     {
-                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
+                        player.FastForward();
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
                     } catch(Exception) {
                         Debug.WriteLine("Error seeking. Probably seeked passed the end.");
@@ -355,7 +355,7 @@ namespace PodcastAudioAgent
                 case UserAction.Rewind:
                     try
                     {
-                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);
+                        player.Rewind();
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
                     } catch(Exception) {
                         Debug.WriteLine("Error seeking. Probably seeked passed the start.");
