@@ -147,13 +147,13 @@ namespace Podcatcher.ViewModels
             switch (index)
             {
                 case 1:
-                    return 1;
-                case 2:
                     return 3;
-                case 3:
+                case 2:
                     return 10;
-                case 4:
+                case 3:
                     return 20;
+                case 4:
+                    return 30;
                 case 0:
                 default:
                     return 9999;
