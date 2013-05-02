@@ -335,12 +335,6 @@ namespace Podcatcher.ViewModels
             {
                 m_episodeDownloadState = value;
 
-                NotifyPropertyChanged("ShouldShowDownloadButton");
-                NotifyPropertyChanged("EpisodeDownloadState");
-                NotifyPropertyChanged("ProgressBarIsVisible");
-                NotifyPropertyChanged("ProgressBarValue");
-                NotifyPropertyChanged("EpisodeStatusText");
-
                 if (m_episodeDownloadState != EpisodeDownloadStateEnum.Downloading
                     && m_downloadRequest != null)
                 {
@@ -348,6 +342,12 @@ namespace Podcatcher.ViewModels
                     m_downloadRequest.TransferStatusChanged -= new EventHandler<BackgroundTransferEventArgs>(transferStatusChanged);
                     m_downloadRequest = null;
                 }
+
+                NotifyPropertyChanged("ShouldShowDownloadButton");
+                NotifyPropertyChanged("EpisodeDownloadState");
+                NotifyPropertyChanged("ProgressBarIsVisible");
+                NotifyPropertyChanged("ProgressBarValue");
+                NotifyPropertyChanged("EpisodeStatusText");
             }
         }
 
