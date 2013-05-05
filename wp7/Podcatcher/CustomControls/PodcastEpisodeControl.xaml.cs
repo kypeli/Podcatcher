@@ -35,6 +35,7 @@ using Microsoft.Phone.Tasks;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using System.Windows.Navigation;
 
 namespace Podcatcher
 {
@@ -169,7 +170,18 @@ namespace Podcatcher
 
         private void Episode_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastEpisodeDescriptionView.xaml?episodeId={0}", (this.DataContext as PodcastEpisodeModel).EpisodeId), UriKind.Relative));
+            PodcastEpisodeModel podcastEpisode = this.DataContext as PodcastEpisodeModel;
+            PhoneApplicationFrame applicationFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+
+            if (podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing
+                || podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Streaming)
+            {
+                applicationFrame.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
+            }
+            else
+            {
+                applicationFrame.Navigate(new Uri(string.Format("/Views/PodcastEpisodeDescriptionView.xaml?episodeId={0}", (this.DataContext as PodcastEpisodeModel).EpisodeId), UriKind.Relative));
+            }
         }
 
         #endregion
