@@ -22,6 +22,5 @@ namespace Podcatcher
             Playlist = GetTable<PlaylistItem>();
             // TODO: Handle scheme changes.                    
         }
-
     }
 }

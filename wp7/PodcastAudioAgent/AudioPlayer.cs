@@ -227,10 +227,10 @@ namespace PodcastAudioAgent
                 return;
             }
 
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
             using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
             {
                 mutex.WaitOne();
+                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
                 if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE))
                 {
@@ -244,7 +244,6 @@ namespace PodcastAudioAgent
                 catch (InvalidOperationException e)
                 {
                     Debug.WriteLine("AudioPlayer:saveEpisodeStartinfo - Player no longer available. Error:  " + e.Message);
-                    return;
                 }
 
                 settings.Save();

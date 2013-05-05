@@ -362,5 +362,24 @@ namespace Podcatcher
                 PodcastSubscriptionsManager.getInstance().exportSubscriptions();
             }
         }
+
+        private void PlayOrderChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListPickerItem selectedItem = (sender as ListPicker).SelectedItem as ListPickerItem;
+            if (selectedItem == null)
+            {
+                return;
+            }
+
+            switch (selectedItem.Tag as String)
+            {
+                case "OldestFirst":
+                    Debug.WriteLine("Oldest first");
+                    break;
+                case "NewestFirst":
+                    Debug.WriteLine("Newest first");
+                    break;
+            }
+        }
     }
 }

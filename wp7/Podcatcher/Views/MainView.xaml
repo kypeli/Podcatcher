@@ -52,7 +52,7 @@
                 </Grid>
             </controls:PivotItem>
 
-            <!-- New podcast episodes -->
+            <!-- Download queue -->
             <controls:PivotItem Header="downloads">
                 <Grid x:Name="DownloadsRoot" Background="Transparent">
                     <ListBox Margin="0,0,-12,0" x:Name="EpisodeDownloadList">
@@ -109,9 +109,49 @@
                                  TextWrapping="Wrap" 
                                  TextAlignment="Center" 
                                  Style="{StaticResource PhoneTextGroupHeaderStyle}" 
-                                 Margin="71,193,69,181" />
+                                 Margin="71,193,69,181"/>
                 </Grid>
             </controls:PivotItem>
+            
+            <!-- Podcast play queue -->
+            <controls:PivotItem Header="play queue">
+                <Grid Background="Transparent" Width="480">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Width="Auto" VerticalAlignment="Top">
+                        <TextBlock TextWrapping="Wrap" Text="Play order" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
+
+                        <toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="0"  Width="300" SelectionChanged="PlayOrderChanged">
+                            <toolkit:ListPickerItem Tag="OldestFirst" HorizontalAlignment="Center">Oldest first</toolkit:ListPickerItem>
+                            <toolkit:ListPickerItem Tag="NewestFirst" HorizontalAlignment="Center">Newest first</toolkit:ListPickerItem>
+                        </toolkit:ListPicker>
+                    </StackPanel>
+
+                    <ListBox Grid.Row="1" Margin="0,0,-12,0" ItemsSource="{Binding PlayQueue}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Width="Auto" Height="Auto">
+                                    <pc:PlayQueueControl/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Text="You have no episodes in the play queue."
+                                 x:Name="NoEpisodesInQueueText" 
+                                 VerticalAlignment="Center" 
+                                 HorizontalAlignment="Center" 
+                                 TextWrapping="Wrap" 
+                                 TextAlignment="Center" 
+                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                                 Margin="34,96,32,278" 
+                               Visibility="Collapsed"/>
+                </Grid>
+            </controls:PivotItem>
+
 
         </controls:Pivot>
 

@@ -1,6 +1,11 @@
 ﻿using System.Linq;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Diagnostics;
+using System;
+using System.Windows.Media.Imaging;
+using System.IO;
+using System.IO.IsolatedStorage;
 
 namespace Podcatcher.ViewModels
 {
@@ -35,6 +40,25 @@ namespace Podcatcher.ViewModels
         {
             get;
             set;
+        }
+
+        public BitmapImage PodcastLogo
+        {
+            get
+            {
+                Stream stream = null;
+                BitmapImage logo = new BitmapImage(new Uri("images/Podcatcher_generic_podcast_cover.png", UriKind.Relative));
+                using (var isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if (isoStore.FileExists(PodcastLogoLocation))
+                    {
+                        stream = isoStore.OpenFile(PodcastLogoLocation, System.IO.FileMode.Open, FileAccess.Read);
+                        logo.SetSource(stream);
+                    }
+                }
+
+                return logo;
+            }
         }
 
         [Column]

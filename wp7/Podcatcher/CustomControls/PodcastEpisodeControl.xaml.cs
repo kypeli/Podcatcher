@@ -101,6 +101,7 @@ namespace Podcatcher
                 }
 
                 playlistDb.SubmitChanges();
+                App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
             }                
 
             // Play locally from a downloaded file.

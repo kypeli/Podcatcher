@@ -60,6 +60,28 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private ObservableCollection<PlaylistItem> m_playQueue = new ObservableCollection<PlaylistItem>();
+        public ObservableCollection<PlaylistItem> PlayQueue
+        {
+            get
+            {
+                using (var db = new PlaylistDBContext())
+                {
+                    var query = from PlaylistItem e in db.Playlist
+                                 orderby e.OrderNumber
+                                 select e;
+
+                    return new ObservableCollection<PlaylistItem>(query);
+                }
+
+            }
+
+            set
+            {
+                NotifyPropertyChanged("PlayQueue");
+            }
+        }
+
         private List<PodcastEpisodeModel> createPlayHistory()
         {
             List<PodcastEpisodeModel> playHistory = new List<PodcastEpisodeModel>();

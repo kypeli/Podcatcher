@@ -550,6 +550,21 @@ namespace Podcatcher.ViewModels
             Debug.WriteLine("Object: " + GetHashCode() + " Episode ID: " + EpisodeId);
         }
 
+        public String EpisodeDuration
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(m_episodeRunningTime) == false)
+                {
+                    return String.Format("Duration: {0}", m_episodeRunningTime);
+                }
+                else
+                {
+                    return @"";
+                }
+            }
+        }
+
         public String EpisodeStatusText
         {
             get 

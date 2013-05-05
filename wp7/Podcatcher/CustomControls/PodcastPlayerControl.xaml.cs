@@ -513,15 +513,15 @@ namespace Podcatcher
                     Debug.WriteLine("Podcast player is playing...");
                     setupUIForEpisodePlaying();
                     // initializePlayerUI();
-                    PodcastEpisodeModel nextEpisode = getCurrentlyPlayingEpisode();
+                    PodcastEpisodeModel currentEpisode = getCurrentlyPlayingEpisode();
                     if (App.currentlyPlayingEpisode == null
-                        || nextEpisode == null)
+                        || currentEpisode == null)
                     {
                         Debug.WriteLine("No playing episode in DB.");
                         return;
                     }
 
-                    if (nextEpisode.EpisodeId != App.currentlyPlayingEpisode.EpisodeId)
+                    if (currentEpisode.EpisodeId != App.currentlyPlayingEpisode.EpisodeId)
                     {
                         // If next episode is different from currently playing, the track changed.
                         App.currentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
@@ -530,7 +530,7 @@ namespace Podcatcher
                         addEpisodeToPlayHistory(App.currentlyPlayingEpisode);
                         updateEpisodeToDB(App.currentlyPlayingEpisode);
 
-                        App.currentlyPlayingEpisode = nextEpisode;
+                        App.currentlyPlayingEpisode = currentEpisode;
                         App.currentlyPlayingEpisode.setPlaying();
                     }
 
