@@ -1,3 +1,9 @@
+2.4.0.0
+-------
+ * Change how lock screen buttons work.
+   - If continuous playback / play queue is active, pressing next will take user to next episode.
+   - If continuous playback / play queue is not active, pressing next / prev will skip 30s forward/backwards.
+
 2.3.0.0
 -------
  * Implement continuous playback for subscriptions.

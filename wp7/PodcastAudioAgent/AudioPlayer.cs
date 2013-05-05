@@ -269,6 +269,8 @@ namespace PodcastAudioAgent
         /// </remarks>
         protected override void OnUserAction(BackgroundAudioPlayer player, AudioTrack track, UserAction action, object param)
         {
+            AudioTrack nextTrack = getNextPlaylistTrack();
+
             switch (action)
             {
                 case UserAction.Play:
@@ -335,8 +337,12 @@ namespace PodcastAudioAgent
 
                 case UserAction.SkipNext:
                     Debug.WriteLine("Skip next.");
-                    AudioTrack nextTrack = getNextPlaylistTrack();
-                    if (nextTrack != null)
+                    
+                    if (nextTrack == null)
+                    {
+                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
+                    }
+                    else 
                     {
                         player.Track = nextTrack;
                         player.Play();
@@ -346,14 +352,15 @@ namespace PodcastAudioAgent
                 case UserAction.FastForward:
                     try
                     {
-                        player.FastForward();
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
+                        player.FastForward();
                     } catch(Exception) {
                         Debug.WriteLine("Error seeking. Probably seeked passed the end.");
                     }
                     break;
 
                 case UserAction.SkipPrevious:
+                    player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);
                     break;
                 case UserAction.Rewind:
                     try
