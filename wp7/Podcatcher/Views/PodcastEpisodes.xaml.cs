@@ -218,10 +218,7 @@ namespace Podcatcher.Views
                     episodes = db.episodesForSubscription(m_subscription);
                     foreach (PodcastEpisodeModel episode in episodes)
                     {
-                        if (episode.SavedPlayPos > 0)
-                        {
-                            episode.markAsListened();
-                        }
+                        episode.markAsListened();
                     }
                     db.SubmitChanges();
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(m_subscription);
@@ -234,6 +231,8 @@ namespace Podcatcher.Views
 
                 this.DataContext = m_subscription;
                 this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
+
+                App.showNotificationToast("All episodes marked as listened.");
             }
         }
 
