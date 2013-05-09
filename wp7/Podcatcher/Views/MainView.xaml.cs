@@ -221,7 +221,7 @@ namespace Podcatcher
             {
                 this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
 
-                if (App.currentlyPlayingEpisode != null)
+                if (App.CurrentlyPlayingEpisode != null)
                 {
                     this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
                 }

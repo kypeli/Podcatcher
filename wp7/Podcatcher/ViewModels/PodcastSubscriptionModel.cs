@@ -411,12 +411,12 @@ namespace Podcatcher.ViewModels
                             m_episodes[i].NewEpisodeVisibility = Visibility.Visible;
                         }
 
-                        if (App.currentlyPlayingEpisode != null)
+                        if (App.CurrentlyPlayingEpisode != null)
                         {
-                            PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == App.currentlyPlayingEpisode.EpisodeId).FirstOrDefault();
+                            PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == App.CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();
                             if (playingEpisode != null)
                             {
-                                playingEpisode.initializeState(App.currentlyPlayingEpisode);
+                                playingEpisode.initializeState(App.CurrentlyPlayingEpisode);
                             }
                         }
                     }

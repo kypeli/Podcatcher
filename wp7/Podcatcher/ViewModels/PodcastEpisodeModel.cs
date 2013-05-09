@@ -454,6 +454,20 @@ namespace Podcatcher.ViewModels
 
         }
 
+        public PodcastSubscriptionModel PodcastSubscriptionInstance
+        {
+            get
+            {
+                using (var db = new PodcastSqlModel())
+                {
+                    int subscriptionId = db.Episodes.Where(ep => ep.EpisodeId == m_episodeId).Select(ep => ep.PodcastSubscription.PodcastId).First();
+                    return db.Subscriptions.Where(sub => sub.PodcastId == subscriptionId).First();
+                }
+            }
+
+            private set { }
+        }
+
         private bool playableMimeType()
         {
             String episodeMimeType = EpisodeFileMimeType;
@@ -861,7 +875,7 @@ namespace Podcatcher.ViewModels
             }
 
             EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
-                                                                   : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                                                                 : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             episodeStartedPlaying();
             ProgressBarIsVisible = Visibility.Visible;
             m_isPlaying = true;

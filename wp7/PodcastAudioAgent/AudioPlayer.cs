@@ -380,9 +380,12 @@ namespace PodcastAudioAgent
         {
             using (var db = new Podcatcher.PlaylistDBContext())
             {
-                Podcatcher.ViewModels.PlaylistItem current = db.Playlist.First(item => item.EpisodeName == episodeName);
-                current.IsCurrent = true;
-                db.SubmitChanges();
+                Podcatcher.ViewModels.PlaylistItem current = db.Playlist.FirstOrDefault(item => item.EpisodeName == episodeName);
+                if (current != null)
+                {
+                    current.IsCurrent = true;
+                    db.SubmitChanges();
+                }
             }
         }
 

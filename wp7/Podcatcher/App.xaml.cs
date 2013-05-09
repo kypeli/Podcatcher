@@ -77,8 +77,46 @@ namespace Podcatcher
 
         public static MainViewModels mainViewModels = new MainViewModels();
 
-//        public static int currentlyPlayingEpisodeId = -1;
-        public static PodcastEpisodeModel currentlyPlayingEpisode = null;
+        public static PodcastPlaybackManager playbackManager = PodcastPlaybackManager.getInstance();
+        
+        private static PodcastEpisodeModel m_currentlyPlayingEpisode = null;
+        public static PodcastEpisodeModel CurrentlyPlayingEpisode
+        {
+            get
+            {
+                return m_currentlyPlayingEpisode;
+            }
+
+            set
+            {
+                if (value != m_currentlyPlayingEpisode)
+                {
+                    m_currentlyPlayingEpisode = value;
+                    using (var db = new Podcatcher.PlaylistDBContext())
+                    {
+                        db.Playlist.DeleteAllOnSubmit(db.Playlist);
+                        if (m_currentlyPlayingEpisode != null)
+                        {
+                            PodcastSubscriptionModel subscription = m_currentlyPlayingEpisode.PodcastSubscriptionInstance;
+                            db.Playlist.InsertOnSubmit(new PlaylistItem
+                            {
+                                OrderNumber = 0,
+                                PodcastName = subscription.PodcastName,
+                                PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
+                                EpisodeName = m_currentlyPlayingEpisode.EpisodeName,
+                                EpisodeLocation = (String.IsNullOrEmpty(m_currentlyPlayingEpisode.EpisodeFile)) ?
+                                                                    m_currentlyPlayingEpisode.EpisodeDownloadUri :
+                                                                    m_currentlyPlayingEpisode.EpisodeFile,
+                                EpisodeId = m_currentlyPlayingEpisode.EpisodeId,
+                                IsCurrent = true
+                            });
+                        }
+
+                        db.SubmitChanges();
+                    }
+                }
+            }
+        }
 
         public static bool IsTrial
         {
@@ -200,7 +238,7 @@ namespace Podcatcher
 
                             Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
 
-                            if (currentlyPlayingEpisode == null)
+                            if (CurrentlyPlayingEpisode == null)
                             {
                                 // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
                                 // playing ID. This means the track in question isn't playing anymore, so let's update the state.
@@ -350,8 +388,6 @@ namespace Podcatcher
                 }
             }
             catch (Exception) { /* In case we get some other scheduler related exception. But we are not interested. */ }
-
-            PodcastPlayerControl.getIntance().initializeCurrentlyPlayingEpisode();
         }
 
         // Do not add any additional code to this method

@@ -46,7 +46,7 @@ namespace Podcatcher
 
         internal void SetupNowPlayingView()
         {
-            if (App.currentlyPlayingEpisode != null)
+            if (App.CurrentlyPlayingEpisode != null)
             {
                 this.Visibility = Visibility.Visible;
             }
@@ -58,11 +58,11 @@ namespace Podcatcher
 
             using (var db = new PodcastSqlModel())
             {
-                PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == App.currentlyPlayingEpisode.PodcastId);
+                PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == App.CurrentlyPlayingEpisode.PodcastId);
                 m_podcastLogo = s.PodcastLogo;
             }
 
-            this.DataContext = App.currentlyPlayingEpisode;
+            this.DataContext = App.CurrentlyPlayingEpisode;
             this.PodcastLogo.Source = m_podcastLogo;
         }
 

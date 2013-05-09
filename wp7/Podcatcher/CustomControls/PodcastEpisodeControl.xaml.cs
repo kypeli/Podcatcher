@@ -21,21 +21,10 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
-using System.Diagnostics;
 using Podcatcher.ViewModels;
-using System.IO.IsolatedStorage;
-using Microsoft.Phone.Tasks;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Collections.Generic;
-using System.Windows.Navigation;
 
 namespace Podcatcher
 {
@@ -61,6 +50,13 @@ namespace Podcatcher
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
+
+            PodcastPlaybackManager.getInstance().play(m_episodeModel);
+
+#if false
+            /**
+             * Creating Playlist 
+             */
             List<PodcastEpisodeModel> playlistItems = new List<PodcastEpisodeModel>();
             PodcastSubscriptionModel subscription = null;
             using (var db = new PodcastSqlModel())
@@ -104,30 +100,7 @@ namespace Podcatcher
                 playlistDb.SubmitChanges();
                 App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
             }                
-
-            // Play locally from a downloaded file.
-            if (m_episodeModel.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
-            {
-                PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                player.playEpisode(m_episodeModel);
-                m_episodeModel.setPlaying();
-            }
-
-            // Stream it if not downloaded. 
-            if (m_episodeModel.EpisodeDownloadState != PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
-            {
-                if (PodcastPlayerControl.isAudioPodcast(m_episodeModel))
-                {
-                    m_episodeModel.setPlaying();
-                    audioStreaming(m_episodeModel);
-                }
-                else
-                {
-                    PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                    player.StopPlayback();
-                    videoStreaming(m_episodeModel);
-                }
-            }
+#endif
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
@@ -138,20 +111,6 @@ namespace Podcatcher
             downloadManager.addEpisodeToDownloadQueue(m_episodeModel);
         }
 
-        private void videoStreaming(PodcastEpisodeModel podcastEpisode)
-        {
-            MediaPlayerLauncher mediaPlayerLauncher = new MediaPlayerLauncher();
-            mediaPlayerLauncher.Media = new Uri(podcastEpisode.EpisodeDownloadUri, UriKind.Absolute);
-            mediaPlayerLauncher.Controls = MediaPlaybackControls.All;
-            mediaPlayerLauncher.Location = MediaLocationType.Data;
-            mediaPlayerLauncher.Show();
-        }
-
-        private void audioStreaming(PodcastEpisodeModel podcastEpisode)
-        {
-            PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-            player.streamEpisode(podcastEpisode);
-        }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)
         {

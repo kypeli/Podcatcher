@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="PlaylistDBContext.cs" />
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
+    <Compile Include="PodcastPlaybackManager.cs" />
     <Compile Include="ViewModels\GPodderResultModel.cs" />
     <Compile Include="ViewModels\LastPlayedModel.cs" />
     <Compile Include="ViewModels\MainViewModels.cs" />
