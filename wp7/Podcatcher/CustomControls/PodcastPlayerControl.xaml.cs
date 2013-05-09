@@ -138,31 +138,6 @@ namespace Podcatcher
             return audio;
         }
 
-        public static PodcastEpisodeModel getCurrentlyPlayingEpisode()
-        {
-            PlaylistItem plItem = null;
-            using (var playlistDb = new PlaylistDBContext()) 
-            {
-                if (playlistDb.Playlist.Count() == 0)
-                {
-                    return null;
-                }
-
-                plItem = playlistDb.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
-            }
-
-            if (plItem != null)
-            {
-                using (var db = new PodcastSqlModel())
-                {
-                    return db.Episodes.Where(ep => ep.EpisodeId == plItem.EpisodeId).FirstOrDefault();
-                }
-            }
-            
-
-            return null;
-        }
-
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
             Debug.WriteLine("Starting playback for episode: " + episodeModel.EpisodeName);
