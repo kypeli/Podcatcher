@@ -153,6 +153,8 @@ namespace Podcatcher
                     if (App.CurrentlyPlayingEpisode != null
                         && (currentEpisode.EpisodeId != App.CurrentlyPlayingEpisode.EpisodeId))
                     {
+                        addEpisodeToPlayHistory(App.CurrentlyPlayingEpisode);
+
                         // If next episode is different from currently playing, the track changed.
                         App.CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
                         App.CurrentlyPlayingEpisode.setNoPlaying();
@@ -169,12 +171,15 @@ namespace Podcatcher
                 case PlayState.Shutdown:
                     if (App.CurrentlyPlayingEpisode == null)
                     {
+                        // We didn't have a track playing.
                         return;
                     }
 
                     addEpisodeToPlayHistory(App.CurrentlyPlayingEpisode);
                     clearPlayList();
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(App.CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
+                    
+                    // Cleanup
                     App.CurrentlyPlayingEpisode = null;
                     BackgroundAudioPlayer.Instance.Close();
                     break;

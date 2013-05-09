@@ -395,8 +395,6 @@ namespace Podcatcher
 
             try
             {
-//                BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
-//                BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
                 BackgroundAudioPlayer.Instance.Track = playTrack;
                 BackgroundAudioPlayer.Instance.Volume = 1.0;
 
