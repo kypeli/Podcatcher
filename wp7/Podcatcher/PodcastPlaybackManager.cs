@@ -39,6 +39,14 @@ namespace Podcatcher
 
         public void play(PodcastEpisodeModel episode)
         {
+            if (episode == null)
+            {
+                Debug.WriteLine("Warning: Trying to play a NULL episode.");
+                return;
+            }
+
+            App.CurrentlyPlayingEpisode = episode;
+
             // Play locally from a downloaded file.
             if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
             {
@@ -59,8 +67,6 @@ namespace Podcatcher
                     videoStreaming(episode);
                 }
             }
-
-            App.CurrentlyPlayingEpisode = episode;
         }
 
         public PodcastEpisodeModel currentlyPlayingEpisode()
@@ -160,7 +166,6 @@ namespace Podcatcher
                     break;
 
                 case PlayState.Stopped:
-                case PlayState.Unknown:
                 case PlayState.Shutdown:
                     if (App.CurrentlyPlayingEpisode == null)
                     {
@@ -171,9 +176,13 @@ namespace Podcatcher
                     clearPlayList();
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(App.CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
                     App.CurrentlyPlayingEpisode = null;
+                    BackgroundAudioPlayer.Instance.Close();
                     break;
 
                 case PlayState.TrackReady:
+                    break;
+
+                case PlayState.Unknown:
                     break;
             }
         }

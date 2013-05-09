@@ -80,7 +80,7 @@ namespace Podcatcher
 
         public void initializePlayerUI()
         {
-            if (BackgroundAudioPlayer.Instance.Track != null)
+            if (App.CurrentlyPlayingEpisode != null)
             {
                 Debug.WriteLine("Restoring UI for currently playing episode.");
 
@@ -373,8 +373,6 @@ namespace Podcatcher
                 saveEpisodePlayPosition(App.CurrentlyPlayingEpisode);
             }
 
-            App.CurrentlyPlayingEpisode = episodeModel;
-
             setupPlayerUIContent(App.CurrentlyPlayingEpisode);
             updatePrimary(App.CurrentlyPlayingEpisode);
 
@@ -573,9 +571,7 @@ namespace Podcatcher
 
         private void playbackStopped()
         {
-            saveEpisodePlayPosition(App.CurrentlyPlayingEpisode);            
-            BackgroundAudioPlayer.Instance.Track = null;
-
+            saveEpisodePlayPosition(App.CurrentlyPlayingEpisode);                        
             PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
             if (rootFrame.CanGoBack)
             {
@@ -656,7 +652,6 @@ namespace Podcatcher
 
             showNoPlayerLayout();
             playbackStopped();
-            BackgroundAudioPlayer.Instance.Close();
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
