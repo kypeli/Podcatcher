@@ -3,6 +3,7 @@
  * Change how lock screen buttons work.
    - If continuous playback / play queue is active, pressing next will take user to next episode.
    - If continuous playback / play queue is not active, pressing next / prev will skip 30s forward/backwards.
+ * Fix/Change: Mark all episodes as listened to, even if they haven't yet been listened to at all.
 
 2.3.0.0
 -------
