@@ -46,7 +46,7 @@ namespace Podcatcher
         
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
-        private PodcastPlayerControl m_playerControl;
+        private PodcastPlaybackManager m_playbackManager;
         private IsolatedStorageSettings m_applicationSettings = null;
         private ObservableCollection<PodcastSubscriptionModel> m_subscriptions = App.mainViewModels.PodcastSubscriptions;
 
@@ -71,8 +71,8 @@ namespace Podcatcher
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
 
             // Hook to the event when the podcast player starts playing. 
-            m_playerControl = PodcastPlayerControl.getIntance();
-            m_playerControl.PodcastPlayerStarted += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+            m_playbackManager = PodcastPlaybackManager.getInstance();
+            m_playbackManager.OnOpenPodcastPlayer += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
 
             PodcastSubscriptionsManager.getInstance().OnPodcastChannelDeleteStarted
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelDeleteStarted);

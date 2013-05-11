@@ -73,7 +73,6 @@ namespace Podcatcher.ViewModels
 
                     return new ObservableCollection<PlaylistItem>(query);
                 }
-
             }
 
             set

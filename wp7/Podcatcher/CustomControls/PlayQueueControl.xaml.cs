@@ -23,31 +23,8 @@ namespace Podcatcher
 
         private void PlayQueueItemTapped(object sender, GestureEventArgs e)
         {
-            int episodeID = (int)(sender as StackPanel).Tag;
-
-            using (var queueDb = new PlaylistDBContext())
-            {
-                PlaylistItem current = queueDb.Playlist.FirstOrDefault(item => item.IsCurrent == true);
-                if (current != null)
-                {
-                    current.IsCurrent = false;
-                }
-
-                PlaylistItem next = queueDb.Playlist.First(item => item.EpisodeId == episodeID);
-                next.IsCurrent = true;
-
-                queueDb.SubmitChanges();
-            }
-
-            PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-            using (var db = new PodcastSqlModel())
-            {
-                PodcastEpisodeModel ep = db.episodeForEpisodeId(episodeID);
-                player.playEpisode(ep);
-                ep.setPlaying();
-            }
-
-            App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
+            int playlistItemId = (int)(sender as StackPanel).Tag;
+            PodcastPlaybackManager.getInstance().playPlaylistItem(playlistItemId);
         }
     }
 }

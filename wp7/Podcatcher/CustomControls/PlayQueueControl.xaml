@@ -15,7 +15,7 @@
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot">
-        <StackPanel Tag="{Binding EpisodeId}" Background="{Binding IsCurrent, Converter={StaticResource backgroundColor}}" 
+        <StackPanel Tag="{Binding ItemId}" Background="{Binding IsCurrent, Converter={StaticResource backgroundColor}}" 
                     Orientation="Horizontal" Margin="12,0,0,0" Height="120" Tap="PlayQueueItemTapped">
             <Image Source="{Binding PodcastLogo}" Height="120" Width="120" Stretch="Uniform" HorizontalAlignment="Left"/>
             <StackPanel>
