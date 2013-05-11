@@ -36,6 +36,7 @@ using System.Diagnostics;
 using System.Collections.Specialized;
 using System.IO.IsolatedStorage;
 using Microsoft.Phone.Tasks;
+using Microsoft.Phone.Shell;
 
 namespace Podcatcher
 {
@@ -117,7 +118,7 @@ namespace Podcatcher
 
         private void subscriptionManager_OnPodcastChannelPlayedCountChanged(PodcastSubscriptionModel s) 
         {
-            Debug.WriteLine("Play status chnaged.");
+            Debug.WriteLine("Play status changed.");
             List<PodcastSubscriptionModel> subs = m_subscriptions.ToList();
             foreach (PodcastSubscriptionModel sub in subs) 
             {
@@ -295,12 +296,63 @@ namespace Podcatcher
 
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+            setupApplicationBarForIndex(this.NavigationPivot.SelectedIndex);
 
             if (this.NavigationPivot.SelectedIndex == 2)
             {
                 this.NowPlaying.SetupNowPlayingView();
             }
+        }
+
+        private void setupApplicationBarForIndex(int index)
+        {
+            bool applicationBarVisible = false;
+            switch (index)
+            {
+                // Subscription list view.
+                case 0:
+                    applicationBarVisible = true;
+                    this.ApplicationBar.MenuItems.Clear();
+                    this.ApplicationBar.Buttons.Clear();
+                    ApplicationBarIconButton addAppbarIcon = new ApplicationBarIconButton()
+                    {
+                        IconUri = new Uri("/Images/appbar.add.rest.png", UriKind.Relative), 
+                        Text="Add"                                                                                    
+                    };
+                    addAppbarIcon.Click += new EventHandler(AddSubscriptionIconButton_Click);
+                    this.ApplicationBar.Buttons.Add(addAppbarIcon);
+
+                    ApplicationBarMenuItem item = new ApplicationBarMenuItem() { Text = "Settings" };
+                    item.Click += new EventHandler(SettingsIconButton_Click);
+                    this.ApplicationBar.MenuItems.Add(item);
+
+                    item = new ApplicationBarMenuItem() { Text = "Export subscriptions" };
+                    item.Click += new EventHandler(ExportSubscriptionsMenuItem_Click);
+                    this.ApplicationBar.MenuItems.Add(item);
+
+                    item = new ApplicationBarMenuItem() { Text = "About" };
+                    item.Click += new EventHandler(AboutSubscriptionIconButton_Click);
+                    this.ApplicationBar.MenuItems.Add(item);
+
+                    break;
+
+                // Play queue view
+                case 3:
+                    applicationBarVisible = true;
+                    this.ApplicationBar.MenuItems.Clear();
+                    this.ApplicationBar.Buttons.Clear();
+
+                    ApplicationBarIconButton playQueueButton = new ApplicationBarIconButton()
+                    {
+                        IconUri = new Uri("/Images/Dark/play.png", UriKind.Relative), 
+                        Text="Add"                                                                                    
+                    };
+                    this.ApplicationBar.Buttons.Add(playQueueButton);
+
+                    break;
+            }
+
+            this.ApplicationBar.IsVisible = applicationBarVisible;
         }
 
         private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
