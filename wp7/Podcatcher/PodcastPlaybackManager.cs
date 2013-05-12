@@ -396,7 +396,8 @@ namespace Podcatcher
             PlaylistItem existingItem = dbContext.Playlist.FirstOrDefault(item => item.EpisodeId == e.EpisodeId);
             if (existingItem != null)
             {
-                dbContext.Playlist.DeleteOnSubmit(existingItem);
+                Debug.WriteLine("Item already in playlist.");
+                return;
             }
 
             dbContext.Playlist.InsertOnSubmit(new PlaylistItem
