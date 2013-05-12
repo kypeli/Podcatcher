@@ -16,6 +16,7 @@ using System.Diagnostics;
 using Microsoft.Phone.Controls;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 
 namespace Podcatcher
@@ -234,6 +235,17 @@ namespace Podcatcher
 
         public void sortPlaylist(int sortOrder)
         {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(workerSortPlaylist);
+            worker.RunWorkerAsync(sortOrder);
+            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerSortPlaylistCompleted);
+        }
+
+        /****************************** Private implementations *******************************/
+
+        private void workerSortPlaylist(object sender, DoWorkEventArgs args)
+        {
+            int selectedSortOrderIndex = (int)args.Argument;
             using (var playlistDB = new PlaylistDBContext())
             {
                 PodcastSqlModel sqlContext = new PodcastSqlModel();
@@ -244,7 +256,7 @@ namespace Podcatcher
                                                                     item => item.EpisodeId,
                                                                     episode => episode.EpisodeId,
                                                                     (item, episode) => new { PlaylistItem = item, PodcastEpisodeModel = episode });
-                switch (sortOrder)
+                switch (selectedSortOrderIndex)
                 {
                     // Oldest first
                     case 0:
@@ -270,11 +282,12 @@ namespace Podcatcher
                 playlistDB.Playlist.InsertAllOnSubmit(newSortOrder);
                 playlistDB.SubmitChanges();
             }
-
-            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
         }
 
-        /****************************** Private implementations *******************************/
+        private void workerSortPlaylistCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+        }
 
         private static IEnumerable<PodcastEpisodeModel> episodes(PodcastSqlModel sqlContext)
         {

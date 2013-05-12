@@ -435,16 +435,6 @@ namespace Podcatcher
             {
                 PodcastPlaybackManager.getInstance().sortPlaylist(db.settings().PlaylistSortOrder);
             }
-/*            switch (selectedItem.Tag as String)
-            {
-                case "OldestFirst":
-                    Debug.WriteLine("Oldest first");
-                    break;
-                case "NewestFirst":
-                    Debug.WriteLine("Newest first");
-                    break;
-            }
- */
         }
     }
 }
