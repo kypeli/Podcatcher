@@ -220,7 +220,7 @@ namespace Podcatcher
             showAddedNotification(episodes.Count);
         }
 
-        public void addToPlayqueue(PodcastEpisodeModel episode)
+        public void addToPlayqueue(PodcastEpisodeModel episode, bool showNotification = true)
         {
             using (var db = new PlaylistDBContext())
             {
@@ -234,7 +234,16 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
-            showAddedNotification(1);
+
+            if (showNotification)
+            {
+                showAddedNotification(1);
+            }
+        }
+
+        public void addSilentlyToPlayqueue(PodcastEpisodeModel episode)
+        {
+            addToPlayqueue(episode, false);
         }
 
         public void clearPlayQueue()
@@ -268,7 +277,7 @@ namespace Podcatcher
 
         private void showAddedNotification(int count)
         {
-            String notification = String.Format("{0} podcast{1} added to playlist.", count, (count > 1) ? "s" : "");
+            String notification = String.Format("{0} podcast{1} added to play queue.", count, (count > 1) ? "s" : "");
             App.showNotificationToast(notification);
         }
         

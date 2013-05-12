@@ -66,6 +66,7 @@ namespace Podcatcher.Views
                 s.IsUseCellularData = m_settings.IsUseCellularData;
                 s.SelectedExportIndex = m_settings.SelectedExportIndex;
                 s.ListenedThreashold = m_settings.ListenedThreashold;
+                s.IsAddDownloadsToPlayQueue = m_settings.IsAddDownloadsToPlayQueue;
 
                 db.SubmitChanges();
             }

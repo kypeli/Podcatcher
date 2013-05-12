@@ -490,8 +490,16 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Transfer request completed succesfully.");
                 updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
-
                 PodcastSubscriptionsManager.getInstance().newPlayableEpisode(m_currentEpisodeDownload);
+
+                // Add downloaded episode to play queue, if set.
+                using (var db = new PodcastSqlModel())
+                {
+                    if (db.settings().IsAddDownloadsToPlayQueue)
+                    {
+                        PodcastPlaybackManager.getInstance().addSilentlyToPlayqueue(m_currentEpisodeDownload);
+                    }
+                }
             }
             else
             {

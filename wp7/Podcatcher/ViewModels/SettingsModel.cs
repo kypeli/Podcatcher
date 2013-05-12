@@ -160,6 +160,24 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private bool m_addDownloadsToPlayQueue = false;
+        [Column(DbType = "BIT DEFAULT 0 NOT NULL")]
+        public bool IsAddDownloadsToPlayQueue
+        {
+            get
+            {
+                return m_addDownloadsToPlayQueue;
+            }
+
+            set
+            {
+                if (m_addDownloadsToPlayQueue != value)
+                {
+                    m_addDownloadsToPlayQueue = value;
+                }
+            }
+        }
+
         public static int keepNumEpisodesForSelectedIndex(int index)
         {
             switch (index)

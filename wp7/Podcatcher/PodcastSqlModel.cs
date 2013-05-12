@@ -117,6 +117,7 @@ namespace Podcatcher
                 if (updater.DatabaseSchemaVersion < 9)
                 {
                     updater.AddColumn<SettingsModel>("PlaylistSortOrder");
+                    updater.AddColumn<SettingsModel>("IsAddDownloadsToPlayQueue");
                 }
 
                 updater.DatabaseSchemaVersion = DB_VERSION;

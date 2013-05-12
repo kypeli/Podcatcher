@@ -343,17 +343,20 @@ namespace Podcatcher
                     this.ApplicationBar.MenuItems.Clear();
                     this.ApplicationBar.Buttons.Clear();
 
-                    ApplicationBarIconButton playQueueButton = new ApplicationBarIconButton()
+                    if (App.mainViewModels.PlayQueue.Count > 0)
                     {
-                        Text="Play queue"                                                                                    
-                    };
-                    setupQueueApplicationButton(playQueueButton);
-                    playQueueButton.Click += new EventHandler(PlayQueue_Click);
-                    this.ApplicationBar.Buttons.Add(playQueueButton);
+                        ApplicationBarIconButton playQueueButton = new ApplicationBarIconButton()
+                        {
+                            Text = "Play queue"
+                        };
+                        setupQueueApplicationButton(playQueueButton);
+                        playQueueButton.Click += new EventHandler(PlayQueue_Click);
+                        this.ApplicationBar.Buttons.Add(playQueueButton);
 
-                    ApplicationBarMenuItem queueItem = new ApplicationBarMenuItem() { Text = "Clear play queue" };
-                    queueItem.Click += new EventHandler(ClearPlayqueue_Click);
-                    this.ApplicationBar.MenuItems.Add(queueItem);
+                        ApplicationBarMenuItem queueItem = new ApplicationBarMenuItem() { Text = "Clear play queue" };
+                        queueItem.Click += new EventHandler(ClearPlayqueue_Click);
+                        this.ApplicationBar.MenuItems.Add(queueItem);
+                    }
                     break;
             }
 
