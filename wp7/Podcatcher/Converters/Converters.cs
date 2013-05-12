@@ -220,5 +220,34 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class ShowPlayQueueConventer : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            ObservableCollection<PlaylistItem> playQueue = value as ObservableCollection<PlaylistItem>;
+            return (playQueue.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class ShowNoPlayQueueConventer : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            ObservableCollection<PlaylistItem> playQueue = value as ObservableCollection<PlaylistItem>;
+            return (playQueue.Count == 0) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+
 }
 

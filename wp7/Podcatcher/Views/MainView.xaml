@@ -20,6 +20,11 @@
     Style="{StaticResource TurnstilePage}"
     >
     
+    <UserControl.Resources>
+        <c:ShowPlayQueueConventer x:Name="showPlayQueuedConverter"/>
+        <c:ShowNoPlayQueueConventer x:Name="showNoPlayQueuedConverter"/>
+    </UserControl.Resources>
+    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <toolkit:PerformanceProgressBar x:Name="UpdatingIndicator" Grid.Row="0"
@@ -120,35 +125,37 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Width="Auto" VerticalAlignment="Top">
-                        <TextBlock TextWrapping="Wrap" Text="Play order" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
 
-                        <toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding PlaylistSortOrder, Mode=TwoWay}"  Width="300" SelectionChanged="PlayOrderChanged">
-                            <toolkit:ListPickerItem Tag="OldestFirst" HorizontalAlignment="Center">Oldest first</toolkit:ListPickerItem>
-                            <toolkit:ListPickerItem Tag="NewestFirst" HorizontalAlignment="Center">Newest first</toolkit:ListPickerItem>
-                        </toolkit:ListPicker>
+                    <StackPanel x:Name="PlayQueueContent" Visibility="{Binding PlayQueue, Converter={StaticResource showPlayQueuedConverter}}">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Width="Auto" VerticalAlignment="Top">
+                            <TextBlock TextWrapping="Wrap" Text="Play order" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
+
+                            <toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding PlaylistSortOrder, Mode=TwoWay}"  Width="300" SelectionChanged="PlayOrderChanged">
+                                <toolkit:ListPickerItem Tag="OldestFirst" HorizontalAlignment="Center">Oldest first</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem Tag="NewestFirst" HorizontalAlignment="Center">Newest first</toolkit:ListPickerItem>
+                            </toolkit:ListPicker>
+                        </StackPanel>
+
+                        <ListBox Grid.Row="1" Margin="0,0,-12,0" ItemsSource="{Binding PlayQueue}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Width="Auto" Height="Auto">
+                                        <pc:PlayQueueControl/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </StackPanel>
 
-                    <ListBox Grid.Row="1" Margin="0,0,-12,0" ItemsSource="{Binding PlayQueue}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Width="Auto" Height="Auto">
-                                    <pc:PlayQueueControl/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-
                     <TextBlock Text="You have no episodes in the play queue."
-                                 x:Name="NoEpisodesInQueueText" 
-                                 VerticalAlignment="Center" 
-                                 HorizontalAlignment="Center" 
-                                 TextWrapping="Wrap" 
-                                 TextAlignment="Center" 
-                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
-                                 Margin="34,96,32,278" 
-                               Visibility="Collapsed"/>
+                               x:Name="NoEpisodesInQueueText" 
+                               VerticalAlignment="Center" 
+                               HorizontalAlignment="Center" 
+                               TextWrapping="Wrap" 
+                               TextAlignment="Center" 
+                               Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                               Margin="34,96,32,278" 
+                               Visibility="{Binding PlayQueue, Converter={StaticResource showNoPlayQueuedConverter}}"/>
                 </Grid>
             </controls:PivotItem>
 
