@@ -269,8 +269,6 @@ namespace PodcastAudioAgent
         /// </remarks>
         protected override void OnUserAction(BackgroundAudioPlayer player, AudioTrack track, UserAction action, object param)
         {
-            AudioTrack nextTrack = getNextPlaylistTrack();
-
             switch (action)
             {
                 case UserAction.Play:
@@ -337,6 +335,7 @@ namespace PodcastAudioAgent
 
                 case UserAction.SkipNext:
                     Debug.WriteLine("Skip next.");
+                    AudioTrack nextTrack = getNextPlaylistTrack();
                     
                     if (nextTrack == null)
                     {
@@ -400,16 +399,14 @@ namespace PodcastAudioAgent
                     return null;
                 }
 
-                Podcatcher.ViewModels.PlaylistItem currentTrack = (from item in db.Playlist
-                                                                   orderby item.OrderNumber
-                                                                   select item).FirstOrDefault();
+                Podcatcher.ViewModels.PlaylistItem currentTrack = db.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
+                if (currentTrack != null) 
+                {
+                    currentTrack.IsCurrent = false;
+                }
 
-                db.Playlist.DeleteOnSubmit(currentTrack);
-                db.SubmitChanges();
-
-                Podcatcher.ViewModels.PlaylistItem nextTrack = (from item in db.Playlist
-                                                                orderby item.OrderNumber
-                                                                select item).FirstOrDefault();
+                int orderNumber = db.Playlist.Where(item => item.IsCurrent).Select(item => item.OrderNumber).First();
+                Podcatcher.ViewModels.PlaylistItem nextTrack = db.Playlist.Where(item => item.OrderNumber == orderNumber+1).FirstOrDefault();
 
                 if (nextTrack == null)
                 {

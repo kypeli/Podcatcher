@@ -51,6 +51,11 @@ namespace Podcatcher
                 return;
             }
 
+            Debug.WriteLine("Starting playback for episode: ");
+            Debug.WriteLine(" Name: " + episode.EpisodeName);
+            Debug.WriteLine(" File: " + episode.EpisodeFile);
+            Debug.WriteLine(" Location: " + episode.EpisodeDownloadUri);
+
             if (App.CurrentlyPlayingEpisode != null
                 && (episode.EpisodeId != App.CurrentlyPlayingEpisode.EpisodeId))
             {
@@ -63,7 +68,11 @@ namespace Podcatcher
 
             // We started to play a new podcast by tapping on the "Play" button in the subscription. 
             // We would then assume that a new playlist is created where this episode is the first item.
-            clearPlayQueue();
+            if (openPlayerView)
+            {
+                App.CurrentlyPlayingEpisode = null;
+                clearPlayQueue();
+            }
 
             App.CurrentlyPlayingEpisode = episode;
 
@@ -100,6 +109,18 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>(); // Notify playlist changed.
+        }
+
+        public void startPlaylistPlayback()
+        {
+            int playlistItemId = -1;
+            using (var db = new PlaylistDBContext())
+            {
+                PlaylistItem firstItem = db.Playlist.OrderBy(item => item.OrderNumber).FirstOrDefault();
+                playlistItemId = firstItem.ItemId;                
+            }
+
+            playPlaylistItem(playlistItemId);
         }
 
         public void playPlaylistItem(int tappedPlaylistItemId)
