@@ -37,6 +37,7 @@ using System.Collections.Specialized;
 using System.IO.IsolatedStorage;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.BackgroundAudio;
 
 namespace Podcatcher
 {
@@ -344,9 +345,9 @@ namespace Podcatcher
 
                     ApplicationBarIconButton playQueueButton = new ApplicationBarIconButton()
                     {
-                        IconUri = new Uri("/Images/Dark/play.png", UriKind.Relative), 
                         Text="Play queue"                                                                                    
                     };
+                    setupQueueApplicationButton(playQueueButton);
                     playQueueButton.Click += new EventHandler(PlayQueue_Click);
                     this.ApplicationBar.Buttons.Add(playQueueButton);
 
@@ -359,6 +360,22 @@ namespace Podcatcher
             this.ApplicationBar.IsVisible = applicationBarVisible;
         }
 
+        private void setupQueueApplicationButton(ApplicationBarIconButton button) 
+        { 
+            BackgroundAudioPlayer bap = BackgroundAudioPlayer.Instance;
+            Uri iconUri = bap.PlayerState != PlayState.Playing ? new Uri("/Images/Dark/play.png", UriKind.Relative) :
+                                                                 new Uri("/Images/Dark/pause.png", UriKind.Relative);
+            button.IconUri = iconUri;
+            
+            bap.PlayStateChanged -= new EventHandler(bap_PlayStateChanged);
+            bap.PlayStateChanged += new EventHandler(bap_PlayStateChanged);
+        }
+
+        void bap_PlayStateChanged(object sender, EventArgs e)
+        {
+            setupQueueApplicationButton(this.ApplicationBar.Buttons[0] as ApplicationBarIconButton);
+        }
+
         private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Views/AboutView.xaml", UriKind.Relative));
@@ -366,7 +383,18 @@ namespace Podcatcher
 
         private void PlayQueue_Click(object sender, EventArgs e)
         {
-            PodcastPlaybackManager.getInstance().startPlaylistPlayback();
+            switch(BackgroundAudioPlayer.Instance.PlayerState) 
+            {
+                case PlayState.Playing:
+                    BackgroundAudioPlayer.Instance.Pause();
+                    break;
+                case PlayState.Paused:
+                    BackgroundAudioPlayer.Instance.Play();
+                    break;
+                default:
+                    PodcastPlaybackManager.getInstance().startPlaylistPlayback();
+                    break;
+            }    
         }
 
         private void ClearPlayqueue_Click(object sender, EventArgs e)
