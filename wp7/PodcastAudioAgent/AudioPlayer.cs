@@ -92,7 +92,6 @@ namespace PodcastAudioAgent
             {
                 case PlayState.TrackEnded:
                     saveEpisodeStoptime();
-                    setNoPlayingEpisode();
                     
                     // Start playing next track if we have one.
                     AudioTrack nextTrack = getNextPlaylistTrack();
@@ -101,23 +100,24 @@ namespace PodcastAudioAgent
                         player.Track = nextTrack;
                         player.Play();
                     }
+                    else
+                    {
+                        player.Stop();
+                    }
                     break;
                 case PlayState.TrackReady:
 //                    player.Play();
                     break;
                 case PlayState.Shutdown:
                     saveEpisodeStoptime();
-                    setNoPlayingEpisode();
                     break;
                 case PlayState.Unknown:
                     saveEpisodeStoptime();
-                    setNoPlayingEpisode();
                     Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
                     saveEpisodeStoptime();
                     clearPrimaryTile();
-                    setNoPlayingEpisode();
                     Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
@@ -141,22 +141,6 @@ namespace PodcastAudioAgent
             }
 
             NotifyComplete();
-        }
-
-        private void setNoPlayingEpisode()
-        {
-            using (var db = new Podcatcher.PlaylistDBContext())
-            {
-                Podcatcher.ViewModels.PlaylistItem currentlyPlaying = db.Playlist.FirstOrDefault(pl => pl.IsCurrent == true);
-                if (currentlyPlaying == null)
-                {
-                    Debug.WriteLine("An episode should be playing, but none set in the DB.");
-                    return;
-                }
-
-                currentlyPlaying.IsCurrent = false;
-                db.SubmitChanges();
-            }
         }
 
         private void clearPrimaryTile()
@@ -399,17 +383,18 @@ namespace PodcastAudioAgent
                     return null;
                 }
 
+                int orderNumber = db.Playlist.Where(item => item.IsCurrent).Select(item => item.OrderNumber).First();
                 Podcatcher.ViewModels.PlaylistItem currentTrack = db.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
-                if (currentTrack != null) 
+                
+                if (currentTrack != null)
                 {
                     currentTrack.IsCurrent = false;
                 }
 
-                int orderNumber = db.Playlist.Where(item => item.IsCurrent).Select(item => item.OrderNumber).First();
                 Podcatcher.ViewModels.PlaylistItem nextTrack = db.Playlist.Where(item => item.OrderNumber == orderNumber+1).FirstOrDefault();
-
                 if (nextTrack == null)
                 {
+                    db.SubmitChanges();
                     return null;
                 }
 
@@ -420,8 +405,8 @@ namespace PodcastAudioAgent
                                                new Uri(nextTrack.PodcastLogoLocation, UriKind.RelativeOrAbsolute));
 
                 nextTrack.IsCurrent = true;
-
                 db.SubmitChanges();
+
             }
 
             return track;

@@ -142,22 +142,6 @@ namespace Podcatcher
                 }
 
                 episodeId = (int)db.Playlist.Where(item => item.ItemId == tappedPlaylistItemId).Select(item => item.EpisodeId).First();
-
-                if (episodeId > -1)
-                {
-                    if (current != null)
-                    {
-                        current.IsCurrent = false;
-                    }
-
-                    PlaylistItem next = db.Playlist.FirstOrDefault(item => item.ItemId == tappedPlaylistItemId);
-                    if (next != null)
-                    {
-                        next.IsCurrent = true;
-                    }
-
-                    db.SubmitChanges();
-                }
             }
 
             PodcastEpisodeModel episode = null;
@@ -244,6 +228,20 @@ namespace Podcatcher
         public void addSilentlyToPlayqueue(PodcastEpisodeModel episode)
         {
             addToPlayqueue(episode, false);
+        }
+
+        public void removeFromPlayqueue(int itemId)
+        {
+            using (var db = new PlaylistDBContext())
+            {
+                PlaylistItem itemToRemove = db.Playlist.FirstOrDefault(item => item.IsCurrent == false && item.ItemId == itemId);
+                if (itemToRemove != null) 
+                {
+                    db.Playlist.DeleteOnSubmit(itemToRemove);
+                    db.SubmitChanges();
+                    App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+                }
+            }
         }
 
         public void clearPlayQueue()
@@ -431,8 +429,11 @@ namespace Podcatcher
                         return;
                     }
 
-                    App.CurrentlyPlayingEpisode = currentEpisode;
-                    App.CurrentlyPlayingEpisode.setPlaying();
+                    if (currentEpisode.EpisodeId != App.CurrentlyPlayingEpisode.EpisodeId)
+                    {
+                        App.CurrentlyPlayingEpisode = currentEpisode;
+                        App.CurrentlyPlayingEpisode.setPlaying();
+                    }
                     break;
 
                 case PlayState.Paused:
@@ -468,5 +469,6 @@ namespace Podcatcher
                     break;
             }
         }
+
     }
 }
