@@ -217,6 +217,7 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+            showAddedNotification(episodes.Count);
         }
 
         public void addToPlayqueue(PodcastEpisodeModel episode)
@@ -233,6 +234,7 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+            showAddedNotification(1);
         }
 
         public void clearPlayQueue()
@@ -264,6 +266,12 @@ namespace Podcatcher
 
         /****************************** Private implementations *******************************/
 
+        private void showAddedNotification(int count)
+        {
+            String notification = String.Format("{0} podcast{1} added to playlist.", count, (count > 1) ? "s" : "");
+            App.showNotificationToast(notification);
+        }
+        
         private void workerSortPlaylist(object sender, DoWorkEventArgs args)
         {
             int selectedSortOrderIndex = (int)args.Argument;
@@ -395,7 +403,7 @@ namespace Podcatcher
             {
                 EpisodeId = e.EpisodeId,
                 EpisodeName = e.EpisodeName,
-                EpisodeLocation = e.EpisodeFile,
+                EpisodeLocation = (!String.IsNullOrEmpty(e.EpisodeFile) ? e.EpisodeFile : e.EpisodeDownloadUri),
                 PodcastLogoLocation = e.PodcastSubscriptionInstance.PodcastLogoLocalLocation,
                 PodcastName = e.PodcastSubscriptionInstance.PodcastName
             });

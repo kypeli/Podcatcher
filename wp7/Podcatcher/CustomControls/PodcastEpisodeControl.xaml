@@ -10,7 +10,7 @@
     d:DesignWidth="480" d:DesignHeight="800">
 
     <UserControl.Resources>
-        <c:ContextMenuEnabledConverter x:Name="contextMenuEnabled"/>
+        <c:DeleteEnabledConverter x:Name="deleteEnabledConverter"/>
         <c:PlayButtonImageConverter x:Name="playButtonImage" />
         <c:DownloadButtonImageConverter x:Name="downloadButtonImage" />
         <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
@@ -67,9 +67,11 @@
         </StackPanel>
 
         <toolkit:ContextMenuService.ContextMenu>
-            <toolkit:ContextMenu Visibility="{Binding EpisodeDownloadState, 
-                                  Converter={StaticResource contextMenuEnabled}}">
-                <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click"/>
+            <toolkit:ContextMenu >
+                <toolkit:MenuItem Header="Add to play queue" Click="MenuItemAddToQueue_Click"/>
+                <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" 
+                                  Visibility="{Binding EpisodeDownloadState, 
+                                  Converter={StaticResource deleteEnabledConverter}}"/>
             </toolkit:ContextMenu>
         </toolkit:ContextMenuService.ContextMenu>
         

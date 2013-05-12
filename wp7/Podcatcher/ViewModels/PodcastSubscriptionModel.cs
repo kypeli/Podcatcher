@@ -153,22 +153,29 @@ namespace Podcatcher.ViewModels
                 // When we request for the podcast logo we will in fact fetch
                 // the image from the local cache, create the BitmapImage object
                 // and return that. 
-                IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-                if (isoStore.FileExists(isoFilename) != false)
+                try
                 {
-                    using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
+                    IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+                    if (isoStore.FileExists(isoFilename) != false)
                     {
-                        try
+                        using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                         {
-                            m_podcastBitmapLogo = new BitmapImage();
-                            m_podcastBitmapLogo.SetSource(stream);
-                        }
-                        catch (Exception)
-                        {
-                            Debug.WriteLine("Unsupported subscription logo type.");
-                            m_podcastBitmapLogo = null;
+                            try
+                            {
+                                m_podcastBitmapLogo = new BitmapImage();
+                                m_podcastBitmapLogo.SetSource(stream);
+                            }
+                            catch (Exception)
+                            {
+                                Debug.WriteLine("Unsupported subscription logo type.");
+                                m_podcastBitmapLogo = null;
+                            }
                         }
                     }
+                }
+                catch (IsolatedStorageException isoEx)
+                {
+                    Debug.WriteLine("Issue opening isolated storage! Error: " + isoEx.Message);
                 }
 
                 if (m_podcastBitmapLogo == null)

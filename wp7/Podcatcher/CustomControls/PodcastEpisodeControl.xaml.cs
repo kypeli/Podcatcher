@@ -52,55 +52,6 @@ namespace Podcatcher
         {
 
             PodcastPlaybackManager.getInstance().play(m_episodeModel);
-
-#if false
-            /**
-             * Creating Playlist 
-             */
-            List<PodcastEpisodeModel> playlistItems = new List<PodcastEpisodeModel>();
-            PodcastSubscriptionModel subscription = null;
-            using (var db = new PodcastSqlModel())
-            {
-                m_episodeModel = db.episodeForEpisodeId(m_episodeModel.EpisodeId);
-                subscription = m_episodeModel.PodcastSubscription;
-                if (subscription.IsContinuousPlayback)
-                {
-                    playlistItems = (from episode in subscription.Episodes
-                                     where episode.EpisodePublished <= m_episodeModel.EpisodePublished
-                                     orderby episode.EpisodePublished descending
-                                     select episode).ToList();
-                }
-                else
-                {
-                    playlistItems.Add(m_episodeModel);
-                }
-            }
-
-            using (var playlistDb = new Podcatcher.PlaylistDBContext())
-            {
-                playlistDb.Playlist.DeleteAllOnSubmit(playlistDb.Playlist);
-
-                int i = 0;
-                foreach (PodcastEpisodeModel ep in playlistItems)
-                {
-                    playlistDb.Playlist.InsertOnSubmit(new PlaylistItem
-                    {
-                        OrderNumber = i,
-                        PodcastName = subscription.PodcastName,
-                        PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
-                        EpisodeName = ep.EpisodeName,
-                        EpisodeLocation = (String.IsNullOrEmpty(ep.EpisodeFile)) ? ep.EpisodeDownloadUri : ep.EpisodeFile,
-                        EpisodeId = ep.EpisodeId,
-                        IsCurrent = (i == 0) ? true : false,        // First one is playing.
-                    });
-
-                    i++;
-                }
-
-                playlistDb.SubmitChanges();
-                App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
-            }                
-#endif
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
@@ -144,5 +95,11 @@ namespace Podcatcher
         }
 
         #endregion
+
+        private void MenuItemAddToQueue_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastEpisodeModel podcastEpisode = this.DataContext as PodcastEpisodeModel;
+            PodcastPlaybackManager.getInstance().addToPlayqueue(podcastEpisode);
+        }
     }
 }

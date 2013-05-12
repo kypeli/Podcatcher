@@ -84,7 +84,7 @@ namespace Podcatcher.Converters
         }
     }
 
-    public class ContextMenuEnabledConverter : IValueConverter
+    public class DeleteEnabledConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

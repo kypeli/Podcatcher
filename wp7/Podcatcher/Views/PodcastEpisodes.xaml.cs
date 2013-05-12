@@ -248,7 +248,6 @@ namespace Podcatcher.Views
         {
             PodcastPlaybackManager playbackManager = PodcastPlaybackManager.getInstance();
             playbackManager.addToPlayqueue(m_playableEpisodes);
-            App.showNotificationToast(m_playableEpisodes.Count + " podcasts added to playlist.");
         }
 
         private void MarkAllListened_Click(object sender, EventArgs e) 
