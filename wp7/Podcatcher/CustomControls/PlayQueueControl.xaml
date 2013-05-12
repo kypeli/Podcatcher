@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:c="clr-namespace:Podcatcher.Converters"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -23,4 +24,10 @@
             </StackPanel>
         </StackPanel>
     </Grid>
+
+    <toolkit:ContextMenuService.ContextMenu>
+        <toolkit:ContextMenu >
+            <toolkit:MenuItem Header="Remove from play queue" Click="RemoveFromPlayQueue_Click"/>
+        </toolkit:ContextMenu>
+    </toolkit:ContextMenuService.ContextMenu>
 </UserControl>

@@ -11,6 +11,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using Podcatcher.ViewModels;
+using Microsoft.Phone.Controls;
 
 namespace Podcatcher
 {
@@ -21,10 +22,16 @@ namespace Podcatcher
             InitializeComponent();
         }
 
-        private void PlayQueueItemTapped(object sender, GestureEventArgs e)
+        private void PlayQueueItemTapped(object sender, RoutedEventArgs e)
         {
             int playlistItemId = (int)(sender as StackPanel).Tag;
             PodcastPlaybackManager.getInstance().playPlaylistItem(playlistItemId);
+        }
+
+        private void RemoveFromPlayQueue_Click(object sender, RoutedEventArgs e)
+        {
+            PlaylistItem playlistItem = (sender as MenuItem).DataContext as PlaylistItem;
+            PodcastPlaybackManager.getInstance().removeFromPlayqueue(playlistItem.ItemId);
         }
     }
 }
