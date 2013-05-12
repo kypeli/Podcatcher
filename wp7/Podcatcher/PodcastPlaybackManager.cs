@@ -60,6 +60,10 @@ namespace Podcatcher
                 App.CurrentlyPlayingEpisode.setNoPlaying();
             }
 
+            // We started to play a new podcast by tapping on the "Play" button in the subscription. 
+            // We would then assume that a new playlist is created where this episode is the first item.
+            clearPlayQueue();
+
             App.CurrentlyPlayingEpisode = episode;
 
             // Play locally from a downloaded file.
@@ -95,30 +99,6 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>(); // Notify playlist changed.
-        }
-
-        public PodcastEpisodeModel currentlyPlayingEpisode()
-        {
-            PlaylistItem plItem = null;
-            using (var playlistDb = new PlaylistDBContext())
-            {
-                if (playlistDb.Playlist.Count() == 0)
-                {
-                    return null;
-                }
-
-                plItem = playlistDb.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
-            }
-
-            if (plItem != null)
-            {
-                using (var db = new PodcastSqlModel())
-                {
-                    return db.Episodes.Where(ep => ep.EpisodeId == plItem.EpisodeId).FirstOrDefault();
-                }
-            }
-
-            return null;
         }
 
         public void playPlaylistItem(int tappedPlaylistItemId)
@@ -174,6 +154,30 @@ namespace Podcatcher
             }
         }
 
+        public PodcastEpisodeModel currentlyPlayingEpisode()
+        {
+            PlaylistItem plItem = null;
+            using (var playlistDb = new PlaylistDBContext())
+            {
+                if (playlistDb.Playlist.Count() == 0)
+                {
+                    return null;
+                }
+
+                plItem = playlistDb.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
+            }
+
+            if (plItem != null)
+            {
+                using (var db = new PodcastSqlModel())
+                {
+                    return db.Episodes.Where(ep => ep.EpisodeId == plItem.EpisodeId).FirstOrDefault();
+                }
+            }
+
+            return null;
+        }
+
         public void addToPlayqueue(Collection<PodcastEpisodeModel> episodes)
         {
             using (var db = new PlaylistDBContext())
@@ -209,7 +213,7 @@ namespace Podcatcher
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
         }
 
-        public void clearPlayqueue()
+        public void clearPlayQueue()
         {
             using (var db = new PlaylistDBContext())
             {
@@ -228,19 +232,53 @@ namespace Podcatcher
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
         }
 
+        public void sortPlaylist(int sortOrder)
+        {
+            using (var playlistDB = new PlaylistDBContext())
+            {
+                PodcastSqlModel sqlContext = new PodcastSqlModel();
+                IEnumerable<PlaylistItem> newSortOrderQuery = null;
+                List<PlaylistItem> newSortOrder = new List<PlaylistItem>();
+
+                var query = playlistDB.Playlist.AsEnumerable().Join(episodes(sqlContext),
+                                                                    item => item.EpisodeId,
+                                                                    episode => episode.EpisodeId,
+                                                                    (item, episode) => new { PlaylistItem = item, PodcastEpisodeModel = episode });
+                switch (sortOrder)
+                {
+                    // Oldest first
+                    case 0:
+                        newSortOrderQuery = query.OrderBy(newPlaylistItem => newPlaylistItem.PodcastEpisodeModel.EpisodePublished)
+                                            .Select(newPlaylistItem => newPlaylistItem.PlaylistItem).AsEnumerable();
+                        break;
+                    // Newest first.
+                    case 1:
+                        newSortOrderQuery = query.OrderByDescending(newPlaylistItem => newPlaylistItem.PodcastEpisodeModel.EpisodePublished)
+                                            .Select(newPlaylistItem => newPlaylistItem.PlaylistItem).AsEnumerable();
+                        break;
+                }
+
+                int i = 0;
+                foreach (PlaylistItem item in newSortOrderQuery)
+                {
+                    PlaylistItem newItem = item;
+                    newItem.OrderNumber = i++;
+                    newSortOrder.Add(newItem);
+                }
+
+                playlistDB.Playlist.DeleteAllOnSubmit(playlistDB.Playlist);
+                playlistDB.Playlist.InsertAllOnSubmit(newSortOrder);
+                playlistDB.SubmitChanges();
+            }
+
+            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+        }
+
         /****************************** Private implementations *******************************/
 
-        private void sortPlaylist(int sortOrder)
+        private static IEnumerable<PodcastEpisodeModel> episodes(PodcastSqlModel sqlContext)
         {
-            switch (sortOrder)
-            {
-                // Oldest first
-                case 0:
-                    break;
-                // Newest first.
-                case 1:
-                    break;
-            }
+            return sqlContext.Episodes.AsQueryable();
         }
 
         private void videoStreaming(PodcastEpisodeModel podcastEpisode)
@@ -263,15 +301,6 @@ namespace Podcatcher
             using (var db = new PodcastSqlModel())
             {
                 db.addEpisodeToPlayHistory(episode);
-            }
-        }
-
-        private void clearPlayList()
-        {
-            using (var db = new PlaylistDBContext())
-            {
-                db.Playlist.DeleteAllOnSubmit(db.Playlist);
-                db.SubmitChanges();
             }
         }
 

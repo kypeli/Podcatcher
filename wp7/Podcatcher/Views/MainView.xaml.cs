@@ -365,11 +365,12 @@ namespace Podcatcher
 
         private void ClearPlayqueue_Click(object sender, EventArgs e)
         {
-            PodcastPlaybackManager.getInstance().clearPlayqueue();
+            PodcastPlaybackManager.getInstance().clearPlayQueue();
         }
 
         private void SettingsIconButton_Click(object sender, EventArgs e)
         {
+            NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
         }
 
         private void handleShowReviewPopup()
@@ -430,7 +431,11 @@ namespace Podcatcher
                 return;
             }
 
-            switch (selectedItem.Tag as String)
+            using (var db = new PodcastSqlModel()) 
+            {
+                PodcastPlaybackManager.getInstance().sortPlaylist(db.settings().PlaylistSortOrder);
+            }
+/*            switch (selectedItem.Tag as String)
             {
                 case "OldestFirst":
                     Debug.WriteLine("Oldest first");
@@ -439,6 +444,7 @@ namespace Podcatcher
                     Debug.WriteLine("Newest first");
                     break;
             }
+ */
         }
     }
 }

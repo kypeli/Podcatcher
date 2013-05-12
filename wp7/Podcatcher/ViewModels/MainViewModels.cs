@@ -68,8 +68,8 @@ namespace Podcatcher.ViewModels
                 using (var db = new PlaylistDBContext())
                 {
                     var query = from PlaylistItem e in db.Playlist
-                                 orderby e.OrderNumber
-                                 select e;
+                                orderby e.OrderNumber
+                                select e;
 
                     return new ObservableCollection<PlaylistItem>(query);
                 }

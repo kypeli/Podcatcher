@@ -32,6 +32,7 @@ using System.IO.IsolatedStorage;
 using Podcatcher.ViewModels;
 using Microsoft.Phone.BackgroundAudio;
 using System.Threading;
+using System.Linq;
 
 namespace Podcatcher
 {
@@ -91,29 +92,41 @@ namespace Podcatcher
             {
                 if (value != m_currentlyPlayingEpisode)
                 {
-                    m_currentlyPlayingEpisode = value;
                     using (var db = new Podcatcher.PlaylistDBContext())
                     {
-                        db.Playlist.DeleteAllOnSubmit(db.Playlist);
+                        PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
+                        if (current != null)
+                        {
+                            current.IsCurrent = false;
+                        }
+
+                        m_currentlyPlayingEpisode = value;
                         if (m_currentlyPlayingEpisode != null)
                         {
                             PodcastSubscriptionModel subscription = m_currentlyPlayingEpisode.PodcastSubscriptionInstance;
-                            db.Playlist.InsertOnSubmit(new PlaylistItem
+                            PlaylistItem newCurrent = db.Playlist.FirstOrDefault(item => item.EpisodeId == m_currentlyPlayingEpisode.EpisodeId);
+                            if (newCurrent == null)
                             {
-                                OrderNumber = 0,
-                                PodcastName = subscription.PodcastName,
-                                PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
-                                EpisodeName = m_currentlyPlayingEpisode.EpisodeName,
-                                EpisodeLocation = (String.IsNullOrEmpty(m_currentlyPlayingEpisode.EpisodeFile)) ?
-                                                                    m_currentlyPlayingEpisode.EpisodeDownloadUri :
-                                                                    m_currentlyPlayingEpisode.EpisodeFile,
-                                EpisodeId = m_currentlyPlayingEpisode.EpisodeId,
-                                IsCurrent = true
-                            });
+                                newCurrent = new PlaylistItem {
+                                                                PodcastName = subscription.PodcastName,
+                                                                PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
+                                                                EpisodeName = m_currentlyPlayingEpisode.EpisodeName,
+                                                                EpisodeLocation = (String.IsNullOrEmpty(m_currentlyPlayingEpisode.EpisodeFile)) ?
+                                                                                                    m_currentlyPlayingEpisode.EpisodeDownloadUri :
+                                                                                                    m_currentlyPlayingEpisode.EpisodeFile,
+                                                                EpisodeId = m_currentlyPlayingEpisode.EpisodeId,
+                                                             };
+                                
+                                db.Playlist.InsertOnSubmit(newCurrent);
+                            }
+
+                            newCurrent.IsCurrent = true;
                         }
 
                         db.SubmitChanges();
                     }
+
+                    App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
                 }
             }
         }
