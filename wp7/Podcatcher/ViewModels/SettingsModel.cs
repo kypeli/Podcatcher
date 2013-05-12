@@ -142,6 +142,24 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private int m_playlistSortOrder = 0;
+        [Column(DbType = "INT DEFAULT 0 NOT NULL")]
+        public int PlaylistSortOrder
+        {
+            get
+            {
+                return m_playlistSortOrder;
+            }
+
+            set
+            {
+                if (m_playlistSortOrder != value)
+                {
+                    m_playlistSortOrder = value;
+                }
+            }
+        }
+
         public static int keepNumEpisodesForSelectedIndex(int index)
         {
             switch (index)

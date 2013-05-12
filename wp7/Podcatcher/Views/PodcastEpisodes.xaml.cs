@@ -191,7 +191,45 @@ namespace Podcatcher.Views
 
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.ApplicationBar.IsVisible = this.NavigationPivot.SelectedIndex == 0 ? true : false;
+            setupApplicationBarForIndex(this.NavigationPivot.SelectedIndex);
+        }
+
+        private void setupApplicationBarForIndex(int index)
+        {
+            this.ApplicationBar.MenuItems.Clear();
+            this.ApplicationBar.Buttons.Clear();
+
+            switch (index)
+            {
+                // Episode listing
+                case 0:
+                    ApplicationBarIconButton settingsAppbarIcon = new ApplicationBarIconButton()
+                    {
+                        IconUri = new Uri("/Images/settings.png", UriKind.Relative), 
+                        Text="Settings"                                                                              
+                    };
+                    settingsAppbarIcon.Click += new EventHandler(ApplicationBarSettingsButton_Click);
+                    this.ApplicationBar.Buttons.Add(settingsAppbarIcon);
+
+                    ApplicationBarMenuItem item = new ApplicationBarMenuItem() { Text = "Mark all as listened" };
+                    item.Click += new EventHandler(MarkAllListened_Click);
+                    this.ApplicationBar.MenuItems.Add(item);
+
+                    item = new ApplicationBarMenuItem() { Text = "Delete all downloads" };
+                    item.Click += new EventHandler(DeleteAllDownloads_Click);
+                    this.ApplicationBar.MenuItems.Add(item);
+                    break;
+
+                // Downloaded listing.
+                case 1:
+                    if (m_playableEpisodes.Count > 0)
+                    {
+                        ApplicationBarMenuItem downloadedItem = new ApplicationBarMenuItem() { Text = "Add all to play queue" };
+                        downloadedItem.Click += new EventHandler(AddDownloadedToPlayQueue_Clicked);
+                        this.ApplicationBar.MenuItems.Add(downloadedItem);
+                    }
+                    break;
+            }
         }
 
         private int CompareEpisodesByPublishDate(PodcastEpisodeModel e1, PodcastEpisodeModel e2) 
@@ -204,6 +242,13 @@ namespace Podcatcher.Views
             {
                 return 1;
             }
+        }
+
+        private void AddDownloadedToPlayQueue_Clicked(object sender, EventArgs e)
+        {
+            PodcastPlaybackManager playbackManager = PodcastPlaybackManager.getInstance();
+            playbackManager.addToPlayqueue(m_playableEpisodes);
+            App.showNotificationToast(m_playableEpisodes.Count + " podcasts added to playlist.");
         }
 
         private void MarkAllListened_Click(object sender, EventArgs e) 

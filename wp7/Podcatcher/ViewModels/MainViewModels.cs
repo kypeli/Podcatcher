@@ -81,6 +81,27 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        public int PlaylistSortOrder
+        {
+            get
+            {
+                using (var db = new PodcastSqlModel())
+                {
+                    return db.settings().PlaylistSortOrder;
+                }
+            }
+
+            set
+            {
+                using (var db = new PodcastSqlModel())
+                {
+                    SettingsModel s = db.settings();
+                    s.PlaylistSortOrder = value;
+                    db.SubmitChanges();
+                }
+            }
+        }
+
         private List<PodcastEpisodeModel> createPlayHistory()
         {
             List<PodcastEpisodeModel> playHistory = new List<PodcastEpisodeModel>();

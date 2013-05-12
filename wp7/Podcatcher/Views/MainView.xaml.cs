@@ -345,10 +345,13 @@ namespace Podcatcher
                     ApplicationBarIconButton playQueueButton = new ApplicationBarIconButton()
                     {
                         IconUri = new Uri("/Images/Dark/play.png", UriKind.Relative), 
-                        Text="Add"                                                                                    
+                        Text="Play queue"                                                                                    
                     };
                     this.ApplicationBar.Buttons.Add(playQueueButton);
 
+                    ApplicationBarMenuItem queueItem = new ApplicationBarMenuItem() { Text = "Clear play queue" };
+                    queueItem.Click += new EventHandler(ClearPlayqueue_Click);
+                    this.ApplicationBar.MenuItems.Add(queueItem);
                     break;
             }
 
@@ -360,9 +363,13 @@ namespace Podcatcher
             NavigationService.Navigate(new Uri("/Views/AboutView.xaml", UriKind.Relative));
         }
 
+        private void ClearPlayqueue_Click(object sender, EventArgs e)
+        {
+            PodcastPlaybackManager.getInstance().clearPlayqueue();
+        }
+
         private void SettingsIconButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Views/SettingsView.xaml", UriKind.Relative));
         }
 
         private void handleShowReviewPopup()

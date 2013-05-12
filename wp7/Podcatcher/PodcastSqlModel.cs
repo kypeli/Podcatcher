@@ -114,6 +114,11 @@ namespace Podcatcher
                     updater.AddColumn<PodcastSubscriptionModel>("IsContinuousPlayback");
                 }
 
+                if (updater.DatabaseSchemaVersion < 9)
+                {
+                    updater.AddColumn<SettingsModel>("PlaylistSortOrder");
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
@@ -380,7 +385,7 @@ namespace Podcatcher
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
-        private const int DB_VERSION = 8;
+        private const int DB_VERSION = 9;
 
         private bool isValidSubscriptionModelIndex(int index)
         {

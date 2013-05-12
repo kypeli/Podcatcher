@@ -124,7 +124,7 @@
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Width="Auto" VerticalAlignment="Top">
                         <TextBlock TextWrapping="Wrap" Text="Play order" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
 
-                        <toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="0"  Width="300" SelectionChanged="PlayOrderChanged">
+                        <toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding PlaylistSortOrder, Mode=TwoWay}"  Width="300" SelectionChanged="PlayOrderChanged">
                             <toolkit:ListPickerItem Tag="OldestFirst" HorizontalAlignment="Center">Oldest first</toolkit:ListPickerItem>
                             <toolkit:ListPickerItem Tag="NewestFirst" HorizontalAlignment="Center">Newest first</toolkit:ListPickerItem>
                         </toolkit:ListPicker>

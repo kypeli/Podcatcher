@@ -14,6 +14,8 @@ using Microsoft.Phone.BackgroundAudio;
 using System.Linq;
 using System.Diagnostics;
 using Microsoft.Phone.Controls;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 
 namespace Podcatcher
@@ -130,7 +132,8 @@ namespace Podcatcher
                 }
 
                 PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
-                if (current.ItemId == tappedPlaylistItemId)
+                if (current != null
+                    && current.ItemId == tappedPlaylistItemId)
                 {
                     Debug.WriteLine("Tapped on the currently playing episode. I am not changing the track...");
                     return;
@@ -171,7 +174,74 @@ namespace Podcatcher
             }
         }
 
+        public void addToPlayqueue(Collection<PodcastEpisodeModel> episodes)
+        {
+            using (var db = new PlaylistDBContext())
+            {
+                foreach (PodcastEpisodeModel e in episodes)
+                {
+                    addToPlayqueue(e, db);
+                }
+                db.SubmitChanges();
+            }
+
+            using (var db = new PodcastSqlModel())
+            {
+                sortPlaylist(db.settings().PlaylistSortOrder);
+            }
+
+            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+        }
+
+        public void addToPlayqueue(PodcastEpisodeModel episode)
+        {
+            using (var db = new PlaylistDBContext())
+            {
+                addToPlayqueue(episode, db);
+                db.SubmitChanges();
+            }
+
+            using (var db = new PodcastSqlModel())
+            {
+                sortPlaylist(db.settings().PlaylistSortOrder);
+            }
+
+            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+        }
+
+        public void clearPlayqueue()
+        {
+            using (var db = new PlaylistDBContext())
+            {
+                List<PlaylistItem> playlist = db.Playlist.ToList();
+                foreach (PlaylistItem item in playlist)
+                {
+                    if (item.IsCurrent == false)
+                    {
+                        db.Playlist.DeleteOnSubmit(item);
+                    }
+                }
+
+                db.SubmitChanges();
+            }
+
+            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+        }
+
         /****************************** Private implementations *******************************/
+
+        private void sortPlaylist(int sortOrder)
+        {
+            switch (sortOrder)
+            {
+                // Oldest first
+                case 0:
+                    break;
+                // Newest first.
+                case 1:
+                    break;
+            }
+        }
 
         private void videoStreaming(PodcastEpisodeModel podcastEpisode)
         {
@@ -248,6 +318,24 @@ namespace Podcatcher
             {
                 rootFrame.GoBack();
             }
+        }
+
+        private void addToPlayqueue(PodcastEpisodeModel e, PlaylistDBContext dbContext)
+        {
+            PlaylistItem existingItem = dbContext.Playlist.FirstOrDefault(item => item.EpisodeId == e.EpisodeId);
+            if (existingItem != null)
+            {
+                dbContext.Playlist.DeleteOnSubmit(existingItem);
+            }
+
+            dbContext.Playlist.InsertOnSubmit(new PlaylistItem
+            {
+                EpisodeId = e.EpisodeId,
+                EpisodeName = e.EpisodeName,
+                EpisodeLocation = e.EpisodeFile,
+                PodcastLogoLocation = e.PodcastSubscriptionInstance.PodcastLogoLocalLocation,
+                PodcastName = e.PodcastSubscriptionInstance.PodcastName
+            });
         }
 
         private void PlayStateChanged(object sender, EventArgs e)
