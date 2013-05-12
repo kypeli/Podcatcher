@@ -354,16 +354,11 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                return m_isContinuousPlayback;
+                return false;
             }
 
             set
             {
-                if (m_isContinuousPlayback != value)
-                {
-                    m_isContinuousPlayback = value;
-                    NotifyPropertyChanged("IsContinuousPlayback");
-                }
             }
         }
 

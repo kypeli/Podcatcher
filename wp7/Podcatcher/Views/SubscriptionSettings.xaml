@@ -55,14 +55,6 @@
             		</StackPanel>
 
                     <StackPanel Margin="0,9,12,0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock TextWrapping="Wrap" Text="Continuous playback" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
-                            <toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsContinuousPlayback, Mode=TwoWay}" Content="ToggleSwitchButton"/>
-                        </StackPanel>
-                        <TextBlock TextWrapping="Wrap" Text="When continuous playback is enabled the playback will continue to the next episode in the subscription." Style="{StaticResource PhoneTextSubtleStyle}"/>
-                    </StackPanel>
-
-                    <StackPanel Margin="0,9,12,0">
             			<StackPanel Orientation="Vertical">
             				<TextBlock TextWrapping="Wrap" Text="Keep episodes for this subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
             				<toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding SubscriptionSelectedKeepNumEpisodesIndex, Mode=TwoWay}">

@@ -64,7 +64,6 @@ namespace Podcatcher.Views
                 subscription.IsSubscribed = subscriptionDataContext.IsSubscribed;
                 subscription.IsAutoDownload = subscriptionDataContext.IsAutoDownload;
                 subscription.SubscriptionIsDeleteEpisodes = subscriptionDataContext.SubscriptionIsDeleteEpisodes;
-                subscription.IsContinuousPlayback = subscriptionDataContext.IsContinuousPlayback;
 
                 db.SubmitChanges();
             }
