@@ -65,18 +65,19 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                using (var db = new PlaylistDBContext())
-                {
-                    var query = from PlaylistItem e in db.Playlist
-                                orderby e.OrderNumber
-                                select e;
-
-                    return new ObservableCollection<PlaylistItem>(query);
-                }
+                return m_playQueue;
             }
 
             set
             {
+                using (var db = new PlaylistDBContext())
+                {
+                    var query = from PlaylistItem e in db.Playlist
+                                orderby e.OrderNumber
+                                select e;                    
+                    m_playQueue = new ObservableCollection<PlaylistItem>(query);
+                }
+
                 NotifyPropertyChanged("PlayQueue");
             }
         }
