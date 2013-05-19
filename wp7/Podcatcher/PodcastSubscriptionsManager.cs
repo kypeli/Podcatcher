@@ -310,7 +310,7 @@ namespace Podcatcher
             }
         }
 
-        public void newPlayableEpisode(PodcastEpisodeModel e)
+        public void newDownloadedEpisode(PodcastEpisodeModel e)
         {
             if (NewPlayableEpisode != null)
             {

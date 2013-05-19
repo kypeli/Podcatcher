@@ -68,6 +68,7 @@ namespace Podcatcher
             episode.DownloadPercentage = 0;
             m_episodeDownloadQueue.Enqueue(episode);
             saveEpisodeInfoToDB(episode);
+            PodcastSubscriptionsManager.getInstance().newDownloadedEpisode(episode);
 
             if (m_currentEpisodeDownload == null)
             {
@@ -97,6 +98,8 @@ namespace Podcatcher
             }
 
             episode.DownloadRequest = null;
+            PodcastSubscriptionsManager.getInstance().removedPlayableEpisode(episode);
+
         }
 
         public void addEpisodesToDownloadQueue(List<PodcastEpisodeModel> newPodcastEpisodes)
@@ -490,7 +493,6 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Transfer request completed succesfully.");
                 updateEpisodeWhenDownloaded(m_currentEpisodeDownload);
-                PodcastSubscriptionsManager.getInstance().newPlayableEpisode(m_currentEpisodeDownload);
 
                 // Add downloaded episode to play queue, if set.
                 using (var db = new PodcastSqlModel())

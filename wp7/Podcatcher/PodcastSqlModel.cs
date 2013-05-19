@@ -267,7 +267,9 @@ namespace Podcatcher
                                && (episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
                                || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing
                                || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened
-                               || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused))
+                               || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused
+                               || episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloading
+                               || episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Queued))
                         orderby episode.EpisodePublished descending
                         select episode;
 
