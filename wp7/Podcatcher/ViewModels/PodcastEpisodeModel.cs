@@ -35,6 +35,7 @@ using Coding4Fun.Phone.Controls;
 using Microsoft.Phone.BackgroundAudio;
 using System.Windows.Threading;
 using System.Windows.Media.Imaging;
+using System.Windows.Controls;
 
 namespace Podcatcher.ViewModels
 {
@@ -274,19 +275,14 @@ namespace Podcatcher.ViewModels
             set { m_totalLengthTicks = value; }
         }
 
-        private BitmapImage m_PodcastLogo = null;
         public BitmapImage PodcastLogo
         {
             get
             {
-                if (m_PodcastLogo == null) {
-                    using (var db = new PodcastSqlModel())
-                    {
-                        m_PodcastLogo = db.Subscriptions.First(s => s.PodcastId == PodcastId).PodcastLogo;
-                    }
+                using (var db = new PodcastSqlModel())
+                {
+                    return db.Subscriptions.FirstOrDefault(s => s.PodcastId == PodcastId).PodcastLogo;
                 }
-
-                return m_PodcastLogo;
             }
 
             private set {}

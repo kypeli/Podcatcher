@@ -27,6 +27,7 @@ using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Collections.ObjectModel;
 using Microsoft.Phone.Shell;
+using System.Windows.Media.Imaging;
 
 namespace Podcatcher.Views
 {
@@ -38,6 +39,17 @@ namespace Podcatcher.Views
         public PodcastEpisodes()
         {
             InitializeComponent();
+            this.Unloaded += new RoutedEventHandler(PodcastEpisodes_Unloaded);
+        }
+
+        void PodcastEpisodes_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (this.Logo != null)
+            {
+                BitmapImage i = this.Logo.Source as BitmapImage;
+                i.UriSource = null;
+                this.Logo = null;
+            }
         }
 
         void m_subscription_PodcastCleanStarted()

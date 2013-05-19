@@ -32,6 +32,7 @@ using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using Microsoft.Phone.Shell;
 using System.IO.IsolatedStorage;
+using System.Windows.Media.Imaging;
 
 namespace Podcatcher
 {
@@ -41,6 +42,13 @@ namespace Podcatcher
         {
             // Required to initialize variables
             InitializeComponent();
+        }
+
+        void PodcastSubscriptionControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            BitmapImage i = this.Logo.Source as BitmapImage;
+            i.UriSource = null;
+            this.Logo = null;
         }
 
         private void MenuItemDelete_Click(object sender, RoutedEventArgs e)

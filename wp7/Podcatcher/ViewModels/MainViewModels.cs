@@ -33,6 +33,7 @@ namespace Podcatcher.ViewModels
                                     orderby podcastSubscription.PodcastName
                                     select podcastSubscription;
 
+                        m_podcastSubscriptions = null;
                         m_podcastSubscriptions = new ObservableCollection<PodcastSubscriptionModel>(query);
                     }
                 }
@@ -74,7 +75,9 @@ namespace Podcatcher.ViewModels
                 {
                     var query = from PlaylistItem e in db.Playlist
                                 orderby e.OrderNumber
-                                select e;                    
+                                select e;
+
+                    m_playQueue = null;
                     m_playQueue = new ObservableCollection<PlaylistItem>(query);
                 }
 

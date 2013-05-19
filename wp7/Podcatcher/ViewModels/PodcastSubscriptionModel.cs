@@ -32,6 +32,8 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Phone.Shell;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Podcatcher.ViewModels
 {
@@ -126,17 +128,13 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private BitmapImage m_podcastBitmapLogo = null; 
         public BitmapImage PodcastLogo
         {
             get
             {
-                if (m_podcastBitmapLogo != null)
-                {
-                    return m_podcastBitmapLogo;
-                }
-
+                BitmapImage logoImage = new BitmapImage();
                 string isoFilename;
+
                 if (String.IsNullOrEmpty(m_PodcastLogoLocalLocation))
                 {
                     isoFilename = "/images/Podcatcher_generic_podcast_cover.png";
@@ -146,6 +144,7 @@ namespace Podcatcher.ViewModels
                 {
                     isoFilename = m_PodcastLogoLocalLocation;
                 }
+
 
                 // This method can be called when we still don't have a local
                 // image stored, so the file name can be empty.
@@ -160,16 +159,8 @@ namespace Podcatcher.ViewModels
                     {
                         using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                         {
-                            try
-                            {
-                                m_podcastBitmapLogo = new BitmapImage();
-                                m_podcastBitmapLogo.SetSource(stream);
-                            }
-                            catch (Exception)
-                            {
-                                Debug.WriteLine("Unsupported subscription logo type.");
-                                m_podcastBitmapLogo = null;
-                            }
+                            //logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
+                            logoImage.SetSource(stream);
                         }
                     }
                 }
@@ -178,12 +169,12 @@ namespace Podcatcher.ViewModels
                     Debug.WriteLine("Issue opening isolated storage! Error: " + isoEx.Message);
                 }
 
-                if (m_podcastBitmapLogo == null)
+                if (logoImage == null)
                 {
                     try
                     {
                         Uri uri = new Uri("/images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
-                        return new BitmapImage(uri);
+                        logoImage.UriSource = uri;
                     }
                     catch (Exception)
                     {
@@ -191,10 +182,42 @@ namespace Podcatcher.ViewModels
                     }
                 }
 
-                return m_podcastBitmapLogo;
+                return logoImage;
             }
 
             private set { }
+        }
+
+        private Image createMemorySafeThumbnail(IsolatedStorageFileStream stream, int width)
+        {
+            BitmapImage bi = new BitmapImage();
+            bi.SetSource(stream);
+
+            double cx = width;
+            double cy = bi.PixelHeight * (cx / bi.PixelWidth);
+
+            Image image = new Image();
+            image.Source = bi;
+
+            WriteableBitmap wb1 = new WriteableBitmap((int)cx, (int)cy);
+            ScaleTransform transform = new ScaleTransform();
+            transform.ScaleX = cx / bi.PixelWidth;
+            transform.ScaleY = cy / bi.PixelHeight;
+            wb1.Render(image, transform);
+            wb1.Invalidate();
+
+            WriteableBitmap wb2 = new WriteableBitmap((int)cx, (int)cy);
+            for (int i = 0; i < wb2.Pixels.Length; i++)
+                wb2.Pixels[i] = wb1.Pixels[i];
+            wb2.Invalidate();
+
+            Image thumbnail = new Image();
+            thumbnail.Width = cx;
+            thumbnail.Height = cy;
+
+            thumbnail.Source = wb2;
+
+            return thumbnail;
         }
 
         [Column]
