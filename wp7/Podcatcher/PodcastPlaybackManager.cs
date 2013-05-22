@@ -450,6 +450,14 @@ namespace Podcatcher
 
                 case PlayState.Paused:
                     saveEpisodePlayPosition(App.CurrentlyPlayingEpisode);
+                    if (App.CurrentlyPlayingEpisode != null)
+                    {
+                        App.CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("SHOULD NOT HAPPEND! Cannot save episode state to paused!");
+                    }
                     break;
 
                 case PlayState.Stopped:
