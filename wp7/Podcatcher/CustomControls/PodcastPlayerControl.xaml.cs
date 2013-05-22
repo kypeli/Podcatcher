@@ -54,7 +54,6 @@ namespace Podcatcher
             setupPlayerUI();
             if (m_instance == null) 
             {
-                checkPlayerEpisodeState();
                 m_instance = this;
             }
 
@@ -241,25 +240,6 @@ namespace Podcatcher
             {
                 showNoPlayerLayout();
                 Debug.WriteLine("WARNING: Could not find episode ID from app settings, so cannot restore player UI with episode information!");
-            }
-        }
-
-        public void checkPlayerEpisodeState()
-        {
-            IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
-            if (App.CurrentlyPlayingEpisode != null)
-            {
-                if (BackgroundAudioPlayer.Instance.Track == null)
-                {
-                    using (var db = new PodcastSqlModel())
-                    {
-                        PodcastEpisodeModel episode = db.episodeForEpisodeId(App.CurrentlyPlayingEpisode.EpisodeId);
-                        if (episode != null)
-                        {
-                            db.addEpisodeToPlayHistory(episode);
-                        }
-                    }
-                }
             }
         }
 
