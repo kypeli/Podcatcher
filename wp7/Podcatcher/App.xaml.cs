@@ -120,6 +120,7 @@ namespace Podcatcher
                         }
 
                         newCurrent.IsCurrent = true;
+                        m_currentlyPlayingEpisode.setPlaying();
                     }
 
                     db.SubmitChanges();

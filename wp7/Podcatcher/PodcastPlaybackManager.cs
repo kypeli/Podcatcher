@@ -29,7 +29,7 @@ namespace Podcatcher
 
         private PodcastPlaybackManager()
         {
-            initializeCurrentlyPlayingEpisode();
+//            initializeCurrentlyPlayingEpisode();
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
         }
 

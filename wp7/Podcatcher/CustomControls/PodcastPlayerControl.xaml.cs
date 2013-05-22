@@ -620,14 +620,7 @@ namespace Podcatcher
 
         void m_screenUpdateTimer_Tick(object sender, EventArgs e)
         {
-            Debug.WriteLine("Tick.");
-
-            if (App.CurrentlyPlayingEpisode == null)
-            {
-                Debug.WriteLine("Warning: Current episode playing is NULL!");
-                return;
-            }
-
+            Debug.WriteLine("Tick.");            
             PositionSlider.Value = 0;
             TimeSpan position = TimeSpan.Zero;
 
