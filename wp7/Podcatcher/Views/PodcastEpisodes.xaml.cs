@@ -83,6 +83,9 @@ namespace Podcatcher.Views
             m_playableEpisodes = m_subscription.PlayableEpisodes;
             this.DataContext = m_subscription;
 
+            PodcastSubscriptionsManager.getInstance().NewPlayableEpisode -= new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
+            PodcastSubscriptionsManager.getInstance().RemovedPlayableEpisode -= new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_RemovedPlayableEpisode);
+
             PodcastSubscriptionsManager.getInstance().NewPlayableEpisode += new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
             PodcastSubscriptionsManager.getInstance().RemovedPlayableEpisode += new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_RemovedPlayableEpisode);
             
