@@ -70,7 +70,8 @@ namespace Podcatcher
                 Debug.WriteLine("Restoring UI for currently playing episode.");
 
                 showPlayerLayout();
-                restoreEpisodeToPlayerUI(currentlyPlayingEpisode);
+                setupPlayerUIContent(currentlyPlayingEpisode);
+                m_currentPlayerEpisode = currentlyPlayingEpisode;
             }
             else
             {
@@ -159,8 +160,8 @@ namespace Podcatcher
 
         private void audioPlayback(PodcastEpisodeModel episodeModel)
         {
-            if (App.CurrentlyPlayingEpisode != null
-                && App.CurrentlyPlayingEpisode == episodeModel
+            if (m_currentPlayerEpisode != null
+                && m_currentPlayerEpisode.EpisodeId == episodeModel.EpisodeId
                 && BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
             {
                 BackgroundAudioPlayer.Instance.Play();
@@ -194,6 +195,7 @@ namespace Podcatcher
         private static bool settingSliderFromPlay;
         private IsolatedStorageSettings m_appSettings;
         private static DispatcherTimer m_screenUpdateTimer = null;
+        private static PodcastEpisodeModel m_currentPlayerEpisode = null;
 
         // Loading the control images based on the theme color
         private BitmapImage m_playButtonBitmap;
@@ -321,6 +323,7 @@ namespace Podcatcher
 
         private void startNewPlayback(PodcastEpisodeModel episodeModel, bool streaming)
         {
+            m_currentPlayerEpisode = episodeModel;
             setupPlayerUIContent(episodeModel);
             updatePrimary(episodeModel);
 
@@ -488,7 +491,6 @@ namespace Podcatcher
 
         private void setupUIForEpisodePaused()
         {
-            App.CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
             if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
             {
                 m_screenUpdateTimer.Stop();
@@ -548,6 +550,7 @@ namespace Podcatcher
             }
 
             showNoPlayerLayout();
+            m_currentPlayerEpisode = null;
         }
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)

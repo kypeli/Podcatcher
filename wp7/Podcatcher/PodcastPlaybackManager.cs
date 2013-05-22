@@ -45,6 +45,8 @@ namespace Podcatcher
 
         public void play(PodcastEpisodeModel episode, bool openPlayerView = true)
         {
+            bool startedFromEpisodeListing = openPlayerView;
+
             if (episode == null)
             {
                 Debug.WriteLine("Warning: Trying to play a NULL episode.");
@@ -68,13 +70,20 @@ namespace Podcatcher
 
             // We started to play a new podcast by tapping on the "Play" button in the subscription. 
             // We would then assume that a new playlist is created where this episode is the first item.
-            if (openPlayerView)
+            if (startedFromEpisodeListing)
             {
-                App.CurrentlyPlayingEpisode = null;
-                clearPlayQueue();
+                if (BackgroundAudioPlayer.Instance.PlayerState != PlayState.Paused
+                    || (App.CurrentlyPlayingEpisode != null 
+                        && App.CurrentlyPlayingEpisode.EpisodeId != episode.EpisodeId))
+                {
+                    App.CurrentlyPlayingEpisode = episode;
+                    clearPlayQueue();
+                }
             }
-
-            App.CurrentlyPlayingEpisode = episode;
+            else
+            {
+                App.CurrentlyPlayingEpisode = episode;
+            }
 
             // Play locally from a downloaded file.
             if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
@@ -102,7 +111,7 @@ namespace Podcatcher
                     openPlayerView = false;
                 }
             }
-
+            
             if (openPlayerView)
             {
                 OnOpenPodcastPlayer(this, new EventArgs());
@@ -429,7 +438,10 @@ namespace Podcatcher
                         return;
                     }
 
-                    if (currentEpisode.EpisodeId != App.CurrentlyPlayingEpisode.EpisodeId)
+                    if (App.CurrentlyPlayingEpisode == null)
+                    {
+                        App.CurrentlyPlayingEpisode = currentEpisode;
+                    } else if (currentEpisode.EpisodeId != App.CurrentlyPlayingEpisode.EpisodeId)
                     {
                         App.CurrentlyPlayingEpisode = currentEpisode;
                         App.CurrentlyPlayingEpisode.setPlaying();

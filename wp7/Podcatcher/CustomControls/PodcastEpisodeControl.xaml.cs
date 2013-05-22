@@ -50,7 +50,6 @@ namespace Podcatcher
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-
             PodcastPlaybackManager.getInstance().play(m_episodeModel);
         }
 
