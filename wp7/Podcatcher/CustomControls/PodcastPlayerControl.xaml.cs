@@ -413,20 +413,28 @@ namespace Podcatcher
                     setupUIForEpisodePaused();
                     break;
 
+                case PlayState.Shutdown:
+                case PlayState.Unknown:
                 case PlayState.Stopped:
                     // Player stopped
                     Debug.WriteLine("Podcast player stopped.");
-                    break;
-
-                case PlayState.Shutdown:
-                case PlayState.Unknown:
-                    Debug.WriteLine("Podcast player shut down.");
+                    GoBack();
                     break;
 
                 case PlayState.TrackEnded:
                     break;
             }
         }
+
+        private void GoBack()
+        {
+            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+            if (rootFrame.CanGoBack)
+            {
+                rootFrame.GoBack();
+            }
+        }
+
 
         private void updatePrimary(PodcastEpisodeModel currentEpisode)
         {

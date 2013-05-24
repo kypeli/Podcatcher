@@ -450,15 +450,6 @@ namespace Podcatcher
             }
         }
 
-        private void GoBack()
-        {
-            PhoneApplicationFrame rootFrame = Application.Current.RootVisual as PhoneApplicationFrame;
-            if (rootFrame.CanGoBack)
-            {
-                rootFrame.GoBack();
-            }
-        }
-
         private void addToPlayqueue(PodcastEpisodeModel e, PlaylistDBContext dbContext)
         {
             PlaylistItem existingItem = dbContext.Playlist.FirstOrDefault(item => item.EpisodeId == e.EpisodeId);
@@ -527,7 +518,6 @@ namespace Podcatcher
                     // Cleanup
                     CurrentlyPlayingEpisode = null;
                     BackgroundAudioPlayer.Instance.Close();
-                    GoBack();
                     break;
 
                 case PlayState.TrackReady:
