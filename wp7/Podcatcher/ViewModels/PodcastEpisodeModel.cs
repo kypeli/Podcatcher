@@ -363,17 +363,16 @@ namespace Podcatcher.ViewModels
                     return;
                 }
 
+                m_episodePlayState = value;
+
                 if (m_episodePlayState == EpisodePlayStateEnum.Listened)
                 {
                     SavedPlayPos = 0; // Let's start from the beginning if we are listened.
                 }
-
-                m_episodePlayState = value;
                 
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("EpisodeStatusText");
-
             }
         }
 

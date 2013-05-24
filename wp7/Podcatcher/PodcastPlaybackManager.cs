@@ -513,8 +513,26 @@ namespace Podcatcher
 
                     saveEpisodePlayPosition(CurrentlyPlayingEpisode);
                     addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
+
+                    if ((CurrentlyPlayingEpisode.SavedPlayPos * 1.05) >= CurrentlyPlayingEpisode.TotalLengthTicks)
+                    {
+                        CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
+                    }
+                    else
+                    {
+                        CurrentlyPlayingEpisode.EpisodePlayState = String.IsNullOrEmpty(CurrentlyPlayingEpisode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
+                                                                                                                               PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                    }   
+
+                    using (var db = new PodcastSqlModel())
+                    {
+                        PodcastEpisodeModel episode = db.Episodes.Where(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId).First();
+                        episode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
+                        db.SubmitChanges();
+                    }
+
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
-                    
+
                     // Cleanup
                     CurrentlyPlayingEpisode = null;
                     BackgroundAudioPlayer.Instance.Close();
