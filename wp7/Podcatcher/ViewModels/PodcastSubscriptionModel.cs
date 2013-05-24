@@ -132,13 +132,12 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                BitmapImage logoImage = new BitmapImage();
+                BitmapImage logoImage = null;
                 string isoFilename;
 
                 if (String.IsNullOrEmpty(m_PodcastLogoLocalLocation))
                 {
                     isoFilename = "/images/Podcatcher_generic_podcast_cover.png";
-                    PodcastLogoLocalLocation = isoFilename;
                 }
                 else
                 {
@@ -157,6 +156,7 @@ namespace Podcatcher.ViewModels
                     IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
                     if (isoStore.FileExists(isoFilename) != false)
                     {
+                        logoImage = new BitmapImage();
                         using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                         {
                             //logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
@@ -174,6 +174,7 @@ namespace Podcatcher.ViewModels
                     try
                     {
                         Uri uri = new Uri("/images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
+                        logoImage = new BitmapImage();
                         logoImage.UriSource = uri;
                     }
                     catch (Exception)

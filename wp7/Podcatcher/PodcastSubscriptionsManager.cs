@@ -600,8 +600,7 @@ namespace Podcatcher
             if (podcastModel.PodcastLogoUrl == null 
                 || String.IsNullOrEmpty(podcastModel.PodcastLogoUrl.ToString()))
             {
-                // Podcast logo URL is empty - use default placeholder logo.
-                podcastLogoFilename = @"Podcatcher_generic_podcast_cover.png";
+                return "";
             }
             else
             {
