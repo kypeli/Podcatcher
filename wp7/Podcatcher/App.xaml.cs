@@ -80,56 +80,6 @@ namespace Podcatcher
 
         public static PodcastPlaybackManager playbackManager = PodcastPlaybackManager.getInstance();
 
-        private static PodcastEpisodeModel m_currentlyPlayingEpisode = null;
-        public static PodcastEpisodeModel CurrentlyPlayingEpisode
-        {
-            get
-            {
-                return m_currentlyPlayingEpisode;
-            }
-
-            set
-            {
-                using (var db = new Podcatcher.PlaylistDBContext())
-                {
-                    PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
-                    if (current != null)
-                    {
-                        current.IsCurrent = false;
-                    }
-
-                    m_currentlyPlayingEpisode = value;
-                    if (m_currentlyPlayingEpisode != null)
-                    {
-                        PodcastSubscriptionModel subscription = m_currentlyPlayingEpisode.PodcastSubscriptionInstance;
-                        PlaylistItem newCurrent = db.Playlist.FirstOrDefault(item => item.EpisodeId == m_currentlyPlayingEpisode.EpisodeId);
-                        if (newCurrent == null)
-                        {
-                            newCurrent = new PlaylistItem
-                            {
-                                PodcastName = subscription.PodcastName,
-                                PodcastLogoLocation = subscription.PodcastLogoLocalLocation,
-                                EpisodeName = m_currentlyPlayingEpisode.EpisodeName,
-                                EpisodeLocation = (String.IsNullOrEmpty(m_currentlyPlayingEpisode.EpisodeFile)) ?
-                                                                    m_currentlyPlayingEpisode.EpisodeDownloadUri :
-                                                                    m_currentlyPlayingEpisode.EpisodeFile,
-                                EpisodeId = m_currentlyPlayingEpisode.EpisodeId,
-                            };
-
-                            db.Playlist.InsertOnSubmit(newCurrent);
-                        }
-
-                        newCurrent.IsCurrent = true;
-                        m_currentlyPlayingEpisode.setPlaying();
-                    }
-
-                    db.SubmitChanges();
-                }
-
-                App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
-            }
-        }
-
         public static bool IsTrial
         {
             get
@@ -250,7 +200,7 @@ namespace Podcatcher
 
                             Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
 
-                            if (CurrentlyPlayingEpisode == null)
+                            if (PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode == null)
                             {
                                 // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
                                 // playing ID. This means the track in question isn't playing anymore, so let's update the state.

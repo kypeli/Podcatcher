@@ -522,7 +522,7 @@ namespace Podcatcher
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
             {
                 // We are already stopped (playback ended or something). Let's update the episode state.
-                App.CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
             }
             else
             {
