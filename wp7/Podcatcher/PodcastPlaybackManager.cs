@@ -88,8 +88,6 @@ namespace Podcatcher
 
                     db.SubmitChanges();
                 }
-
-                App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
             }
         }
 
@@ -277,8 +275,6 @@ namespace Podcatcher
             {
                 sortPlaylist(db.settings().PlaylistSortOrder);
             }
-
-            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
 
             if (showNotification)
             {
@@ -489,6 +485,8 @@ namespace Podcatcher
                         CurrentlyPlayingEpisode = currentEpisode;
                         CurrentlyPlayingEpisode.setPlaying();
                     }
+
+                    App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
                     break;
 
                 case PlayState.Paused:
