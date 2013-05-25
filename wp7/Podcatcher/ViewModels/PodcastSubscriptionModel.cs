@@ -128,11 +128,21 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private WeakReference m_podcastLogoRef = null;
         public BitmapImage PodcastLogo
         {
             get
             {
                 BitmapImage logoImage = null;
+                if (m_podcastLogoRef != null)
+                {
+                    logoImage = m_podcastLogoRef.Target as BitmapImage;
+                    if (logoImage != null)
+                    {
+                        return logoImage;
+                    }
+                }
+
                 string isoFilename;
 
                 if (String.IsNullOrEmpty(m_PodcastLogoLocalLocation))
@@ -183,6 +193,7 @@ namespace Podcatcher.ViewModels
                     }
                 }
 
+                m_podcastLogoRef = new WeakReference(logoImage);
                 return logoImage;
             }
 
