@@ -485,8 +485,6 @@ namespace Podcatcher
                         CurrentlyPlayingEpisode = currentEpisode;
                         CurrentlyPlayingEpisode.setPlaying();
                     }
-
-                    App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
                     break;
 
                 case PlayState.Paused:
@@ -546,6 +544,8 @@ namespace Podcatcher
                 case PlayState.Unknown:
                     break;
             }
+
+            App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
         }
 
     }
