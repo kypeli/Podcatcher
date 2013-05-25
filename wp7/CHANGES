@@ -4,13 +4,16 @@
    - All items from the subscription's downloaded view can be added to the play queue.
    - Add single episode to play queue by long pressing on the episode.
    - Add setting that gives the possibility to add all downloaded episodes automatically to the play queue.
+ * Change the layout of the episode listing to better utilize the whole screen.
  * Change how lock screen buttons work.
    - If continuous playback / play queue is active, pressing next will take user to next episode.
    - If continuous playback / play queue is not active, pressing next / prev will skip 30s forward/backwards.
  * Remove Continuous playback option from the subscriptions settings.
    - Play queue replaces that functionality.
+ * Improve memory management and caching of podcast logos.
  * Fix/Change: Mark all episodes as listened to, even if they haven't yet been listened to at all.
- * Fix podcast player.
+ * Fix many things in the podcast player.
+ * Fix marking of listened episodes really as listened.
 
 2.3.0.0
 -------

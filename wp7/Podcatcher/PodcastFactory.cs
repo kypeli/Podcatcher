@@ -63,14 +63,16 @@ namespace Podcatcher
                              Link           = (string)channel.Element("link")
                          }).FirstOrDefault();
 
-            if (query == null) 
+            if (query == null
+                && itunesNamespace != "http://www.itunes.com/DTDs/Podcast-1.0.dtd") 
             {
                 return podcastModelFromRSS(podcastRss, "http://www.itunes.com/DTDs/Podcast-1.0.dtd");
             }
 
             if (query == null)
             {
-                validFeed = false;
+                Debug.WriteLine("ERROR: Cannot get all necessary fields from the podcast RSS.");
+                return null;
             }
 
             if (String.IsNullOrEmpty(query.Link))
