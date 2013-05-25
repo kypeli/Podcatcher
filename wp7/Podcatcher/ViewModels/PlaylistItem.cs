@@ -47,7 +47,7 @@ namespace Podcatcher.ViewModels
             get
             {
                 Stream stream = null;
-                BitmapImage logo = new BitmapImage(new Uri("images/Podcatcher_generic_podcast_cover.png", UriKind.Relative));
+                BitmapImage logo = new BitmapImage(new Uri("/images/Podcatcher_generic_podcast_cover.png", UriKind.Relative));
                 using (var isoStore = IsolatedStorageFile.GetUserStoreForApplication())
                 {
                     if (isoStore.FileExists(PodcastLogoLocation))
