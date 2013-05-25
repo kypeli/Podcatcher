@@ -501,6 +501,7 @@ namespace Podcatcher
 
                 case PlayState.Stopped:
                 case PlayState.Shutdown:
+                case PlayState.TrackEnded:
                     if (CurrentlyPlayingEpisode == null)
                     {
                         // We didn't have a track playing.
@@ -524,6 +525,7 @@ namespace Podcatcher
                     {
                         PodcastEpisodeModel episode = db.Episodes.Where(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId).First();
                         episode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
+                        episode.SavedPlayPos = CurrentlyPlayingEpisode.SavedPlayPos;
                         db.SubmitChanges();
                     }
 
@@ -535,10 +537,6 @@ namespace Podcatcher
                     break;
 
                 case PlayState.TrackReady:
-                    break;
-
-                case PlayState.TrackEnded:
-                    saveEpisodePlayPosition(CurrentlyPlayingEpisode);
                     break;
 
                 case PlayState.Unknown:
