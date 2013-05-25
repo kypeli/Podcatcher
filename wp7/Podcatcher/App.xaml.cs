@@ -244,6 +244,7 @@ namespace Podcatcher
         {
     //          IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
             CheckLicense();
+            mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
         }
 
         // Code to execute when the application is deactivated (sent to background)
