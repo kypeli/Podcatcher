@@ -171,6 +171,7 @@ namespace Podcatcher.ViewModels
                         {
                             //logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
                             logoImage.SetSource(stream);
+                            m_podcastLogoRef = new WeakReference(logoImage);
                         }
                     }
                 }
@@ -193,7 +194,6 @@ namespace Podcatcher.ViewModels
                     }
                 }
 
-                m_podcastLogoRef = new WeakReference(logoImage);
                 return logoImage;
             }
 
