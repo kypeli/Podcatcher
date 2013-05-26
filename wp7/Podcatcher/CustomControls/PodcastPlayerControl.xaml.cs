@@ -63,7 +63,7 @@ namespace Podcatcher
 
         public void initializePlayerUI()
         {
-            PodcastEpisodeModel currentlyPlayingEpisode = PodcastPlaybackManager.getInstance().currentlyPlayingEpisode();
+            PodcastEpisodeModel currentlyPlayingEpisode = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
             if (currentlyPlayingEpisode != null)
             {
                 Debug.WriteLine("Restoring UI for currently playing episode.");

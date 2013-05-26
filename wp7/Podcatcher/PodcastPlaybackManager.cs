@@ -219,7 +219,7 @@ namespace Podcatcher
             }
         }
 
-        public PodcastEpisodeModel currentlyPlayingEpisode()
+        public PodcastEpisodeModel updateCurrentlyPlayingEpisode()
         {
             PlaylistItem plItem = null;
             using (var playlistDb = new PlaylistDBContext())
@@ -236,7 +236,9 @@ namespace Podcatcher
             {
                 using (var db = new PodcastSqlModel())
                 {
-                    return db.Episodes.Where(ep => ep.EpisodeId == plItem.EpisodeId).FirstOrDefault();
+                    PodcastEpisodeModel currentEpisode = db.Episodes.Where(ep => ep.EpisodeId == plItem.EpisodeId).FirstOrDefault();
+                    CurrentlyPlayingEpisode = currentEpisode;
+                    return currentEpisode;
                 }
             }
 
@@ -414,7 +416,7 @@ namespace Podcatcher
         {
             // If we have an episodeId stored in local cache, this means we returned to the app and 
             // have that episode playing. Hence, here we need to reload the episode data from the SQL. 
-            CurrentlyPlayingEpisode = currentlyPlayingEpisode();
+            CurrentlyPlayingEpisode = updateCurrentlyPlayingEpisode();
             if (CurrentlyPlayingEpisode != null)
             {
                 CurrentlyPlayingEpisode.setPlaying();
@@ -470,7 +472,7 @@ namespace Podcatcher
             switch (BackgroundAudioPlayer.Instance.PlayerState)
             {
                 case PlayState.Playing:
-                    PodcastEpisodeModel currentEpisode = currentlyPlayingEpisode();
+                    PodcastEpisodeModel currentEpisode = updateCurrentlyPlayingEpisode();
                     if (currentEpisode == null)
                     {
                         Debug.WriteLine("Error: No playing episode in DB.");
