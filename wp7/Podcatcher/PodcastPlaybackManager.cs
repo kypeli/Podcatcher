@@ -24,6 +24,7 @@ namespace Podcatcher
     public class PodcastPlaybackManager
     {
         public event EventHandler OnOpenPodcastPlayer;
+        public event EventHandler OnPodcastStartedPlaying;
 
         private static PodcastPlaybackManager m_instance;
 
@@ -164,7 +165,17 @@ namespace Podcatcher
             
             if (openPlayerView)
             {
-                OnOpenPodcastPlayer(this, new EventArgs());
+                var handler = OnOpenPodcastPlayer;
+                if (handler != null)
+                {
+                    OnOpenPodcastPlayer(this, new EventArgs());
+                }
+            }
+
+            var handlerStartedPlaying = OnPodcastStartedPlaying;
+            if (handlerStartedPlaying != null)
+            {
+                OnPodcastStartedPlaying(this, new EventArgs());
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>(); // Notify playlist changed.
@@ -531,8 +542,6 @@ namespace Podcatcher
                         db.SubmitChanges();
                     }
 
-                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
-
                     // Cleanup
                     CurrentlyPlayingEpisode = null;
                     BackgroundAudioPlayer.Instance.Close();
@@ -546,6 +555,7 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
+            PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
         }
 
     }

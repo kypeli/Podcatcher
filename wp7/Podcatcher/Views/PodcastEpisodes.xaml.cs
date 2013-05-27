@@ -133,6 +133,9 @@ namespace Podcatcher.Views
 
             App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged -= new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
             App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged += new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
+
+            PodcastPlaybackManager.getInstance().OnPodcastStartedPlaying -= new EventHandler(PodcastEpisodes_OnPodcastStartedPlaying);
+            PodcastPlaybackManager.getInstance().OnPodcastStartedPlaying += new EventHandler(PodcastEpisodes_OnPodcastStartedPlaying);
         }
 
         void episodeDownloadManager_PodcastEpisodeDownloadStateChanged(object source, PodcastDownloadManagerArgs args)
@@ -322,6 +325,12 @@ namespace Podcatcher.Views
             }
 
             this.DataContext = m_subscription;
+            this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
+        }
+
+        private void PodcastEpisodes_OnPodcastStartedPlaying(object sender, EventArgs e)
+        {
+            m_subscription.EpisodesPublishedDescending = new ObservableCollection<PodcastEpisodeModel>();
             this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
         }
     }
