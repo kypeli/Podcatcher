@@ -27,12 +27,15 @@ using System.Windows.Media.Imaging;
 using Microsoft.Phone.BackgroundAudio;
 using System.Diagnostics;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Podcatcher
 {
     public partial class PodcastNowPlaying : UserControl
     {
-        private BitmapImage m_podcastLogo;
+        private Dictionary<int, WeakReference> m_logoCache = new Dictionary<int, WeakReference>();
+        private BitmapImage m_podcastLogo = null;
+        private PodcastEpisodeModel m_currentlyShowingEpisode = null;
 
         public PodcastNowPlaying()
         {
@@ -58,14 +61,47 @@ namespace Podcatcher
                 return;
             }
 
-            using (var db = new PodcastSqlModel())
+            if (m_currentlyShowingEpisode == null 
+                || pm.CurrentlyPlayingEpisode.EpisodeId != m_currentlyShowingEpisode.EpisodeId)
             {
-                PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == pm.CurrentlyPlayingEpisode.PodcastId);
-                m_podcastLogo = s.PodcastLogo;
+                m_currentlyShowingEpisode = pm.CurrentlyPlayingEpisode;
+                using (var db = new PodcastSqlModel())
+                {
+                    PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == pm.CurrentlyPlayingEpisode.PodcastId);
+                    m_podcastLogo = getLogoForSubscription(s);
+                }
             }
 
-            this.DataContext = pm.CurrentlyPlayingEpisode;
+            this.DataContext = m_currentlyShowingEpisode;
             this.PodcastLogo.Source = m_podcastLogo;
+        }
+
+        private BitmapImage getLogoForSubscription(PodcastSubscriptionModel subscription)
+        {
+            bool fillCache = false;
+            BitmapImage logo = null;
+
+            if (m_logoCache.ContainsKey(subscription.PodcastId) == false)
+            {
+                fillCache = true;
+            }
+            else
+            {
+                logo = m_logoCache[subscription.PodcastId].Target as BitmapImage;
+                if (logo == null)
+                {
+                    fillCache = true;
+                }
+            }
+
+            if (fillCache)
+            {
+                logo = subscription.PodcastLogo;
+                WeakReference cachedLogo = new WeakReference(logo);
+                m_logoCache[subscription.PodcastId] = cachedLogo;
+            }
+
+            return logo;
         }
 
         private void NowPlayingTapped(object sender, System.Windows.Input.GestureEventArgs e)
