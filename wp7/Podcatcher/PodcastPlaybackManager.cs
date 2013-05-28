@@ -555,7 +555,11 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
-            PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
+
+            if (CurrentlyPlayingEpisode != null)
+            {
+                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
+            }
         }
 
     }

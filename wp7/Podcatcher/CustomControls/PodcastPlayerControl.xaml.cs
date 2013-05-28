@@ -490,7 +490,7 @@ namespace Podcatcher
         {
             if (BackgroundAudioPlayer.Instance.Track == null)
             {
-                Debug.WriteLine("Error: Cannot setup player UI when BackgroundAudioPlayer.Instance.Track == null");
+                Debug.WriteLine("Error: Cannot setup UI when there's no track.");
                 showNoPlayerLayout();
                 return;
             }
@@ -518,10 +518,25 @@ namespace Podcatcher
                 BackgroundAudioPlayer.Instance.Pause();
                 setupUIForEpisodePaused();
             }
-            else
+            else if (BackgroundAudioPlayer.Instance.Track != null)
             {
                 BackgroundAudioPlayer.Instance.Play();
                 setupUIForEpisodePlaying();
+            }
+            else
+            {
+                Debug.WriteLine("No track currently set. Trying to setup currently playing episode as track...");
+                PodcastEpisodeModel ep = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
+                if (ep != null)
+                {
+                    PodcastPlaybackManager.getInstance().play(ep);
+                } 
+                else 
+                {
+                    Debug.WriteLine("Error: No currently playing track either! Giving up...");
+                    App.showErrorToast("Something went wrong. Cannot play the track.");
+                    showNoPlayerLayout();
+                }
             }
         }
 
