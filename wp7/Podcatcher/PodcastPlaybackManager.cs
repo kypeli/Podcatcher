@@ -133,7 +133,10 @@ namespace Podcatcher
             }
             else
             {
-                pm.CurrentlyPlayingEpisode = episode;
+                if (PodcastPlayerControl.isAudioPodcast(episode))
+                {
+                    pm.CurrentlyPlayingEpisode = episode;
+                }
             }
 
             // Play locally from a downloaded file.
@@ -175,7 +178,10 @@ namespace Podcatcher
             var handlerStartedPlaying = OnPodcastStartedPlaying;
             if (handlerStartedPlaying != null)
             {
-                OnPodcastStartedPlaying(this, new EventArgs());
+                if (PodcastPlayerControl.isAudioPodcast(episode))
+                {
+                    OnPodcastStartedPlaying(this, new EventArgs());
+                }
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>(); // Notify playlist changed.

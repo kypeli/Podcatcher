@@ -53,7 +53,15 @@ namespace Podcatcher.ViewModels
                     if (isoStore.FileExists(PodcastLogoLocation))
                     {
                         stream = isoStore.OpenFile(PodcastLogoLocation, System.IO.FileMode.Open, FileAccess.Read);
-                        logo.SetSource(stream);
+                        try
+                        {
+                            logo.SetSource(stream);
+                        }
+                        catch (Exception e)
+                        {
+                            // Logo could not be set, using default logo.
+                        }
+
                     }
                 }
 

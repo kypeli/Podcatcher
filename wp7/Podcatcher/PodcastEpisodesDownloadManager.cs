@@ -652,17 +652,7 @@ namespace Podcatcher
             string localPath = new Uri(podcastEpisode.EpisodeDownloadUri).LocalPath;
             string podcastEpisodeFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
 
-            // Remove all unnecessary cruft from the filename
-            string cleanFilename = "";
-            foreach (Char c in podcastEpisodeFilename.ToCharArray())
-            {
-                if (c == '.' || Char.IsLetterOrDigit(c))
-                {
-                    cleanFilename += c;
-                }
-            }
-            
-            podcastEpisodeFilename = cleanFilename;
+            podcastEpisodeFilename = PodcastSubscriptionsManager.sanitizeFilename(podcastEpisodeFilename);
             podcastEpisodeFilename = String.Format("{0}_{1}", DateTime.Now.Millisecond, podcastEpisodeFilename);
             
             string localPodcastEpisodeFilename = App.PODCAST_DL_DIR + "/" + podcastEpisodeFilename;

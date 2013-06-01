@@ -342,6 +342,21 @@ namespace Podcatcher
             }
         }
 
+        public static string sanitizeFilename(string podcastString)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in podcastString.ToArray())
+            {
+                if (Char.IsLetterOrDigit(c) || c == '.')
+                {
+                    sb.Append(c);
+                }
+            }
+
+            podcastString = null;
+            return sb.ToString();
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
@@ -607,6 +622,7 @@ namespace Podcatcher
                 // Parse the filename of the logo from the remote URL.
                 string localPath = podcastModel.PodcastLogoUrl.LocalPath;
                 podcastLogoFilename = localPath.Substring(localPath.LastIndexOf('/') + 1);
+                podcastLogoFilename = sanitizeFilename(podcastLogoFilename);
             }
 
             // Make podcast logo name random.
