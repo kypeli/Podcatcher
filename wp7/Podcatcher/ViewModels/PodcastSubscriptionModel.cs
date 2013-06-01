@@ -170,8 +170,16 @@ namespace Podcatcher.ViewModels
                         using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                         {
                             //logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
-                            logoImage.SetSource(stream);
-                            m_podcastLogoRef = new WeakReference(logoImage);
+                            try
+                            {
+                                logoImage.SetSource(stream);
+                                m_podcastLogoRef = new WeakReference(logoImage);
+                            }
+                            catch (Exception exception)
+                            {
+                                // File format is not supported.
+                                logoImage = null;
+                            }                            
                         }
                     }
                 }
