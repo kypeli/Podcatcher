@@ -291,11 +291,6 @@ namespace Podcatcher.Views
                     m_subscription = db.subscriptionModelForIndex(m_podcastId);
                 }
 
-/*                if (m_cleanListenedEpisodesAutomatically)
-                {
-                    PodcastSubscriptionsManager.getInstance().cleanListenedEpisodes(m_subscription);
-                }
-                */
                 this.DataContext = m_subscription;
                 this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
 
