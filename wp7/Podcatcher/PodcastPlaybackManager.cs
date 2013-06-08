@@ -341,6 +341,23 @@ namespace Podcatcher
             }
         }
 
+        public void removeFromPlayqueue(PodcastEpisodeModel episode)
+        {
+            using (var db = new PlaylistDBContext())
+            {
+                PlaylistItem plItem = db.Playlist.FirstOrDefault(item => item.EpisodeId == episode.EpisodeId);
+                if (plItem != null) 
+                {
+                    removeFromPlayqueue(plItem);
+                }
+            }
+        }
+
+        private void removeFromPlayqueue(PlaylistItem plItem)
+        {
+            removeFromPlayqueue(plItem.ItemId);
+        }
+
         public void clearPlayQueue()
         {
             List<int> itemsToRemove = new List<int>();
