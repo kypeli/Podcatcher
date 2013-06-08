@@ -155,7 +155,11 @@ namespace Podcatcher
                 List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
                 using (var db = new PodcastSqlModel())
                 {
-                    bool deleteListened = db.settings().IsAutoDelete;
+                    bool deleteListened = false;
+                    if (playlistItems.Count > 0)
+                    {
+                        deleteListened = db.settings().IsAutoDelete;                        
+                    }
 
                     foreach (PlaylistItem i in playlistItems)
                     {
