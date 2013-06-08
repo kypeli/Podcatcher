@@ -169,8 +169,7 @@ namespace Podcatcher
                         e.SavedPlayPos = i.SavedPlayPosTick;
 
                         // Update play state to listened as appropriate.
-                        if (((e.SavedPlayPos * 1.10) >= e.TotalLengthTicks)
-                            && e.TotalLengthTicks != 0)
+                        if (e.isListened())
                         {
                             e.markAsListened(deleteListened);
                         }

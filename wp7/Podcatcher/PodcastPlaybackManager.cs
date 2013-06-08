@@ -317,6 +317,23 @@ namespace Podcatcher
                 PlaylistItem itemToRemove = db.Playlist.FirstOrDefault(item => item.IsCurrent == false && item.ItemId == itemId);
                 if (itemToRemove != null) 
                 {
+                    PodcastEpisodeModel episode = null;
+                    using (var episodeDb = new PodcastSqlModel())
+                    {
+                        episode = episodeDb.episodeForPlaylistItem(itemToRemove);
+                        if (episode != null)
+                        {
+                            if (episode.isListened())
+                            {
+                                episode.markAsListened(episodeDb.settings().IsAutoDelete);
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Warning: Could not get episode for item id: " + itemToRemove.ItemId);
+                        }
+                    }
+
                     db.Playlist.DeleteOnSubmit(itemToRemove);
                     db.SubmitChanges();
                     App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
@@ -326,6 +343,7 @@ namespace Podcatcher
 
         public void clearPlayQueue()
         {
+            List<int> itemsToRemove = new List<int>();
             using (var db = new PlaylistDBContext())
             {
                 List<PlaylistItem> playlist = db.Playlist.ToList();
@@ -333,11 +351,14 @@ namespace Podcatcher
                 {
                     if (item.IsCurrent == false)
                     {
-                        db.Playlist.DeleteOnSubmit(item);
+                        itemsToRemove.Add(item.ItemId);
                     }
                 }
+            }
 
-                db.SubmitChanges();
+            foreach (int id in itemsToRemove)
+            {
+                removeFromPlayqueue(id);
             }
 
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();

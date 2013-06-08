@@ -704,6 +704,12 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        public bool isListened()
+        {
+            return (((SavedPlayPos * 1.10) >= TotalLengthTicks)
+                     && TotalLengthTicks != 0);
+        }
+
         /************************************* Private implementations *******************************/
         #region private
         private bool m_isPlaying = false;

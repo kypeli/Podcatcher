@@ -384,6 +384,11 @@ namespace Podcatcher
             SubmitChanges();
         }
 
+        public PodcastEpisodeModel episodeForPlaylistItem(PlaylistItem item)
+        {
+            return Episodes.FirstOrDefault(ep => ep.EpisodeId == item.ItemId);
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
