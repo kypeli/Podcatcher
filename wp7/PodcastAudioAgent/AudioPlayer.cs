@@ -343,7 +343,7 @@ namespace PodcastAudioAgent
                     return null;
                 }
 
-                int orderNumber = db.Playlist.Where(item => item.IsCurrent).Select(item => item.OrderNumber).First();
+                int orderNumber = db.Playlist.Where(item => item.IsCurrent).Select(item => item.OrderNumber).FirstOrDefault();
                 Podcatcher.ViewModels.PlaylistItem currentTrack = db.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
                 
                 if (currentTrack != null)

@@ -144,10 +144,10 @@ namespace Podcatcher
             m_licenseInfo = new LicenseInformation();
 
             detectCurrentTheme();
-            updateEpisodePositionsFromAudioAgent();
+            refreshEpisodesFromAudioAgent();
         }
 
-        public static void updateEpisodePositionsFromAudioAgent()
+        public static void refreshEpisodesFromAudioAgent()
         {
             IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
             using (var playlistdb = new PlaylistDBContext())
@@ -155,6 +155,8 @@ namespace Podcatcher
                 List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
                 using (var db = new PodcastSqlModel())
                 {
+                    bool deleteListened = db.settings().IsAutoDelete;
+
                     foreach (PlaylistItem i in playlistItems)
                     {
                         PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == i.EpisodeId);
@@ -165,11 +167,26 @@ namespace Podcatcher
                         }
 
                         e.SavedPlayPos = i.SavedPlayPosTick;
+
+                        // Update play state to listened as appropriate.
+                        if (((e.SavedPlayPos * 1.10) >= e.TotalLengthTicks)
+                            && e.TotalLengthTicks != 0)
+                        {
+                            e.markAsListened(deleteListened);
+                        }
+                        else
+                        {
+                            e.EpisodePlayState = String.IsNullOrEmpty(e.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
+                                                                                       PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                        }
                         db.SubmitChanges();
                     }
                 }
             }
         }
+
+
+
 
 
         // Code to execute when the application is launching (eg, from Start)

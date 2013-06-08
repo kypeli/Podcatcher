@@ -97,7 +97,6 @@ namespace Podcatcher
         public void play(PodcastEpisodeModel episode, bool openPlayerView = true)
         {
             bool startedFromEpisodeListing = openPlayerView;
-            PodcastPlaybackManager pm = PodcastPlaybackManager.getInstance();
             if (episode == null)
             {
                 Debug.WriteLine("Warning: Trying to play a NULL episode.");
@@ -109,32 +108,29 @@ namespace Podcatcher
             Debug.WriteLine(" File: " + episode.EpisodeFile);
             Debug.WriteLine(" Location: " + episode.EpisodeDownloadUri);
 
-            if (pm.CurrentlyPlayingEpisode != null
-                && (episode.EpisodeId != pm.CurrentlyPlayingEpisode.EpisodeId))
+            if (CurrentlyPlayingEpisode != null
+                && (episode.EpisodeId != CurrentlyPlayingEpisode.EpisodeId))
             {
-                addEpisodeToPlayHistory(pm.CurrentlyPlayingEpisode);
+                addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
 
                 // If next episode is different from currently playing, the track changed.
-                pm.CurrentlyPlayingEpisode.setNoPlaying();
+                CurrentlyPlayingEpisode.setNoPlaying();
             }
 
-            // We started to play a new podcast by tapping on the "Play" button in the subscription. 
-            // We would then assume that a new playlist is created where this episode is the first item.
             if (startedFromEpisodeListing)
             {
                 if (BackgroundAudioPlayer.Instance.PlayerState != PlayState.Paused
-                    || (pm.CurrentlyPlayingEpisode != null
-                        && pm.CurrentlyPlayingEpisode.EpisodeId != episode.EpisodeId))
+                    || (CurrentlyPlayingEpisode != null
+                        && CurrentlyPlayingEpisode.EpisodeId != episode.EpisodeId))
                 {
-                    pm.CurrentlyPlayingEpisode = episode;
-                    clearPlayQueue();
+                    CurrentlyPlayingEpisode = episode;
                 }
             }
             else
             {
                 if (PodcastPlayerControl.isAudioPodcast(episode))
                 {
-                    pm.CurrentlyPlayingEpisode = episode;
+                    CurrentlyPlayingEpisode = episode;
                 }
             }
 
@@ -208,13 +204,21 @@ namespace Podcatcher
                     return;
                 }
 
+                // Did we tap the item that is currently playing? 
                 PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
                 if (current != null
                     && current.ItemId == tappedPlaylistItemId)
                 {
                     Debug.WriteLine("Tapped on the currently playing episode. I am not changing the track...");
+
+                    // Always open the player UI when playlist item is tapped.
+                    var handler = OnOpenPodcastPlayer;
+                    if (handler != null)
+                    {
+                        OnOpenPodcastPlayer(this, new EventArgs());
+                    }
                     return;
-                }
+                } 
 
                 episodeId = (int)db.Playlist.Where(item => item.ItemId == tappedPlaylistItemId).Select(item => item.EpisodeId).First();
             }
@@ -227,6 +231,7 @@ namespace Podcatcher
 
             if (episode != null)
             {
+                CurrentlyPlayingEpisode = episode;
                 play(episode);
             }
             else
@@ -495,7 +500,6 @@ namespace Podcatcher
                 case PlayState.Stopped:
                 case PlayState.Shutdown:
                 case PlayState.TrackEnded:
-                case PlayState.Unknown:         // On WP 7.8 we are in Unknown state when we ended a track and play next track from the AudioAgent.
                     PodcastEpisodeModel endedEpisode = CurrentlyPlayingEpisode;
                     if (endedEpisode == null)
                     {
@@ -505,18 +509,6 @@ namespace Podcatcher
 
                     addEpisodeToPlayHistory(endedEpisode);
 
-                    // TODO: Move this to AudiPlayer.cs
-                    if (((endedEpisode.SavedPlayPos * 1.10) >= endedEpisode.TotalLengthTicks)
-                        && endedEpisode.TotalLengthTicks != 0)
-                    {
-                        endedEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
-                    }
-                    else
-                    {
-                        endedEpisode.EpisodePlayState = String.IsNullOrEmpty(endedEpisode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
-                                                                                                         PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                    }
-
                     // Cleanup
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
                     CurrentlyPlayingEpisode = null;
@@ -524,6 +516,10 @@ namespace Podcatcher
                     break;
 
                 case PlayState.TrackReady:
+                    break;
+
+                case PlayState.Unknown:
+                    // Unknown? WTF.
                     break;
 
             }

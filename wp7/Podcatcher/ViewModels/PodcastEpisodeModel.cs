@@ -365,11 +365,6 @@ namespace Podcatcher.ViewModels
 
                 m_episodePlayState = value;
 
-                if (m_episodePlayState == EpisodePlayStateEnum.Listened)
-                {
-                    SavedPlayPos = 0; // Let's start from the beginning if we are listened.
-                }
-                
                 NotifyPropertyChanged("EpisodePlayState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
                 NotifyPropertyChanged("EpisodeStatusText");
@@ -755,18 +750,6 @@ namespace Podcatcher.ViewModels
             {
                 deleteDownloadedEpisode();
             }
-/*            var queryDelEpisodes = db.Episodes.Where(episode => episode.PodcastId == podcastSubscriptionModel.PodcastId).AsEnumerable()
-                                              .Where(ep => (ep.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened
-                                                            || (ep.EpisodeFile != ""
-                                                                && ((ep.TotalLengthTicks > 0 && ep.SavedPlayPos > 0)
-                                                                && ((float)((float)ep.SavedPlayPos / (float)ep.TotalLengthTicks) > listenedEpisodeThreshold))))
-                                                            ).AsEnumerable();
-
-            foreach (var episode in queryDelEpisodes)
-            {
-                episode.deleteDownloadedEpisode();
-            }
-            */
         }
 
         void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)

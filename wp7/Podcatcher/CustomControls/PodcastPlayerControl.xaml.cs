@@ -488,13 +488,6 @@ namespace Podcatcher
 
         private void setupUIForEpisodePlaying()
         {
-            if (BackgroundAudioPlayer.Instance.Track == null)
-            {
-                Debug.WriteLine("Error: Cannot setup UI when there's no track.");
-                showNoPlayerLayout();
-                return;
-            }
-
             if (m_screenUpdateTimer != null && !m_screenUpdateTimer.IsEnabled)
             {
                 m_screenUpdateTimer.Start();
