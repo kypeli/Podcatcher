@@ -227,7 +227,7 @@ namespace Podcatcher
 
             if (episode != null)
             {
-                play(episode, false);
+                play(episode);
             }
             else
             {
