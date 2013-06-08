@@ -28,18 +28,12 @@ using System.Linq;
 using System.Data.Linq;
 using System.Linq.Expressions;
 using System.Threading;
+using Podcatcher.ViewModels;
 
 namespace PodcastAudioAgent
 {
     public class AudioPlayer : AudioPlayerAgent
     {
-        private const string LSKEY_AA_EPISODE_PLAY_TITLE = "aa_episode_title";
-        private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS = "aa_episode_play_lastknownpos";
-        private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
-        private const string LSKEY_AA_EPISODE_STOP_TIMESTAMP = "aa_episode_play_stoptime";
-        private IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-        private const string LSKEY_PODCATCHER_MUTEX = "PodcatcherGlobalMutex";
-
         private static volatile bool _classInitialized;
 
         /// <remarks>
@@ -91,7 +85,7 @@ namespace PodcastAudioAgent
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    saveEpisodeStoptime();
+                    updatePlayposForCurrentEpisode(player);
                     
                     // Start playing next track if we have one.
                     AudioTrack nextTrack = getNextPlaylistTrack();
@@ -106,28 +100,26 @@ namespace PodcastAudioAgent
                     }
                     break;
                 case PlayState.TrackReady:
-//                    player.Play();
                     break;
                 case PlayState.Shutdown:
-                    saveEpisodeStoptime();
+                    updatePlayposForCurrentEpisode(player);
                     break;
                 case PlayState.Unknown:
-                    saveEpisodeStoptime();
+                    updatePlayposForCurrentEpisode(player);
                     Debug.WriteLine("Play state: Unkown");
                     break;
                 case PlayState.Stopped:
-                    saveEpisodeStoptime();
+                    updatePlayposForCurrentEpisode(player);
                     clearPrimaryTile();
                     Debug.WriteLine("Play state: Stopped");
                     break;
                 case PlayState.Paused:
-                    saveEpisodeStoptime();
+                    updatePlayposForCurrentEpisode(player);
                     Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
+                    updatePlayposForCurrentEpisode(player);
                     setCurrentlyPlayingTrack(player.Track.Title);
-                    saveEpisodeStartinfo(player);
-                    updateLastKnownPos(player);
                     Debug.WriteLine("Play state: Playing");
                     break;
                 case PlayState.BufferingStarted:
@@ -156,85 +148,22 @@ namespace PodcastAudioAgent
             }
         }
 
-        private void updateLastKnownPos(BackgroundAudioPlayer player)
+        private void updatePlayposForCurrentEpisode(BackgroundAudioPlayer player)
         {
-            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
+            PlaylistItem currentPlaylistItem = getCurrentlyPlayingTrack();
+            if (currentPlaylistItem != null)
             {
-                mutex.WaitOne();
-                if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_POS))
-                {
-                    settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_POS);
-                }
-
-                if (settings.Contains(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP))
-                {
-                    settings.Remove(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
-                }
-
                 try
                 {
-                    settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP, DateTime.Now.ToString());
-                    settings.Add(LSKEY_AA_EPISODE_LAST_KNOWN_POS, player.Position.Ticks);
-                    settings.Save();
+                    currentPlaylistItem.SavedPlayPosTick = player.Position.Ticks;
+                    updateToDBPlaylistItem(currentPlaylistItem);
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException ex)
                 {
-                    Debug.WriteLine("AudioPlayer:updateLastKnownPos - Player no longer available. Error:  " + e.Message);
-                    return;
+                    Debug.WriteLine("Player not available anymore. Cannot update position.");
                 }
-                mutex.ReleaseMutex();
             }
         }
-
-        private void saveEpisodeStoptime()
-        {
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
-            {
-                mutex.WaitOne();
-                if (settings.Contains(LSKEY_AA_EPISODE_STOP_TIMESTAMP))
-                {
-                    settings.Remove(LSKEY_AA_EPISODE_STOP_TIMESTAMP);
-                }
-
-                settings.Add(LSKEY_AA_EPISODE_STOP_TIMESTAMP, DateTime.Now.ToString());
-                settings.Save();
-                mutex.ReleaseMutex();
-            }
-        }
-
-        private void saveEpisodeStartinfo(BackgroundAudioPlayer player)
-        {
-            if (player.Error != null)
-            {
-                Debug.WriteLine("AudioPlayer:saveEpisodeStartinfo - Player no longer available.");
-                return;
-            }
-
-            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
-            {
-                mutex.WaitOne();
-                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-
-                if (settings.Contains(LSKEY_AA_EPISODE_PLAY_TITLE))
-                {
-                    settings.Remove(LSKEY_AA_EPISODE_PLAY_TITLE);
-                }
-
-                try
-                {
-                    settings.Add(LSKEY_AA_EPISODE_PLAY_TITLE, player.Track.Title);
-                }
-                catch (InvalidOperationException e)
-                {
-                    Debug.WriteLine("AudioPlayer:saveEpisodeStartinfo - Player no longer available. Error:  " + e.Message);
-                }
-
-                settings.Save();
-                mutex.ReleaseMutex();
-            }
-        }
-
 
         /// <summary>
         /// Called when the user requests an action using application/system provided UI
@@ -308,17 +237,17 @@ namespace PodcastAudioAgent
                         if (player.PlayerState == PlayState.Playing)
                         {
                             player.Position = (TimeSpan)param;
-                            updateLastKnownPos(player);
                         }
                     }
                     catch (InvalidOperationException e)
                     {
                         Debug.WriteLine("Exception: " + e.Message);
-                    }
+                    }                    
                     break;
 
                 case UserAction.SkipNext:
                     Debug.WriteLine("Skip next.");
+                    updatePlayposForCurrentEpisode(player);
                     AudioTrack nextTrack = getNextPlaylistTrack();
                     
                     if (nextTrack == null)
@@ -336,19 +265,19 @@ namespace PodcastAudioAgent
                     try
                     {
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
-                        player.FastForward();
-                    } catch(Exception) {
+                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
+                    }
+                    catch (Exception)
+                    {
                         Debug.WriteLine("Error seeking. Probably seeked passed the end.");
                     }
                     break;
 
                 case UserAction.SkipPrevious:
-                    player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);
-                    break;
                 case UserAction.Rewind:
                     try
                     {
-                        player.Rewind();
+                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
                     } catch(Exception) {
                         Debug.WriteLine("Error seeking. Probably seeked passed the start.");
@@ -359,11 +288,41 @@ namespace PodcastAudioAgent
             NotifyComplete();
         }
 
+        private PlaylistItem getCurrentlyPlayingTrack()
+        {
+            using (var db = new Podcatcher.PlaylistDBContext())
+            {
+                return db.Playlist.FirstOrDefault(item => item.IsCurrent);
+            }
+        }
+
+        private void updateToDBPlaylistItem(PlaylistItem pl)
+        {
+            using (var db = new Podcatcher.PlaylistDBContext())
+            {
+                PlaylistItem p = db.Playlist.FirstOrDefault(item => item.ItemId == pl.ItemId);
+                if (p == null) {
+                    Debug.WriteLine("Something went horribly wrong. Cannot update playlist item to DB.");
+                    return;
+                }
+
+                p.IsCurrent = pl.IsCurrent;
+                p.EpisodeName = pl.EpisodeName;
+                p.EpisodeLocation = pl.EpisodeLocation;
+                p.OrderNumber = pl.OrderNumber;
+                p.SavedPlayPosTick = pl.SavedPlayPosTick;
+                p.TotalPlayTicks = pl.TotalPlayTicks;
+
+                db.SubmitChanges();
+            }
+
+        }
+
         private void setCurrentlyPlayingTrack(string episodeName) 
         {
             using (var db = new Podcatcher.PlaylistDBContext())
             {
-                Podcatcher.ViewModels.PlaylistItem current = db.Playlist.FirstOrDefault(item => item.EpisodeName == episodeName);
+                PlaylistItem current = db.Playlist.FirstOrDefault(item => item.EpisodeName == episodeName);
                 if (current != null)
                 {
                     current.IsCurrent = true;

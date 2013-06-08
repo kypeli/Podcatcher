@@ -96,6 +96,20 @@ namespace Podcatcher.ViewModels
             get;
             set;
         }
+
+        [Column(DbType = "BIGINT DEFAULT 0 NOT NULL")]
+        public long SavedPlayPosTick
+        {
+            get;
+            set;
+        }
+
+        [Column(DbType = "BIGINT DEFAULT 0 NOT NULL")]
+        public long TotalPlayTicks
+        {
+            get;
+            set;
+        }
 #endregion
 
     }

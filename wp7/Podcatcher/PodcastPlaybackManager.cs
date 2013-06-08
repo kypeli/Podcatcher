@@ -113,7 +113,6 @@ namespace Podcatcher
                 && (episode.EpisodeId != pm.CurrentlyPlayingEpisode.EpisodeId))
             {
                 addEpisodeToPlayHistory(pm.CurrentlyPlayingEpisode);
-                saveEpisodePlayPosition(pm.CurrentlyPlayingEpisode);
 
                 // If next episode is different from currently playing, the track changed.
                 pm.CurrentlyPlayingEpisode.setNoPlaying();
@@ -440,31 +439,6 @@ namespace Podcatcher
             }
         }
 
-        private void saveEpisodePlayPosition(PodcastEpisodeModel episode)
-        {
-            try
-            {
-                episode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-            }
-            catch (NullReferenceException)
-            {
-                Debug.WriteLine("BackgroundAudioPlayer returned NULL. Player didn't probably have a track that it was playing.");
-                return;
-            }
-            catch (SystemException)
-            {
-                Debug.WriteLine("Got system exception when trying to save position.");
-                return;
-            }
-
-            using (var db = new PodcastSqlModel())
-            {
-                PodcastEpisodeModel e = db.Episodes.Where(ep => ep.EpisodeId == episode.EpisodeId).First();
-                e.SavedPlayPos = episode.SavedPlayPos;
-                db.SubmitChanges();
-            }
-        }
-
         private void addToPlayqueue(PodcastEpisodeModel e, PlaylistDBContext dbContext)
         {
             PlaylistItem existingItem = dbContext.Playlist.FirstOrDefault(item => item.EpisodeId == e.EpisodeId);
@@ -507,7 +481,7 @@ namespace Podcatcher
                     break;
 
                 case PlayState.Paused:
-                    saveEpisodePlayPosition(CurrentlyPlayingEpisode);
+                    BackgroundAudioPlayer playerPaused = BackgroundAudioPlayer.Instance;
                     if (CurrentlyPlayingEpisode != null)
                     {
                         CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
@@ -521,34 +495,38 @@ namespace Podcatcher
                 case PlayState.Stopped:
                 case PlayState.Shutdown:
                 case PlayState.TrackEnded:
-                    if (CurrentlyPlayingEpisode == null)
+                case PlayState.Unknown:         // On WP 7.8 we are in Unknown state when we ended a track and play next track from the AudioAgent.
+                    BackgroundAudioPlayer playerEnded = BackgroundAudioPlayer.Instance;
+                    PodcastEpisodeModel endedEpisode = CurrentlyPlayingEpisode;
+                    if (endedEpisode == null)
                     {
                         // We didn't have a track playing.
                         return;
                     }
 
-                    saveEpisodePlayPosition(CurrentlyPlayingEpisode);
-                    addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
+                    addEpisodeToPlayHistory(endedEpisode);
 
-                    if ((CurrentlyPlayingEpisode.SavedPlayPos * 1.05) >= CurrentlyPlayingEpisode.TotalLengthTicks)
+                    if (((endedEpisode.SavedPlayPos * 1.10) >= endedEpisode.TotalLengthTicks)
+                        && endedEpisode.TotalLengthTicks != 0)
                     {
-                        CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
+                        endedEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
                     }
                     else
                     {
-                        CurrentlyPlayingEpisode.EpisodePlayState = String.IsNullOrEmpty(CurrentlyPlayingEpisode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
-                                                                                                                               PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                        endedEpisode.EpisodePlayState = String.IsNullOrEmpty(endedEpisode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
+                                                                                                         PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
                     }   
 
                     using (var db = new PodcastSqlModel())
                     {
                         PodcastEpisodeModel episode = db.Episodes.Where(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId).First();
-                        episode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
-                        episode.SavedPlayPos = CurrentlyPlayingEpisode.SavedPlayPos;
+                        episode.EpisodePlayState = endedEpisode.EpisodePlayState;
+                        episode.SavedPlayPos = endedEpisode.SavedPlayPos;
                         db.SubmitChanges();
                     }
 
                     // Cleanup
+                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
                     CurrentlyPlayingEpisode = null;
                     BackgroundAudioPlayer.Instance.Close();
                     break;
@@ -556,8 +534,6 @@ namespace Podcatcher
                 case PlayState.TrackReady:
                     break;
 
-                case PlayState.Unknown:
-                    break;
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();

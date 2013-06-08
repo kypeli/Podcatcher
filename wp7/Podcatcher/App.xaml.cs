@@ -33,6 +33,8 @@ using Podcatcher.ViewModels;
 using Microsoft.Phone.BackgroundAudio;
 using System.Threading;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Podcatcher
 {
@@ -65,14 +67,6 @@ namespace Podcatcher
         // Name of our background task that checks for new episodes for pinned subscriptions
         public const string BGTASK_NEW_EPISODES                     = "SubscriptionsChecker";
 
-        public const string LSKEY_PODCATCHER_MUTEX = "PodcatcherGlobalMutex";
-
-        // Keys for storing episode location from AudioAgent.
-        public const string LSKEY_AA_EPISODE_PLAY_TITLE            = "aa_episode_title";
-        private const string LSKEY_AA_EPISODE_LAST_KNOWN_POS       = "aa_episode_play_lastknownpos";
-        private const string LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP = "aa_episode_play_starttime";
-        private const string LSKEY_AA_EPISODE_STOP_TIMESTAMP       = "aa_episode_play_stoptime";
-        
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
 
@@ -156,71 +150,23 @@ namespace Podcatcher
         private void updateEpisodePositionsFromAudioAgent()
         {
             IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
-            using (var mutex = new Mutex(false, LSKEY_PODCATCHER_MUTEX))
+            using (var playlistdb = new PlaylistDBContext())
             {
-                try
+                List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
+                using (var db = new PodcastSqlModel())
                 {
-                    mutex.WaitOne();
-                    if (appSettings.Contains(App.LSKEY_AA_EPISODE_PLAY_TITLE)
-                        && appSettings.Contains(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP)
-                        && appSettings.Contains(App.LSKEY_AA_EPISODE_LAST_KNOWN_POS)
-                        && appSettings.Contains(App.LSKEY_AA_EPISODE_STOP_TIMESTAMP))
+                    foreach (PlaylistItem i in playlistItems)
                     {
-                        Debug.WriteLine("Updating episode position from background agent.");
-
-                        using (var db = new PodcastSqlModel())
+                        PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == i.EpisodeId);
+                        if (e == null)
                         {
-                            PodcastEpisodeModel episodeToUpdate = db.episodesForTitle(appSettings[App.LSKEY_AA_EPISODE_PLAY_TITLE] as String);
-
-                            if (episodeToUpdate == null)
-                            {
-                                Debug.WriteLine("Warning: Episode to update is null!");
-                                return;
-                            }
-
-                            String stop = appSettings[App.LSKEY_AA_EPISODE_STOP_TIMESTAMP] as String;
-                            String lastTimestamp = appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP] as String;
-                            if (String.IsNullOrEmpty(lastTimestamp) || String.IsNullOrEmpty(stop))
-                            {
-                                Debug.WriteLine("Warning: Start or stop timestamp is null.");
-                                return;
-                            }
-
-                            long lastPosTick = (long)appSettings[App.LSKEY_AA_EPISODE_LAST_KNOWN_POS];
-                            DateTime startTime = DateTime.Parse(lastTimestamp);
-                            DateTime stopTime = DateTime.Parse(stop);
-                            long deltaTicks = stopTime.Ticks - startTime.Ticks;
-
-                            if (lastPosTick + deltaTicks >= episodeToUpdate.TotalLengthTicks)
-                            {
-                                deltaTicks = episodeToUpdate.TotalLengthTicks - lastPosTick;
-                            }
-
-                            episodeToUpdate.SavedPlayPos = lastPosTick + deltaTicks;
-
-                            Debug.WriteLine("Found an episode that the audio player agent has left for us to save its position. Episode: " + episodeToUpdate.EpisodeName + ", position: " + episodeToUpdate.SavedPlayPos);
-
-                            if (PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode == null)
-                            {
-                                // We have a stopped playback (as we are in this branch), but the Audio Agent has removed the currently 
-                                // playing ID. This means the track in question isn't playing anymore, so let's update the state.
-                                episodeToUpdate.EpisodePlayState = String.IsNullOrEmpty(episodeToUpdate.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
-                                                                                                                       PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                            }
-
-                            db.SubmitChanges();
+                            Debug.WriteLine("Warning: Could not fetch episode with ID: " + i.EpisodeId);
+                            continue;
                         }
 
-                        appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_TIMESTAMP);
-                        appSettings.Remove(App.LSKEY_AA_EPISODE_LAST_KNOWN_POS);
-                        appSettings.Remove(App.LSKEY_AA_EPISODE_STOP_TIMESTAMP);
-                        appSettings.Remove(App.LSKEY_AA_EPISODE_PLAY_TITLE);
-                        appSettings.Save();
+                        e.SavedPlayPos = i.SavedPlayPosTick;
+                        db.SubmitChanges();
                     }
-                }
-                finally 
-                {
-                    mutex.ReleaseMutex();
                 }
             }
         }
