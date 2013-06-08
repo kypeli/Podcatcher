@@ -496,7 +496,6 @@ namespace Podcatcher
                 case PlayState.Shutdown:
                 case PlayState.TrackEnded:
                 case PlayState.Unknown:         // On WP 7.8 we are in Unknown state when we ended a track and play next track from the AudioAgent.
-                    BackgroundAudioPlayer playerEnded = BackgroundAudioPlayer.Instance;
                     PodcastEpisodeModel endedEpisode = CurrentlyPlayingEpisode;
                     if (endedEpisode == null)
                     {
@@ -506,6 +505,7 @@ namespace Podcatcher
 
                     addEpisodeToPlayHistory(endedEpisode);
 
+                    // TODO: Move this to AudiPlayer.cs
                     if (((endedEpisode.SavedPlayPos * 1.10) >= endedEpisode.TotalLengthTicks)
                         && endedEpisode.TotalLengthTicks != 0)
                     {
@@ -515,14 +515,6 @@ namespace Podcatcher
                     {
                         endedEpisode.EpisodePlayState = String.IsNullOrEmpty(endedEpisode.EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle :
                                                                                                          PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-                    }   
-
-                    using (var db = new PodcastSqlModel())
-                    {
-                        PodcastEpisodeModel episode = db.Episodes.Where(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId).First();
-                        episode.EpisodePlayState = endedEpisode.EpisodePlayState;
-                        episode.SavedPlayPos = endedEpisode.SavedPlayPos;
-                        db.SubmitChanges();
                     }
 
                     // Cleanup

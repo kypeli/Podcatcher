@@ -147,7 +147,7 @@ namespace Podcatcher
             updateEpisodePositionsFromAudioAgent();
         }
 
-        private void updateEpisodePositionsFromAudioAgent()
+        public static void updateEpisodePositionsFromAudioAgent()
         {
             IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
             using (var playlistdb = new PlaylistDBContext())

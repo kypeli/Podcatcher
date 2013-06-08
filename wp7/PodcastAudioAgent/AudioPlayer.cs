@@ -205,7 +205,8 @@ namespace PodcastAudioAgent
                 case UserAction.Stop:
                     try
                     {
-                        if (player.PlayerState != PlayState.Stopped) {    
+                        if (player.PlayerState != PlayState.Stopped) {
+                            updatePlayposForCurrentEpisode(player);
                             player.Stop();
                             Debug.WriteLine("User.Action: Stop");
                         }
