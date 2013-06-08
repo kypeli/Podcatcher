@@ -413,28 +413,6 @@ namespace Podcatcher
             SubmitChanges();
         }
 
-        internal void cleanListenedEpisodes(PodcastSubscriptionModel podcastSubscriptionModel)
-        {
-            float listenedEpisodeThreshold = 0.0F;
-            using (var db = new PodcastSqlModel())
-            {
-                listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
-            }
-
-            var queryDelEpisodes = from episode in podcastSubscriptionModel.Episodes
-                                   where (episode.EpisodeFile != ""
-                                          && ((episode.TotalLengthTicks > 0 && episode.SavedPlayPos > 0)
-                                               && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) > listenedEpisodeThreshold))
-                                          || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened)
-                                   select episode;
-
-            foreach (var episode in queryDelEpisodes)
-            {
-                episode.deleteDownloadedEpisode();
-                SubmitChanges();
-            }
-        }
-
         internal PodcastEpisodeModel episodesForTitle(String episodeTitle)
         {
             PodcastEpisodeModel episode = (from   e in Episodes

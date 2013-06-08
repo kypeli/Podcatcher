@@ -684,6 +684,7 @@ namespace Podcatcher.ViewModels
                 EpisodeFile = "";
                 EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                 EpisodePlayState = EpisodePlayStateEnum.Idle;
+                SavedPlayPos = 0;
 
                 using (var db = new PodcastSqlModel())
                 {
@@ -699,6 +700,7 @@ namespace Podcatcher.ViewModels
                     e.EpisodeFile = EpisodeFile;
                     e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                     e.EpisodePlayState = EpisodePlayStateEnum.Idle;
+                    e.SavedPlayPos = 0;
 
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
 
@@ -744,10 +746,27 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        internal void markAsListened()
+        internal void markAsListened(bool deleteListened)
         {
             SavedPlayPos = 0;
             EpisodePlayState = EpisodePlayStateEnum.Listened;
+
+            if (deleteListened && String.IsNullOrEmpty(EpisodeFile) == false)
+            {
+                deleteDownloadedEpisode();
+            }
+/*            var queryDelEpisodes = db.Episodes.Where(episode => episode.PodcastId == podcastSubscriptionModel.PodcastId).AsEnumerable()
+                                              .Where(ep => (ep.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened
+                                                            || (ep.EpisodeFile != ""
+                                                                && ((ep.TotalLengthTicks > 0 && ep.SavedPlayPos > 0)
+                                                                && ((float)((float)ep.SavedPlayPos / (float)ep.TotalLengthTicks) > listenedEpisodeThreshold))))
+                                                            ).AsEnumerable();
+
+            foreach (var episode in queryDelEpisodes)
+            {
+                episode.deleteDownloadedEpisode();
+            }
+            */
         }
 
         void SavePodcastEpisodeCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -69,14 +69,16 @@ namespace Podcatcher.Views
       
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
+            App.updateEpisodePositionsFromAudioAgent();
+
             m_podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             using (var db = new PodcastSqlModel())
             {
                 m_subscription = db.subscriptionModelForIndex(m_podcastId);
-
-                if (db.settings().IsAutoDelete)
+                m_cleanListenedEpisodesAutomatically = db.settings().IsAutoDelete;
+                if (m_cleanListenedEpisodesAutomatically)
                 {
-                    db.cleanListenedEpisodes(m_subscription);
+                    PodcastSubscriptionsManager.getInstance().cleanListenedEpisodes(m_subscription);
                 }
             }
 
@@ -162,6 +164,7 @@ namespace Podcatcher.Views
 
         /************************************* Priovate implementations *******************************/
         private PodcastSubscriptionModel m_subscription;
+        private bool m_cleanListenedEpisodesAutomatically = false;
         
         private void m_subscription_NewPlayableEpisode(PodcastEpisodeModel e)
         {
@@ -280,17 +283,19 @@ namespace Podcatcher.Views
                     episodes = db.episodesForSubscription(m_subscription);
                     foreach (PodcastEpisodeModel episode in episodes)
                     {
-                        episode.markAsListened();
+                        episode.markAsListened(m_cleanListenedEpisodesAutomatically);
                     }
                     db.SubmitChanges();
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(m_subscription);
-                }
 
-                using (var db = new PodcastSqlModel())
-                {
                     m_subscription = db.subscriptionModelForIndex(m_podcastId);
                 }
 
+/*                if (m_cleanListenedEpisodesAutomatically)
+                {
+                    PodcastSubscriptionsManager.getInstance().cleanListenedEpisodes(m_subscription);
+                }
+                */
                 this.DataContext = m_subscription;
                 this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
 

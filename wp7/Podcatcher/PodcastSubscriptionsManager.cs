@@ -357,6 +357,27 @@ namespace Podcatcher
             return sb.ToString();
         }
 
+        public void cleanListenedEpisodes(PodcastSubscriptionModel podcastSubscriptionModel)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                float listenedEpisodeThreshold = 0.0F;
+                listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
+
+                var queryDelEpisodes = db.Episodes.Where(episode => episode.PodcastId == podcastSubscriptionModel.PodcastId).AsEnumerable()
+                                                  .Where(ep => (ep.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened
+                                                                || (ep.EpisodeFile != ""
+                                                                    && ((ep.TotalLengthTicks > 0 && ep.SavedPlayPos > 0)
+                                                                    && ((float)((float)ep.SavedPlayPos / (float)ep.TotalLengthTicks) > listenedEpisodeThreshold))))
+                                                                ).AsEnumerable();
+
+                foreach (var episode in queryDelEpisodes)
+                {
+                    episode.deleteDownloadedEpisode();
+                }
+            }
+        }
+
         /************************************* Private implementation *******************************/
         #region privateImplementations
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
