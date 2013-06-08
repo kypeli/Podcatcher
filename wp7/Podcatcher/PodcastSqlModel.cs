@@ -423,17 +423,15 @@ namespace Podcatcher
 
             var queryDelEpisodes = from episode in podcastSubscriptionModel.Episodes
                                    where (episode.EpisodeFile != ""
-                                          && (episode.TotalLengthTicks > 0 && episode.SavedPlayPos > 0)
-                                          && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) > listenedEpisodeThreshold))
+                                          && ((episode.TotalLengthTicks > 0 && episode.SavedPlayPos > 0)
+                                               && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) > listenedEpisodeThreshold))
+                                          || episode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Listened)
                                    select episode;
 
             foreach (var episode in queryDelEpisodes)
             {
-                if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
-                {
-                    episode.deleteDownloadedEpisode();
-                    SubmitChanges();
-                }
+                episode.deleteDownloadedEpisode();
+                SubmitChanges();
             }
         }
 
