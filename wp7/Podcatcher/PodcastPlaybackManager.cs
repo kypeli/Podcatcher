@@ -135,28 +135,28 @@ namespace Podcatcher
             }
 
             // Play locally from a downloaded file.
-            if (episode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
+            if (CurrentlyPlayingEpisode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
             {
                 PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                episode.setPlaying();
-                episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
-                player.playEpisode(episode);
+                CurrentlyPlayingEpisode.setPlaying();
+                CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+                player.playEpisode(CurrentlyPlayingEpisode);
             }
             else
             {
                 // Stream it if not downloaded. 
-                if (PodcastPlayerControl.isAudioPodcast(episode))
+                if (PodcastPlayerControl.isAudioPodcast(CurrentlyPlayingEpisode))
                 {
-                    episode.setPlaying();
-                    audioStreaming(episode);
-                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
+                    CurrentlyPlayingEpisode.setPlaying();
+                    audioStreaming(CurrentlyPlayingEpisode);
+                    CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }
                 else
                 {
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                     player.StopPlayback();
                     videoStreaming(episode);
-                    episode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
+                    CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                     openPlayerView = false;
                 }
             }
@@ -528,6 +528,8 @@ namespace Podcatcher
                     if (CurrentlyPlayingEpisode != null)
                     {
                         CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
+                        App.refreshEpisodesFromAudioAgent();
+                        App.mainViewModels.PlayHistoryListProperty = new ObservableCollection<PodcastEpisodeModel>();
                     }
                     else
                     {
@@ -538,14 +540,14 @@ namespace Podcatcher
                 case PlayState.Stopped:
                 case PlayState.Shutdown:
                 case PlayState.TrackEnded:
-                    PodcastEpisodeModel endedEpisode = CurrentlyPlayingEpisode;
-                    if (endedEpisode == null)
+                    if (CurrentlyPlayingEpisode == null)
                     {
                         // We didn't have a track playing.
                         return;
                     }
 
-                    addEpisodeToPlayHistory(endedEpisode);
+                    addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
+                    App.refreshEpisodesFromAudioAgent();
 
                     // Cleanup
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);

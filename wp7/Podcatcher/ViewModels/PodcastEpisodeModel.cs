@@ -749,6 +749,8 @@ namespace Podcatcher.ViewModels
 
         internal void markAsListened(bool deleteListened)
         {
+            Debug.WriteLine("Episode '" + EpisodeName + "' marked as listened.");
+
             SavedPlayPos = 0;
             EpisodePlayState = EpisodePlayStateEnum.Listened;
 
@@ -829,6 +831,7 @@ namespace Podcatcher.ViewModels
                     break;
 
                 case PlayState.Stopped:
+                case PlayState.Unknown:
                     Debug.WriteLine("Episode: Stopped.");
                     SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
                     episodeStoppedPlaying();

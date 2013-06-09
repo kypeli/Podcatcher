@@ -69,8 +69,6 @@ namespace Podcatcher.Views
       
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            App.refreshEpisodesFromAudioAgent();
-
             m_podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
             using (var db = new PodcastSqlModel())
             {

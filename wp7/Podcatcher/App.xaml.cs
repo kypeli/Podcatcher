@@ -149,7 +149,9 @@ namespace Podcatcher
 
         public static void refreshEpisodesFromAudioAgent()
         {
+            Debug.WriteLine("Refreshing episode information that has been updated from AudioPlayer.");
             IsolatedStorageSettings appSettings = IsolatedStorageSettings.ApplicationSettings;
+
             using (var playlistdb = new PlaylistDBContext())
             {
                 List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
@@ -170,6 +172,7 @@ namespace Podcatcher
                             continue;
                         }
 
+                        Debug.WriteLine("Updating episode '" + e.EpisodeName + "' playpos to: " + i.SavedPlayPosTick);
                         e.SavedPlayPos = i.SavedPlayPosTick;
 
                         // Update play state to listened as appropriate.
