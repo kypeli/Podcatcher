@@ -223,6 +223,7 @@ namespace PodcastAudioAgent
                     {
                         if (player.PlayerState == PlayState.Playing)
                         {
+                            updatePlayposForCurrentEpisode(player);
                             player.Pause();
                         }
                     }

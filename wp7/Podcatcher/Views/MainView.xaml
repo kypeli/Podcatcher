@@ -93,7 +93,7 @@
 
                     <StackPanel Grid.Row="1" x:Name="PlayHistory" Height="Auto">
                         <TextBlock TextWrapping="Wrap" Text="RECENT" Style="{StaticResource PhoneTextTitle2Style}" Margin="12,0,12,20"/>
-                        <ItemsControl x:Name="PlayHistoryList" ItemsSource="{Binding PlayHistoryListProperty}">
+                        <ItemsControl ItemsSource="{Binding PlayHistoryListProperty}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <toolkit:WrapPanel Orientation="Vertical"/>

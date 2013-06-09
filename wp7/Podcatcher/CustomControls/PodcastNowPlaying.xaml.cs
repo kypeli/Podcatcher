@@ -35,7 +35,7 @@ namespace Podcatcher
     {
         private Dictionary<int, WeakReference> m_logoCache = new Dictionary<int, WeakReference>();
         private BitmapImage m_podcastLogo = null;
-        private PodcastEpisodeModel m_currentlyShowingEpisode = null;
+        private int m_currentlyPlayingEpisodeId = -1;
 
         public PodcastNowPlaying()
         {
@@ -61,10 +61,10 @@ namespace Podcatcher
                 return;
             }
 
-            if (m_currentlyShowingEpisode == null 
-                || pm.CurrentlyPlayingEpisode.EpisodeId != m_currentlyShowingEpisode.EpisodeId)
+            if (m_currentlyPlayingEpisodeId < 0
+                || pm.CurrentlyPlayingEpisode.EpisodeId != m_currentlyPlayingEpisodeId)
             {
-                m_currentlyShowingEpisode = pm.CurrentlyPlayingEpisode;
+                m_currentlyPlayingEpisodeId = pm.CurrentlyPlayingEpisode.EpisodeId;
                 using (var db = new PodcastSqlModel())
                 {
                     PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == pm.CurrentlyPlayingEpisode.PodcastId);
@@ -72,7 +72,7 @@ namespace Podcatcher
                 }
             }
 
-            this.DataContext = m_currentlyShowingEpisode;
+            this.DataContext = pm.CurrentlyPlayingEpisode;
             this.PodcastLogo.Source = m_podcastLogo;
         }
 

@@ -806,22 +806,6 @@ namespace Podcatcher.ViewModels
             {
                 case PlayState.Playing:
                     Debug.WriteLine("Episode: Playing.");
-                    if (TotalLengthTicks == 0)
-                    {
-                        TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
-                        using (var db = new PodcastSqlModel())
-                        {
-                            PodcastEpisodeModel episode = db.episodeForEpisodeId(EpisodeId);
-                            if (episode == null)
-                            {
-                                Debug.WriteLine("Warning: Got NULL episode from DB when trying to update this episode.");
-                                return;
-                            }
-
-                            episode.TotalLengthTicks = TotalLengthTicks;
-                            db.SubmitChanges();
-                        }
-                    }
                     break;
 
                 case PlayState.Paused:
@@ -886,7 +870,6 @@ namespace Podcatcher.ViewModels
             EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
                                                                  : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             episodeStartedPlaying();
-            ProgressBarIsVisible = Visibility.Visible;
             m_isPlaying = true;
             BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
         }
@@ -895,7 +878,6 @@ namespace Podcatcher.ViewModels
         {
             EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
-            ProgressBarIsVisible = Visibility.Collapsed;
             m_isPlaying = false;
             BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
         }

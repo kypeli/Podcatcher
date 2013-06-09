@@ -521,6 +521,24 @@ namespace Podcatcher
                         CurrentlyPlayingEpisode = currentEpisode;
                         CurrentlyPlayingEpisode.setPlaying();
                     }
+
+                    if (CurrentlyPlayingEpisode.TotalLengthTicks == 0)
+                    {
+                        CurrentlyPlayingEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
+                        using (var db = new PodcastSqlModel())
+                        {
+                            PodcastEpisodeModel episode = db.episodeForEpisodeId(CurrentlyPlayingEpisode.EpisodeId);
+                            if (episode == null)
+                            {
+                                Debug.WriteLine("Warning: Got NULL episode from DB when trying to update this episode.");
+                                return;
+                            }
+
+                            episode.TotalLengthTicks = CurrentlyPlayingEpisode.TotalLengthTicks;
+                            db.SubmitChanges();
+                        }
+                    }
+
                     break;
 
                 case PlayState.Paused:
