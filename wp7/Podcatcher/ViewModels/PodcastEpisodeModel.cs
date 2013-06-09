@@ -769,7 +769,7 @@ namespace Podcatcher.ViewModels
         private void episodeStartedPlaying()
         {
             m_screenUpdateTimer = new DispatcherTimer();
-            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); // Fire the timer every half a second.
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
             m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
             m_screenUpdateTimer.Start();
         }
@@ -788,6 +788,7 @@ namespace Podcatcher.ViewModels
 
         private void episodePlayback_Tick(object sender, EventArgs e)
         {
+            Debug.WriteLine("Episode - tick.");
             ProgressBarValue = PodcastPlayerControl.getEpisodePlayPosition();
         }
 
