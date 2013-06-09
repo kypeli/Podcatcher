@@ -673,6 +673,11 @@ namespace Podcatcher
                 Debug.WriteLine("Error when updating player: " + ioe.Message);
                 return 0.0;
             }
+            catch (ArgumentException arge)
+            {
+                Debug.WriteLine("Catched argument error when trying to access BackgroundAudioPlayer.");
+                return 0.0;
+            }
 
             if (duration.Ticks > 0)
             {

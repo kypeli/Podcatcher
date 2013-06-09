@@ -872,7 +872,9 @@ namespace Podcatcher.ViewModels
 
         internal void setPlaying()
         {
-            if (m_isPlaying)
+            if (BackgroundAudioPlayer.Instance == null 
+                || BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing 
+                || m_isPlaying)
             {
                 return;
             }
