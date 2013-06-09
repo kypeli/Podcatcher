@@ -526,8 +526,10 @@ namespace Podcatcher.ViewModels
                     return DownloadPercentage;
                 }
                 else if (m_episodePlayState == EpisodePlayStateEnum.Playing
-                         || m_episodePlayState == EpisodePlayStateEnum.Streaming)
+                         || m_episodePlayState == EpisodePlayStateEnum.Streaming
+                         || m_episodePlayState == EpisodePlayStateEnum.Paused)
                 {
+                    m_progressBarValue = PodcastPlayerControl.getEpisodePlayPosition();
                     return m_progressBarValue * 100;
                 }
                 else if (SavedPlayPos > 0 && TotalLengthTicks > 0)
@@ -876,8 +878,16 @@ namespace Podcatcher.ViewModels
 
         internal void setNoPlaying()
         {
-            EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded
-                                                                   : PodcastEpisodeModel.EpisodePlayStateEnum.Idle;
+            if (BackgroundAudioPlayer.Instance != null && BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
+            {
+                EpisodePlayState = EpisodePlayStateEnum.Paused;
+            }
+            else
+            {
+                EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle
+                                                                     : PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+            }
+
             m_isPlaying = false;
             BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
         }

@@ -83,6 +83,7 @@ namespace Podcatcher
             PhoneApplicationFrame applicationFrame = Application.Current.RootVisual as PhoneApplicationFrame;
 
             if (podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing
+                || podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused
                 || podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Streaming)
             {
                 applicationFrame.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));

@@ -397,6 +397,11 @@ namespace Podcatcher
             }
         }
 
+        public bool isCurrentlyPlaying()
+        {
+            return CurrentlyPlayingEpisode != null;
+        }
+
         /****************************** Private implementations *******************************/
 
         private void showAddedNotification(int count)
@@ -545,8 +550,15 @@ namespace Podcatcher
                     BackgroundAudioPlayer playerPaused = BackgroundAudioPlayer.Instance;
                     if (CurrentlyPlayingEpisode != null)
                     {
+                        CurrentlyPlayingEpisode = App.refreshEpisodeFromAudioAgent(CurrentlyPlayingEpisode);
                         CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
-                        App.refreshEpisodesFromAudioAgent();
+                        using (var db = new PodcastSqlModel())
+                        {
+                            PodcastEpisodeModel updatedEpisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId);
+                            updatedEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
+                            db.SubmitChanges();
+                        }
+
                         App.mainViewModels.PlayHistoryListProperty = new ObservableCollection<PodcastEpisodeModel>();
                     }
                     else
@@ -568,7 +580,6 @@ namespace Podcatcher
                     App.refreshEpisodesFromAudioAgent();
 
                     // Cleanup
-                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
                     CurrentlyPlayingEpisode = null;
                     BackgroundAudioPlayer.Instance.Close();
                     break;
