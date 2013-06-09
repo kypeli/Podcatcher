@@ -3,7 +3,9 @@
 * Bug fixes:
  - Save podcast play position more reliably. This still won't work if we start playing audio from some other app while podcast is playing. This is because BackgroundAudioPlayer is not anymore available in the event handler that handles the stop event - even though BackgroundAudioPlayer is sent as a parameter to the event handler [sic]. On WP7.8 at least.
  - Reliably mark episodes as listened.
- - Delete episodes when they are marked as listened if the setting is enabled.
+ - Delete episodes when they are marked as listened, if the setting is enabled.
+* Add episodes to play history when an episode is listened to in the background.
+* Show player UI when we start episodes from the play queue.
 
 2.4.0.0
 -------
