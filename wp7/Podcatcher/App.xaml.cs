@@ -176,6 +176,7 @@ namespace Podcatcher
                         if (e.isListened())
                         {
                             e.markAsListened(deleteListened);
+                            PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
                         }
                         else
                         {

@@ -389,6 +389,14 @@ namespace Podcatcher
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerSortPlaylistCompleted);
         }
 
+        public void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                db.addEpisodeToPlayHistory(episode);
+            }
+        }
+
         /****************************** Private implementations *******************************/
 
         private void showAddedNotification(int count)
@@ -461,14 +469,6 @@ namespace Podcatcher
         {
             PodcastPlayerControl player = PodcastPlayerControl.getIntance();
             player.streamEpisode(podcastEpisode);
-        }
-
-        private void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
-        {
-            using (var db = new PodcastSqlModel())
-            {
-                db.addEpisodeToPlayHistory(episode);
-            }
         }
 
         private void initializeCurrentlyPlayingEpisode()
