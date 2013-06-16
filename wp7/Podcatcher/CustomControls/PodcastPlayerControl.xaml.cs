@@ -659,7 +659,8 @@ namespace Podcatcher
 
             try
             {
-                if (BackgroundAudioPlayer.Instance.Track == null
+                if (BackgroundAudioPlayer.Instance == null
+                    || BackgroundAudioPlayer.Instance.Track == null
                     || BackgroundAudioPlayer.Instance.Position == null)
                 {
                     return 0.0;
@@ -675,7 +676,12 @@ namespace Podcatcher
             }
             catch (ArgumentException arge)
             {
-                Debug.WriteLine("Catched argument error when trying to access BackgroundAudioPlayer.");
+                Debug.WriteLine("Catched argument error when trying to access BackgroundAudioPlayer. Error: " + arge.Message);
+                return 0.0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Some other exception from player. Message: " + ex.Message);
                 return 0.0;
             }
 
