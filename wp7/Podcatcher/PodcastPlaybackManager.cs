@@ -580,6 +580,7 @@ namespace Podcatcher
 
                     addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
                     App.refreshEpisodesFromAudioAgent();
+                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
 
                     // Cleanup
                     CurrentlyPlayingEpisode = null;
