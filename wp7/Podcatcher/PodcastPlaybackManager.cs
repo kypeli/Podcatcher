@@ -395,6 +395,8 @@ namespace Podcatcher
             {
                 db.addEpisodeToPlayHistory(episode);
             }
+
+            App.mainViewModels.PlayHistoryListProperty = new ObservableCollection<PodcastEpisodeModel>();
         }
 
         public bool isCurrentlyPlaying()
