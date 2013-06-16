@@ -189,42 +189,41 @@ namespace Podcatcher
 
         internal static PodcastEpisodeModel refreshEpisodeFromAudioAgent(PodcastEpisodeModel episode)
         {
-            PodcastEpisodeModel e = null;
-            using (var db = new PodcastSqlModel()) 
-            {
-                e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == episode.EpisodeId);
-            }
-
+            List<PlaylistItem> playlistItems = null;
             using (var playlistdb = new PlaylistDBContext())
             {
-                List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
-                using (var db = new PodcastSqlModel())
+                playlistItems = playlistdb.Playlist.ToList();
+            }
+
+            PodcastEpisodeModel e = null;
+            using (var db = new PodcastSqlModel())
+            {
+                e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == episode.EpisodeId);
+
+                bool deleteListened = false;
+                if (playlistItems.Count > 0)
                 {
-                    bool deleteListened = false;
-                    if (playlistItems.Count > 0)
+                    deleteListened = db.settings().IsAutoDelete;
+                }
+
+                foreach (PlaylistItem i in playlistItems)
+                {
+                    if (i.EpisodeId != episode.EpisodeId)
                     {
-                        deleteListened = db.settings().IsAutoDelete;                        
+                        continue;
                     }
 
-                    foreach (PlaylistItem i in playlistItems)
+                    Debug.WriteLine("Updating episode '" + e.EpisodeName + "' playpos to: " + i.SavedPlayPosTick);
+                    e.SavedPlayPos = i.SavedPlayPosTick;
+
+                    // Update play state to listened as appropriate.
+                    if (e.isListened())
                     {
-                        if (i.EpisodeId != episode.EpisodeId) 
-                        {
-                            continue;
-                        }
-
-                        Debug.WriteLine("Updating episode '" + e.EpisodeName + "' playpos to: " + i.SavedPlayPosTick);
-                        e.SavedPlayPos = i.SavedPlayPosTick;
-
-                        // Update play state to listened as appropriate.
-                        if (e.isListened())
-                        {
-                            e.markAsListened(deleteListened);
-                            PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
-                        }
-
-                        db.SubmitChanges();
+                        e.markAsListened(deleteListened);
+                        PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
                     }
+
+                    db.SubmitChanges();
                 }
             }
 
