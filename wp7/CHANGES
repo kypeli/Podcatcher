@@ -6,6 +6,9 @@
  - Delete episodes when they are marked as listened, if the setting is enabled.
 * Add episodes to play history when an episode is listened to in the background.
 * Show player UI when we start episodes from the play queue.
+* Show episodes as paused when restarting Podcatcher.
+* Update play position to play history view also when episode is paused.
+* Fix crash in player when asking for the current position.
 
 2.4.0.0
 -------
