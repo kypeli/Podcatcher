@@ -147,6 +147,31 @@ namespace Podcatcher
             refreshEpisodesFromAudioAgent();
         }
 
+        public static long getPlayposFromAudioAgentForEpisode(PodcastEpisodeModel episode)
+        {
+            using (var playlistdb = new PlaylistDBContext())
+            {
+                List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
+                using (var db = new PodcastSqlModel())
+                {
+                    foreach (PlaylistItem i in playlistItems)
+                    {
+                        PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == i.EpisodeId);
+                        if (e == null || e.EpisodeId != episode.EpisodeId)
+                        {
+                            continue;
+                        }
+
+                        Debug.WriteLine("Found play pos for episode: " + episode.EpisodeId + ", pos: " + i.SavedPlayPosTick);
+                        return i.SavedPlayPosTick;
+                    }
+                }
+            }
+
+            Debug.WriteLine("Warning: No play pos found for episode: " + episode.EpisodeId);
+            return 0;
+        }
+
         public static void refreshEpisodesFromAudioAgent()
         {
             Debug.WriteLine("Refreshing episode information that has been updated from AudioPlayer.");

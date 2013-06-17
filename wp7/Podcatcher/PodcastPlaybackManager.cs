@@ -94,9 +94,8 @@ namespace Podcatcher
 
 
 
-        public void play(PodcastEpisodeModel episode, bool openPlayerView = true)
+        public void play(PodcastEpisodeModel episode, bool startedFromPlayQueue = false)
         {
-            bool startedFromEpisodeListing = openPlayerView;
             if (episode == null)
             {
                 Debug.WriteLine("Warning: Trying to play a NULL episode.");
@@ -117,7 +116,7 @@ namespace Podcatcher
                 CurrentlyPlayingEpisode.setNoPlaying();
             }
 
-            if (startedFromEpisodeListing)
+            if (startedFromPlayQueue)
             {
                 if (BackgroundAudioPlayer.Instance.PlayerState != PlayState.Paused
                     || (CurrentlyPlayingEpisode != null
@@ -132,6 +131,11 @@ namespace Podcatcher
                 {
                     CurrentlyPlayingEpisode = episode;
                 }
+
+                // Clear play queue (yes) when we start playback from episode listing.
+                // And we clear the queue after the current episode is being set, so that we don't delete the currently 
+                // playing one.
+                clearPlayQueue();
             }
 
             // Play locally from a downloaded file.
@@ -157,17 +161,14 @@ namespace Podcatcher
                     player.StopPlayback();
                     videoStreaming(episode);
                     CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
-                    openPlayerView = false;
                 }
             }
-            
-            if (openPlayerView)
+
+            // Always open the player view.
+            var handler = OnOpenPodcastPlayer;
+            if (handler != null)
             {
-                var handler = OnOpenPodcastPlayer;
-                if (handler != null)
-                {
-                    OnOpenPodcastPlayer(this, new EventArgs());
-                }
+                OnOpenPodcastPlayer(this, new EventArgs());
             }
 
             var handlerStartedPlaying = OnPodcastStartedPlaying;
@@ -232,7 +233,7 @@ namespace Podcatcher
             if (episode != null)
             {
                 CurrentlyPlayingEpisode = episode;
-                play(episode);
+                play(episode, true);
             }
             else
             {
@@ -579,7 +580,21 @@ namespace Podcatcher
                     }
 
                     addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
-                    App.refreshEpisodesFromAudioAgent();
+                    long playpos = App.getPlayposFromAudioAgentForEpisode(CurrentlyPlayingEpisode);
+                    CurrentlyPlayingEpisode.SavedPlayPos = playpos;
+                    CurrentlyPlayingEpisode.setNoPlaying();
+
+                    using (var db = new PodcastSqlModel())
+                    {
+                        PodcastEpisodeModel savingEpisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId);
+                        if (savingEpisode != null)
+                        {
+                            savingEpisode.SavedPlayPos = CurrentlyPlayingEpisode.SavedPlayPos;
+                            savingEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
+                            db.SubmitChanges();
+                        }
+                    }
+
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
 
                     // Cleanup
