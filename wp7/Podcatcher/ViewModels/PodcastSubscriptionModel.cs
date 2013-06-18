@@ -556,17 +556,14 @@ namespace Podcatcher.ViewModels
 
         private static int partiallyPlayedEpisodesCount(int subscriptionId)
         {
-            float listenedEpisodeThreshold = 0.0F;
             using (var db = new PodcastSqlModel())
             {
                 try
                 {
-                    listenedEpisodeThreshold = (float)db.settings().ListenedThreashold / (float)100.0;
                     var query = from episode in db.Episodes
                                 where (episode.PodcastId == subscriptionId
                                        && episode.EpisodePlayState != PodcastEpisodeModel.EpisodePlayStateEnum.Listened
-                                       && episode.SavedPlayPos > 0
-                                       && ((float)((float)episode.SavedPlayPos / (float)episode.TotalLengthTicks) < listenedEpisodeThreshold))
+                                       && episode.SavedPlayPos > 0)
                                 select episode;
 
                     return query.Count();
