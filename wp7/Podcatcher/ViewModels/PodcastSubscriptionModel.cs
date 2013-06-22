@@ -147,7 +147,7 @@ namespace Podcatcher.ViewModels
 
                 if (String.IsNullOrEmpty(m_PodcastLogoLocalLocation))
                 {
-                    isoFilename = "/images/Podcatcher_generic_podcast_cover.png";
+                    isoFilename = "/Images/Podcatcher_generic_podcast_cover.png";
                 }
                 else
                 {
@@ -192,7 +192,7 @@ namespace Podcatcher.ViewModels
                 {
                     try
                     {
-                        Uri uri = new Uri("/images/Podcatcher_generic_podcast_cover.png", UriKind.Relative);
+                        Uri uri = new Uri(@"../Images/Podcatcher_generic_podcast_cover.png", UriKind.RelativeOrAbsolute);
                         logoImage = new BitmapImage();
                         logoImage.UriSource = uri;
                     }
