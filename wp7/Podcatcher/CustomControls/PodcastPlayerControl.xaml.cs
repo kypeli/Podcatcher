@@ -394,6 +394,7 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
+                    setupPlayerUIContent(PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode);
                     setupUIForEpisodePlaying();
                     break;
 
