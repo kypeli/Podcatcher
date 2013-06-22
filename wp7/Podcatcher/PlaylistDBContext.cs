@@ -34,6 +34,9 @@ namespace Podcatcher
                     updater.AddColumn<PlaylistItem>("SavedPlayPosTick");
                     updater.AddColumn<PlaylistItem>("TotalPlayTicks");
                 }
+
+                updater.DatabaseSchemaVersion = PLAYLIST_DB_VERSION;
+                updater.Execute();
             }
 
             Playlist = GetTable<PlaylistItem>();
