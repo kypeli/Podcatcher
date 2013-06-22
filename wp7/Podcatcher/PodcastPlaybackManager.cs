@@ -25,6 +25,7 @@ namespace Podcatcher
     {
         public event EventHandler OnOpenPodcastPlayer;
         public event EventHandler OnPodcastStartedPlaying;
+        public event EventHandler OnPodcastStoppedPlaying;
 
         private static PodcastPlaybackManager m_instance;
 
@@ -511,6 +512,7 @@ namespace Podcatcher
 
         private void PlayStateChanged(object sender, EventArgs e)
         {
+            EventHandler handlerStoppedPlaying = null;
             switch (BackgroundAudioPlayer.Instance.PlayerState)
             {
                 case PlayState.Playing:
@@ -563,6 +565,13 @@ namespace Podcatcher
                         }
 
                         App.mainViewModels.PlayHistoryListProperty = new ObservableCollection<PodcastEpisodeModel>();
+
+                        handlerStoppedPlaying = OnPodcastStoppedPlaying;
+                        if (handlerStoppedPlaying != null)
+                        {
+                            OnPodcastStoppedPlaying(this, new EventArgs());
+                        }
+
                     }
                     else
                     {
@@ -605,6 +614,11 @@ namespace Podcatcher
                     }
 
                     PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
+                    handlerStoppedPlaying = OnPodcastStoppedPlaying;
+                    if (handlerStoppedPlaying != null)
+                    {
+                        OnPodcastStoppedPlaying(this, new EventArgs());
+                    }
 
                     // Cleanup
                     CurrentlyPlayingEpisode = null;
