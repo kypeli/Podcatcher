@@ -56,26 +56,13 @@ namespace Podcatcher
             {
                 m_instance = this;
             }
-
-            BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
-            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
         }
 
         public void initializePlayerUI()
         {
             PodcastEpisodeModel currentlyPlayingEpisode = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
-            if (currentlyPlayingEpisode != null)
-            {
-                Debug.WriteLine("Restoring UI for currently playing episode.");
-
-                showPlayerLayout();
-                setupPlayerUIContent(currentlyPlayingEpisode);
-                m_currentPlayerEpisode = currentlyPlayingEpisode;
-            }
-            else
-            {
-                showNoPlayerLayout();
-            }
+            restoreEpisodeToPlayerUI(currentlyPlayingEpisode);
+            m_currentPlayerEpisode = currentlyPlayingEpisode;
         }
 
         public static PodcastPlayerControl getIntance()
@@ -225,6 +212,7 @@ namespace Podcatcher
         {
             if (currentEpisode != null) 
             {
+                showPlayerLayout();
                 setupPlayerUIContent(currentEpisode);
 
                 if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
@@ -239,7 +227,6 @@ namespace Podcatcher
             else 
             {
                 showNoPlayerLayout();
-                Debug.WriteLine("WARNING: Could not find episode ID from app settings, so cannot restore player UI with episode information!");
             }
         }
 
@@ -286,6 +273,9 @@ namespace Podcatcher
                 m_screenUpdateTimer.Tick += new EventHandler(m_screenUpdateTimer_Tick);
                 m_screenUpdateTimer.Start();
             }
+
+            BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
+            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
 
             NoPlayingLayout.Visibility = Visibility.Collapsed;
             PlayingLayout.Visibility = Visibility.Visible;
@@ -498,9 +488,12 @@ namespace Podcatcher
 
         private void rewButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
+            if (player != null && player.PlayerState == PlayState.Playing)
             {
-                BackgroundAudioPlayer.Instance.Position = TimeSpan.FromSeconds(BackgroundAudioPlayer.Instance.Position.TotalSeconds - 30);
+                player.Position = (player.Position.TotalSeconds - 30 >= 0) ?
+                                    TimeSpan.FromSeconds(player.Position.TotalSeconds - 30) :
+                                    TimeSpan.FromSeconds(0);
             }
         }
 
@@ -551,9 +544,11 @@ namespace Podcatcher
 
         private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
+            if (player != null && player.PlayerState == PlayState.Playing)
             {
-                BackgroundAudioPlayer.Instance.Position = TimeSpan.FromSeconds(BackgroundAudioPlayer.Instance.Position.TotalSeconds + 30);
+                player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
+                                                                                                             TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);  
             }
         }
 
