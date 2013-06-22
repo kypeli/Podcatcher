@@ -204,6 +204,7 @@ namespace Podcatcher
                         {
                             e.markAsListened(deleteListened);
                             PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
+                            PodcastPlaybackManager.getInstance().removeFromPlayqueue(e);
                         }
 
                         db.SubmitChanges();

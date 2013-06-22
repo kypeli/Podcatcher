@@ -315,7 +315,7 @@ namespace Podcatcher
         {
             using (var db = new PlaylistDBContext())
             {
-                PlaylistItem itemToRemove = db.Playlist.FirstOrDefault(item => item.IsCurrent == false && item.ItemId == itemId);
+                PlaylistItem itemToRemove = db.Playlist.FirstOrDefault(item => item.ItemId == itemId);
                 if (itemToRemove != null) 
                 {
                     PodcastEpisodeModel episode = null;
@@ -590,7 +590,16 @@ namespace Podcatcher
                         if (savingEpisode != null)
                         {
                             savingEpisode.SavedPlayPos = CurrentlyPlayingEpisode.SavedPlayPos;
-                            savingEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
+                            // Update play state to listened as appropriate.
+                            if (savingEpisode.isListened())
+                            {
+                                savingEpisode.markAsListened(db.settings().IsAutoDelete);
+                                removeFromPlayqueue(savingEpisode);
+                            }
+                            else
+                            {
+                                savingEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
+                            }
                             db.SubmitChanges();
                         }
                     }
