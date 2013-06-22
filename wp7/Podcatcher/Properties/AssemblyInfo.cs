@@ -6,7 +6,7 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Podcatcher BETA")]
+[assembly: AssemblyTitle("Podcatcher")]
 [assembly: AssemblyDescription("Your mobile podcast client.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Johan Paul")]
@@ -32,6 +32,6 @@ using System.Resources;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.4.2.4")]
-[assembly: AssemblyFileVersion("2.4.2.4")]
+[assembly: AssemblyVersion("2.4.2.0")]
+[assembly: AssemblyFileVersion("2.4.2.0")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
