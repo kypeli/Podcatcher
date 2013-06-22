@@ -419,6 +419,11 @@ namespace Podcatcher
             int selectedSortOrderIndex = (int)args.Argument;
             using (var playlistDB = new PlaylistDBContext())
             {
+                if (playlistDB.Playlist.Count() <= 1)
+                {
+                    return;
+                }
+
                 PodcastSqlModel sqlContext = new PodcastSqlModel();
                 IEnumerable<PlaylistItem> newSortOrderQuery = null;
                 List<PlaylistItem> newSortOrder = new List<PlaylistItem>();
@@ -622,7 +627,6 @@ namespace Podcatcher
 
                     // Cleanup
                     CurrentlyPlayingEpisode = null;
-                    BackgroundAudioPlayer.Instance.Close();
                     break;
 
                 case PlayState.TrackReady:
