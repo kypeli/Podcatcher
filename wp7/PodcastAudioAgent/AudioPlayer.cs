@@ -254,7 +254,8 @@ namespace PodcastAudioAgent
                     
                     if (nextTrack == null)
                     {
-                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
+                        player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
+                                                                                                                     TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);
                     }
                     else 
                     {
@@ -267,7 +268,9 @@ namespace PodcastAudioAgent
                     try
                     {
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
-                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds + 30);
+                        player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
+                                                                                                                     TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);  
+
                     }
                     catch (Exception)
                     {
@@ -279,7 +282,8 @@ namespace PodcastAudioAgent
                 case UserAction.Rewind:
                     try
                     {
-                        player.Position = TimeSpan.FromSeconds(player.Position.TotalSeconds - 30);
+                        player.Position = (player.Position.TotalSeconds - 30 >= 0) ? TimeSpan.FromSeconds(player.Position.TotalSeconds - 30) :
+                                                                                     TimeSpan.FromSeconds(0);
                         Debug.WriteLine("Player fast forward. New position: " + player.Position);
                     } catch(Exception) {
                         Debug.WriteLine("Error seeking. Probably seeked passed the start.");
