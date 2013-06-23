@@ -178,7 +178,11 @@ namespace Podcatcher
 
             using (var playlistdb = new PlaylistDBContext())
             {
+                int playlistItemsCount = 0;
+                int listenedItemsCount = 0;
                 List<PlaylistItem> playlistItems = playlistdb.Playlist.ToList();
+
+                playlistItemsCount = playlistItems.Count;
                 using (var db = new PodcastSqlModel())
                 {
                     bool deleteListened = false;
@@ -205,10 +209,17 @@ namespace Podcatcher
                             e.markAsListened(deleteListened);
                             PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
                             PodcastPlaybackManager.getInstance().removeFromPlayqueue(e);
+                            listenedItemsCount++;
                         }
 
                         db.SubmitChanges();
                     }
+                }
+
+                // If all items in the play queue were listened, then we shouldn't show an episodep laying anymore.
+                if (playlistItemsCount == listenedItemsCount)
+                {
+                    PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode = null;
                 }
             }
         }
