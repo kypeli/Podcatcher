@@ -108,13 +108,19 @@ namespace Podcatcher
             Debug.WriteLine(" File: " + episode.EpisodeFile);
             Debug.WriteLine(" Location: " + episode.EpisodeDownloadUri);
 
+            // We have another episode currently playing, and we switch the episode that we are playing.
             if (CurrentlyPlayingEpisode != null
                 && (episode.EpisodeId != CurrentlyPlayingEpisode.EpisodeId))
             {
                 addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
-
-                // If next episode is different from currently playing, the track changed.
                 CurrentlyPlayingEpisode.setNoPlaying();
+                CurrentlyPlayingEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+                using (var db = new PodcastSqlModel())
+                {
+                    PodcastEpisodeModel savingEpisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId);
+                    savingEpisode.SavedPlayPos = CurrentlyPlayingEpisode.SavedPlayPos;
+                    db.SubmitChanges();
+                }
             }
 
             if (startedFromPlayQueue)
@@ -233,7 +239,6 @@ namespace Podcatcher
 
             if (episode != null)
             {
-                CurrentlyPlayingEpisode = episode;
                 play(episode, true);
             }
             else
