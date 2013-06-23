@@ -248,6 +248,28 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class EpisodeNotListenedTextConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            FontWeight fontWeight = FontWeights.Bold;
+            PodcastEpisodeModel.EpisodePlayStateEnum playStatus = (PodcastEpisodeModel.EpisodePlayStateEnum)value;
+
+            switch (playStatus)
+            {
+                case PodcastEpisodeModel.EpisodePlayStateEnum.Listened:
+                    fontWeight = FontWeights.Normal;
+                    break;
+            }
+
+            return fontWeight;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
 
 }
 
