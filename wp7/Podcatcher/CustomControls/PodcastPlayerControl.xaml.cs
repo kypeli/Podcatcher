@@ -232,6 +232,11 @@ namespace Podcatcher
 
         private void setupPlayerUIContent(PodcastEpisodeModel currentEpisode)
         {
+            if (currentEpisode == null)
+            {
+                return;
+            }
+
             Debug.WriteLine("Setting up player UI.");
             if (currentEpisode.EpisodeName == PodcastEpisodeName.Text)
             {
