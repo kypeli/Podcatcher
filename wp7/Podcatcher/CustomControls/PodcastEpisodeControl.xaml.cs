@@ -101,5 +101,18 @@ namespace Podcatcher
             PodcastEpisodeModel podcastEpisode = this.DataContext as PodcastEpisodeModel;
             PodcastPlaybackManager.getInstance().addToPlayqueue(podcastEpisode);
         }
+         
+        private void MenuItemMarkAsListened_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastEpisodeModel podcastEpisode = this.DataContext as PodcastEpisodeModel;
+            
+            bool delete = false;            
+            using (var db = new PodcastSqlModel())
+            {
+                delete = db.settings().IsAutoDelete;
+            }
+
+            podcastEpisode.markAsListened(delete);
+        }
     }
 }

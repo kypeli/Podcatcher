@@ -11,6 +11,7 @@
 
     <UserControl.Resources>
         <c:DeleteEnabledConverter x:Name="deleteEnabledConverter"/>
+        <c:MarkAsListenedEnabledConverter x:Name="markAsListenedEnabledConverter"/>
         <c:PlayButtonImageConverter x:Name="playButtonImage" />
         <c:DownloadButtonImageConverter x:Name="downloadButtonImage" />
         <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
@@ -69,6 +70,9 @@
         <toolkit:ContextMenuService.ContextMenu>
             <toolkit:ContextMenu >
                 <toolkit:MenuItem Header="Add to play queue" Click="MenuItemAddToQueue_Click"/>
+                <toolkit:MenuItem Header="Mark as listened" Click="MenuItemMarkAsListened_Click" 
+                                  Visibility="{Binding SavedPlayPos, 
+                                  Converter={StaticResource markAsListenedEnabledConverter}}"/>
                 <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" 
                                   Visibility="{Binding EpisodeDownloadState, 
                                   Converter={StaticResource deleteEnabledConverter}}"/>

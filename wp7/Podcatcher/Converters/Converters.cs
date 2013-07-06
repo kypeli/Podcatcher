@@ -107,6 +107,27 @@ namespace Podcatcher.Converters
         }
     }
 
+    public class MarkAsListenedEnabledConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Visibility episodeContextMenuVisible = Visibility.Collapsed;
+
+            long episodePlayPos = (long)value;
+            if (episodePlayPos > 0)
+            {
+                episodeContextMenuVisible = Visibility.Visible;
+            }
+
+            return episodeContextMenuVisible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
     public class PlayButtonImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
