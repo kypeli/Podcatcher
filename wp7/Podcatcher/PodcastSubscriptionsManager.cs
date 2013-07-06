@@ -38,6 +38,7 @@ using System.IO.IsolatedStorage;
 using System.IO;
 using System.Data.Linq;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace Podcatcher
 {
@@ -242,6 +243,14 @@ namespace Podcatcher
 
         public void refreshSubscriptions()
         {
+            if (NetworkInterface.GetIsNetworkAvailable() == false)
+            {
+                Debug.WriteLine("No network available. Won't refresh.");
+                stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);                
+                return;
+            }
+
             stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.StartedRefreshing;
             OnPodcastSubscriptionsChanged(this, stateChangedArgs);
 
