@@ -210,10 +210,24 @@ namespace Podcatcher.ViewModels
                 if (EpisodeDownloadState == EpisodeDownloadStateEnum.Downloading
                     && m_downloadRequest == null) 
                 {
-                    m_downloadRequest = BackgroundTransferService.Requests.ElementAt(0);
-                    m_downloadRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transferProgressChanged);
-                    m_downloadRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transferStatusChanged);
+                    if (BackgroundTransferService.Requests.Count() > 0)
+                    {
+                        m_downloadRequest = BackgroundTransferService.Requests.ElementAt(0);
+                        m_downloadRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transferProgressChanged);
+                        m_downloadRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transferStatusChanged);
+                    }
+                    else
+                    {
+                        m_downloadRequest = null;
+                    }
+
+                    if (BackgroundTransferService.Requests.Count() != 1)
+                    {
+                        Debug.WriteLine("Warning: Have unwanted number of background transfers! Count: " + BackgroundTransferService.Requests.Count());
+                    }
+
                 }
+
                 return m_downloadPercentage;
             }
 
@@ -467,7 +481,7 @@ namespace Podcatcher.ViewModels
                 return false;
             }
 
-            bool playable = PodcastPlaybackManager.getInstance().isAudioPodcast(this);
+            bool playable = PodcastPlaybackManager.isAudioPodcast(this);
             if (!playable)
             {
                 switch (episodeMimeType)
