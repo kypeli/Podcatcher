@@ -544,7 +544,7 @@ namespace Podcatcher.ViewModels
                                        && episode.SavedPlayPos == 0)
                                 select episode;
 
-                    return query.AsEnumerable().Where(episode => PodcastPlaybackManager.getInstance().isAudioPodcast(episode)).Count();
+                    return query.AsEnumerable().Where(episode => PodcastPlaybackManager.isAudioPodcast(episode)).Count();
 
                     // int count = query.Count();
                     // return count;
@@ -568,7 +568,7 @@ namespace Podcatcher.ViewModels
                                        && episode.SavedPlayPos > 0)
                                 select episode;
 
-                    return query.AsEnumerable().Where(episode => PodcastPlaybackManager.getInstance().isAudioPodcast(episode)).Count();
+                    return query.AsEnumerable().Where(episode => PodcastPlaybackManager.isAudioPodcast(episode)).Count();
                     
                     // return query.Count();
                 }

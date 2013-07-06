@@ -365,7 +365,7 @@ namespace Podcatcher
             }
         }
 
-        public bool isAudioPodcast(PodcastEpisodeModel episode)
+        public static bool isAudioPodcast(PodcastEpisodeModel episode)
         {
             bool audio = false;
 

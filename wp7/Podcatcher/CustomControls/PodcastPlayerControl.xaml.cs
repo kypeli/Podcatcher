@@ -79,7 +79,7 @@ namespace Podcatcher
         {
             Debug.WriteLine("Starting playback for episode: " + episodeModel.EpisodeName);
 
-            if (PodcastPlaybackManager.getInstance().isAudioPodcast(episodeModel))
+            if (PodcastPlaybackManager.isAudioPodcast(episodeModel))
             {
                 try
                 {
