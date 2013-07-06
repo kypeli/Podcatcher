@@ -75,46 +75,11 @@ namespace Podcatcher
             return m_instance;
         }
 
-        public static bool isAudioPodcast(PodcastEpisodeModel episode)
-        {
-            bool audio = false;
-
-             // We have to treat empty as an audio, because that was what the previous 
-             // version had for mime type and we don't want to break the functionality.
-            if (String.IsNullOrEmpty(episode.EpisodeFileMimeType))
-            {
-                return true;
-            }
-
-            switch (episode.EpisodeFileMimeType)
-            {
-                case "audio/mpeg":
-                case "audio/mp3":
-                case "audio/x-mp3":
-                case "audio/mpeg3":
-                case "audio/x-mpeg3":
-                case "audio/mpg":
-                case "audio/x-mpg":
-                case "audio/x-mpegaudio":
-                case "audio/x-m4a":
-                case "audio/mpegaudio":
-                case "audio/m4a":
-                case "audio/x-mpeg":
-                case "media/mpeg":
-                case "x-audio/mp3":
-                case "audio/x-mpegurl":
-                    audio = true;
-                    break;
-            }
-
-            return audio;
-        }
-
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
             Debug.WriteLine("Starting playback for episode: " + episodeModel.EpisodeName);
 
-            if (isAudioPodcast(episodeModel))
+            if (PodcastPlaybackManager.getInstance().isAudioPodcast(episodeModel))
             {
                 try
                 {

@@ -467,7 +467,7 @@ namespace Podcatcher.ViewModels
                 return false;
             }
 
-            bool playable = PodcastPlayerControl.isAudioPodcast(this);
+            bool playable = PodcastPlaybackManager.getInstance().isAudioPodcast(this);
             if (!playable)
             {
                 switch (episodeMimeType)

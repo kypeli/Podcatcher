@@ -66,6 +66,13 @@ namespace Podcatcher
                     m_currentlyPlayingEpisode = value;
                     if (m_currentlyPlayingEpisode != null)
                     {
+                        // We can't handle video podcasts' events so we don't handle them.
+                        if (isAudioPodcast(value) == false)
+                        {
+                            Debug.WriteLine("Playing video podcast. Ignoring.");
+                            return;
+                        }
+
                         PodcastSubscriptionModel subscription = m_currentlyPlayingEpisode.PodcastSubscriptionInstance;
                         PlaylistItem newCurrent = db.Playlist.FirstOrDefault(item => item.EpisodeId == m_currentlyPlayingEpisode.EpisodeId);
                         if (newCurrent == null)
@@ -102,7 +109,7 @@ namespace Podcatcher
                 Debug.WriteLine("Warning: Trying to play a NULL episode.");
                 return;
             }
-
+            
             Debug.WriteLine("Starting playback for episode: ");
             Debug.WriteLine(" Name: " + episode.EpisodeName);
             Debug.WriteLine(" File: " + episode.EpisodeFile);
@@ -134,11 +141,8 @@ namespace Podcatcher
             }
             else
             {
-                if (PodcastPlayerControl.isAudioPodcast(episode))
-                {
-                    CurrentlyPlayingEpisode = episode;
-                }
-
+                CurrentlyPlayingEpisode = episode;
+            
                 // Clear play queue (yes) when we start playback from episode listing.
                 // And we clear the queue after the current episode is being set, so that we don't delete the currently 
                 // playing one.
@@ -146,7 +150,8 @@ namespace Podcatcher
             }
 
             // Play locally from a downloaded file.
-            if (CurrentlyPlayingEpisode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
+            if (CurrentlyPlayingEpisode != null
+                && CurrentlyPlayingEpisode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
             {
                 PodcastPlayerControl player = PodcastPlayerControl.getIntance();
                 CurrentlyPlayingEpisode.setPlaying();
@@ -156,7 +161,7 @@ namespace Podcatcher
             else
             {
                 // Stream it if not downloaded. 
-                if (PodcastPlayerControl.isAudioPodcast(CurrentlyPlayingEpisode))
+                if (isAudioPodcast(CurrentlyPlayingEpisode))
                 {
                     CurrentlyPlayingEpisode.setPlaying();
                     audioStreaming(CurrentlyPlayingEpisode);
@@ -181,7 +186,7 @@ namespace Podcatcher
             var handlerStartedPlaying = OnPodcastStartedPlaying;
             if (handlerStartedPlaying != null)
             {
-                if (PodcastPlayerControl.isAudioPodcast(episode))
+                if (isAudioPodcast(episode))
                 {
                     OnPodcastStartedPlaying(this, new EventArgs());
                 }
@@ -358,6 +363,41 @@ namespace Podcatcher
                     removeFromPlayqueue(plItem);
                 }
             }
+        }
+
+        public bool isAudioPodcast(PodcastEpisodeModel episode)
+        {
+            bool audio = false;
+
+            // We have to treat empty as an audio, because that was what the previous 
+            // version had for mime type and we don't want to break the functionality.
+            if (String.IsNullOrEmpty(episode.EpisodeFileMimeType))
+            {
+                return true;
+            }
+
+            switch (episode.EpisodeFileMimeType)
+            {
+                case "audio/mpeg":
+                case "audio/mp3":
+                case "audio/x-mp3":
+                case "audio/mpeg3":
+                case "audio/x-mpeg3":
+                case "audio/mpg":
+                case "audio/x-mpg":
+                case "audio/x-mpegaudio":
+                case "audio/x-m4a":
+                case "audio/mpegaudio":
+                case "audio/m4a":
+                case "audio/x-mpeg":
+                case "media/mpeg":
+                case "x-audio/mp3":
+                case "audio/x-mpegurl":
+                    audio = true;
+                    break;
+            }
+
+            return audio;
         }
 
         private void removeFromPlayqueue(PlaylistItem plItem)
