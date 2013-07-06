@@ -105,14 +105,25 @@ namespace Podcatcher
         private void MenuItemMarkAsListened_Click(object sender, RoutedEventArgs e)
         {
             PodcastEpisodeModel podcastEpisode = this.DataContext as PodcastEpisodeModel;
-            
+            PodcastSubscriptionModel subscription = null; // We need this to update the play states for this subscription.
+
             bool delete = false;            
             using (var db = new PodcastSqlModel())
             {
+                PodcastEpisodeModel sqlepisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == podcastEpisode.EpisodeId);
+                
+                subscription = db.Subscriptions.FirstOrDefault(sub => sub.PodcastId == sqlepisode.PodcastId);
+                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(subscription);
+
                 delete = db.settings().IsAutoDelete;
+
+                sqlepisode.SavedPlayPos = 0;
+                sqlepisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Listened;
+                db.SubmitChanges();
             }
 
             podcastEpisode.markAsListened(delete);
+
         }
     }
 }
