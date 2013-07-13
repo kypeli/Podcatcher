@@ -611,6 +611,7 @@ namespace Podcatcher
 
         private void workerUpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
             refreshNextSubscription();
         }
 
