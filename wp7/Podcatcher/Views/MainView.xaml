@@ -57,55 +57,33 @@
                 </Grid>
             </controls:PivotItem>
 
-            <!-- Download queue -->
-            <controls:PivotItem Header="downloads">
-                <Grid x:Name="DownloadsRoot" Background="Transparent">
-                    <ListBox Margin="0,0,-12,0" x:Name="EpisodeDownloadList">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Width="Auto" Height="Auto">
-                                <pc:PodcastDownloadControl/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    </ListBox>
-                
-                    <TextBlock Text="You have no podcasts downloading."
-                                 x:Name="EpisodesDownloadingText" 
-                                 VerticalAlignment="Center" 
-                                 HorizontalAlignment="Center" 
-                                 TextWrapping="Wrap" 
-                                 TextAlignment="Center" 
-                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
-                                 Margin="34,96,32,278" />
-                </Grid>
-            </controls:PivotItem>
-
             <!-- Podcast play history -->
-            <controls:PivotItem Header="play history">
+            <controls:PivotItem Header="latest">
                 <Grid Background="Transparent" Width="480">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
                     <pc:PodcastNowPlaying Grid.Row="0" x:Name="NowPlaying" Height="Auto" />
 
-                    <StackPanel Grid.Row="1" x:Name="PlayHistory" Height="Auto">
-                        <TextBlock TextWrapping="Wrap" Text="RECENT" Style="{StaticResource PhoneTextTitle2Style}" Margin="12,0,12,20"/>
-                        <ItemsControl ItemsSource="{Binding PlayHistoryListProperty}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <toolkit:WrapPanel Orientation="Vertical"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <pc:PodcastHistoryItem/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                    <ScrollViewer x:Name="LatestEpisodesList" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" Text="LATEST" Style="{StaticResource PhoneTextTitle2Style}" Margin="12,0,12,20"/>
+                            <ItemsControl ItemsSource="{Binding LatestEpisodesListProperty}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <toolkit:WrapPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <pc:PodcastLatestControl Tap="PodcastLatestControl_Tap" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
 
                     <TextBlock Text="You have no play history."
                                  x:Name="NoPlayHistoryText" 
@@ -117,7 +95,7 @@
                                  Margin="71,193,69,181"/>
                 </Grid>
             </controls:PivotItem>
-            
+
             <!-- Podcast play queue -->
             <controls:PivotItem Header="play queue">
                 <Grid Background="Transparent">
@@ -157,7 +135,29 @@
                 </Grid>
             </controls:PivotItem>
 
+            <!-- Download queue -->
+            <controls:PivotItem Header="downloads">
+                <Grid x:Name="DownloadsRoot" Background="Transparent">
+                    <ListBox Margin="0,0,-12,0" x:Name="EpisodeDownloadList">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Width="Auto" Height="Auto">
+                                    <pc:PodcastDownloadControl/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
+                    <TextBlock Text="You have no podcasts downloading."
+                                 x:Name="EpisodesDownloadingText" 
+                                 VerticalAlignment="Center" 
+                                 HorizontalAlignment="Center" 
+                                 TextWrapping="Wrap" 
+                                 TextAlignment="Center" 
+                                 Style="{StaticResource PhoneTextGroupHeaderStyle}" 
+                                 Margin="34,96,32,278" />
+                </Grid>
+            </controls:PivotItem>
         </controls:Pivot>
 
         <c4f:ProgressOverlay Name="deleteProgressOverlay" Visibility="Collapsed">

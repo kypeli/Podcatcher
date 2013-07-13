@@ -61,6 +61,23 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        public ObservableCollection<PodcastEpisodeModel> LatestEpisodesListProperty
+        {
+            get
+            {
+                using (var db = new PodcastSqlModel())
+                {
+                    List<PodcastEpisodeModel> latest = db.Episodes.OrderByDescending(ep => ep.EpisodePublished).Take(20).ToList();
+                    return new ObservableCollection<PodcastEpisodeModel>(latest);
+                }
+            }
+
+            set
+            {
+                NotifyPropertyChanged("PlayHistoryListProperty");
+            }
+        }
+
         private ObservableCollection<PlaylistItem> m_playQueue = new ObservableCollection<PlaylistItem>();
         public ObservableCollection<PlaylistItem> PlayQueue
         {
