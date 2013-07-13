@@ -221,7 +221,7 @@ namespace Podcatcher
 
             if (App.mainViewModels.PlayHistoryListProperty.Count == 0)
             {
-                this.PlayHistory.Visibility = System.Windows.Visibility.Collapsed;
+                this.LatestEpisodesList.Visibility = System.Windows.Visibility.Collapsed;
 
                 if (PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode != null)
                 {
@@ -234,7 +234,7 @@ namespace Podcatcher
             }
             else
             {
-                this.PlayHistory.Visibility = System.Windows.Visibility.Visible;
+                this.LatestEpisodesList.Visibility = System.Windows.Visibility.Visible;
                 this.NoPlayHistoryText.Visibility = System.Windows.Visibility.Collapsed;
             }
  
@@ -472,6 +472,11 @@ namespace Podcatcher
             {
                 PodcastPlaybackManager.getInstance().sortPlaylist(db.settings().PlaylistSortOrder);
             }
+        }
+
+        private void PodcastLatestControl_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+
         }
     }
 }
