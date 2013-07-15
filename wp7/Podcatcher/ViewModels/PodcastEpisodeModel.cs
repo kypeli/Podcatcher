@@ -659,44 +659,9 @@ namespace Podcatcher.ViewModels
 
         public void deleteDownloadedEpisode() 
         {
-            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
+            bool success = doDeleteFile();
+            if (success)
             {
-                try
-                {
-                    Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
-                    if (String.IsNullOrEmpty(EpisodeFile) == false 
-                        && episodeStore.FileExists(EpisodeFile))
-                    {
-                        episodeStore.DeleteFile(EpisodeFile);
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Warning: Cannot delete episode with file: " + EpisodeFile);
-                    }
-                }
-                catch (IsolatedStorageException)
-                {
-                    ToastPrompt toast = new ToastPrompt();
-                    toast.Title = "Error";
-                    toast.Message = "Could not delete episode.";
-
-                    toast.Show();
-                }
-                catch (NullReferenceException)
-                {
-                    Debug.WriteLine("Got NULL pointer exception when deleting episode.");
-                }
-                finally
-                {
-                    SavedPlayPos = 0;
-                    TotalLengthTicks = 0;
-                }
-
-                EpisodeFile = "";
-                EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
-                EpisodePlayState = EpisodePlayStateEnum.Idle;
-                SavedPlayPos = 0;
-
                 using (var db = new PodcastSqlModel())
                 {
                     PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == EpisodeId);
@@ -708,7 +673,6 @@ namespace Podcatcher.ViewModels
 
                     e.SavedPlayPos = SavedPlayPos;
                     e.TotalLengthTicks = TotalLengthTicks;
-                    e.EpisodeFile = EpisodeFile;
                     e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                     e.EpisodePlayState = EpisodePlayStateEnum.Idle;
                     e.SavedPlayPos = 0;
@@ -718,6 +682,46 @@ namespace Podcatcher.ViewModels
                     db.SubmitChanges();
                 }
             }
+            else
+            {
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Could not delete episode.";
+
+                toast.Show();
+            }
+        }
+
+        private bool doDeleteFile()
+        {
+            bool success = false;
+            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                try
+                {
+                    Debug.WriteLine("Deleting downloaded episode: " + EpisodeFile);
+                    if (String.IsNullOrEmpty(EpisodeFile) == false
+                        && episodeStore.FileExists(EpisodeFile))
+                    {
+                        episodeStore.DeleteFile(EpisodeFile);
+                        success = true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Warning: Cannot delete episode with file: " + EpisodeFile);
+                    }
+                }
+                catch (IsolatedStorageException)
+                {
+                    Debug.WriteLine("IsolatedStorageException: " + EpisodeFile);
+                }
+                catch (NullReferenceException)
+                {
+                    Debug.WriteLine("Got NULL pointer exception when deleting episode.");
+                }
+            }
+
+            return success;
         }
 
         public bool isListened()
