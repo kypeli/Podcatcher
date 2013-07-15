@@ -536,6 +536,10 @@ namespace Podcatcher
                 
                 Debug.WriteLine("No more episodes to refresh. Done.");
                 stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
+
+                // Update all episodes to the latest list.
+                App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
+                
                 OnPodcastSubscriptionsChanged(this, stateChangedArgs);                
                 return;
             }
@@ -611,7 +615,6 @@ namespace Podcatcher
 
         private void workerUpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
             refreshNextSubscription();
         }
 
