@@ -659,28 +659,21 @@ namespace Podcatcher.ViewModels
 
         public void deleteDownloadedEpisode() 
         {
+            using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication()) 
+            {
+                // Episode not deleted, or file is missing. Reset episode info in DB anyway.
+                if (String.IsNullOrEmpty(EpisodeFile)
+                    || episodeStore.FileExists(EpisodeFile) == false)
+                {
+                    resetEpisodeInDB();
+                    return;
+                }
+            }
+
             bool success = doDeleteFile();
             if (success)
             {
-                using (var db = new PodcastSqlModel())
-                {
-                    PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == EpisodeId);
-                    if (e == null)
-                    {
-                        Debug.WriteLine("Episode NULL. Probably alrady deleted.");
-                        return;
-                    }
-
-                    e.SavedPlayPos = SavedPlayPos;
-                    e.TotalLengthTicks = TotalLengthTicks;
-                    e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
-                    e.EpisodePlayState = EpisodePlayStateEnum.Idle;
-                    e.SavedPlayPos = 0;
-
-                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
-
-                    db.SubmitChanges();
-                }
+                resetEpisodeInDB();
             }
             else
             {
@@ -689,6 +682,29 @@ namespace Podcatcher.ViewModels
                 toast.Message = "Could not delete episode.";
 
                 toast.Show();
+            }
+        }
+
+        private void resetEpisodeInDB() 
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == EpisodeId);
+                if (e == null)
+                {
+                    Debug.WriteLine("Episode NULL. Probably alrady deleted.");
+                    return;
+                }
+
+                e.SavedPlayPos = SavedPlayPos;
+                e.TotalLengthTicks = TotalLengthTicks;
+                e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
+                e.EpisodePlayState = EpisodePlayStateEnum.Idle;
+                e.SavedPlayPos = 0;
+
+                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
+
+                db.SubmitChanges();
             }
         }
 
