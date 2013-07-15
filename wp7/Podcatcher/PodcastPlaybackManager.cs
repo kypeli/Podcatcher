@@ -121,7 +121,17 @@ namespace Podcatcher
             {
                 addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
                 CurrentlyPlayingEpisode.setNoPlaying();
-                CurrentlyPlayingEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+
+                try
+                {
+                    CurrentlyPlayingEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+                }
+                catch (Exception)
+                {
+                    Debug.WriteLine("Could not set saved play pos; not available.");
+                    CurrentlyPlayingEpisode.SavedPlayPos = 0;
+                } 
+
                 using (var db = new PodcastSqlModel())
                 {
                     PodcastEpisodeModel savingEpisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId);

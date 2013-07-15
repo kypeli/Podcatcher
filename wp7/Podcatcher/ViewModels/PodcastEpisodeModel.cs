@@ -701,10 +701,11 @@ namespace Podcatcher.ViewModels
                 e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                 e.EpisodePlayState = EpisodePlayStateEnum.Idle;
                 e.SavedPlayPos = 0;
-
-                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
+                e.EpisodeFile = "";
 
                 db.SubmitChanges();
+
+                PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(e.PodcastSubscription);
             }
         }
 
