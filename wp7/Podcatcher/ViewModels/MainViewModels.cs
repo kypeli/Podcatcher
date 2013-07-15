@@ -74,7 +74,7 @@ namespace Podcatcher.ViewModels
 
             set
             {
-                NotifyPropertyChanged("PlayHistoryListProperty");
+                NotifyPropertyChanged("LatestEpisodesListProperty");
             }
         }
 
