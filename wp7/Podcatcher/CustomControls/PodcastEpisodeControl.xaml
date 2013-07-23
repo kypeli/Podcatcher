@@ -16,7 +16,6 @@
         <c:DownloadButtonImageConverter x:Name="downloadButtonImage" />
         <c:EpisodeButtonActiveConverter x:Name="downloadButtonActive"/>
         <c:EpisodePlayButtonActiveConverter x:Name="playButtonActive"/>
-        <c:EpisodeNotListenedTextConverter x:Name="unlistenedTextStyle"/>
     </UserControl.Resources>
 
     <Grid x:Name="EpisodeMainLayout">
@@ -34,7 +33,7 @@
 
         		<Ellipse Visibility="{Binding NewEpisodeVisibility}" Fill="{StaticResource PhoneAccentBrush}" Height="12" Stroke="{StaticResource PhoneAccentBrush}" Width="12" StrokeThickness="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0"/>
                 <StackPanel Grid.Column="1" Margin="0.333,0,10.667,0" Tap="Episode_Tap">
-                    <TextBlock Text="{Binding EpisodeName}" FontWeight="{Binding EpisodePlayState, Converter={StaticResource unlistenedTextStyle}}" TextWrapping="Wrap" Margin="0" HorizontalAlignment="Left" Width="272" VerticalAlignment="Top" FontSize="27" />
+        			<TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="0" HorizontalAlignment="Left" Width="272" FontWeight="Bold" VerticalAlignment="Top" FontSize="27" />
         			<TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="0,5,0,0" HorizontalAlignment="Left" Width="272" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" FontSize="24" />
         			<ProgressBar Visibility="{Binding ProgressBarIsVisible}"
         				Value="{Binding ProgressBarValue}" x:Name="PlayProgressBar" Height="11" Margin="-12,10,-12,0" VerticalAlignment="Top"/>
