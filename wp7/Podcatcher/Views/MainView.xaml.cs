@@ -211,15 +211,11 @@ namespace Podcatcher
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-
-            // Hook data contextes.
-//            this.PlayHistoryList.ItemsSource = playHistory;
-            //            ObservableCollection<PodcastEpisodeModel> playHistory = App.mainViewModels.PlayHistoryListProperty;
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
             this.NowPlaying.SetupNowPlayingView();
 
 
-            if (App.mainViewModels.PlayHistoryListProperty.Count == 0)
+            if (App.mainViewModels.LatestEpisodesListProperty.Count == 0)
             {
                 this.LatestEpisodesList.Visibility = System.Windows.Visibility.Collapsed;
 

@@ -85,14 +85,14 @@
                         </StackPanel>
                     </ScrollViewer>
 
-                    <TextBlock Text="You have no play history."
+                    <TextBlock Text="You have no latest episodes."
                                  x:Name="NoPlayHistoryText" 
                                  VerticalAlignment="Center" 
                                  HorizontalAlignment="Center" 
                                  TextWrapping="Wrap" 
                                  TextAlignment="Center" 
                                  Style="{StaticResource PhoneTextGroupHeaderStyle}" 
-                                 Margin="71,193,69,181"/>
+                                 Margin="38,193,44,181" Width="398" />
                 </Grid>
             </controls:PivotItem>
 
