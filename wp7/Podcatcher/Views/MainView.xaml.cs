@@ -334,7 +334,7 @@ namespace Podcatcher
                     break;
 
                 // Play queue view
-                case 3:
+                case 2:
                     applicationBarVisible = true;
                     this.ApplicationBar.MenuItems.Clear();
                     this.ApplicationBar.Buttons.Clear();
