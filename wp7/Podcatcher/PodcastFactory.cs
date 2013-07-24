@@ -448,6 +448,12 @@ namespace Podcatcher
                 resultDateTime = getDateTimeWithFormat("d/M/yyyy HH:mm:ss", pubDateString, "d/M/yyyy HH:mm:ss".Length);  // Parse as 28/3/2013 8:46:31
             }
 
+            if (resultDateTime.Equals(DateTime.MinValue))
+            {
+                // Magic the Gathering
+                Debug.WriteLine("Warning: Could not parse pub date! Trying with next format...");
+                resultDateTime = getDateTimeWithFormat("dd MMMM yyyy HH:mm:ss", pubDateString, "dd MMMM yyyy HH:mm:ss".Length);  // 12 July 2013 11:30:00 PDT
+            }
 
             if (resultDateTime.Equals(DateTime.MinValue))
             {
