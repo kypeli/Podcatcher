@@ -115,6 +115,9 @@ namespace Podcatcher
             // Global handler for uncaught exceptions. 
             UnhandledException += Application_UnhandledException;
 
+            // Updates episodes from the audio agent. 
+            refreshEpisodesFromAudioAgent();
+
             // Standard Silverlight initialization
             InitializeComponent();
 
@@ -144,7 +147,6 @@ namespace Podcatcher
             m_licenseInfo = new LicenseInformation();
 
             detectCurrentTheme();
-            refreshEpisodesFromAudioAgent();
         }
 
         public static long getPlayposFromAudioAgentForEpisode(PodcastEpisodeModel episode)
@@ -221,6 +223,9 @@ namespace Podcatcher
                 {
                     PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode = null;
                 }
+
+                // Refresh subscriptions.
+                App.mainViewModels.PodcastSubscriptions = new ObservableCollection<PodcastSubscriptionModel>();
             }
         }
 
