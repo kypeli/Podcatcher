@@ -158,7 +158,7 @@ namespace PodcastAudioAgent
                     currentPlaylistItem.SavedPlayPosTick = player.Position.Ticks;
                     updateToDBPlaylistItem(currentPlaylistItem);
                 }
-                catch (InvalidOperationException ex)
+                catch (Exception)
                 {
                     Debug.WriteLine("Player not available anymore. Cannot update position.");
                 }
