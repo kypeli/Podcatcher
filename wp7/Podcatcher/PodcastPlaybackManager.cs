@@ -452,8 +452,6 @@ namespace Podcatcher
             {
                 db.addEpisodeToPlayHistory(episode);
             }
-
-            App.mainViewModels.PlayHistoryListProperty = new ObservableCollection<PodcastEpisodeModel>();
         }
 
         public bool isCurrentlyPlaying()
@@ -623,8 +621,6 @@ namespace Podcatcher
                             updatedEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
                             db.SubmitChanges();
                         }
-
-                        App.mainViewModels.PlayHistoryListProperty = new ObservableCollection<PodcastEpisodeModel>();
 
                         handlerStoppedPlaying = OnPodcastStoppedPlaying;
                         if (handlerStoppedPlaying != null)

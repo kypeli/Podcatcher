@@ -47,20 +47,6 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private ObservableCollection<PodcastEpisodeModel> m_playHistory = new ObservableCollection<PodcastEpisodeModel>();
-        public ObservableCollection<PodcastEpisodeModel> PlayHistoryListProperty
-        {
-            get
-            {
-                return new ObservableCollection<PodcastEpisodeModel>(createPlayHistory());
-            }
-
-            set 
-            {
-                NotifyPropertyChanged("PlayHistoryListProperty");
-            }
-        }
-
         public ObservableCollection<PodcastEpisodeModel> LatestEpisodesListProperty
         {
             get
