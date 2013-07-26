@@ -127,8 +127,8 @@ namespace Podcatcher
                 {
                     Deployment.Current.Dispatcher.BeginInvoke(() =>
                     {
-                        sub.UnplayedEpisodes--;
-                        sub.PartiallyPlayedEpisodes--;
+                        sub.reloadUnplayedPlayedEpisodes();
+                        sub.reloadPartiallyPlayedEpisodes();
                     });
                     break;
                 }

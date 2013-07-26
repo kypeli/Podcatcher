@@ -493,7 +493,7 @@ namespace Podcatcher.ViewModels
         }
 
         private int m_unplayedEpisodes = 0;
-        [Column]
+        [Column(DbType = "SMALLINT DEFAULT 0 NOT NULL")]
         public int UnplayedEpisodes
         {
             get
@@ -503,13 +503,30 @@ namespace Podcatcher.ViewModels
 
             set
             {
-                m_unplayedEpisodes = unplayedEpisodesCount(PodcastId);
-                NotifyPropertyChanged("NumberOfEpisodesText");
+                if (value != m_unplayedEpisodes)
+                {
+                    m_unplayedEpisodes = value;
+                    NotifyPropertyChanged("NumberOfEpisodesText");                    
+                }
+            }
+        }
+
+        public void reloadUnplayedPlayedEpisodes()
+        {
+            UnplayedEpisodes = unplayedEpisodesCount(PodcastId);
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel sub = db.Subscriptions.FirstOrDefault(s => s.PodcastId == PodcastId);
+                if (sub != null)
+                {
+                    sub.UnplayedEpisodes = m_unplayedEpisodes;
+                    db.SubmitChanges();
+                }
             }
         }
 
         private int m_partiallyPlayedEpisodes = 0;
-        [Column]
+        [Column(DbType = "SMALLINT DEFAULT 0 NOT NULL")]
         public int PartiallyPlayedEpisodes
         {
             get
@@ -519,8 +536,25 @@ namespace Podcatcher.ViewModels
 
             set
             {
-                m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
-                NotifyPropertyChanged("NumberOfEpisodesText");
+                if (m_partiallyPlayedEpisodes != value)
+                {
+                    m_partiallyPlayedEpisodes = value;
+                    NotifyPropertyChanged("NumberOfEpisodesText");
+                }
+            }
+        }
+
+        public void reloadPartiallyPlayedEpisodes() 
+        {
+            PartiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel sub = db.Subscriptions.FirstOrDefault(s => s.PodcastId == PodcastId);
+                if (sub != null)
+                {
+                    sub.PartiallyPlayedEpisodes = m_partiallyPlayedEpisodes;
+                    db.SubmitChanges();
+                }
             }
         }
 

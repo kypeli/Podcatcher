@@ -626,8 +626,8 @@ namespace Podcatcher
                     return;
                 }
 
-                sub.UnplayedEpisodes--;
-                sub.PartiallyPlayedEpisodes--;
+                sub.reloadUnplayedPlayedEpisodes();
+                sub.reloadPartiallyPlayedEpisodes();
             }
             
             refreshNextSubscription();

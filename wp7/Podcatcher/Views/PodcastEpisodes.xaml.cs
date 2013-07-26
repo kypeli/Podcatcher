@@ -330,6 +330,8 @@ namespace Podcatcher.Views
 
         private void PodcastEpisodes_OnPodcastPlaystateChanged(object sender, EventArgs e)
         {
+            m_subscription.reloadPartiallyPlayedEpisodes();
+            m_subscription.reloadUnplayedPlayedEpisodes();
             m_subscription.EpisodesPublishedDescending = new ObservableCollection<PodcastEpisodeModel>();
             this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
         }
