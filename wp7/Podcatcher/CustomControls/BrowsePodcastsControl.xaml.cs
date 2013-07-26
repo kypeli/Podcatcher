@@ -25,6 +25,7 @@ namespace Podcatcher.CustomControls
         {
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Arts", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/arts/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "BBC", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/bbc/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Business", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/Business News/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "CBS", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/cbs/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Comedy", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/comedy/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Computer Science", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/Computer Science/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
@@ -41,6 +42,7 @@ namespace Podcatcher.CustomControls
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Skepticism", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/skepticism/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Literature", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/Literature/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Video Games", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/Video Games/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "NPR", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/NPR/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
             
             InitializeComponent();
             Loaded += PageLoaded;
