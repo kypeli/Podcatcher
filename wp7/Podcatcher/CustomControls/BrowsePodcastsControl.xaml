@@ -19,7 +19,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="20,20,20,20">
+                    <StackPanel Margin="20,20,20,20" Tap="PodcastGroupTapped">
                         <Rectangle Width="175" Height="175" Fill="{StaticResource PhoneAccentBrush}" />
                         <Border Background="Black" Width="175" Height="75" Margin="0,-75,0,0" Opacity="0.7">
                             <TextBlock Text="{Binding Name}"  HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}"/>

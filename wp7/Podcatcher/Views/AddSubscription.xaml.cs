@@ -32,11 +32,14 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Coding4Fun.Phone.Controls;
 using System.Windows.Media.Imaging;
+using Podcatcher.ViewModels;
 
 namespace Podcatcher.Views
 {
     public partial class AddSubscription : PhoneApplicationPage
     {
+        internal static List<BrowsePodcastsGroupModel> PodcastGroups = new List<BrowsePodcastsGroupModel>();
+
         /************************************* Public implementations *******************************/
         public AddSubscription()
         {

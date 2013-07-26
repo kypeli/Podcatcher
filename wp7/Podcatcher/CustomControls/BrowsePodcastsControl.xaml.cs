@@ -10,39 +10,45 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Podcatcher.ViewModels;
+using Podcatcher.Views;
+using System.Diagnostics;
 
 namespace Podcatcher.CustomControls
 {
     public partial class BrowsePodcastsControl : UserControl
     {
+        private const String GPODDER_API_BASEURL = "https://gpodder.net/api/2/";
+        private const int NUMBER_OF_PODCASTS_PER_GROUP = 25;
+
         public BrowsePodcastsControl()
         {
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Arts", RestAPIUrl = new Uri(GPODDER_API_BASEURL + "tag/arts/" + NUMBER_OF_PODCASTS_PER_GROUP + ".json") });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "CBS" });                 // https://gpodder.net/directory/CBC
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Comedy" });              // https://gpodder.net/directory/comedy
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Computer Science" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Drama" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Gadgets" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "News" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Religion" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Politics" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Technology" });          // https://gpodder.net/directory/technology
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "TV" });
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Science" });             // https://gpodder.net/directory/Science
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Sports" });              // https://gpodder.net/api/2/tag/Sports%20&%20Recreation/25.json
+            AddSubscription.PodcastGroups.Add(new BrowsePodcastsGroupModel { Name = "Skepticism" });
+            
             InitializeComponent();
             Loaded += PageLoaded;
-//            this.LoadingText.Visibility = Visibility.Visible;
         }
 
         void PageLoaded(object sender, RoutedEventArgs e)
         {
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Arts" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "CBS" });                 // https://gpodder.net/directory/CBC
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Comedy" });              // https://gpodder.net/directory/comedy
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Computer Science" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Drama" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Gadgets" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "News" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Religion" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Politics" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Technology" });          // https://gpodder.net/directory/technology
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "TV" });
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Science" });             // https://gpodder.net/directory/Science
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Sports" });              // https://gpodder.net/api/2/tag/Sports%20&%20Recreation/25.json
-            BrowsePodcastsList.Items.Add(new BrowsePodcastsItemModel { Name = "Skepticism" });        
+            BrowsePodcastsList.ItemsSource = AddSubscription.PodcastGroups.OrderBy(group => group.Name).ToArray();
         }
 
-        private void TextBlock_BindingValidationError(object sender, ValidationErrorEventArgs e)
+        private void PodcastGroupTapped(object sender, GestureEventArgs e)
         {
-
+            BrowsePodcastsGroupModel group = (sender as StackPanel).DataContext as BrowsePodcastsGroupModel;
         }
     }
 }

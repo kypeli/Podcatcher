@@ -11,12 +11,9 @@ using System.Windows.Shapes;
 
 namespace Podcatcher.ViewModels
 {
-    public class BrowsePodcastsItemModel
+    public class BrowsePodcastsGroupModel
     {
-        public String Name
-        {
-            get;
-            set;
-        }
+        public String Name { get; set; }
+        public Uri RestAPIUrl { get; set; }
     }
 }
