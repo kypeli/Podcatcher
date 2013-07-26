@@ -169,7 +169,7 @@ namespace Podcatcher.ViewModels
                         logoImage = new BitmapImage();
                         using (var stream = isoStore.OpenFile(isoFilename, System.IO.FileMode.OpenOrCreate))
                         {
-                            //logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
+                            // logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
                             try
                             {
                                 logoImage.SetSource(stream);

@@ -38,7 +38,6 @@ namespace Podcatcher.CustomControls
 {
     public partial class PodcastSearchResultControl : UserControl
     {
-        GPodderResultModel m_searchResultModel;
         PodcastSubscriptionsManager m_subscriptionManager;
 
         public PodcastSearchResultControl()
@@ -55,15 +54,39 @@ namespace Podcatcher.CustomControls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            m_searchResultModel = this.DataContext as GPodderResultModel;
-            m_subscriptionManager.addSubscriptionFromURL(m_searchResultModel.PodcastUrl);
+            GPodderResultModel searchResultModel = this.DataContext as GPodderResultModel;
+            String podcastUri = null;
+
+            // Hack.
+            if (searchResultModel != null)
+            { 
+                podcastUri = searchResultModel.PodcastUrl;
+            } else 
+            {
+                BrowsePodcastItemModel browseModel = this.DataContext as BrowsePodcastItemModel;
+                podcastUri = browseModel.url;
+            }
+
+            m_subscriptionManager.addSubscriptionFromURL(podcastUri);
         }
 
         private void ResultTapped(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            m_searchResultModel = this.DataContext as GPodderResultModel;
+            GPodderResultModel searchResultModel = this.DataContext as GPodderResultModel;
+            String podcastUri = null;
 
-            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastSubscriptionIntroduction.xaml?podcastUrl={0}", m_searchResultModel.PodcastUrl), UriKind.Relative));
+            // Hack.
+            if (searchResultModel != null)
+            {
+                podcastUri = searchResultModel.PodcastUrl;
+            }
+            else
+            {
+                BrowsePodcastItemModel browseModel = this.DataContext as BrowsePodcastItemModel;
+                podcastUri = browseModel.url;
+            }
+
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri(string.Format("/Views/PodcastSubscriptionIntroduction.xaml?podcastUrl={0}", podcastUri), UriKind.Relative));
         }
     }
 }

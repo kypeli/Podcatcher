@@ -123,9 +123,23 @@ namespace Podcatcher.Views
         private void subscriptionManager_OnPodcastChannelAddFinished(object source, SubscriptionManagerArgs e)
         {
             progressOverlay.Hide();
+
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.Navigated += new System.Windows.Navigation.NavigatedEventHandler(NavigationService_Navigated);
+                NavigationService.GoBack();
+            }
+        }
+
+        void NavigationService_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
             if (NavigationService.CanGoBack)
             {
                 NavigationService.GoBack();
+            }
+            else
+            {
+                NavigationService.Navigated -= new System.Windows.Navigation.NavigatedEventHandler(NavigationService_Navigated);
             }
         }
 
