@@ -53,7 +53,7 @@ namespace Podcatcher.ViewModels
             {
                 using (var db = new PodcastSqlModel())
                 {
-                    List<PodcastEpisodeModel> latest = db.Episodes.OrderByDescending(ep => ep.EpisodePublished).Take(20).ToList<PodcastEpisodeModel>();
+                    List<PodcastEpisodeModel> latest = db.Episodes.OrderByDescending(ep => ep.EpisodePublished).Take(10).ToList<PodcastEpisodeModel>();
                     return new ObservableCollection<PodcastEpisodeModel>(latest);
                 }
             }
