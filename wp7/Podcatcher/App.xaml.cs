@@ -116,9 +116,6 @@ namespace Podcatcher
             // Global handler for uncaught exceptions. 
             UnhandledException += Application_UnhandledException;
 
-            // Updates episodes from the audio agent. 
-            refreshEpisodesFromAudioAgent();
-
             // Standard Silverlight initialization
             InitializeComponent();
 
@@ -284,7 +281,11 @@ namespace Podcatcher
             }
 
             CheckLicense();
+
+            // Updates episodes from the audio agent. 
+            refreshEpisodesFromAudioAgent();
         }
+
         // Code to execute when the application is activated (brought to foreground)
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
