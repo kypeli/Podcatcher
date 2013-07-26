@@ -492,16 +492,12 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_unplayedEpisodes = -1;
+        private int m_unplayedEpisodes = 0;
+        [Column]
         public int UnplayedEpisodes
         {
             get
             {
-                if (m_unplayedEpisodes < 0)
-                {
-                    m_unplayedEpisodes = unplayedEpisodesCount(PodcastId);
-                }
-
                 return m_unplayedEpisodes;
             }
 
@@ -512,16 +508,12 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private int m_partiallyPlayedEpisodes = -1;
+        private int m_partiallyPlayedEpisodes = 0;
+        [Column]
         public int PartiallyPlayedEpisodes
         {
             get
             {
-                if (m_partiallyPlayedEpisodes < 0)
-                {
-                    m_partiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
-                }
-
                 return m_partiallyPlayedEpisodes;
             }
 
@@ -532,7 +524,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private static int unplayedEpisodesCount(int subscriptionId)
+        private int unplayedEpisodesCount(int subscriptionId)
         {
             using (var db = new PodcastSqlModel())
             {
@@ -556,7 +548,7 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private static int partiallyPlayedEpisodesCount(int subscriptionId)
+        private int partiallyPlayedEpisodesCount(int subscriptionId)
         {
             using (var db = new PodcastSqlModel())
             {

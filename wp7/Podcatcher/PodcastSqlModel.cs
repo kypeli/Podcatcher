@@ -120,6 +120,14 @@ namespace Podcatcher
                     updater.AddColumn<SettingsModel>("IsAddDownloadsToPlayQueue");
                 }
 
+                if (updater.DatabaseSchemaVersion < 10)
+                {
+                    updater.AddColumn<PodcastSubscriptionModel>("UnplayedEpisodes");
+                    updater.AddColumn<PodcastSubscriptionModel>("PartiallyPlayedEpisodes");
+                    
+                    App.forceReloadOfEpisodeData = true;
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
@@ -393,7 +401,7 @@ namespace Podcatcher
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
-        private const int DB_VERSION = 9;
+        private const int DB_VERSION = 10;
 
         private bool isValidSubscriptionModelIndex(int index)
         {

@@ -69,6 +69,7 @@ namespace Podcatcher
 
         private static LicenseInformation m_licenseInfo;
         private static bool m_isTrial = true;
+        public static bool forceReloadOfEpisodeData = false;        
 
         public static MainViewModels mainViewModels = new MainViewModels();
 

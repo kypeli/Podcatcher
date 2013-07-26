@@ -610,11 +610,26 @@ namespace Podcatcher
             Debug.WriteLine("Starting refreshing episodes for " + subscription.PodcastName);
             subscription.EpisodesManager.updatePodcastEpisodes();
 
+            args.Result = subscription;
             Debug.WriteLine("Done.");
         }
 
         private void workerUpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // Ugly.
+            if (App.forceReloadOfEpisodeData)
+            {
+                PodcastSubscriptionModel sub = e.Result as PodcastSubscriptionModel;
+                if (sub == null)
+                {
+                    Debug.WriteLine("Warning: Could not get subscription from e.Result!");
+                    return;
+                }
+
+                sub.UnplayedEpisodes--;
+                sub.PartiallyPlayedEpisodes--;
+            }
+            
             refreshNextSubscription();
         }
 
