@@ -149,6 +149,9 @@ namespace Podcatcher
                 }
             }
 
+            // Update all episodes to the latest list.
+            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
+
             m_subscriptions = new ObservableCollection<PodcastSubscriptionModel>(subs);
             this.SubscriptionsList.ItemsSource = m_subscriptions;
 
@@ -180,6 +183,9 @@ namespace Podcatcher
             this.SubscriptionsList.ItemsSource = m_subscriptions;
 
             NoSubscriptionsLabel.Visibility = Visibility.Collapsed;
+
+            // Update all episodes to the latest list.
+            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
         }
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)

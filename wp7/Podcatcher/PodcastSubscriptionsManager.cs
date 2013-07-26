@@ -511,7 +511,6 @@ namespace Podcatcher
             addArgs.isImportingFromExternalService = importingFromExternalService;
 
             OnPodcastChannelAddFinished(this, addArgs);
-
             OnPodcastChannelAdded(podcastModel);
         }
 
