@@ -15,5 +15,6 @@ namespace Podcatcher.ViewModels
     {
         public String Name { get; set; }
         public Uri RestAPIUrl { get; set; }
+        public String CachedJSON { get; set; }
     }
 }
