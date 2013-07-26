@@ -88,7 +88,7 @@ namespace Podcatcher.Views
                 this.opmlNotAvailable.Visibility = System.Windows.Visibility.Collapsed;
                 this.opmlUrl.IsEnabled = true;
                 this.importFromOpmlUrl.IsEnabled = true;
-            }
+            }            
         }
 
         /************************************* Private implementations *******************************/

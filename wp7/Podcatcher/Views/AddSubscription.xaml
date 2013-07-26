@@ -15,7 +15,7 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
+    mc:Ignorable="d" d:DesignHeight="696" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True"
     Style="{StaticResource TurnstilePage}">
 
@@ -29,49 +29,54 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
                 <controls:Pivot>
-                    <!-- Popular podcasts pivot item -->
-                    <controls:PivotItem Header="popular podcasts">
-                        <pc:PopularPodcastsControl/>
-                    </controls:PivotItem>
-
-                    <!-- Search podcasts pivot item -->
-                    <controls:PivotItem Header="search podcast">
-                        <pc:PodcastSearchControl x:Name="SearchControl"/>
-                    </controls:PivotItem>
+                <!-- Popular podcasts pivot item -->
+                <controls:PivotItem Header="browse">
+                    <pc:BrowsePodcastsControl/>
+                </controls:PivotItem>
                 
-                    <!-- Add podcasts manually pivot item -->
-                    <controls:PivotItem Header="add podcast">
-                        <StackPanel Height="661" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
-                            <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Podcast RSS URL" TextWrapping="Wrap" />
-                            <TextBox Height="71" InputScope="url" Name="addFromUrlInput" Text="" d:LayoutOverrides="HorizontalMargin" />
-                            <Button Content="Add" Height="71" Name="addFromUrlButton" Width="152" HorizontalAlignment="Right" Click="addFromUrlButton_Click" Margin="0,0,8,0" />
-                            </StackPanel>
-                    </controls:PivotItem>
-
-                    <!-- Add podcasts from gpodder -->
-                    <controls:PivotItem Header="import from gpodder">
-                        <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
-                            <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder username" TextWrapping="Wrap" />
-                            <TextBox Height="71" Name="gpodderUsername" Text="" d:LayoutOverrides="HorizontalMargin" />
-                            <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder password" TextWrapping="Wrap" />
-                            <PasswordBox Height="71" Name="gpodderPassword" d:LayoutOverrides="HorizontalMargin" />
-                        <Button Content="Import" Height="71" Name="importFromGpodderButton" Width="152" HorizontalAlignment="Right" Click="importFromGpodderButton_Click" Margin="0,0,8,0" />
-                        <TextBlock x:Name="gpodderDisclaimer" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="If you have an account on gpodder.net you can import your subscriptions by entering your username and password above. If you don't have an account, you can create one for free at https://gpodder.net/register/."/><LineBreak/><LineBreak/><Run Text="Username or password will not be stored locally."/></TextBlock>
-                        <TextBlock Visibility="Collapsed" x:Name="gpodderNotAvailable" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="Importing subscriptions from gPodder is only available in the full version of Podcatcher."/></TextBlock>
-                    </StackPanel>
+                <!-- Popular podcasts pivot item -->
+                <controls:PivotItem Header="popular">
+                    <pc:PopularPodcastsControl/>
                 </controls:PivotItem>
 
-                <!-- Add podcasts from OPML URL -->
-                    <controls:PivotItem Header="opml file import">
-                        <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
-                            <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="URL to OPML file" TextWrapping="Wrap" />
-                            <TextBox Height="71" Name="opmlUrl" Text="" d:LayoutOverrides="HorizontalMargin" />
-                            <Button Content="Import" Height="71" Name="importFromOpmlUrl" Width="152" HorizontalAlignment="Right" Margin="0,0,8,0" Click="importFromOpmlUrl_Click" />
-                            <TextBlock x:Name="opmlDisclaimer" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="You can give the HTTP location of your OPML podcasts subscription file here. The file could be for example on SkyDrive or Dropbox. Just ensure that the file URL is accessible by everyone."/></TextBlock>
-                            <TextBlock Visibility="Collapsed" x:Name="opmlNotAvailable" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="Importing subscriptions from an OPML file is only available in the full version of Podcatcher."/></TextBlock>
+                <!-- Search podcasts pivot item -->
+                <controls:PivotItem Header="search podcast">
+                    <pc:PodcastSearchControl x:Name="SearchControl"/>
+                </controls:PivotItem>
+                
+                <!-- Add podcasts manually pivot item -->
+                <controls:PivotItem Header="add podcast">
+                    <StackPanel Height="661" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
+                        <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Podcast RSS URL" TextWrapping="Wrap" />
+                        <TextBox Height="71" InputScope="url" Name="addFromUrlInput" Text="" d:LayoutOverrides="HorizontalMargin" />
+                        <Button Content="Add" Height="71" Name="addFromUrlButton" Width="152" HorizontalAlignment="Right" Click="addFromUrlButton_Click" Margin="0,0,8,0" />
                         </StackPanel>
+                </controls:PivotItem>
 
-                    </controls:PivotItem>
+                <!-- Add podcasts from gpodder -->
+                <controls:PivotItem Header="import from gpodder">
+                    <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
+                        <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder username" TextWrapping="Wrap" />
+                        <TextBox Height="71" Name="gpodderUsername" Text="" d:LayoutOverrides="HorizontalMargin" />
+                        <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="gPodder password" TextWrapping="Wrap" />
+                        <PasswordBox Height="71" Name="gpodderPassword" d:LayoutOverrides="HorizontalMargin" />
+                    <Button Content="Import" Height="71" Name="importFromGpodderButton" Width="152" HorizontalAlignment="Right" Click="importFromGpodderButton_Click" Margin="0,0,8,0" />
+                    <TextBlock x:Name="gpodderDisclaimer" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="If you have an account on gpodder.net you can import your subscriptions by entering your username and password above. If you don't have an account, you can create one for free at https://gpodder.net/register/."/><LineBreak/><LineBreak/><Run Text="Username or password will not be stored locally."/></TextBlock>
+                    <TextBlock Visibility="Collapsed" x:Name="gpodderNotAvailable" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="Importing subscriptions from gPodder is only available in the full version of Podcatcher."/></TextBlock>
+                </StackPanel>
+            </controls:PivotItem>
+
+            <!-- Add podcasts from OPML URL -->
+                <controls:PivotItem Header="opml file import">
+                    <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
+                        <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="URL to OPML file" TextWrapping="Wrap" />
+                        <TextBox Height="71" Name="opmlUrl" Text="" d:LayoutOverrides="HorizontalMargin" />
+                        <Button Content="Import" Height="71" Name="importFromOpmlUrl" Width="152" HorizontalAlignment="Right" Margin="0,0,8,0" Click="importFromOpmlUrl_Click" />
+                        <TextBlock x:Name="opmlDisclaimer" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="You can give the HTTP location of your OPML podcasts subscription file here. The file could be for example on SkyDrive or Dropbox. Just ensure that the file URL is accessible by everyone."/></TextBlock>
+                        <TextBlock Visibility="Collapsed" x:Name="opmlNotAvailable" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="Importing subscriptions from an OPML file is only available in the full version of Podcatcher."/></TextBlock>
+                    </StackPanel>
+
+                </controls:PivotItem>
             </controls:Pivot>
 
             <c4f:ProgressOverlay x:Name="progressOverlay" Visibility="Collapsed">
@@ -85,17 +90,17 @@
             </c4f:ProgressOverlay> 
         </Grid>
     </Grid>
- 
+
+
     <!--Sample code showing usage of ApplicationBar-->
-    <!--<phone:PhoneApplicationPage.ApplicationBar>
+    <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
-                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+                <shell:ApplicationBarMenuItem Text="Add podcast RSS URL"/>
+                <shell:ApplicationBarMenuItem Text="Import podcasts from gPodder"/>
+                <shell:ApplicationBarMenuItem Text="Import OPML file via URL"/>
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>-->
+    </phone:PhoneApplicationPage.ApplicationBar>
 
 </phone:PhoneApplicationPage>

@@ -86,6 +86,9 @@
     <Compile Include="Converters\ColorConverters.cs" />
     <Compile Include="Converters\Converters.cs" />
     <Compile Include="Converters\StringUtils.cs" />
+    <Compile Include="CustomControls\BrowsePodcastsControl.xaml.cs">
+      <DependentUpon>BrowsePodcastsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\ObservableQueue.cs" />
     <Compile Include="CustomControls\PlayQueueControl.xaml.cs">
       <DependentUpon>PlayQueueControl.xaml</DependentUpon>
@@ -117,6 +120,7 @@
     <Compile Include="PlaylistDBContext.cs" />
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="PodcastPlaybackManager.cs" />
+    <Compile Include="ViewModels\BrowsePodcastsItemModel.cs" />
     <Compile Include="ViewModels\GPodderResultModel.cs" />
     <Compile Include="ViewModels\LastPlayedModel.cs" />
     <Compile Include="ViewModels\MainViewModels.cs" />
@@ -170,6 +174,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="CustomControls\BrowsePodcastsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomControls\PlayQueueControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
