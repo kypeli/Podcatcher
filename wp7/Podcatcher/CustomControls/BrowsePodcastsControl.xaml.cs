@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Podcatcher.ViewModels;
 using Podcatcher.Views;
 using System.Diagnostics;
+using Microsoft.Phone.Controls;
 
 namespace Podcatcher.CustomControls
 {
@@ -46,9 +47,12 @@ namespace Podcatcher.CustomControls
             BrowsePodcastsList.ItemsSource = AddSubscription.PodcastGroups.OrderBy(group => group.Name).ToArray();
         }
 
-        private void PodcastGroupTapped(object sender, GestureEventArgs e)
+        private void PodcastGroupTapped(object sender, System.Windows.Input.GestureEventArgs e)
         {
             BrowsePodcastsGroupModel group = (sender as StackPanel).DataContext as BrowsePodcastsGroupModel;
+
+            PhoneApplicationFrame applicationFrame = Application.Current.RootVisual as PhoneApplicationFrame;
+            applicationFrame.Navigate(new Uri(string.Format("/Views/PodcastListCategory.xaml?categoryName={0}", group.Name), UriKind.Relative));
         }
     }
 }

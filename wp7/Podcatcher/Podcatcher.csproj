@@ -153,6 +153,9 @@
     <Compile Include="Views\PodcastEpisodes.xaml.cs">
       <DependentUpon>PodcastEpisodes.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PodcastListCategory.xaml.cs">
+      <DependentUpon>PodcastListCategory.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PodcastPlayerView.xaml.cs">
       <DependentUpon>PodcastPlayerView.xaml</DependentUpon>
     </Compile>
@@ -239,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PodcastEpisodes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PodcastListCategory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
