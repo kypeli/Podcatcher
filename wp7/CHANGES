@@ -1,8 +1,10 @@
 2.4.3.0
 -------
+* Add a "Browse" view to browse through categories of podcasts when you add a new podcast.
 * Replace "Recent" list with "Latest" list showing latest episodes within all subscriptions.
-* Fix: Don't add duplicate episodes even if the podcast stream says the pubDate has changed.
 * Startup performance improvements. 
+* Fix: Don't add duplicate episodes even if the podcast stream says the pubDate has changed.
+* Make podcasts from wizards.com work. Their "pubDate" is faulty.
 
 2.4.2.0
 -------
