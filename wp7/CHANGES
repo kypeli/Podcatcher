@@ -1,3 +1,9 @@
+2.4.3.0
+-------
+* Replace "Recent" list with "Latest" list showing latest episodes within all subscriptions.
+* Fix: Don't add duplicate episodes even if the podcast stream says the pubDate has changed.
+* Startup performance improvements. 
+
 2.4.2.0
 -------
 * Bug fixes:
