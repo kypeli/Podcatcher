@@ -63,6 +63,7 @@ namespace Podcatcher
             PodcastEpisodeModel currentlyPlayingEpisode = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
             restoreEpisodeToPlayerUI(currentlyPlayingEpisode);
             m_currentPlayerEpisode = currentlyPlayingEpisode;
+            updatePlayerPosition();
         }
 
         public static PodcastPlayerControl getIntance()
@@ -584,15 +585,21 @@ namespace Podcatcher
         {
             Debug.WriteLine("Tick.");            
             PositionSlider.Value = 0;
-            TimeSpan position = TimeSpan.Zero;
+            updatePlayerPosition();
+        }
 
+        private void updatePlayerPosition()
+        {
+            TimeSpan position = TimeSpan.Zero;
             settingSliderFromPlay = true;
 
             try
             {
-                if (BackgroundAudioPlayer.Instance.Track == null
-                    || BackgroundAudioPlayer.Instance.Position == null)
+                if ((BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing || BackgroundAudioPlayer.Instance.PlayerState != PlayState.Paused)
+                    && (BackgroundAudioPlayer.Instance.Track == null
+                        || BackgroundAudioPlayer.Instance.Position == null))
                 {
+                    settingSliderFromPlay = false;
                     return;
                 }
 
@@ -605,14 +612,12 @@ namespace Podcatcher
             catch (InvalidOperationException ioe)
             {
                 Debug.WriteLine("Error when updating player: " + ioe.Message);
-                return;
             }
             catch (SystemException syse)
             {
                 Debug.WriteLine("Error when updating player: " + syse.Message);
                 App.showErrorToast("WP8 cannot play from this location.");
                 StopPlayback();
-                return;
             }
 
             settingSliderFromPlay = false;
