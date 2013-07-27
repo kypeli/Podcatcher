@@ -44,15 +44,6 @@
                     <pc:PodcastSearchControl x:Name="SearchControl"/>
                 </controls:PivotItem>
                 
-                <!-- Add podcasts manually pivot item -->
-                <controls:PivotItem Header="add podcast">
-                    <StackPanel Height="661" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
-                        <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="Podcast RSS URL" TextWrapping="Wrap" />
-                        <TextBox Height="71" InputScope="url" Name="addFromUrlInput" Text="" d:LayoutOverrides="HorizontalMargin" />
-                        <Button Content="Add" Height="71" Name="addFromUrlButton" Width="152" HorizontalAlignment="Right" Click="addFromUrlButton_Click" Margin="0,0,8,0" />
-                        </StackPanel>
-                </controls:PivotItem>
-
                 <!-- Add podcasts from gpodder -->
                 <controls:PivotItem Header="import from gpodder">
                     <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
@@ -96,7 +87,7 @@
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="Add podcast RSS URL"/>
+                <shell:ApplicationBarMenuItem Text="Add podcast RSS URL" Click="addPodcastFromURL_clicked" />
                 <shell:ApplicationBarMenuItem Text="Import podcasts from gPodder"/>
                 <shell:ApplicationBarMenuItem Text="Import OPML file via URL"/>
             </shell:ApplicationBar.MenuItems>

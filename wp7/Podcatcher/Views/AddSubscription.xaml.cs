@@ -98,11 +98,6 @@ namespace Podcatcher.Views
         #region private
         private PodcastSubscriptionsManager m_subscriptionManager;
 
-        private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
-        {
-            m_subscriptionManager.addSubscriptionFromURL(addFromUrlInput.Text);
-        }
-
         private void subscriptionManager_OnPodcastChannelAddStarted(object source, SubscriptionManagerArgs e)
         {
             ProgressText.Text = "Subscribing";
@@ -188,6 +183,11 @@ namespace Podcatcher.Views
         private void importFromOpmlUrl_Click(object sender, RoutedEventArgs e)
         {
             m_subscriptionManager.addSubscriptionFromOPMLFile(opmlUrl.Text);
+        }
+
+        private void addPodcastFromURL_clicked(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri(string.Format("/Views/AddPodcastFromURL.xaml"), UriKind.Relative));
         }
     }
 }
