@@ -149,6 +149,9 @@
     <Compile Include="Views\ImportPodcastsFromGPodder.xaml.cs">
       <DependentUpon>ImportPodcastsFromGPodder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ImportPodcastsViaOPML.xaml.cs">
+      <DependentUpon>ImportPodcastsViaOPML.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -244,6 +247,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ImportPodcastsFromGPodder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImportPodcastsViaOPML.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

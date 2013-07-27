@@ -643,7 +643,10 @@ namespace Podcatcher
                 m_activeExternalImportsCount--;
                 if (m_activeExternalImportsCount <= 0)
                 {
-                    OnGPodderImportFinished(this, null);
+                    if (OnGPodderImportFinished != null)
+                    {
+                        OnGPodderImportFinished(this, null);
+                    }
                 }
             }
         }

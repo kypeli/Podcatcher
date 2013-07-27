@@ -28,7 +28,7 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-                <controls:Pivot>
+            <controls:Pivot>
                 <!-- Popular podcasts pivot item -->
                 <controls:PivotItem Header="browse">
                     <pc:BrowsePodcastsControl/>
@@ -40,21 +40,9 @@
                 </controls:PivotItem>
 
                 <!-- Search podcasts pivot item -->
-                <controls:PivotItem Header="search podcast">
+                <controls:PivotItem Header="search">
                     <pc:PodcastSearchControl x:Name="SearchControl"/>
-                </controls:PivotItem>
-                
-            <!-- Add podcasts from OPML URL -->
-                <controls:PivotItem Header="opml file import">
-                    <StackPanel Height="628" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="432">
-                        <TextBlock Height="Auto" Margin="0,0,0,0" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="URL to OPML file" TextWrapping="Wrap" />
-                        <TextBox Height="71" Name="opmlUrl" Text="" d:LayoutOverrides="HorizontalMargin" />
-                        <Button Content="Import" Height="71" Name="importFromOpmlUrl" Width="152" HorizontalAlignment="Right" Margin="0,0,8,0" Click="importFromOpmlUrl_Click" />
-                        <TextBlock x:Name="opmlDisclaimer" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="You can give the HTTP location of your OPML podcasts subscription file here. The file could be for example on SkyDrive or Dropbox. Just ensure that the file URL is accessible by everyone."/></TextBlock>
-                        <TextBlock Visibility="Collapsed" x:Name="opmlNotAvailable" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="Importing subscriptions from an OPML file is only available in the full version of Podcatcher."/></TextBlock>
-                    </StackPanel>
-
-                </controls:PivotItem>
+                </controls:PivotItem>                
             </controls:Pivot>
 
             <c4f:ProgressOverlay x:Name="progressOverlay" Visibility="Collapsed">
@@ -69,14 +57,12 @@
         </Grid>
     </Grid>
 
-
-    <!--Sample code showing usage of ApplicationBar-->
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Add podcast RSS URL" Click="addPodcastFromURL_clicked" />
                 <shell:ApplicationBarMenuItem Text="Import podcasts from gPodder" Click="importPodcastsFromGPodder_clicked" />
-                <shell:ApplicationBarMenuItem Text="Import OPML file via URL"/>
+                <shell:ApplicationBarMenuItem Text="Import OPML file via URL" Click="importViaOPML_clicked" />
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>

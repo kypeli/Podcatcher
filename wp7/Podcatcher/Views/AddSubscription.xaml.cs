@@ -58,37 +58,6 @@ namespace Podcatcher.Views
 
         }
 
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
-        {
-/*            if (App.IsTrial)
-            {
-                this.gpodderDisclaimer.Visibility = System.Windows.Visibility.Collapsed;
-                this.gpodderNotAvailable.Visibility = System.Windows.Visibility.Visible;
-                this.gpodderPassword.IsEnabled = false;
-                this.gpodderUsername.IsEnabled = false;
-                this.importFromGpodderButton.IsEnabled = false;
-
-                this.opmlDisclaimer.Visibility = System.Windows.Visibility.Collapsed;
-                this.opmlNotAvailable.Visibility = System.Windows.Visibility.Visible;
-                this.opmlUrl.IsEnabled = false;
-                this.importFromOpmlUrl.IsEnabled = false;
-            }
-            else
-            {
-                this.gpodderDisclaimer.Visibility = System.Windows.Visibility.Visible;
-                this.gpodderNotAvailable.Visibility = System.Windows.Visibility.Collapsed;
-                this.gpodderPassword.IsEnabled = true;
-                this.gpodderUsername.IsEnabled = true;
-                this.importFromGpodderButton.IsEnabled = true;
-
-                this.opmlDisclaimer.Visibility = System.Windows.Visibility.Visible;
-                this.opmlNotAvailable.Visibility = System.Windows.Visibility.Collapsed;
-                this.opmlUrl.IsEnabled = true;
-                this.importFromOpmlUrl.IsEnabled = true;
-            }            
- */
-        }
-
         /************************************* Private implementations *******************************/
         #region private
         private PodcastSubscriptionsManager m_subscriptionManager;
@@ -141,10 +110,6 @@ namespace Podcatcher.Views
 
         #endregion
 
-        private void importFromOpmlUrl_Click(object sender, RoutedEventArgs e)
-        {
-            m_subscriptionManager.addSubscriptionFromOPMLFile(opmlUrl.Text);
-        }
 
         private void addPodcastFromURL_clicked(object sender, EventArgs e)
         {
@@ -154,6 +119,11 @@ namespace Podcatcher.Views
         private void importPodcastsFromGPodder_clicked(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri(string.Format("/Views/ImportPodcastsFromGPodder.xaml"), UriKind.Relative));
+        }
+
+        private void importViaOPML_clicked(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri(string.Format("/Views/ImportPodcastsViaOPML.xaml"), UriKind.Relative));
         }
     }
 }
