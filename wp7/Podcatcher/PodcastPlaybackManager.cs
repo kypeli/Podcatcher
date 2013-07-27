@@ -604,6 +604,8 @@ namespace Podcatcher
 
                             episode.TotalLengthTicks = CurrentlyPlayingEpisode.TotalLengthTicks;
                             db.SubmitChanges();
+
+                            PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(episode.PodcastSubscription);
                         }
                     }
 
@@ -644,8 +646,47 @@ namespace Podcatcher
                         return;
                     }
 
-                    addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
-                    long playpos = App.getPlayposFromAudioAgentForEpisode(CurrentlyPlayingEpisode);
+                    // FUCK YOU WINDOWS PHONE!!
+                    /**
+                     * This is so horrible that I can't find other words to describe how bad the BackgroundAudioPlayer
+                     * is in Windows Phone!
+                     * 
+                     * First of all the events are fired totally differently between Windows Phone 7 and Windows Phone 8. 
+                     * Secondly the events related to when tracks end arae totally wrong and horrible! Let me explain:
+                     * - We get here the PlayState.Stopped event when the track ends. 
+                     * - We get the event here BEFORE the AudioAgent gets any events.
+                     * - AudioAgent correctly gets the PlayState.TrackEnded event, but it gets it after we have received the 
+                     *   event here.
+                     * - We NEVER get the the PlayState.TrackEnded event here.
+                     * - Which is not the case for Windows Phone 7, because it first fires PlayState.TrackEnded. 
+                     *
+                     * So this code here is a horrible kludge that just guesses that Windows Phone means "track did end" 
+                     * when the state is stopped and the play position is still 0.
+                     * 
+                     * Johan, when you return from the future to this piece of code, don't even try to change it or "fix it".
+                     **/
+                    long playpos = 0;
+                    if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.TrackEnded)
+                    {
+                        playpos = CurrentlyPlayingEpisode.TotalLengthTicks;
+                    }
+                    else if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped
+                      && BackgroundAudioPlayer.Instance.Position.Ticks == 0)
+                    {
+                        playpos = CurrentlyPlayingEpisode.TotalLengthTicks;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            playpos = BackgroundAudioPlayer.Instance.Position.Ticks;
+                        }
+                        catch (Exception)
+                        {
+                            Debug.WriteLine("Warning: Player didn't return us a play pos!");
+                        }
+                    }
+
                     CurrentlyPlayingEpisode.SavedPlayPos = playpos;
                     CurrentlyPlayingEpisode.setNoPlaying();
 
@@ -666,6 +707,8 @@ namespace Podcatcher
                                 savingEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
                             }
                             db.SubmitChanges();
+
+                            PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(savingEpisode.PodcastSubscription);
                         }
                     }
 
