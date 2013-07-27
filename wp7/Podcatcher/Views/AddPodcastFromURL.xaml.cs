@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using Coding4Fun.Phone.Controls;
 
 namespace Podcatcher.Views
 {
@@ -22,8 +23,8 @@ namespace Podcatcher.Views
 
         private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
         {
+            progressOverlay.Visibility = System.Windows.Visibility.Visible;
             PodcastSubscriptionsManager.getInstance().addSubscriptionFromURL(addFromUrlInput.Text);
         }
-
     }
 }

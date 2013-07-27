@@ -146,6 +146,9 @@
     <Compile Include="Views\AddSubscription.xaml.cs">
       <DependentUpon>AddSubscription.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ImportPodcastsFromGPodder.xaml.cs">
+      <DependentUpon>ImportPodcastsFromGPodder.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -237,6 +240,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AddSubscription.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImportPodcastsFromGPodder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

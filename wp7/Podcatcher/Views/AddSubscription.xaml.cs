@@ -56,17 +56,11 @@ namespace Podcatcher.Views
             m_subscriptionManager.OnPodcastChannelRequiresAuthentication
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelRequiresAuthentication);
 
-            m_subscriptionManager.OnGPodderImportStarted
-                += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportStarted);
-            m_subscriptionManager.OnGPodderImportFinished
-                += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinished);
-            m_subscriptionManager.OnGPodderImportFinishedWithError
-                += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinishedWithError);
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            if (App.IsTrial)
+/*            if (App.IsTrial)
             {
                 this.gpodderDisclaimer.Visibility = System.Windows.Visibility.Collapsed;
                 this.gpodderNotAvailable.Visibility = System.Windows.Visibility.Visible;
@@ -92,6 +86,7 @@ namespace Podcatcher.Views
                 this.opmlUrl.IsEnabled = true;
                 this.importFromOpmlUrl.IsEnabled = true;
             }            
+ */
         }
 
         /************************************* Private implementations *******************************/
@@ -144,40 +139,6 @@ namespace Podcatcher.Views
             NavigationService.Navigate(new Uri(string.Format("/Views/PodcastSubscriptionCredentials.xaml?url={0}", e.podcastFeedRSSUri.ToString()), UriKind.Relative));
         }
 
-        private void importFromGpodderButton_Click(object sender, RoutedEventArgs e)
-        {
-            NetworkCredential nc = new NetworkCredential(gpodderUsername.Text, gpodderPassword.Password);
-            m_subscriptionManager.importFromGpodderWithCredentials(nc);
-        }
-
-        private void subscriptionManager_OnGPodderImportStarted(object source, SubscriptionManagerArgs e)
-        {
-            ProgressText.Text = "Importing from gPodder...";
-            progressOverlay.Show();
-        }
-
-        private void subscriptionManager_OnGPodderImportFinished(object source, SubscriptionManagerArgs e)
-        {
-            progressOverlay.Hide();
-            if (NavigationService.CanGoBack)
-            {
-                NavigationService.GoBack();
-            }
-            progressOverlay.Hide();
-        }
-
-        private void subscriptionManager_OnGPodderImportFinishedWithError(object source, SubscriptionManagerArgs e)
-        {
-            progressOverlay.Hide();
-
-            ToastPrompt toast = new ToastPrompt();
-            toast.Title = "Error";
-            toast.Message = e.message;
-
-            toast.Show();
-        }
-
-
         #endregion
 
         private void importFromOpmlUrl_Click(object sender, RoutedEventArgs e)
@@ -188,6 +149,11 @@ namespace Podcatcher.Views
         private void addPodcastFromURL_clicked(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri(string.Format("/Views/AddPodcastFromURL.xaml"), UriKind.Relative));
+        }
+
+        private void importPodcastsFromGPodder_clicked(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri(string.Format("/Views/ImportPodcastsFromGPodder.xaml"), UriKind.Relative));
         }
     }
 }
