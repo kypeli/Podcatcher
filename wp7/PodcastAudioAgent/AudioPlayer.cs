@@ -155,8 +155,11 @@ namespace PodcastAudioAgent
             {
                 try
                 {
-                    currentPlaylistItem.SavedPlayPosTick = player.Position.Ticks;
-                    updateToDBPlaylistItem(currentPlaylistItem);
+                    if (player.Position.Ticks > 0)
+                    {
+                        currentPlaylistItem.SavedPlayPosTick = player.Position.Ticks;
+                        updateToDBPlaylistItem(currentPlaylistItem);
+                    }
                 }
                 catch (Exception)
                 {

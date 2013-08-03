@@ -200,19 +200,21 @@ namespace Podcatcher
                             continue;
                         }
 
-                        Debug.WriteLine("Updating episode '" + e.EpisodeName + "' playpos to: " + i.SavedPlayPosTick);
-                        e.SavedPlayPos = i.SavedPlayPosTick;
-
-                        // Update play state to listened as appropriate.
-                        if (e.isListened())
+                        if (i.SavedPlayPosTick > 0)
                         {
-                            e.markAsListened(deleteListened);
-                            PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
-                            PodcastPlaybackManager.getInstance().removeFromPlayqueue(e);
-                            listenedItemsCount++;
-                        }
+                            Debug.WriteLine("Updating episode '" + e.EpisodeName + "' playpos to: " + i.SavedPlayPosTick);
+                            e.SavedPlayPos = i.SavedPlayPosTick;
 
-                        db.SubmitChanges();
+                            // Update play state to listened as appropriate.
+                            if (e.isListened())
+                            {
+                                e.markAsListened(deleteListened);
+                                PodcastPlaybackManager.getInstance().removeFromPlayqueue(e);
+                                listenedItemsCount++;
+                            }
+
+                            db.SubmitChanges();
+                        }
                     }
                 }
 
@@ -260,7 +262,6 @@ namespace Podcatcher
                     if (e.isListened())
                     {
                         e.markAsListened(deleteListened);
-                        PodcastPlaybackManager.getInstance().addEpisodeToPlayHistory(e);
                     }
 
                     db.SubmitChanges();
