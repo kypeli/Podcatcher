@@ -85,7 +85,10 @@ namespace PodcastAudioAgent
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    updatePlayposForCurrentEpisode(player);
+                    PlaylistItem currentPlaylistItem = getCurrentlyPlayingTrack();
+                    currentPlaylistItem.SavedPlayPosTick = currentPlaylistItem.TotalPlayTicks; // We hit TrackEnded event so we can save the playpos to the end.
+                                                                                               // But really, this is a bug in WP8 since the player doesn't know the playpos at this point anymore.
+                    updateToDBPlaylistItem(currentPlaylistItem);
                     
                     // Start playing next track if we have one.
                     AudioTrack nextTrack = getNextPlaylistTrack();
@@ -118,6 +121,10 @@ namespace PodcastAudioAgent
                     Debug.WriteLine("Play state: Paused");
                     break;
                 case PlayState.Playing:
+                    PlaylistItem plItem = getCurrentlyPlayingTrack();
+                    plItem.TotalPlayTicks = player.Track.Duration.Ticks;
+                    updateToDBPlaylistItem(plItem);
+
                     updatePlayposForCurrentEpisode(player);
                     setCurrentlyPlayingTrack(player.Track.Title);
                     Debug.WriteLine("Play state: Playing");
