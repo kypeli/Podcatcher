@@ -889,6 +889,7 @@ namespace Podcatcher.ViewModels
             // and the new logo can be fetched to the UI. 
             NotifyPropertyChanged("PodcastLogo");
             App.mainViewModels.PodcastSubscriptions = null;
+            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
         }
 
         #region propertyChanged
