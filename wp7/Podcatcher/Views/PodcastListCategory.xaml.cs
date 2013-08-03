@@ -54,6 +54,12 @@ namespace Podcatcher.Views
 
         void wc_DownloadCategoryJSONCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
+            if (e.Error != null)
+            {
+                LoadingText.Text = "Error: Could not fetch category information from server. Please try again a bit later...";
+                return;
+            }
+
             String json = e.Result;
             if (String.IsNullOrEmpty(json) == false)
             {
