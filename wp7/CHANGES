@@ -9,6 +9,7 @@
 * Make podcasts from wizards.com work. Their "pubDate" is faulty.
 * Fix: Don't add duplicate episodes even if the podcast stream says the pubDate has changed.
 * Fix: Improve updating partially and unplayed episodes at startup.
+* Relax on the required OPML file format: Don't require the "rss" attribute.
 
 2.4.2.0
 -------
