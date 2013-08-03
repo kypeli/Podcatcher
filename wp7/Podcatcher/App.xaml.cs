@@ -214,6 +214,9 @@ namespace Podcatcher
                             }
 
                             db.SubmitChanges();
+
+                            e.PodcastSubscription.reloadPartiallyPlayedEpisodes();
+                            e.PodcastSubscription.reloadUnplayedPlayedEpisodes();
                         }
                     }
                 }
@@ -223,9 +226,6 @@ namespace Podcatcher
                 {
                     PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode = null;
                 }
-
-                // Refresh subscriptions.
-                App.mainViewModels.PodcastSubscriptions = new ObservableCollection<PodcastSubscriptionModel>();
             }
         }
 

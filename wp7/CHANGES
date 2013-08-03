@@ -1,12 +1,14 @@
-2.4.3.0
+2.5.0.0
 -------
 * Add a "Browse" view to browse through categories of podcasts when you add a new podcast.
 * Redo the layout for the "Add subscriptions" view.
 * Replace "Recent" list with "Latest" list showing latest episodes within all subscriptions.
 * Fix marking episodes as listened when tracks end. What a horrible kludge that is, so thank you Windows Phone 8.
+* Update the play position in player view immediately when the view opens and not after a second.
 * Startup performance improvements. 
-* Fix: Don't add duplicate episodes even if the podcast stream says the pubDate has changed.
 * Make podcasts from wizards.com work. Their "pubDate" is faulty.
+* Fix: Don't add duplicate episodes even if the podcast stream says the pubDate has changed.
+* Fix: Improve updating partially and unplayed episodes at startup.
 
 2.4.2.0
 -------
