@@ -119,7 +119,6 @@ namespace Podcatcher
             if (CurrentlyPlayingEpisode != null
                 && (episode.EpisodeId != CurrentlyPlayingEpisode.EpisodeId))
             {
-                addEpisodeToPlayHistory(CurrentlyPlayingEpisode);
                 CurrentlyPlayingEpisode.setNoPlaying();
 
                 try
@@ -444,14 +443,6 @@ namespace Podcatcher
             worker.DoWork += new DoWorkEventHandler(workerSortPlaylist);
             worker.RunWorkerAsync(sortOrder);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerSortPlaylistCompleted);
-        }
-
-        public void addEpisodeToPlayHistory(PodcastEpisodeModel episode)
-        {
-            using (var db = new PodcastSqlModel())
-            {
-                db.addEpisodeToPlayHistory(episode);
-            }
         }
 
         public bool isCurrentlyPlaying()
