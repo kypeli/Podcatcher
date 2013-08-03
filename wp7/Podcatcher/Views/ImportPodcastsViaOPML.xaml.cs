@@ -34,8 +34,20 @@ namespace Podcatcher.Views
                 this.opmlNotAvailable.Visibility = System.Windows.Visibility.Collapsed;
                 this.opmlUrl.IsEnabled = true;
                 this.importFromOpmlUrl.IsEnabled = true;
-            }            
+            }
 
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAddStarted += new SubscriptionManagerHandler(ImportPodcastViaOPML_OnPodcastChannelAddStarted);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAddFinishedWithError += new SubscriptionManagerHandler(ImportPodcastViaOPML_OnPodcastChannelAddFinishedWithError);
+        }
+
+        void ImportPodcastViaOPML_OnPodcastChannelAddFinishedWithError(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        void ImportPodcastViaOPML_OnPodcastChannelAddStarted(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void importFromOpmlUrl_Click(object sender, RoutedEventArgs e)

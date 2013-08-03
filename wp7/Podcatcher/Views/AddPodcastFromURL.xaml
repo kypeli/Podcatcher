@@ -35,17 +35,16 @@
                 <TextBox Height="71" InputScope="url" Name="addFromUrlInput" Text="" d:LayoutOverrides="HorizontalMargin" />
                 <Button Content="Add" Height="71" Name="addFromUrlButton" Width="152" HorizontalAlignment="Right" Click="addFromUrlButton_Click" Margin="0,0,8,0" />
             </StackPanel>
-            
+
             <c4f:ProgressOverlay x:Name="progressOverlay" Visibility="Collapsed">
                 <StackPanel>
-                    <TextBlock x:Name="ProgressText" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="ProgressText" Text="Subscribing..." HorizontalAlignment="Center"/>
                     <toolkit:PerformanceProgressBar 
                         IsIndeterminate="True"
                         Foreground="Green"
                     />
                 </StackPanel>
             </c4f:ProgressOverlay>
-
         </Grid>
     </Grid>
  

@@ -49,7 +49,6 @@
                     />
                 </StackPanel>
             </c4f:ProgressOverlay>
-
         </Grid>
     </Grid>
 

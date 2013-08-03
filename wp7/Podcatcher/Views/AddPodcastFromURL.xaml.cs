@@ -19,11 +19,23 @@ namespace Podcatcher.Views
         public AddPodcastFromURL()
         {
             InitializeComponent();
+
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAddStarted += new SubscriptionManagerHandler(AddPodcastFromURL_OnPodcastChannelAddStarted);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAddFinishedWithError += new SubscriptionManagerHandler(AddPodcastFromURL_OnPodcastChannelAddFinishedWithError);
+        }
+
+        void AddPodcastFromURL_OnPodcastChannelAddFinishedWithError(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        void AddPodcastFromURL_OnPodcastChannelAddStarted(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Visibility = System.Windows.Visibility.Visible;
         }
 
         private void addFromUrlButton_Click(object sender, RoutedEventArgs e)
         {
-            progressOverlay.Visibility = System.Windows.Visibility.Visible;
             PodcastSubscriptionsManager.getInstance().addSubscriptionFromURL(addFromUrlInput.Text);
         }
     }

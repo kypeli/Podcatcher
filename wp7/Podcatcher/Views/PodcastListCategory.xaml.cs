@@ -22,6 +22,18 @@ namespace Podcatcher.Views
         public PodcastListCategory()
         {
             InitializeComponent();
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAddStarted += new SubscriptionManagerHandler(PodcastListCategory_OnPodcastChannelAddStarted);
+            PodcastSubscriptionsManager.getInstance().OnPodcastChannelAddFinishedWithError += new SubscriptionManagerHandler(PodcastListCategory_OnPodcastChannelAddFinishedWithError);
+        }
+
+        void PodcastListCategory_OnPodcastChannelAddFinishedWithError(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        void PodcastListCategory_OnPodcastChannelAddStarted(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Visibility = System.Windows.Visibility.Visible;
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)

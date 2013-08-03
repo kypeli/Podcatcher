@@ -37,6 +37,17 @@
                 <TextBlock x:Name="opmlDisclaimer" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="You can give the HTTP location of your OPML podcasts subscription file here. The file could be for example on Dropbox. Just ensure that the OPML file content is accessible by everyone via the given URL."/></TextBlock>
                 <TextBlock Visibility="Collapsed" x:Name="opmlNotAvailable" TextWrapping="Wrap" Margin="0,13,0,0"><Run Text="Importing subscriptions from an OPML file is only available in the full version of Podcatcher."/></TextBlock>
             </StackPanel>
+
+            <c4f:ProgressOverlay x:Name="progressOverlay" Visibility="Collapsed">
+                <StackPanel>
+                    <TextBlock Text="Importing..." HorizontalAlignment="Center"/>
+                    <toolkit:PerformanceProgressBar 
+                        IsIndeterminate="True"
+                        Foreground="Green"
+                    />
+                </StackPanel>
+            </c4f:ProgressOverlay>
+
         </Grid>
     </Grid>
  

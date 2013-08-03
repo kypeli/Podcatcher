@@ -33,6 +33,7 @@ using System.Diagnostics;
 using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Windows.Navigation;
+using Podcatcher.Views;
 
 namespace Podcatcher.CustomControls
 {
@@ -69,7 +70,7 @@ namespace Podcatcher.CustomControls
 
             m_subscriptionManager.addSubscriptionFromURL(podcastUri);
         }
-
+        
         private void ResultTapped(object sender, System.Windows.Input.GestureEventArgs e)
         {
             GPodderResultModel searchResultModel = this.DataContext as GPodderResultModel;
