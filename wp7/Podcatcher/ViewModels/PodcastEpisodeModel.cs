@@ -353,6 +353,11 @@ namespace Podcatcher.ViewModels
                     m_downloadRequest = null;
                 }
 
+                if (value == EpisodeDownloadStateEnum.Idle)
+                {
+                    EpisodeFile = "";
+                }
+
                 NotifyPropertyChanged("ShouldShowDownloadButton");
                 NotifyPropertyChanged("EpisodeDownloadState");
                 NotifyPropertyChanged("ProgressBarIsVisible");
@@ -698,10 +703,10 @@ namespace Podcatcher.ViewModels
 
                 e.SavedPlayPos = SavedPlayPos;
                 e.TotalLengthTicks = TotalLengthTicks;
+                e.EpisodeFile = "";
                 e.EpisodeDownloadState = EpisodeDownloadStateEnum.Idle;
                 e.EpisodePlayState = EpisodePlayStateEnum.Idle;
                 e.SavedPlayPos = 0;
-                e.EpisodeFile = "";
 
                 db.SubmitChanges();
 
