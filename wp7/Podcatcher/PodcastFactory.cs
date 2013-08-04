@@ -344,16 +344,12 @@ namespace Podcatcher
             List<Uri> podcastUrls = new List<Uri>();
             foreach (var podcast in podcastsQuery)
             {
-                XAttribute type = podcast.Attribute("type");
                 XAttribute url = podcast.Attribute("xmlUrl");
-                if (type != null && type.Value == "rss")
+                if (url != null
+                    && url.Value != null)
                 {
-                    if (url != null
-                        && url.Value != null)
-                    {
-                        podcastUrls.Add(new Uri(url.Value));
-                        Debug.WriteLine("Got new URI from OPML: " + url.Value);
-                    }
+                    podcastUrls.Add(new Uri(url.Value));
+                    Debug.WriteLine("Got new URI from OPML: " + url.Value);
                 }
             }
 
