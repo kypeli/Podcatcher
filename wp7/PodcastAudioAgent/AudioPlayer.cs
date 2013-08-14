@@ -125,12 +125,20 @@ namespace PodcastAudioAgent
                     break;
                 case PlayState.Playing:
                     PlaylistItem plItem = getCurrentlyPlayingTrack();
-                    plItem.TotalPlayTicks = player.Track.Duration.Ticks;
-                    updateToDBPlaylistItem(plItem);
+                    if (plItem != null)
+                    {
+                        plItem.TotalPlayTicks = player.Track.Duration.Ticks;
+                        updateToDBPlaylistItem(plItem);
+
+                        Debug.WriteLine("Play state: Playing");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Playlist item NULL!");
+                    }
 
                     updatePlayposForCurrentEpisode(player);
                     setCurrentlyPlayingTrack(player.Track.Title);
-                    Debug.WriteLine("Play state: Playing");
                     break;
                 case PlayState.BufferingStarted:
                     break;
