@@ -796,6 +796,17 @@ namespace Podcatcher.ViewModels
             SavedPlayPos = 0;
             EpisodePlayState = EpisodePlayStateEnum.Listened;
 
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel e = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == EpisodeId);
+                if (e != null)
+                {
+                    e.SavedPlayPos = SavedPlayPos;
+                    e.EpisodePlayState = EpisodePlayState;
+                    db.SubmitChanges();
+                }
+            }
+
             if (deleteListened && String.IsNullOrEmpty(EpisodeFile) == false)
             {
                 deleteDownloadedEpisode();
