@@ -35,6 +35,7 @@ using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Linq;
 
 namespace Podcatcher
 {
@@ -205,6 +206,15 @@ namespace Podcatcher
                             Debug.WriteLine("Updating episode '" + e.EpisodeName + "' playpos to: " + i.SavedPlayPosTick);
                             e.SavedPlayPos = i.SavedPlayPosTick;
 
+                            try
+                            {
+                                db.SubmitChanges();
+                            }
+                            catch (ChangeConflictException)
+                            {
+                                Debug.WriteLine("ChangeConflictException: Could not submit changes");
+                            }
+
                             // Update play state to listened as appropriate.
                             if (e.isListened())
                             {
@@ -213,7 +223,6 @@ namespace Podcatcher
                                 listenedItemsCount++;
                             }
 
-                            db.SubmitChanges();
 
                             e.PodcastSubscription.reloadPartiallyPlayedEpisodes();
                             e.PodcastSubscription.reloadUnplayedPlayedEpisodes();
