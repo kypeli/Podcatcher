@@ -223,7 +223,6 @@ namespace Podcatcher
                                 listenedItemsCount++;
                             }
 
-
                             e.PodcastSubscription.reloadPartiallyPlayedEpisodes();
                             e.PodcastSubscription.reloadUnplayedPlayedEpisodes();
                         }

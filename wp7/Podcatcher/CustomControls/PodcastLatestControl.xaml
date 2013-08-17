@@ -9,10 +9,10 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     d:DesignHeight="480" d:DesignWidth="480">
 
-    <Grid x:Name="LayoutRoot" Height="120" >
-        <StackPanel Orientation="Horizontal" Margin="12,0,0,0" Height="120" Tap="LatestEpisodeTapped">
+    <Grid x:Name="LayoutRoot" >
+        <StackPanel Orientation="Horizontal" Margin="12,0,0,0" Tap="LatestEpisodeTapped">
             <Image Source="{Binding PodcastLogo}" Height="120" Width="120" HorizontalAlignment="Left"/>
-            <StackPanel Height="120">
+            <StackPanel>
                 <TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="20,0,0,0" Width="300" FontSize="27" VerticalAlignment="Top"/>
                 <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="20,0,0,0" HorizontalAlignment="Left" Width="300" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" FontSize="24" />
             </StackPanel>
