@@ -14,7 +14,7 @@
             <Image Source="{Binding PodcastLogo}" Height="120" Width="120" HorizontalAlignment="Left"/>
             <StackPanel>
                 <TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" Margin="20,0,0,0" Width="300" FontSize="27" VerticalAlignment="Top"/>
-                <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="20,0,0,0" HorizontalAlignment="Left" Width="300" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" FontSize="24" />
+                <TextBlock Text="{Binding EpisodePublishedString}" TextWrapping="Wrap" Margin="20,0,0,10" HorizontalAlignment="Left" Width="300" Style="{StaticResource PhoneTextSubtleStyle}" VerticalAlignment="Bottom" FontSize="24" />
             </StackPanel>
         </StackPanel>
     </Grid>
