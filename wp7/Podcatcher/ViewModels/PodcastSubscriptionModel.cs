@@ -172,15 +172,7 @@ namespace Podcatcher.ViewModels
                             // logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
                             try
                             {
-                                logoImage.SetSource(stream);
-                                
-                                WriteableBitmap  wb = new WriteableBitmap(logoImage);
-                                MemoryStream resizedImage = new MemoryStream();
-                                logoImage = null;
-                                wb.SaveJpeg(resizedImage, 200, 200, 0, 100);
-                                logoImage = new BitmapImage();
-                                logoImage.SetSource(resizedImage);
-
+                                logoImage.SetSource(stream);                                
                                 m_podcastLogoRef = new WeakReference(logoImage);
                             }
                             catch (Exception)
@@ -884,11 +876,18 @@ namespace Podcatcher.ViewModels
             // Store the downloaded podcast logo to isolated storage for local cache.
             MemoryStream logoMemory = new MemoryStream();
             logoInStream.CopyTo(logoMemory);
+
+            BitmapImage logoImage = new BitmapImage();
+            logoImage.SetSource(logoMemory);
+            WriteableBitmap wb = new WriteableBitmap(logoImage);
+            MemoryStream resizedImageStream = new MemoryStream();
+            wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
+
             using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation, 
                                                                      FileMode.OpenOrCreate, 
                                                                      m_isolatedFileStorage))
             {
-                isoFileStream.Write(logoMemory.ToArray(), 0, (int)logoMemory.Length);
+                isoFileStream.Write(resizedImageStream.ToArray(), 0, (int)resizedImageStream.Length);
             }
 
             Debug.WriteLine("Stored local podcast icon as: " + PodcastLogoLocalLocation);
