@@ -970,9 +970,12 @@ namespace Podcatcher.ViewModels
                         return;
                     }
 
+                    PodcastEpisodeModel[] newEpisodesSet = new PodcastEpisodeModel[newPodcastEpisodes.Count];
+                    newPodcastEpisodes.CopyTo(newEpisodesSet);
+
                     // Let's check for duplicate episode names. This can happen if the subscription updates the "pubDate"
                     // of the most recent episode in the feed, in which case the most recent one (at least) can become a duplicate entry.
-                    foreach (PodcastEpisodeModel newEpisode in newPodcastEpisodes) 
+                    foreach (PodcastEpisodeModel newEpisode in newEpisodesSet.AsEnumerable()) 
                     {
                         if (sub.Episodes.OrderByDescending(ep => ep.EpisodePublished).Take(10).ToArray().FirstOrDefault(ep => ep.EpisodeName == newEpisode.EpisodeName) != null)
                         {
