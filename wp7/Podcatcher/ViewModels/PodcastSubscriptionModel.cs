@@ -173,9 +173,17 @@ namespace Podcatcher.ViewModels
                             try
                             {
                                 logoImage.SetSource(stream);
+                                
+                                WriteableBitmap  wb = new WriteableBitmap(logoImage);
+                                MemoryStream resizedImage = new MemoryStream();
+                                logoImage = null;
+                                wb.SaveJpeg(resizedImage, 200, 200, 0, 100);
+                                logoImage = new BitmapImage();
+                                logoImage.SetSource(resizedImage);
+
                                 m_podcastLogoRef = new WeakReference(logoImage);
                             }
-                            catch (Exception exception)
+                            catch (Exception)
                             {
                                 // File format is not supported.
                                 logoImage = null;
