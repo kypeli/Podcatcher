@@ -36,6 +36,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Linq;
+using System.IO;
 
 namespace Podcatcher
 {
@@ -57,6 +58,9 @@ namespace Podcatcher
         // Root key name for storing episode information for background service.
         public const string LSKEY_BG_SUBSCRIPTION_LATEST_EPISODE    = "bg_subscription_latest_episode";
         
+        // Clean podcast logo files to optimize memory and we can download them again.
+        public const string LSKEY_MUST_CLEAN_PODCAST_ICONS          = "podcast_icons_cleaned";
+
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_CELLULAR  = "dl_withCellular";
         public const string LSKEY_NOTIFY_DOWNLOADING_WITH_WIFI      = "dl_withWifi";
         public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER       = 104857600;
@@ -293,6 +297,33 @@ namespace Podcatcher
 
             // Updates episodes from the audio agent. 
             refreshEpisodesFromAudioAgent();
+
+            handleRemovingIconFiles();
+        }
+
+        private static void handleRemovingIconFiles()
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+            IsolatedStorageFile isoStorage = IsolatedStorageFile.GetUserStoreForApplication();
+            if (isoStorage.DirectoryExists(App.PODCAST_ICON_DIR))
+            {
+                if (settings.Contains(LSKEY_MUST_CLEAN_PODCAST_ICONS))
+                {
+                    return;
+                }
+
+                MessageBox.Show("The podcast logo handling has improved in this version of Podcatcher. We'll now remove all old logo files and fetch them again.", "Optimization notice",  
+                    MessageBoxButton.OK);
+
+                foreach (var file in isoStorage.GetFileNames(Path.Combine(App.PODCAST_ICON_DIR, "*.*")))
+                {
+                    Debug.WriteLine("Deleting podcast logo: " + file);
+                    isoStorage.DeleteFile(Path.Combine(App.PODCAST_ICON_DIR, file));
+                }
+            }
+
+            settings[LSKEY_MUST_CLEAN_PODCAST_ICONS] = "done";
+            settings.Save();
         }
 
         // Code to execute when the application is activated (brought to foreground)

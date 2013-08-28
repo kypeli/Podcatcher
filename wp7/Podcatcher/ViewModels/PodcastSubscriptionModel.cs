@@ -172,15 +172,20 @@ namespace Podcatcher.ViewModels
                             // logoImage = createMemorySafeThumbnail(stream, 150); // Thumbnail is 150 pixel in width
                             try
                             {
-                                logoImage.SetSource(stream);                                
+                                logoImage.SetSource(stream);
                                 m_podcastLogoRef = new WeakReference(logoImage);
                             }
                             catch (Exception)
                             {
                                 // File format is not supported.
                                 logoImage = null;
-                            }                            
+                            }
                         }
+                    }
+                    else
+                    {
+                        // Icon not found on file system. Let's refetch it.
+                        refetchPodcastLogo();
                     }
                 }
                 catch (IsolatedStorageException isoEx)
@@ -1066,5 +1071,26 @@ namespace Podcatcher.ViewModels
             }
         }
         #endregion
+
+        private void refetchPodcastLogo() 
+        {
+            WebClient wc = new WebClient();
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
+            wc.DownloadStringAsync(new Uri(PodcastRSSUrl));
+        }
+
+        void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                Debug.WriteLine("Malformed podcast address.");
+                return;
+            }
+
+            PodcastSubscriptionModel subscription = PodcastFactory.podcastModelFromRSS((string)e.Result);
+            PodcastLogoUrl = subscription.PodcastLogoUrl;
+            fetchChannelLogo();
+        }
+
     }
 }
