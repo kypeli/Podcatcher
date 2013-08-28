@@ -885,15 +885,19 @@ namespace Podcatcher.ViewModels
             WriteableBitmap wb = new WriteableBitmap(logoImage);
             logoImage = null;
 
-            MemoryStream resizedImageStream = new MemoryStream();
-            wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
-            wb = null;
-
-            using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation, 
-                                                                     FileMode.OpenOrCreate, 
-                                                                     m_isolatedFileStorage))
+            using (MemoryStream resizedImageStream = new MemoryStream())
             {
-                isoFileStream.Write(resizedImageStream.ToArray(), 0, (int)resizedImageStream.Length);
+                wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
+                wb = null;
+
+                GC.Collect();
+
+                using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation,
+                                                                         FileMode.OpenOrCreate,
+                                                                         m_isolatedFileStorage))
+                {
+                    isoFileStream.Write(resizedImageStream.ToArray(), 0, (int)resizedImageStream.Length);
+                }
             }
 
             Debug.WriteLine("Stored local podcast icon as: " + PodcastLogoLocalLocation);
