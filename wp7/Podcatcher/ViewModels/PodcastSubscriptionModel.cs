@@ -878,15 +878,16 @@ namespace Podcatcher.ViewModels
                 }
             }
 
-            // Store the downloaded podcast logo to isolated storage for local cache.
-            MemoryStream logoMemory = new MemoryStream();
-            logoInStream.CopyTo(logoMemory);
-
             BitmapImage logoImage = new BitmapImage();
-            logoImage.SetSource(logoMemory);
+            logoImage.SetSource(logoInStream);
+            logoInStream = null;
+            
             WriteableBitmap wb = new WriteableBitmap(logoImage);
+            logoImage = null;
+
             MemoryStream resizedImageStream = new MemoryStream();
             wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
+            wb = null;
 
             using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation, 
                                                                      FileMode.OpenOrCreate, 
