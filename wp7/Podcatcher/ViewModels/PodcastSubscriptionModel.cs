@@ -184,7 +184,6 @@ namespace Podcatcher.ViewModels
                     }
                     else
                     {
-                        m_podcastLogoFetchingInProgress = true;
                         // Icon not found on file system. Let's refetch it.
                         refetchPodcastLogo();
                     }
@@ -1087,6 +1086,8 @@ namespace Podcatcher.ViewModels
             {
                 return;
             }
+
+            m_podcastLogoFetchingInProgress = true;
 
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefetchedRSSForLogoCompleted);
