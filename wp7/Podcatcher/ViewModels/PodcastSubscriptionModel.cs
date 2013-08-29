@@ -184,6 +184,7 @@ namespace Podcatcher.ViewModels
                     }
                     else
                     {
+                        m_podcastLogoFetchingInProgress = true;
                         // Icon not found on file system. Let's refetch it.
                         refetchPodcastLogo();
                     }
@@ -865,39 +866,40 @@ namespace Podcatcher.ViewModels
             Debug.WriteLine("Storing podcast icon locally...");
 
             Stream logoInStream = null;
-            try
-            {
-                logoInStream = (Stream)e.Result;
-            }
-            catch (WebException webEx)
-            {
-                if (webEx.Status != WebExceptionStatus.Success)
-                {
-                    Debug.WriteLine("ERROR: Web error occured. Cannot load image!");
-                    return;
-                }
-            }
-
             BitmapImage logoImage = new BitmapImage();
-            logoImage.SetSource(logoInStream);
-            logoInStream = null;
-            
-            WriteableBitmap wb = new WriteableBitmap(logoImage);
-            logoImage = null;
+            MemoryStream logoBytes = new MemoryStream();
 
-            using (MemoryStream resizedImageStream = new MemoryStream())
+            using (logoInStream = (Stream)e.Result)
             {
-                wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
-                wb = null;
+                try
+                {
+                    // This will fail if we don't support the image, such as Gif images,
+                    logoImage.SetSource(logoInStream);
 
-                GC.Collect();
+                    WriteableBitmap wb = new WriteableBitmap(logoImage);
+                    logoImage = null;
+
+                    MemoryStream resizedImageStream = new MemoryStream();
+                    wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
+                    wb = null;
+                    GC.Collect();
+
+                    logoBytes = resizedImageStream;
+
+                }
+                catch (Exception)
+                {
+                    Debug.WriteLine("Error processing logo picture! Will store the original image to ISO Storage...");
+                    logoInStream.CopyTo(logoBytes);
+                }
 
                 using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation,
                                                                          FileMode.OpenOrCreate,
                                                                          m_isolatedFileStorage))
                 {
-                    isoFileStream.Write(resizedImageStream.ToArray(), 0, (int)resizedImageStream.Length);
+                    isoFileStream.Write(logoBytes.ToArray(), 0, (int)logoBytes.Length);
                 }
+
             }
 
             Debug.WriteLine("Stored local podcast icon as: " + PodcastLogoLocalLocation);
@@ -907,11 +909,13 @@ namespace Podcatcher.ViewModels
             NotifyPropertyChanged("PodcastLogo");
             App.mainViewModels.PodcastSubscriptions = null;
             App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
+            m_podcastLogoFetchingInProgress = false;
         }
 
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
+        private bool m_podcastLogoFetchingInProgress;
         
         private void NotifyPropertyChanging()
         {
@@ -1079,12 +1083,17 @@ namespace Podcatcher.ViewModels
 
         private void refetchPodcastLogo() 
         {
+            if (m_podcastLogoFetchingInProgress)
+            {
+                return;
+            }
+
             WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefetchedRSSForLogoCompleted);
             wc.DownloadStringAsync(new Uri(PodcastRSSUrl));
         }
 
-        void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        void wc_RefetchedRSSForLogoCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             if (e.Error != null)
             {
