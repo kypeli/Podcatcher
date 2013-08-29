@@ -184,8 +184,15 @@ namespace Podcatcher.ViewModels
                     }
                     else
                     {
-                        // Icon not found on file system. Let's refetch it.
-                        refetchPodcastLogo();
+                        lock (this)
+                        {
+                            if (!m_podcastLogoFetchingInProgress)
+                            {
+                                m_podcastLogoFetchingInProgress = true;
+                                // Icon not found on file system. Let's refetch it.
+                                refetchPodcastLogo();
+                            }
+                        }
                     }
                 }
                 catch (IsolatedStorageException isoEx)
@@ -1082,13 +1089,6 @@ namespace Podcatcher.ViewModels
 
         private void refetchPodcastLogo() 
         {
-            if (m_podcastLogoFetchingInProgress)
-            {
-                return;
-            }
-
-            m_podcastLogoFetchingInProgress = true;
-
             WebClient wc = new WebClient();
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefetchedRSSForLogoCompleted);
             wc.DownloadStringAsync(new Uri(PodcastRSSUrl));
