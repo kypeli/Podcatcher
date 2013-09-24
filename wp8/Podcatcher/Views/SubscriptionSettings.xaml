@@ -1,0 +1,98 @@
+﻿<phone:PhoneApplicationPage
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:toolkitPrimitives="clr-namespace:Microsoft.Phone.Controls.Primitives;assembly=Microsoft.Phone.Controls.Toolkit" 
+    x:Class="Podcatcher.Views.SubscriptionSettings"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
+    shell:SystemTray.IsVisible="True"
+    Style="{StaticResource TurnstilePage}">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto"  Width="480" Margin="0,0,0,8">
+            <Grid.RowDefinitions>
+            	<RowDefinition Height="Auto"/>
+            	<RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+            	<ColumnDefinition Width="160" />
+            	<ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="PodcastName" Text="{Binding PodcastName}" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}" />
+            <Image Grid.Row="1" Source="{Binding PodcastLogo}" Grid.Column="0" x:Name="PodcastIcon" Width="150" Height="150" VerticalAlignment="Top" Stretch="Fill" Margin="5,0" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PodcastDescription}" x:Name="PodcastDescription" TextWrapping="Wrap" Height="180" Margin="17,0,0,0" VerticalAlignment="Top" />
+            <ScrollViewer VerticalAlignment="Top" Grid.ColumnSpan="2" d:LayoutOverrides="VerticalAlignment" Grid.Row="2">
+            	<StackPanel Margin="0,0,8,8" VerticalAlignment="Bottom">
+
+            		<StackPanel Height="88" Orientation="Horizontal">
+            			<TextBlock TextWrapping="Wrap" Text="Subscribe" Width="288" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
+            			<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsSubscribed, Mode=TwoWay}" Content="ToggleSwitchButton" Margin="0" Width="180" d:LayoutOverrides="Height"/>
+            		</StackPanel>
+            		<TextBlock TextWrapping="Wrap" Text="By subscribing to a podcast you receive new episodes as they are published. Turn subscription off if you don't want new episodes." Style="{StaticResource PhoneTextSubtleStyle}"/>
+            		
+                    <StackPanel Margin="0,9,12,0">
+            			<StackPanel Orientation="Horizontal">
+            				<TextBlock TextWrapping="Wrap" Text="Auto-download" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+            				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding IsAutoDownload, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+            			</StackPanel>
+            			<TextBlock TextWrapping="Wrap" Text="When auto-download is on, the new episodes for the subscription will be automatically downloaded to your device." Style="{StaticResource PhoneTextSubtleStyle}"/>
+            		</StackPanel>
+
+                    <StackPanel Margin="0,9,12,0">
+            			<StackPanel Orientation="Vertical">
+            				<TextBlock TextWrapping="Wrap" Text="Keep episodes for this subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
+            				<toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding SubscriptionSelectedKeepNumEpisodesIndex, Mode=TwoWay}">
+                                <toolkit:ListPickerItem>All</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem>3</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem>10</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem>20</toolkit:ListPickerItem>
+                                <toolkit:ListPickerItem>30</toolkit:ListPickerItem>
+                            </toolkit:ListPicker>
+            			</StackPanel>
+            			<TextBlock TextWrapping="Wrap" Text="This specifies how many episodes to keep for this subscription and the rest will be deleted." Style="{StaticResource PhoneTextSubtleStyle}"/>
+            		</StackPanel>
+
+            		<StackPanel Margin="0,9,12,0">
+            			<StackPanel Orientation="Horizontal">
+            				<TextBlock TextWrapping="Wrap" Text="Delete downloaded episodes for this subscription" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}"/>
+            				<toolkitPrimitives:ToggleSwitchButton IsChecked="{Binding SubscriptionIsDeleteEpisodes, Mode=TwoWay}" Content="ToggleSwitchButton"/>
+            			</StackPanel>
+            			<TextBlock TextWrapping="Wrap" Text="If you turn this on, episodes that have been downloaded but not yet listened to will also be deleted when cleaning episodes as set in the setting above." Style="{StaticResource PhoneTextSubtleStyle}"/>
+            		</StackPanel>
+
+            	</StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <!-- Place additional content here-->
+
+    </Grid>
+ 
+    <!--Sample code showing usage of ApplicationBar-->
+    <!--<phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
+                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>-->
+
+</phone:PhoneApplicationPage>

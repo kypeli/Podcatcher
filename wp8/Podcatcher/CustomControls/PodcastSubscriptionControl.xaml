@@ -1,0 +1,36 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"    
+    xmlns:c="clr-namespace:Podcatcher.Converters"
+	mc:Ignorable="d"
+	x:Class="Podcatcher.PodcastSubscriptionControl"
+	d:DesignWidth="480" Margin="0">
+    
+    <UserControl.Resources>
+        <c:NewEpisodesTextVisible x:Name="newEpisodesTextIsVisible"/>
+        <c:ShowPinToStart x:Name="showPinToStart"/>
+    </UserControl.Resources>
+    
+	<StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
+		<Image x:Name="Logo" Source="{Binding PodcastLogo}" Width="150" VerticalAlignment="Center" Margin="0,0,10,0" Height="150"/>
+		<StackPanel Width="319">
+			<TextBlock x:Name="EpisodeName" Text="{Binding PodcastName}"  Style="{StaticResource PhoneTextLargeStyle}" Margin="0,10,0,0" VerticalAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Left" Width="300"/>
+			<StackPanel Margin="0,5,0,0">
+                <TextBlock x:Name="NumberOfEpisodes" Text="{Binding NumberOfEpisodesText}" TextWrapping="Wrap" FontSize="20" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                <TextBlock Visibility="{Binding NewEpisodesText, Converter={StaticResource newEpisodesTextIsVisible}}" x:Name="NewEpisodes" Text="{Binding NewEpisodesText}"  TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" FontSize="20" Style="{StaticResource PhoneTextAccentStyle}"/>                
+			</StackPanel>
+		</StackPanel>
+		<toolkit:ContextMenuService.ContextMenu>
+			<toolkit:ContextMenu>
+                <toolkit:MenuItem Header="Pin to start" Click="MenuItemPin_Click" 
+                                  Visibility="{Binding PodcastId, 
+                                  Converter={StaticResource showPinToStart}}"/>
+                <toolkit:MenuItem Header="Unsubscribe" Click="MenuItemDelete_Click" />
+            </toolkit:ContextMenu>
+		</toolkit:ContextMenuService.ContextMenu>
+
+	</StackPanel>
+</UserControl>

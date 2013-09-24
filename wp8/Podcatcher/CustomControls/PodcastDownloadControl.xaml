@@ -1,0 +1,29 @@
+﻿<UserControl 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Podcatcher.PodcastDownloadControl"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}" VerticalAlignment="Center" Width="440">
+    
+    <Grid x:Name="LayoutRoot" Margin="0,0,0,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel  Grid.Row="0" Orientation="Horizontal">
+            <Image Width="100" Height="100" x:Name="PodcastLogo" VerticalAlignment="Center" />
+            <TextBlock TextWrapping="Wrap" Text="{Binding EpisodeName}" Width="284" Height="100" Style="{StaticResource PhoneTextTitle3Style}" Margin="10,0" VerticalAlignment="Center"/>
+            <Image x:Name="CancelDownloadButton" Width="32" Margin="0,10" Tap="StopDownloadImage_Tap" Height="57" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Text="{Binding EpisodeStatusText}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto" Width="Auto"/>
+            <TextBlock x:Name="DownloadProgressText" Text="{Binding DownloadPercentage}" Style="{StaticResource PhoneTextTitle3Style}" VerticalAlignment="Center" Height="Auto" Width="61"/>
+            <ProgressBar Width="181" Value="{Binding ProgressBarValue}" HorizontalAlignment="Center" Margin="10,0,0,0" Foreground="{StaticResource PhoneAccentBrush}" Background="{StaticResource PhoneAccentBrush}" BorderThickness="0" Height="Auto" ValueChanged="ProgressBar_ValueChanged" />            
+        </StackPanel>
+    </Grid>
+</UserControl>

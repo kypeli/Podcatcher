@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Podcatcher.PodcastNowPlaying"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}" d:DesignWidth="480" Height="231">
+    
+    <Grid x:Name="LayoutRoot" VerticalAlignment="Top">
+    	<StackPanel VerticalAlignment="Top" Tap="NowPlayingTapped">
+    		<TextBlock TextWrapping="Wrap" Text="NOW" Style="{StaticResource PhoneTextTitle2Style}" Margin="12,0,12,10"/>
+    		<StackPanel Orientation="Horizontal" Margin="12,0,0,0">
+                <Image x:Name="PodcastLogo" Height="120" Width="120" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+    			<StackPanel Margin="18,0,0,0" Width="325">
+                    <TextBlock Text="{Binding EpisodeName}" TextWrapping="Wrap" Style="{StaticResource PhoneTextTitle3Style}" FontSize="27"/>
+                    <ProgressBar Value="{Binding ProgressBarValue}" Height="10" VerticalAlignment="Bottom" Maximum="100" Margin="0,10,0,0"/> 
+    			</StackPanel>
+    		</StackPanel>
+    	</StackPanel>
+
+    </Grid>
+</UserControl>
