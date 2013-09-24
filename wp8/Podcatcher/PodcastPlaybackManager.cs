@@ -196,7 +196,7 @@ namespace Podcatcher
                 else
                 {
                     PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                    player.StopPlayback();
+                    player.PlaybackStopped();
                     videoStreaming(episode);
                     CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }

@@ -28,6 +28,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.BackgroundAudio;
+using System.Diagnostics;
+using Podcatcher.ViewModels;
+using Microsoft.Phone.Shell;
 
 namespace Podcatcher.Views
 {
@@ -46,6 +50,83 @@ namespace Podcatcher.Views
         protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
         {
             this.PodcastPlayer.showNoPlayerLayout();
+        }
+
+        private void rewButtonClicked(object sender, EventArgs e)
+        {
+            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
+            if (player != null && player.PlayerState == PlayState.Playing)
+            {
+                player.Position = (player.Position.TotalSeconds - 30 >= 0) ?
+                                    TimeSpan.FromSeconds(player.Position.TotalSeconds - 30) :
+                                    TimeSpan.FromSeconds(0);
+            }
+        }
+
+        private void playButtonClicked(object sender, EventArgs e)
+        {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                // Paused
+                BackgroundAudioPlayer.Instance.Pause();
+                PodcastPlayer.setupUIForEpisodePaused();
+                //       PlayButtonImage.Source = m_playButtonBitmap;
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).IconUri = new Uri("/Images/Light/play.png", UriKind.Relative);
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).Text = "Play";
+            }
+            else if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                // Playing
+                BackgroundAudioPlayer.Instance.Play();
+                PodcastPlayer.setupUIForEpisodePlaying();
+                //            PlayButtonImage.Source = m_pauseButtonBitmap;
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).IconUri = new Uri("/Images/Light/pause.png", UriKind.Relative);
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).Text = "Pause";
+            }
+            else
+            {
+                Debug.WriteLine("No track currently set. Trying to setup currently playing episode as track...");
+                PodcastEpisodeModel ep = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
+                if (ep != null)
+                {
+                    PodcastPlaybackManager.getInstance().play(ep);
+                }
+                else
+                {
+                    Debug.WriteLine("Error: No currently playing track either! Giving up...");
+                    App.showErrorToast("Something went wrong. Cannot play the track.");
+                    PodcastPlayer.showNoPlayerLayout();
+                }
+            }
+        }
+
+        private void stopButtonClicked(object sender, EventArgs e)
+        {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
+            {
+                // We are already stopped (playback ended or something). Let's update the episode state.
+                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+            }
+            else
+            {
+                if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
+                    || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
+                {
+                    BackgroundAudioPlayer.Instance.Stop();
+                }
+            }
+
+            PodcastPlayer.PlaybackStopped();
+        }
+
+        private void ffButtonClicked(object sender, EventArgs e)
+        {
+            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
+            if (player != null && player.PlayerState == PlayState.Playing)
+            {
+                player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
+                                                                                                             TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);
+            }
         }
     }
 }

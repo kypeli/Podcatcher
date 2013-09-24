@@ -27,17 +27,15 @@
             <pc:PodcastPlayerControl x:Name="PodcastPlayer"/>
         </Grid>
     </Grid>
- 
-    <!--Sample code showing usage of ApplicationBar-->
-    <!--<phone:PhoneApplicationPage.ApplicationBar>
+
+    <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
-            <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
-                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
-            </shell:ApplicationBar.MenuItems>
+            <shell:ApplicationBarIconButton x:Name="RewButton" Text="Rew" Click="rewButtonClicked" IconUri="/Images/Light/rew.png" />
+            <shell:ApplicationBarIconButton x:Name="PlayButton" Text="Play" Click="playButtonClicked" IconUri="/Images/Light/pause.png" />
+            <shell:ApplicationBarIconButton x:Name="StopButton" Text="Stop" Click="stopButtonClicked" IconUri="/Images/Light/stop.png" />
+            <shell:ApplicationBarIconButton x:Name="FFButton" Text="FF" Click="ffButtonClicked" IconUri="/Images/Light/ff.png" />
         </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>-->
+    </phone:PhoneApplicationPage.ApplicationBar>
+
 
 </phone:PhoneApplicationPage>

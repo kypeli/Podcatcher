@@ -76,6 +76,12 @@ namespace Podcatcher
             return m_instance;
         }
 
+        internal void PlaybackStopped()
+        {
+            showNoPlayerLayout();
+            m_currentPlayerEpisode = null;
+        }
+
         internal void playEpisode(PodcastEpisodeModel episodeModel)
         {
             Debug.WriteLine("Starting playback for episode: " + episodeModel.EpisodeName);
@@ -96,7 +102,7 @@ namespace Podcatcher
             }
             else
             {
-                StopPlayback();
+                PlaybackStopped();
                 videoPlayback(episodeModel);
             }
         }
@@ -130,17 +136,6 @@ namespace Podcatcher
             startNewRemotePlayback(episodeModel);
         }
 
-        public void StopPlayback()
-        {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
-                || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
-            {
-
-                showNoPlayerLayout();
-                BackgroundAudioPlayer.Instance.Stop();
-            }
-        }
-
         /************************************* Private implementation *******************************/
 
         private static PodcastPlayerControl m_instance = null;
@@ -149,29 +144,9 @@ namespace Podcatcher
         private static DispatcherTimer m_screenUpdateTimer = null;
         private static PodcastEpisodeModel m_currentPlayerEpisode = null;
 
-        // Loading the control images based on the theme color
-        private BitmapImage m_playButtonBitmap;
-        private BitmapImage m_pauseButtonBitmap;
-        private BitmapImage m_stopButtonBitmap;
-        private BitmapImage m_nextButtonBitmap;
-        private BitmapImage m_prevButtonBitmap;
-
         private void setupPlayerUI()
         {
             Microsoft.Xna.Framework.Media.MediaLibrary library = new Microsoft.Xna.Framework.Media.MediaLibrary();
-
-            m_playButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/play.png", UriKind.Relative));
-            m_pauseButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/pause.png", UriKind.Relative));
-            PlayButtonImage.Source = m_playButtonBitmap;
-
-            m_stopButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/stop.png", UriKind.Relative));
-            StopButtonImage.Source = m_stopButtonBitmap;
-
-            m_nextButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/ff.png", UriKind.Relative));
-            NextButtonImage.Source = m_nextButtonBitmap;
-
-            m_prevButtonBitmap = new BitmapImage(new Uri("/Images/" + App.CurrentTheme + "/rew.png", UriKind.Relative));
-            PrevButtonImage.Source = m_prevButtonBitmap;
         }
 
         private void restoreEpisodeToPlayerUI(PodcastEpisodeModel currentEpisode)
@@ -312,12 +287,8 @@ namespace Podcatcher
 
             try
             {
-//                BackgroundAudioPlayer.Instance.PlayStateChanged -= new EventHandler(PlayStateChanged);
-//                BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(PlayStateChanged);
                 BackgroundAudioPlayer.Instance.Track = playTrack;
                 BackgroundAudioPlayer.Instance.Volume = 1.0;
-
-                PlayButtonImage.Source = m_pauseButtonBitmap;
 
                 // This should really be on the other side of BackgroundAudioPlayer.Instance.Position
                 // then for some reason it's not honored. 
@@ -439,89 +410,21 @@ namespace Podcatcher
             } 
         }
 
-        private void setupUIForEpisodePaused()
+        public void setupUIForEpisodePaused()
         {
             if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
             {
                 m_screenUpdateTimer.Stop();
             }                                 
-            PlayButtonImage.Source = m_playButtonBitmap;
         }
 
-        private void setupUIForEpisodePlaying()
+        public void setupUIForEpisodePlaying()
         {
             if (m_screenUpdateTimer != null && !m_screenUpdateTimer.IsEnabled)
             {
                 m_screenUpdateTimer.Start();
             }
 
-            PlayButtonImage.Source = m_pauseButtonBitmap;
-        }
-
-        private void rewButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
-        {
-            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
-            if (player != null && player.PlayerState == PlayState.Playing)
-            {
-                player.Position = (player.Position.TotalSeconds - 30 >= 0) ?
-                                    TimeSpan.FromSeconds(player.Position.TotalSeconds - 30) :
-                                    TimeSpan.FromSeconds(0);
-            }
-        }
-
-        private void playButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
-        {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
-            {
-                BackgroundAudioPlayer.Instance.Pause();
-                setupUIForEpisodePaused();
-            }
-            else if (BackgroundAudioPlayer.Instance.Track != null)
-            {
-                BackgroundAudioPlayer.Instance.Play();
-                setupUIForEpisodePlaying();
-            }
-            else
-            {
-                Debug.WriteLine("No track currently set. Trying to setup currently playing episode as track...");
-                PodcastEpisodeModel ep = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
-                if (ep != null)
-                {
-                    PodcastPlaybackManager.getInstance().play(ep);
-                } 
-                else 
-                {
-                    Debug.WriteLine("Error: No currently playing track either! Giving up...");
-                    App.showErrorToast("Something went wrong. Cannot play the track.");
-                    showNoPlayerLayout();
-                }
-            }
-        }
-
-        private void stopButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
-        {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
-            {
-                // We are already stopped (playback ended or something). Let's update the episode state.
-                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
-            }
-            else
-            {
-                StopPlayback();
-            }
-
-            showNoPlayerLayout();
-            m_currentPlayerEpisode = null;
-        }
-
-        private void ffButtonClicked(object sender, System.Windows.Input.GestureEventArgs e)
-        {
-            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
-            if (player != null && player.PlayerState == PlayState.Playing)
-            {
-                player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
-                                                                                                             TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);  
-            }
         }
 
         private AudioTrack getAudioTrackForEpisode(PodcastEpisodeModel currentEpisode)
@@ -617,7 +520,7 @@ namespace Podcatcher
             {
                 Debug.WriteLine("Error when updating player: " + syse.Message);
                 App.showErrorToast("WP8 cannot play from this location.");
-                StopPlayback();
+                PlaybackStopped();
             }
 
             settingSliderFromPlay = false;
