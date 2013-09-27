@@ -220,8 +220,8 @@ namespace Podcatcher
                 m_screenUpdateTimer.Start();
             }
 
-            BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
-            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
+//            BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
+//            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
 
             NoPlayingLayout.Visibility = Visibility.Collapsed;
             PlayingLayout.Visibility = Visibility.Visible;

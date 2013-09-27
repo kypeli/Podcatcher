@@ -548,7 +548,7 @@ namespace Podcatcher.ViewModels
                          || m_episodePlayState == EpisodePlayStateEnum.Streaming
                          || m_episodePlayState == EpisodePlayStateEnum.Paused)
                 {
-                    m_progressBarValue = PodcastPlayerControl.getEpisodePlayPosition();
+                    m_progressBarValue = PodcastPlayer.getEpisodePlayPosition();
                     return m_progressBarValue * 100;
                 }
                 else if (SavedPlayPos > 0 && TotalLengthTicks > 0)
@@ -844,7 +844,7 @@ namespace Podcatcher.ViewModels
         private void episodePlayback_Tick(object sender, EventArgs e)
         {
             Debug.WriteLine("Episode - tick.");
-            ProgressBarValue = PodcastPlayerControl.getEpisodePlayPosition();
+            ProgressBarValue = PodcastPlayer.getEpisodePlayPosition();
         }
 
         private void PlayStateChanged(object sender, EventArgs e)

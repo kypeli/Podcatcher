@@ -40,7 +40,6 @@ namespace Podcatcher
 {
     public class PodcastPlaybackManager
     {
-        public event EventHandler OnOpenPodcastPlayer;
         public event EventHandler OnPodcastStartedPlaying;
         public event EventHandler OnPodcastStoppedPlaying;
 
@@ -179,7 +178,7 @@ namespace Podcatcher
             if (CurrentlyPlayingEpisode != null
                 && CurrentlyPlayingEpisode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
             {
-                PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+                PodcastPlayer player = PodcastPlayer.getIntance();
                 CurrentlyPlayingEpisode.setPlaying();
                 CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
                 player.playEpisode(CurrentlyPlayingEpisode);
@@ -195,18 +194,11 @@ namespace Podcatcher
                 }
                 else
                 {
-                    PodcastPlayerControl player = PodcastPlayerControl.getIntance();
-                    player.PlaybackStopped();
+                    PodcastPlayer player = PodcastPlayer.getIntance();
+//                    player.PlaybackStopped();
                     videoStreaming(episode);
                     CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }
-            }
-
-            // Always open the player view.
-            var handler = OnOpenPodcastPlayer;
-            if (handler != null)
-            {
-                OnOpenPodcastPlayer(this, new EventArgs());
             }
 
             var handlerStartedPlaying = OnPodcastStartedPlaying;
@@ -244,7 +236,7 @@ namespace Podcatcher
                 }
 
                 // Did we tap the item that is currently playing? 
-                PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
+/*                PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
                 if (current != null
                     && current.ItemId == tappedPlaylistItemId)
                 {
@@ -258,7 +250,7 @@ namespace Podcatcher
                     }
                     return;
                 } 
-
+                */
                 episodeId = (int)db.Playlist.Where(item => item.ItemId == tappedPlaylistItemId).Select(item => item.EpisodeId).First();
             }
 
@@ -542,7 +534,7 @@ namespace Podcatcher
 
         private void audioStreaming(PodcastEpisodeModel podcastEpisode)
         {
-            PodcastPlayerControl player = PodcastPlayerControl.getIntance();
+            PodcastPlayer player = PodcastPlayer.getIntance();
             player.streamEpisode(podcastEpisode);
         }
 
@@ -631,13 +623,6 @@ namespace Podcatcher
                             updatedEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
                             db.SubmitChanges();
                         }
-
-                        handlerStoppedPlaying = OnPodcastStoppedPlaying;
-                        if (handlerStoppedPlaying != null)
-                        {
-                            OnPodcastStoppedPlaying(this, new EventArgs());
-                        }
-
                     }
                     else
                     {

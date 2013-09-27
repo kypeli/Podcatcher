@@ -46,11 +46,41 @@ namespace Podcatcher
         private const int PODCAST_PLAYER_PIVOR_INDEX = 2;
         private const int TRIAL_SUBSCRIPTION_LIMIT   = 2;
         
+        // Pivot page indexes
+        private const int PIVOT_INDEX_MAINVIEW  = 0;
+        private const int PIVOT_INDEX_PLAYER    = 1;
+        private const int PIVOT_INDEX_PLAYLIST  = 2;
+        private const int PIVOT_INDEX_DOWNLOADS = 3;
+
+
         private PodcastEpisodesDownloadManager m_episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
         private PodcastSubscriptionsManager m_subscriptionsManager;
         private PodcastPlaybackManager m_playbackManager;
         private IsolatedStorageSettings m_applicationSettings = null;
         private ObservableCollection<PodcastSubscriptionModel> m_subscriptions = App.mainViewModels.PodcastSubscriptions;
+        private List<ApplicationBarIconButton> m_playerButtons = new List<ApplicationBarIconButton>();
+
+        // Player app bar buttons
+        private ApplicationBarIconButton rewPlayerButton = new ApplicationBarIconButton(new Uri("/Images/Light/rew.png", UriKind.Relative))
+        {
+            Text = "Rew"            
+        };
+        private ApplicationBarIconButton playPlayerButton = new ApplicationBarIconButton(new Uri("/Images/Light/play.png", UriKind.Relative))
+        {
+            Text = "Play"
+        };
+        private ApplicationBarIconButton pausePlayerButton = new ApplicationBarIconButton(new Uri("/Images/Light/pause.png", UriKind.Relative))
+        {
+            Text = "Pause"
+        };
+        private ApplicationBarIconButton stopPlayerButton = new ApplicationBarIconButton(new Uri("/Images/Light/stop.png", UriKind.Relative))
+        {
+            Text = "Stop"            
+        };
+        private ApplicationBarIconButton ffPlayerButton = new ApplicationBarIconButton(new Uri("/Images/Light/ff.png", UriKind.Relative))
+        {
+            Text = "FF"
+        };
 
         public MainView()
         {
@@ -74,7 +104,8 @@ namespace Podcatcher
 
             // Hook to the event when the podcast player starts playing. 
             m_playbackManager = PodcastPlaybackManager.getInstance();
-            m_playbackManager.OnOpenPodcastPlayer += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+            m_playbackManager.OnPodcastStartedPlaying += new EventHandler(PodcastPlayer_PodcastPlayerStarted);
+            m_playbackManager.OnPodcastStoppedPlaying += new EventHandler(PodcastPlayer_PodcastPlayerStopped);
 
             PodcastSubscriptionsManager.getInstance().OnPodcastChannelDeleteStarted
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelDeleteStarted);
@@ -106,6 +137,13 @@ namespace Podcatcher
             App.episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
 
             CheckLicense();
+
+            // Setup player button events.
+            rewPlayerButton.Click += rewButtonClicked;
+            pausePlayerButton.Click += playButtonClicked;
+            playPlayerButton.Click += playButtonClicked;
+            stopPlayerButton.Click += stopButtonClicked;
+            ffPlayerButton.Click += ffButtonClicked;
         }
 
         private void subscriptionManager_OnPodcastChannelDeleteStarted(object source, SubscriptionManagerArgs e)
@@ -246,7 +284,40 @@ namespace Podcatcher
 
         void PodcastPlayer_PodcastPlayerStarted(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
+            // TODO
+            // NavigationService.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
+
+            m_playerButtons.Clear();
+            m_playerButtons.Add(rewPlayerButton);
+            m_playerButtons.Add(pausePlayerButton);
+            m_playerButtons.Add(stopPlayerButton);
+            m_playerButtons.Add(ffPlayerButton);
+
+            updatePlayerButtonsInApplicationBar(m_playerButtons);
+        }
+
+        private void updatePlayerButtonsInApplicationBar(List<ApplicationBarIconButton> playerButtons)
+        {
+            if (NavigationPivot.SelectedIndex != PIVOT_INDEX_PLAYER)
+            {
+                return;
+            }
+
+            this.ApplicationBar.MenuItems.Clear();
+            this.ApplicationBar.Buttons.Clear();
+
+            foreach (ApplicationBarIconButton button in playerButtons)
+            {
+                this.ApplicationBar.Buttons.Add(button);
+            }
+
+            this.ApplicationBar.IsVisible = (this.ApplicationBar.Buttons.Count > 0) ? true : false;
+        }
+
+        void PodcastPlayer_PodcastPlayerStopped(object sender, EventArgs e)
+        {
+            m_playerButtons.Clear();
+            updatePlayerButtonsInApplicationBar(m_playerButtons);
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -303,7 +374,7 @@ namespace Podcatcher
         {
             setupApplicationBarForIndex(this.NavigationPivot.SelectedIndex);
 
-            if (this.NavigationPivot.SelectedIndex == 2)
+            if (this.NavigationPivot.SelectedIndex == PIVOT_INDEX_PLAYER)
             {
                 this.NowPlaying.SetupNowPlayingView();
             }
@@ -315,7 +386,7 @@ namespace Podcatcher
             switch (index)
             {
                 // Subscription list view.
-                case 0:
+                case PIVOT_INDEX_MAINVIEW:
                     applicationBarVisible = true;
                     this.ApplicationBar.MenuItems.Clear();
                     this.ApplicationBar.Buttons.Clear();
@@ -341,8 +412,13 @@ namespace Podcatcher
 
                     break;
 
+                case PIVOT_INDEX_PLAYER:
+                    updatePlayerButtonsInApplicationBar(m_playerButtons);
+                    applicationBarVisible = true;
+                    break;
+
                 // Play queue view
-                case 2:
+                case PIVOT_INDEX_PLAYLIST:
                     applicationBarVisible = true;
                     this.ApplicationBar.MenuItems.Clear();
                     this.ApplicationBar.Buttons.Clear();
@@ -505,5 +581,83 @@ namespace Podcatcher
             m_isTrial = m_licenseInfo.IsTrial();
 #endif
         }
+
+        private void rewButtonClicked(object sender, EventArgs e)
+        {
+            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
+            if (player != null && player.PlayerState == PlayState.Playing)
+            {
+                player.Position = (player.Position.TotalSeconds - 30 >= 0) ?
+                                    TimeSpan.FromSeconds(player.Position.TotalSeconds - 30) :
+                                    TimeSpan.FromSeconds(0);
+            }
+        }
+
+        private void playButtonClicked(object sender, EventArgs e)
+        {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+            {
+                // Paused
+                BackgroundAudioPlayer.Instance.Pause();
+               // PodcastPlayer.setupUIForEpisodePaused();
+                //       PlayButtonImage.Source = m_playButtonBitmap;
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).IconUri = new Uri("/Images/Light/play.png", UriKind.Relative);
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).Text = "Play";
+            }
+            else if (BackgroundAudioPlayer.Instance.Track != null)
+            {
+                // Playing
+                BackgroundAudioPlayer.Instance.Play();
+               // PodcastPlayer.setupUIForEpisodePlaying();
+                //            PlayButtonImage.Source = m_pauseButtonBitmap;
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).IconUri = new Uri("/Images/Light/pause.png", UriKind.Relative);
+                (this.ApplicationBar.Buttons[1] as ApplicationBarIconButton).Text = "Pause";
+            }
+            else
+            {
+                Debug.WriteLine("No track currently set. Trying to setup currently playing episode as track...");
+                PodcastEpisodeModel ep = PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode;
+                if (ep != null)
+                {
+                    PodcastPlaybackManager.getInstance().play(ep);
+                }
+                else
+                {
+                    Debug.WriteLine("Error: No currently playing track either! Giving up...");
+                    App.showErrorToast("Something went wrong. Cannot play the track.");
+                 //   PodcastPlayer.showNoPlayerLayout();
+                }
+            }
+        }
+
+        private void stopButtonClicked(object sender, EventArgs e)
+        {
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
+            {
+                // We are already stopped (playback ended or something). Let's update the episode state.
+                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+            }
+            else
+            {
+                if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
+                    || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
+                {
+                    BackgroundAudioPlayer.Instance.Stop();
+                }
+            }
+
+           // PodcastPlayer.PlaybackStopped();
+        }
+
+        private void ffButtonClicked(object sender, EventArgs e)
+        {
+            BackgroundAudioPlayer player = BackgroundAudioPlayer.Instance;
+            if (player != null && player.PlayerState == PlayState.Playing)
+            {
+                player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
+                                                                                                             TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);
+            }
+        }
+
     }
 }

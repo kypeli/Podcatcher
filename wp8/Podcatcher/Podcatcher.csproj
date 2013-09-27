@@ -112,6 +112,7 @@
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="PodcastFactory.cs" />
     <Compile Include="PodcastPlaybackManager.cs" />
+    <Compile Include="PodcastPlayer.cs" />
     <Compile Include="PodcastSqlModel.cs" />
     <Compile Include="PodcastSubscriptionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

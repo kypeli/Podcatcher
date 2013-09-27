@@ -57,8 +57,8 @@
                 </Grid>
             </controls:PivotItem>
 
-            <!-- Podcast play history -->
-            <controls:PivotItem Header="latest">
+            <!-- Play view -->
+            <controls:PivotItem Header="play">
                 <Grid Background="Transparent" Width="480">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
