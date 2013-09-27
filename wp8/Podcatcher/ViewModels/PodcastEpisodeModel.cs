@@ -823,6 +823,11 @@ namespace Podcatcher.ViewModels
 
         private void episodeStartedPlaying()
         {
+            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
+            {
+                return;
+            }
+
             m_screenUpdateTimer = new DispatcherTimer();
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
             m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
@@ -833,8 +838,8 @@ namespace Podcatcher.ViewModels
         {
             if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
             {
-                m_screenUpdateTimer.Stop();
                 m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
+                m_screenUpdateTimer.Stop();
                 m_screenUpdateTimer = null;
             }
 

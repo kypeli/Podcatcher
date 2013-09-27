@@ -38,6 +38,8 @@ using System.IO.IsolatedStorage;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.BackgroundAudio;
+using System.Threading;
+using Microsoft.Phone.Reactive;
 
 namespace Podcatcher
 {
@@ -257,9 +259,17 @@ namespace Podcatcher
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;            
-            this.NowPlaying.SetupNowPlayingView();
+            this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
+            NowPlaying.SetupNowPlayingView();
 
+            m_playerButtons.Clear();
+            m_playerButtons.Add(rewPlayerButton);
+            m_playerButtons.Add(pausePlayerButton);
+            m_playerButtons.Add(stopPlayerButton);
+            m_playerButtons.Add(ffPlayerButton);
+            updatePlayerButtonsInApplicationBar(m_playerButtons);
+
+            this.ApplicationBar.IsVisible = PodcastPlaybackManager.getInstance().isCurrentlyPlaying() ? true : false;
 
             if (App.mainViewModels.LatestEpisodesListProperty.Count == 0)
             {
@@ -286,14 +296,20 @@ namespace Podcatcher
         {
             // TODO
             // NavigationService.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
+            this.NowPlaying.SetupNowPlayingView();
+            this.NowPlaying.Visibility = System.Windows.Visibility.Visible;
+            Scheduler.Dispatcher.Schedule(() =>     // We have to do this hack so that Windows Phone's UI doesn't get confused when we add the application bar. 
+            {
+                this.ApplicationBar.IsVisible = true;
+                Debug.WriteLine("Showing application bar.");
+            }, TimeSpan.FromSeconds(1));
+        }
 
-            m_playerButtons.Clear();
-            m_playerButtons.Add(rewPlayerButton);
-            m_playerButtons.Add(pausePlayerButton);
-            m_playerButtons.Add(stopPlayerButton);
-            m_playerButtons.Add(ffPlayerButton);
-
-            updatePlayerButtonsInApplicationBar(m_playerButtons);
+        void PodcastPlayer_PodcastPlayerStopped(object sender, EventArgs e)
+        {
+            this.NowPlaying.Visibility = System.Windows.Visibility.Collapsed;
+            this.ApplicationBar.IsVisible = false;
+            Debug.WriteLine("Hiding application bar.");
         }
 
         private void updatePlayerButtonsInApplicationBar(List<ApplicationBarIconButton> playerButtons)
@@ -312,12 +328,6 @@ namespace Podcatcher
             }
 
             this.ApplicationBar.IsVisible = (this.ApplicationBar.Buttons.Count > 0) ? true : false;
-        }
-
-        void PodcastPlayer_PodcastPlayerStopped(object sender, EventArgs e)
-        {
-            m_playerButtons.Clear();
-            updatePlayerButtonsInApplicationBar(m_playerButtons);
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -373,11 +383,6 @@ namespace Podcatcher
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             setupApplicationBarForIndex(this.NavigationPivot.SelectedIndex);
-
-            if (this.NavigationPivot.SelectedIndex == PIVOT_INDEX_PLAYER)
-            {
-                this.NowPlaying.SetupNowPlayingView();
-            }
         }
 
         private void setupApplicationBarForIndex(int index)
@@ -414,7 +419,7 @@ namespace Podcatcher
 
                 case PIVOT_INDEX_PLAYER:
                     updatePlayerButtonsInApplicationBar(m_playerButtons);
-                    applicationBarVisible = true;
+                    applicationBarVisible = PodcastPlaybackManager.getInstance().isCurrentlyPlaying() ? true : false;
                     break;
 
                 // Play queue view
@@ -425,14 +430,6 @@ namespace Podcatcher
 
                     if (App.mainViewModels.PlayQueue.Count > 0)
                     {
-                        ApplicationBarIconButton playQueueButton = new ApplicationBarIconButton()
-                        {
-                            Text = "Play queue"
-                        };
-                        setupQueueApplicationButton(playQueueButton);
-                        playQueueButton.Click += new EventHandler(PlayQueue_Click);
-                        this.ApplicationBar.Buttons.Add(playQueueButton);
-
                         ApplicationBarMenuItem queueItem = new ApplicationBarMenuItem() { Text = "Clear play queue" };
                         queueItem.Click += new EventHandler(ClearPlayqueue_Click);
                         this.ApplicationBar.MenuItems.Add(queueItem);
@@ -443,41 +440,9 @@ namespace Podcatcher
             this.ApplicationBar.IsVisible = applicationBarVisible;
         }
 
-        private void setupQueueApplicationButton(ApplicationBarIconButton button) 
-        { 
-            BackgroundAudioPlayer bap = BackgroundAudioPlayer.Instance;
-            Uri iconUri = bap.PlayerState != PlayState.Playing ? new Uri("/Images/Dark/play.png", UriKind.Relative) :
-                                                                 new Uri("/Images/Dark/pause.png", UriKind.Relative);
-            button.IconUri = iconUri;
-            
-            bap.PlayStateChanged -= new EventHandler(bap_PlayStateChanged);
-            bap.PlayStateChanged += new EventHandler(bap_PlayStateChanged);
-        }
-
-        void bap_PlayStateChanged(object sender, EventArgs e)
-        {
-            setupQueueApplicationButton(this.ApplicationBar.Buttons[0] as ApplicationBarIconButton);
-        }
-
         private void AboutSubscriptionIconButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Views/AboutView.xaml", UriKind.Relative));
-        }
-
-        private void PlayQueue_Click(object sender, EventArgs e)
-        {
-            switch(BackgroundAudioPlayer.Instance.PlayerState) 
-            {
-                case PlayState.Playing:
-                    BackgroundAudioPlayer.Instance.Pause();
-                    break;
-                case PlayState.Paused:
-                    BackgroundAudioPlayer.Instance.Play();
-                    break;
-                default:
-                    PodcastPlaybackManager.getInstance().startPlaylistPlayback();
-                    break;
-            }    
         }
 
         private void ClearPlayqueue_Click(object sender, EventArgs e)
