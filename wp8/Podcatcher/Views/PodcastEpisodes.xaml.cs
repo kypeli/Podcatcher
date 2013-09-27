@@ -102,6 +102,9 @@ namespace Podcatcher.Views
 
             if (forceUpdate)
             {
+                // Clear the back stack
+                while (((App)Application.Current).RootFrame.RemoveBackEntry() != null) ;
+                
                 ShellTile pinnedSubscriptionTile = m_subscription.getSubscriptionsLiveTile();
                 if (pinnedSubscriptionTile != null)
                 {
@@ -112,6 +115,7 @@ namespace Podcatcher.Views
                 }
 
                 PodcastSubscriptionsManager.getInstance().refreshSubscription(m_subscription);
+
             }
 
             m_subscription.PodcastCleanStarted -= new PodcastSubscriptionModel.SubscriptionModelHandler(m_subscription_PodcastCleanStarted);
