@@ -18,24 +18,20 @@
 
 
 
+using Coding4Fun.Toolkit.Controls;
+using Microsoft.Phone.BackgroundAudio;
+using Microsoft.Phone.BackgroundTransfer;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.Linq.Mapping;
-using System.Data.Linq;
 using System.ComponentModel;
-using System.Net;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
 using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
-using Microsoft.Phone.BackgroundTransfer;
+using System.Linq;
 using System.Windows;
-using Microsoft.Phone.BackgroundAudio;
-using System.Windows.Threading;
 using System.Windows.Media.Imaging;
-using System.Windows.Controls;
-using Coding4Fun.Toolkit.Controls;
+using System.Windows.Threading;
 
 namespace Podcatcher.ViewModels
 {
@@ -759,13 +755,10 @@ namespace Podcatcher.ViewModels
 
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
         {
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.DoWork += new DoWorkEventHandler(savePodcastAsync);
-            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(SavePodcastEpisodeCompleted);
-            bw.RunWorkerAsync();
+            savePodcastAsync();
         }
 
-        void savePodcastAsync(object sender, DoWorkEventArgs e)
+        async void savePodcastAsync()
         {
             Debug.WriteLine("Writing episode to disk.");
 
@@ -781,9 +774,9 @@ namespace Podcatcher.ViewModels
                     }
 
                     int bytesRead = 0;
-                    while ((bytesRead = m_downloadStream.Read(buffer, 0, 4096)) > 0)
+                    while ((bytesRead = await m_downloadStream.ReadAsync(buffer, 0, 4096)) > 0)
                     {
-                        fileStream.Write(buffer, 0, bytesRead);
+                        await fileStream.WriteAsync(buffer, 0, bytesRead);
                     }
                 }
             }

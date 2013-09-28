@@ -18,27 +18,23 @@
 
 
 
-using System;
-using System.Net;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Windows.Navigation;
-using System.Windows;
-using Microsoft.Phone.Controls;
-using System.Windows.Controls;
 using Coding4Fun.Toolkit.Controls;
-using Podcatcher.ViewModels;
-using System.Text;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Xml;
-using Microsoft.Phone.Tasks;
 using Microsoft.Live;
-using System.IO.IsolatedStorage;
+using Microsoft.Phone.Tasks;
+using Podcatcher.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
-using System.Data.Linq;
+using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Xml;
 
 namespace Podcatcher
 {
@@ -211,34 +207,22 @@ namespace Podcatcher
             Debug.WriteLine("Fetching podcast from URL: " + podcastRss.ToString());
         }
 
-        public void deleteSubscription(PodcastSubscriptionModel podcastSubscriptionModel)
+        public async void deleteSubscription(PodcastSubscriptionModel podcastSubscriptionModel)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(deleteSubscriptionFromDB);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(deleteSubscriptionFromDBCompleted);
-            worker.RunWorkerAsync(podcastSubscriptionModel);
-
             OnPodcastChannelDeleteStarted(this, null);
-        }
 
-        void deleteSubscriptionFromDB(object sender, DoWorkEventArgs e)
-        {
-            PodcastSubscriptionModel podcastModel = e.Argument as PodcastSubscriptionModel;
-            using (var db = new PodcastSqlModel())
+            await Task.Run(() =>
             {
-                PodcastSubscriptionModel dbSubscription = db.Subscriptions.First(s => s.PodcastId == podcastModel.PodcastId);
-                dbSubscription.cleanupForDeletion();
-                db.deleteSubscription(dbSubscription);
-            }
+                using (var db = new PodcastSqlModel())
+                {
+                    PodcastSubscriptionModel dbSubscription = db.Subscriptions.First(s => s.PodcastId == podcastSubscriptionModel.PodcastId);
+                    dbSubscription.cleanupForDeletion();
+                    db.deleteSubscription(dbSubscription);
+                }
+            });
 
-            e.Result = podcastModel;
-        }
-
-        void deleteSubscriptionFromDBCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
             OnPodcastChannelDeleteFinished(this, null);
-            PodcastSubscriptionModel s = e.Result as PodcastSubscriptionModel;
-            OnPodcastChannelRemoved(s);
+            OnPodcastChannelRemoved(podcastSubscriptionModel);
         }
 
         public void refreshSubscriptions()
@@ -417,7 +401,6 @@ namespace Podcatcher
             return new Uri(string.Format("{0}{1}nocache={2}", refreshUri,
                                                               delimitter,
                                                               Environment.TickCount));
-
         }
 
         private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -552,7 +535,7 @@ namespace Podcatcher
                 refreshNextSubscription();
             }
 
-            Uri refreshUri = createNonCachedRefreshUri(subscription.PodcastRSSUrl);
+            Uri refreshUri = new Uri(subscription.PodcastRSSUrl, UriKind.Absolute);
             Debug.WriteLine("Refreshing subscriptions for '{0}', using URL: {1}", subscription.PodcastName, refreshUri);
 
             NetworkCredential nc = null;
@@ -578,7 +561,7 @@ namespace Podcatcher
             wc.DownloadStringAsync(refreshUri, subscription);
         }
 
-        void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        async void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             PodcastSubscriptionModel subscription = e.UserState as PodcastSubscriptionModel;
             
@@ -597,39 +580,19 @@ namespace Podcatcher
 
             subscription.CachedPodcastRSSFeed = e.Result as string;
 
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(workerUpdateEpisodes);
-            worker.RunWorkerAsync(subscription);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerUpdateEpisodesCompleted);
-        }
-
-        private void workerUpdateEpisodes(object sender, DoWorkEventArgs args)
-        {
-            PodcastSubscriptionModel subscription = args.Argument as PodcastSubscriptionModel;
             Debug.WriteLine("Starting refreshing episodes for " + subscription.PodcastName);
-            subscription.EpisodesManager.updatePodcastEpisodes();
-
-            args.Result = subscription;
+            await Task.Run(() => subscription.EpisodesManager.updatePodcastEpisodes());
             Debug.WriteLine("Done.");
-        }
 
-        private void workerUpdateEpisodesCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
             // Ugly.
             if (App.forceReloadOfEpisodeData)
             {
-                PodcastSubscriptionModel sub = e.Result as PodcastSubscriptionModel;
-                if (sub == null)
-                {
-                    Debug.WriteLine("Warning: Could not get subscription from e.Result!");
-                    return;
-                }
-
-                sub.reloadUnplayedPlayedEpisodes();
-                sub.reloadPartiallyPlayedEpisodes();
+                subscription.reloadUnplayedPlayedEpisodes();
+                subscription.reloadPartiallyPlayedEpisodes();
             }
-            
+
             refreshNextSubscription();
+            
         }
 
         private void PodcastSubscriptionsManager_OnPodcastAddedFinished(object source, SubscriptionManagerArgs e)

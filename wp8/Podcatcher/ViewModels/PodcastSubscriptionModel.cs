@@ -16,24 +16,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Net;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.IO.IsolatedStorage;
-using System.Data.Linq.Mapping;
-using System.Data.Linq;
-using Podcatcher.ViewModels;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Threading;
 using Microsoft.Phone.Shell;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
+using System.Diagnostics;
+using System.IO;
+using System.IO.IsolatedStorage;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Podcatcher.ViewModels
 {
@@ -707,16 +706,6 @@ namespace Podcatcher.ViewModels
                 tile.Delete();
             }
 
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(backgroundCleanupWork);
-            worker.RunWorkerAsync();
-        }
-
-        void backgroundCleanupWork(object sender, DoWorkEventArgs e)
-        {
-            // TODO: Extract methods.
-
-            // Delete logo from local image cache.
             if (m_isolatedFileStorage.FileExists(m_PodcastLogoLocalLocation) == false)
             {
                 Debug.WriteLine("ERROR: Logo local cache file not found! Subscription: " + m_PodcastName
@@ -754,7 +743,7 @@ namespace Podcatcher.ViewModels
             return ShellTile.ActiveTiles.FirstOrDefault(tile => tile.NavigationUri.ToString().Contains("podcastId=" + m_podcastId)) as ShellTile;
         }
 
-        public void cleanOldEpisodes(int keepEpisodes, bool deleteUnplayed = false)
+        public async void cleanOldEpisodes(int keepEpisodes, bool deleteUnplayed = false)
         {
             List<String> episodeFiles = new List<String>();
             IEnumerable<PodcastEpisodeModel> query = null;
@@ -804,19 +793,18 @@ namespace Podcatcher.ViewModels
                 db.deleteEpisodesPerQuery(query);
             }
 
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(workerCleanSubscriptions);
-            worker.RunWorkerAsync(episodeFiles);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerCleanSubscriptionsCompleted);
- 
+            await Task.Run(() => deleteEpisodeFiles(episodeFiles));
+
+            PodcastCleanFinished();
+            NotifyPropertyChanged("EpisodesText");
+            NotifyPropertyChanged("EpisodesPublishedDescending");
         }
 
-        private void workerCleanSubscriptions(object sender, DoWorkEventArgs args)
+        private void deleteEpisodeFiles(List<String> filenamesToDelete)
         {
-            List<String> filesToDelete = args.Argument as List<String>;
             using (var episodeStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                foreach (String filename in filesToDelete)
+                foreach (String filename in filenamesToDelete)
                 {
                     try
                     {
@@ -837,13 +825,6 @@ namespace Podcatcher.ViewModels
                 }
             }
 
-        }
-
-        private void workerCleanSubscriptionsCompleted(object sender, RunWorkerCompletedEventArgs e) 
-        {
-            PodcastCleanFinished();
-            NotifyPropertyChanged("EpisodesText");
-            NotifyPropertyChanged("EpisodesPublishedDescending");
         }
 
         /************************************* Private implementation *******************************/

@@ -34,6 +34,7 @@ using Microsoft.Phone.Controls;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 
 namespace Podcatcher
@@ -296,7 +297,7 @@ namespace Podcatcher
             return null;
         }
 
-        public void addToPlayqueue(Collection<PodcastEpisodeModel> episodes)
+        public async void addToPlayqueue(Collection<PodcastEpisodeModel> episodes)
         {
             using (var db = new PlaylistDBContext())
             {
@@ -309,14 +310,14 @@ namespace Podcatcher
 
             using (var db = new PodcastSqlModel())
             {
-                sortPlaylist(db.settings().PlaylistSortOrder);
+                await Task.Run(() => sortPlaylist(db.settings().PlaylistSortOrder));
             }
 
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
             showAddedNotification(episodes.Count);
         }
 
-        public void addToPlayqueue(PodcastEpisodeModel episode, bool showNotification = true)
+        public async void addToPlayqueue(PodcastEpisodeModel episode, bool showNotification = true)
         {
             using (var db = new PlaylistDBContext())
             {
@@ -326,7 +327,7 @@ namespace Podcatcher
 
             using (var db = new PodcastSqlModel())
             {
-                sortPlaylist(db.settings().PlaylistSortOrder);
+                await Task.Run(() => sortPlaylist(db.settings().PlaylistSortOrder));
             }
 
             if (showNotification)
@@ -448,28 +449,6 @@ namespace Podcatcher
 
         public void sortPlaylist(int sortOrder)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(workerSortPlaylist);
-            worker.RunWorkerAsync(sortOrder);
-            worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(workerSortPlaylistCompleted);
-        }
-
-        public bool isCurrentlyPlaying()
-        {
-            return CurrentlyPlayingEpisode != null;
-        }
-
-        /****************************** Private implementations *******************************/
-
-        private void showAddedNotification(int count)
-        {
-            String notification = String.Format("{0} podcast{1} added to play queue.", count, (count > 1) ? "s" : "");
-            App.showNotificationToast(notification);
-        }
-        
-        private void workerSortPlaylist(object sender, DoWorkEventArgs args)
-        {
-            int selectedSortOrderIndex = (int)args.Argument;
             using (var playlistDB = new PlaylistDBContext())
             {
                 if (playlistDB.Playlist.Count() <= 1)
@@ -485,7 +464,7 @@ namespace Podcatcher
                                                                     item => item.EpisodeId,
                                                                     episode => episode.EpisodeId,
                                                                     (item, episode) => new { PlaylistItem = item, PodcastEpisodeModel = episode });
-                switch (selectedSortOrderIndex)
+                switch (sortOrder)
                 {
                     // Oldest first
                     case 0:
@@ -511,13 +490,23 @@ namespace Podcatcher
                 playlistDB.Playlist.InsertAllOnSubmit(newSortOrder);
                 playlistDB.SubmitChanges();
             }
-        }
 
-        private void workerSortPlaylistCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
         }
 
+        public bool isCurrentlyPlaying()
+        {
+            return CurrentlyPlayingEpisode != null;
+        }
+
+        /****************************** Private implementations *******************************/
+
+        private void showAddedNotification(int count)
+        {
+            String notification = String.Format("{0} podcast{1} added to play queue.", count, (count > 1) ? "s" : "");
+            App.showNotificationToast(notification);
+        }
+        
         private static IEnumerable<PodcastEpisodeModel> episodes(PodcastSqlModel sqlContext)
         {
             return sqlContext.Episodes.AsQueryable();
