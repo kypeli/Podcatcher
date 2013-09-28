@@ -337,7 +337,6 @@ namespace Podcatcher.Views
             m_subscription.reloadPartiallyPlayedEpisodes();
             m_subscription.reloadUnplayedPlayedEpisodes();
             m_subscription.EpisodesPublishedDescending = new ObservableCollection<PodcastEpisodeModel>();
-            this.EpisodeList.ItemsSource = m_subscription.EpisodesPublishedDescending;
         }
     }
 }

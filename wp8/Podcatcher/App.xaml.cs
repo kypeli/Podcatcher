@@ -72,7 +72,7 @@ namespace Podcatcher
         // Name of our background task that checks for new episodes for pinned subscriptions
         public const string BGTASK_NEW_EPISODES                     = "SubscriptionsChecker";
 
-        private static LicenseInformation m_licenseInfo;
+        public static LicenseInformation licenseInfo;
         public static bool isTrial = true;
         public static bool forceReloadOfEpisodeData = false;        
 
@@ -147,7 +147,7 @@ namespace Podcatcher
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
             
-            m_licenseInfo = new LicenseInformation();
+            licenseInfo = new LicenseInformation();
 
             detectCurrentTheme();
         }

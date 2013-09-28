@@ -750,7 +750,6 @@ namespace Podcatcher.ViewModels
 
         /************************************* Private implementations *******************************/
         #region private
-        private bool m_isPlaying = false;
         private static DispatcherTimer m_screenUpdateTimer = null;
 
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
@@ -814,72 +813,10 @@ namespace Podcatcher.ViewModels
             m_downloadStream = null;
         }
 
-        private void episodeStartedPlaying()
-        {
-            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
-            {
-                return;
-            }
-
-            m_screenUpdateTimer = new DispatcherTimer();
-            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
-            m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
-            m_screenUpdateTimer.Start();
-        }
-
-        private void episodeStoppedPlaying()
-        {
-            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
-            {
-                m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
-                m_screenUpdateTimer.Stop();
-                m_screenUpdateTimer = null;
-            }
-
-            setNoPlaying();
-        }
-
         private void episodePlayback_Tick(object sender, EventArgs e)
         {
             Debug.WriteLine("Episode - tick.");
             ProgressBarValue = PodcastPlayer.getEpisodePlayPosition();
-        }
-
-        private void PlayStateChanged(object sender, EventArgs e)
-        {
-            if (BackgroundAudioPlayer.Instance.Error != null)
-            {
-                Debug.WriteLine("PlayStateChanged: Podcast player is no longer available.");
-                return;
-            }
-
-            switch (BackgroundAudioPlayer.Instance.PlayerState)
-            {
-                case PlayState.Playing:
-                    Debug.WriteLine("Episode: Playing.");
-                    break;
-
-                case PlayState.Paused:
-                    Debug.WriteLine("Episode: Paused.");
-                    SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-                    episodeStoppedPlaying();
-                    break;
-
-                case PlayState.Stopped:
-                case PlayState.Unknown:
-                    Debug.WriteLine("Episode: Stopped.");
-                    SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-                    episodeStoppedPlaying();
-                    break;
-                
-                case PlayState.Shutdown:
-                    Debug.WriteLine("Episode: Shutdown.");
-                    SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
-                    episodeStoppedPlaying();
-                    break;
-            }
-
-
         }
 
         #endregion
@@ -911,21 +848,22 @@ namespace Podcatcher.ViewModels
 
         internal void setPlaying()
         {
-            try {
-                if (BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing 
-                    || m_isPlaying)
-                {
-                    return;
-                }
-            } catch(InvalidOperationException) {
+            if (EpisodePlayState == EpisodePlayStateEnum.Playing || EpisodePlayState == EpisodePlayStateEnum.Streaming)
+            {
+                return;
+            }
+
+            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
+            {
                 return;
             }
 
             EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
                                                                  : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
-            episodeStartedPlaying();
-            m_isPlaying = true;
-            BackgroundAudioPlayer.Instance.PlayStateChanged += PlayStateChanged;
+            m_screenUpdateTimer = new DispatcherTimer();
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
+            m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
+            m_screenUpdateTimer.Start();
         }
 
         internal void setNoPlaying()
@@ -940,8 +878,11 @@ namespace Podcatcher.ViewModels
                                                                      : PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
             }
 
-            m_isPlaying = false;
-            BackgroundAudioPlayer.Instance.PlayStateChanged -= PlayStateChanged;
+            if (m_screenUpdateTimer != null)
+            {
+                m_screenUpdateTimer.Stop();
+                m_screenUpdateTimer = null;
+            }
         }
 
         private bool isPlaying()
@@ -962,7 +903,6 @@ namespace Podcatcher.ViewModels
                     setPlaying();
                     break;
             }
-
         }
     }
 }

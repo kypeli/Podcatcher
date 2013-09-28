@@ -80,6 +80,13 @@ namespace Podcatcher
                         current.IsCurrent = false;
                     }
 
+                    if (value != null 
+                        && m_currentlyPlayingEpisode != null 
+                        && (value as PodcastEpisodeModel).EpisodeId == m_currentlyPlayingEpisode.EpisodeId)
+                    {
+                        return;
+                    }
+
                     m_currentlyPlayingEpisode = value;
                     if (m_currentlyPlayingEpisode != null)
                     {
@@ -180,7 +187,6 @@ namespace Podcatcher
                 && CurrentlyPlayingEpisode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
             {
                 PodcastPlayer player = PodcastPlayer.getIntance();
-                CurrentlyPlayingEpisode.setPlaying();
                 CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
                 player.playEpisode(CurrentlyPlayingEpisode);
             }
@@ -189,14 +195,12 @@ namespace Podcatcher
                 // Stream it if not downloaded. 
                 if (isAudioPodcast(CurrentlyPlayingEpisode))
                 {
-                    CurrentlyPlayingEpisode.setPlaying();
                     audioStreaming(CurrentlyPlayingEpisode);
                     CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }
                 else
                 {
                     PodcastPlayer player = PodcastPlayer.getIntance();
-//                    player.PlaybackStopped();
                     videoStreaming(episode);
                     CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }
@@ -236,22 +240,6 @@ namespace Podcatcher
                     return;
                 }
 
-                // Did we tap the item that is currently playing? 
-/*                PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
-                if (current != null
-                    && current.ItemId == tappedPlaylistItemId)
-                {
-                    Debug.WriteLine("Tapped on the currently playing episode. I am not changing the track...");
-
-                    // Always open the player UI when playlist item is tapped.
-                    var handler = OnOpenPodcastPlayer;
-                    if (handler != null)
-                    {
-                        OnOpenPodcastPlayer(this, new EventArgs());
-                    }
-                    return;
-                } 
-                */
                 episodeId = (int)db.Playlist.Where(item => item.ItemId == tappedPlaylistItemId).Select(item => item.EpisodeId).First();
             }
 
@@ -576,7 +564,7 @@ namespace Podcatcher
                     } else if (currentEpisode.EpisodeId != CurrentlyPlayingEpisode.EpisodeId)
                     {
                         CurrentlyPlayingEpisode = currentEpisode;
-                        CurrentlyPlayingEpisode.setPlaying();
+                       //  CurrentlyPlayingEpisode.setPlaying();
                     }
 
                     if (CurrentlyPlayingEpisode.TotalLengthTicks == 0)

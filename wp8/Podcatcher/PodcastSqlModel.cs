@@ -394,7 +394,7 @@ namespace Podcatcher
 
         public PodcastEpisodeModel episodeForPlaylistItem(PlaylistItem item)
         {
-            return Episodes.FirstOrDefault(ep => ep.EpisodeId == item.ItemId);
+            return Episodes.FirstOrDefault(ep => ep.EpisodeId == item.EpisodeId);
         }
 
         /************************************* Private implementation *******************************/

@@ -543,7 +543,7 @@ namespace Podcatcher
                 App.isTrial = false;
             }
 #else
-            m_isTrial = m_licenseInfo.IsTrial();
+            App.isTrial = App.licenseInfo.IsTrial();
 #endif
         }
 

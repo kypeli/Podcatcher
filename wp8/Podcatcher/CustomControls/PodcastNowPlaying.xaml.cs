@@ -72,7 +72,7 @@ namespace Podcatcher
                 }
             }
 
-            this.DataContext = pm.CurrentlyPlayingEpisode;
+            this.DataContext = pm.CurrentlyPlayingEpisode; 
             this.PodcastLogo.Source = m_podcastLogo;
         }
 
