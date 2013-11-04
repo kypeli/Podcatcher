@@ -128,6 +128,7 @@ namespace Podcatcher.ViewModels
         }
 
         private WeakReference m_podcastLogoRef = null;
+        private Task<BitmapImage> fetchPodcastLogoTask = null;
         public BitmapImage PodcastLogo
         {
             get
@@ -183,14 +184,10 @@ namespace Podcatcher.ViewModels
                     }
                     else
                     {
-                        lock (this)
+                        if (fetchPodcastLogoTask == null)
                         {
-                            if (!m_podcastLogoFetchingInProgress)
-                            {
-                                m_podcastLogoFetchingInProgress = true;
-                                // Icon not found on file system. Let's refetch it.
-                                refetchPodcastLogo();
-                            }
+                            // Icon not found on file system. Let's refetch it.
+                            fetchPodcastLogoTask = fetchChannelLogo();
                         }
                     }
                 }
@@ -717,20 +714,61 @@ namespace Podcatcher.ViewModels
             m_isolatedFileStorage.DeleteFile(m_PodcastLogoLocalLocation);
         }
 
-        public void fetchChannelLogo()
+        async public Task<BitmapImage> fetchChannelLogo()
         {
             if (m_PodcastLogoUrl == null)
             {
                 Debug.WriteLine("Logo is null. Using default cover.");
-                return;
+                return null;
             }
 
             Debug.WriteLine("Getting podcast icon: " + m_PodcastLogoUrl);
 
-            // Fetch the remote podcast logo to store locally in the IsolatedStorage.
-            WebClient wc = new WebClient();
-            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_FetchPodcastLogoCompleted);
-            wc.OpenReadAsync(m_PodcastLogoUrl);
+            var response = await HttpWebRequest.Create(m_PodcastLogoUrl).GetResponseAsync();
+            Stream logoInStream = response.GetResponseStream();
+
+            BitmapImage logoImage = new BitmapImage();
+            MemoryStream logoBytes = new MemoryStream();
+
+            try
+            {
+                // This will fail if we don't support the image, such as Gif images,
+                logoImage.SetSource(logoInStream);
+
+                WriteableBitmap wb = new WriteableBitmap(logoImage);
+                logoImage = null;
+
+                MemoryStream resizedImageStream = new MemoryStream();
+                wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
+                wb = null;
+                GC.Collect();
+
+                logoBytes = resizedImageStream;
+
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("Error processing logo picture! Will store the original image to ISO Storage...");
+                logoInStream.CopyTo(logoBytes);
+            }
+
+            using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation,
+                                                                        FileMode.OpenOrCreate,
+                                                                        m_isolatedFileStorage))
+            {
+                isoFileStream.Write(logoBytes.ToArray(), 0, (int)logoBytes.Length);
+            }
+
+
+            Debug.WriteLine("Stored local podcast icon as: " + PodcastLogoLocalLocation);
+
+            // Local cache has been updated - notify the UI that the logo property has changed.
+            // and the new logo can be fetched to the UI. 
+            NotifyPropertyChanged("PodcastLogo");
+            App.mainViewModels.PodcastSubscriptions = null;
+            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
+
+            return logoImage;
         }
 
         public void addNumOfNewEpisodes(int newPodcastEpisodes)
@@ -841,68 +879,9 @@ namespace Podcatcher.ViewModels
             }
         }
 
-        private void wc_FetchPodcastLogoCompleted(object sender, OpenReadCompletedEventArgs e)
-        {
-            if (e.Cancelled || e.Error != null)
-            {
-                Debug.WriteLine("ERROR: Cannot fetch channel logo.");
-                PodcastLogoLocalLocation = null;
-                return;
-            }
-
-            Debug.WriteLine("Storing podcast icon locally...");
-
-            Stream logoInStream = null;
-            BitmapImage logoImage = new BitmapImage();
-            MemoryStream logoBytes = new MemoryStream();
-
-            using (logoInStream = (Stream)e.Result)
-            {
-                try
-                {
-                    // This will fail if we don't support the image, such as Gif images,
-                    logoImage.SetSource(logoInStream);
-
-                    WriteableBitmap wb = new WriteableBitmap(logoImage);
-                    logoImage = null;
-
-                    MemoryStream resizedImageStream = new MemoryStream();
-                    wb.SaveJpeg(resizedImageStream, 200, 200, 0, 100);
-                    wb = null;
-                    GC.Collect();
-
-                    logoBytes = resizedImageStream;
-
-                }
-                catch (Exception)
-                {
-                    Debug.WriteLine("Error processing logo picture! Will store the original image to ISO Storage...");
-                    logoInStream.CopyTo(logoBytes);
-                }
-
-                using (var isoFileStream = new IsolatedStorageFileStream(m_PodcastLogoLocalLocation,
-                                                                         FileMode.OpenOrCreate,
-                                                                         m_isolatedFileStorage))
-                {
-                    isoFileStream.Write(logoBytes.ToArray(), 0, (int)logoBytes.Length);
-                }
-
-            }
-
-            Debug.WriteLine("Stored local podcast icon as: " + PodcastLogoLocalLocation);
-            
-            // Local cache has been updated - notify the UI that the logo property has changed.
-            // and the new logo can be fetched to the UI. 
-            NotifyPropertyChanged("PodcastLogo");
-            App.mainViewModels.PodcastSubscriptions = null;
-            App.mainViewModels.LatestEpisodesListProperty = new ObservableCollection<PodcastEpisodeModel>();
-            m_podcastLogoFetchingInProgress = false;
-        }
-
         #region propertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangingEventHandler PropertyChanging;
-        private bool m_podcastLogoFetchingInProgress;
         
         private void NotifyPropertyChanging()
         {
@@ -1067,26 +1046,5 @@ namespace Podcatcher.ViewModels
             }
         }
         #endregion
-
-        private void refetchPodcastLogo() 
-        {
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefetchedRSSForLogoCompleted);
-            wc.DownloadStringAsync(new Uri(PodcastRSSUrl));
-        }
-
-        void wc_RefetchedRSSForLogoCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            if (e.Error != null)
-            {
-                Debug.WriteLine("Malformed podcast address.");
-                return;
-            }
-
-            PodcastSubscriptionModel subscription = PodcastFactory.podcastModelFromRSS((string)e.Result);
-            PodcastLogoUrl = subscription.PodcastLogoUrl;
-            fetchChannelLogo();
-        }
-
     }
 }

@@ -28,11 +28,6 @@
     
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <toolkit:PerformanceProgressBar x:Name="UpdatingIndicator" Grid.Row="0"
-                        Visibility="Collapsed"
-                        IsIndeterminate="True"
-                        Foreground="Green" Height="10" Margin="8,8,-8,0" VerticalAlignment="Top" d:LayoutOverrides="Height"
-                    />
         <!--Pivot Control-->
         <controls:Pivot x:Name="NavigationPivot" Grid.Row="1" SelectionChanged="NavigationPivot_SelectionChanged">
             <!--Subscription listing -->
@@ -44,7 +39,7 @@
                         Margin="0,0,0,0" 
                         SelectionChanged="ListBox_SelectionChanged"
                         UseOptimizedManipulationRouting="False"
-                        IsPullToRefreshEnabled="True" RefreshRequested="SubscriptionsList_RefreshRequested"                        
+                        IsPullToRefreshEnabled="True" RefreshRequested="SubscriptionsList_RefreshRequested" EmptyContent=""                        
                         >
                         <telerikPrimitives:RadDataBoundListBox.ItemTemplate>
                             <DataTemplate>
