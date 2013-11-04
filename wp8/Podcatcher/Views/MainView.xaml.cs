@@ -375,7 +375,7 @@ namespace Podcatcher
                 PodcastSubscriptionModel tappedSubscription = e.AddedItems[0] as PodcastSubscriptionModel;
                 Debug.WriteLine("Showing episodes for podcast. Name: " + tappedSubscription.PodcastName);
                 NavigationService.Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", tappedSubscription.PodcastId), UriKind.Relative));
-                this.SubscriptionsList.SelectedIndex = -1;  // Aaargh... stupid Silverlight.
+//                this.SubscriptionsList.SelectedIndex = -1;  // Aaargh... stupid Silverlight.
                 tappedSubscription.NewEpisodesCount = 0;
             }
         }
@@ -622,6 +622,11 @@ namespace Podcatcher
                 player.Position = (player.Position.TotalSeconds + 30 < player.Track.Duration.TotalSeconds) ? TimeSpan.FromSeconds(player.Position.TotalSeconds + 30) :
                                                                                                              TimeSpan.FromSeconds(player.Track.Duration.TotalSeconds);
             }
+        }
+
+        private void SubscriptionsList_RefreshRequested(object sender, EventArgs e)
+        {
+
         }
 
     }

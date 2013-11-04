@@ -38,10 +38,8 @@ namespace Podcatcher.Views
         public AboutView()
         {
             InitializeComponent();
-            
-            var nameHelper = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
-            Version thisVersion = nameHelper.Version;
-            version.Text = String.Format("{0}.{1}.{2}.{3}", thisVersion.Major, thisVersion.Minor, thisVersion.Build, thisVersion.Revision);
+
+            version.Text = App.AppVersion;
 
             setUIIfPurchased();
             this.AnimatedTitleText.Begin();

@@ -37,6 +37,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Linq;
 using System.IO;
+using Telerik.Windows.Controls;
+using System.Reflection;
 
 namespace Podcatcher
 {
@@ -77,14 +79,26 @@ namespace Podcatcher
         public static bool forceReloadOfEpisodeData = false;        
 
         public static MainViewModels mainViewModels = new MainViewModels();
-
         public static PodcastPlaybackManager playbackManager = PodcastPlaybackManager.getInstance();
+
+        private RadDiagnostics radDiagnostics;
+
 
         public static bool IsTrial
         {
             get
             {
                 return isTrial;
+            }
+        }
+
+        public static String AppVersion
+        {
+            get
+            {
+                var nameHelper = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
+                Version thisVersion = nameHelper.Version;
+                return String.Format("{0}.{1}.{2}.{3}", thisVersion.Major, thisVersion.Minor, thisVersion.Build, thisVersion.Revision);
             }
         }
 
@@ -150,6 +164,11 @@ namespace Podcatcher
             licenseInfo = new LicenseInformation();
 
             detectCurrentTheme();
+
+            // Initialize diagnostics
+            radDiagnostics = new RadDiagnostics();
+            radDiagnostics.EmailTo = "johan.paul+podcatcher-crash@gmail.com";
+            radDiagnostics.Init();
         }
 
         public static long getPlayposFromAudioAgentForEpisode(PodcastEpisodeModel episode)
@@ -297,6 +316,9 @@ namespace Podcatcher
             refreshEpisodesFromAudioAgent();
 
             handleRemovingIconFiles();
+
+            // Diagnostics
+            ApplicationUsageHelper.Init(App.AppVersion);
         }
 
         private static void handleRemovingIconFiles()
@@ -331,6 +353,8 @@ namespace Podcatcher
     //          IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
             mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>();
             PodcastPlaybackManager.getInstance().updateCurrentlyPlayingEpisode();
+
+            ApplicationUsageHelper.OnApplicationActivated();
         }
 
         // Code to execute when the application is deactivated (sent to background)
