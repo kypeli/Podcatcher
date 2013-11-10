@@ -255,15 +255,7 @@ namespace Podcatcher
         {
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
             NowPlaying.SetupNowPlayingView();
-
-            m_playerButtons.Clear();
-            m_playerButtons.Add(rewPlayerButton);
-            m_playerButtons.Add(pausePlayerButton);
-            m_playerButtons.Add(stopPlayerButton);
-            m_playerButtons.Add(ffPlayerButton);
-            updatePlayerButtonsInApplicationBar(m_playerButtons);
-
-            this.ApplicationBar.IsVisible = PodcastPlaybackManager.getInstance().isCurrentlyPlaying() ? true : false;
+            setupApplicationBarForIndex(NavigationPivot.SelectedIndex);
 
             if (App.mainViewModels.LatestEpisodesListProperty.Count == 0)
             {
@@ -294,6 +286,7 @@ namespace Podcatcher
             this.NowPlaying.Visibility = System.Windows.Visibility.Visible;
             Scheduler.Dispatcher.Schedule(() =>     // We have to do this hack so that Windows Phone's UI doesn't get confused when we add the application bar. 
             {
+                updatePlayerButtonsInApplicationBar();
                 this.ApplicationBar.IsVisible = true;
                 Debug.WriteLine("Showing application bar.");
             }, TimeSpan.FromSeconds(1));
@@ -304,9 +297,14 @@ namespace Podcatcher
             Debug.WriteLine("Playing stopped.");
         }
 
-        private void updatePlayerButtonsInApplicationBar(List<ApplicationBarIconButton> playerButtons)
+        private void updatePlayerButtonsInApplicationBar()
         {
             if (NavigationPivot.SelectedIndex != PIVOT_INDEX_PLAYER)
+            {
+                return;
+            }
+
+            if (this.ApplicationBar.Buttons.Count == 4)  // This is not so nice.
             {
                 return;
             }
@@ -314,12 +312,19 @@ namespace Podcatcher
             this.ApplicationBar.MenuItems.Clear();
             this.ApplicationBar.Buttons.Clear();
 
-            foreach (ApplicationBarIconButton button in playerButtons)
+            m_playerButtons.Clear();
+            if (PodcastPlaybackManager.getInstance().isCurrentlyPlaying())
             {
-                this.ApplicationBar.Buttons.Add(button);
-            }
+                m_playerButtons.Add(rewPlayerButton);
+                m_playerButtons.Add(pausePlayerButton);
+                m_playerButtons.Add(stopPlayerButton);
+                m_playerButtons.Add(ffPlayerButton);
 
-            this.ApplicationBar.IsVisible = (this.ApplicationBar.Buttons.Count > 0) ? true : false;
+                foreach (ApplicationBarIconButton button in m_playerButtons)
+                {
+                    this.ApplicationBar.Buttons.Add(button);
+                }
+            }
         }
 
         private void downloadListChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -399,8 +404,8 @@ namespace Podcatcher
                     break;
 
                 case PIVOT_INDEX_PLAYER:
-                    updatePlayerButtonsInApplicationBar(m_playerButtons);
-                    applicationBarVisible = PodcastPlaybackManager.getInstance().isCurrentlyPlaying() ? true : false;
+                    updatePlayerButtonsInApplicationBar();
+                    applicationBarVisible = this.ApplicationBar.Buttons.Count > 0;
                     break;
 
                 // Play queue view
