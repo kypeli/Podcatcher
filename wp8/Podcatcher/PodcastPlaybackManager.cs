@@ -72,6 +72,11 @@ namespace Podcatcher
 
             set
             {
+                if (m_currentlyPlayingEpisode != null)
+                {
+                    m_currentlyPlayingEpisode.resetPlayState();
+                }
+
                 using (var db = new Podcatcher.PlaylistDBContext())
                 {
                     PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);

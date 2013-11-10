@@ -301,9 +301,7 @@ namespace Podcatcher
 
         void PodcastPlayer_PodcastPlayerStopped(object sender, EventArgs e)
         {
-            this.NowPlaying.Visibility = System.Windows.Visibility.Collapsed;
-            this.ApplicationBar.IsVisible = false;
-            Debug.WriteLine("Hiding application bar.");
+            Debug.WriteLine("Playing stopped.");
         }
 
         private void updatePlayerButtonsInApplicationBar(List<ApplicationBarIconButton> playerButtons)
@@ -360,17 +358,6 @@ namespace Podcatcher
             else
             {
                 MessageBox.Show("You have reached the limit of podcast subscriptions for this free trial of Podcatcher. Please purchase the full version from Windows Phone Marketplace.");
-            }
-        }
-
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0) { 
-                PodcastSubscriptionModel tappedSubscription = e.AddedItems[0] as PodcastSubscriptionModel;
-                Debug.WriteLine("Showing episodes for podcast. Name: " + tappedSubscription.PodcastName);
-                NavigationService.Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", tappedSubscription.PodcastId), UriKind.Relative));
-//                this.SubscriptionsList.SelectedIndex = -1;  // Aaargh... stupid Silverlight.
-                tappedSubscription.NewEpisodesCount = 0;
             }
         }
 
@@ -591,10 +578,13 @@ namespace Podcatcher
 
         private void stopButtonClicked(object sender, EventArgs e)
         {
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped)
+            this.NowPlaying.Visibility = System.Windows.Visibility.Collapsed;
+            this.ApplicationBar.IsVisible = false;
+
+            if (BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing)
             {
                 // We are already stopped (playback ended or something). Let's update the episode state.
-                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode = null;
             }
             else
             {
@@ -604,8 +594,6 @@ namespace Podcatcher
                     BackgroundAudioPlayer.Instance.Stop();
                 }
             }
-
-           // PodcastPlayer.PlaybackStopped();
         }
 
         private void ffButtonClicked(object sender, EventArgs e)
@@ -623,5 +611,12 @@ namespace Podcatcher
             m_subscriptionsManager.refreshSubscriptions();
         }
 
+        private void SubsriptionItem_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+            PodcastSubscriptionModel tappedSubscription = (sender as FrameworkElement).DataContext as PodcastSubscriptionModel;
+            Debug.WriteLine("Showing episodes for podcast. Name: " + tappedSubscription.PodcastName);
+            NavigationService.Navigate(new Uri(string.Format("/Views/PodcastEpisodes.xaml?podcastId={0}", tappedSubscription.PodcastId), UriKind.Relative));
+            tappedSubscription.NewEpisodesCount = 0;
+        }
     }
 }

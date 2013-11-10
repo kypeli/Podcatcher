@@ -21,6 +21,7 @@
 using Coding4Fun.Toolkit.Controls;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.BackgroundTransfer;
+using Podcatcher.Extensions;
 using System;
 using System.ComponentModel;
 using System.Data.Linq;
@@ -36,7 +37,7 @@ using System.Windows.Threading;
 namespace Podcatcher.ViewModels
 {
     [Table]
-    public class PodcastEpisodeModel : INotifyPropertyChanged
+    public class PodcastEpisodeModel : DBBackedModel
     {
         private const int NVARCHAR_MAX = 4000;
 
@@ -651,6 +652,12 @@ namespace Podcatcher.ViewModels
             private set { }
         }
 
+        public void resetPlayState()
+        {
+            StoreProperty<PodcastEpisodeModel.EpisodePlayStateEnum>("EpisodePlayState", String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle
+                                                                                                                          : PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded);
+        }
+
         #endregion
 
         /************************************* Public implementations *******************************/
@@ -751,6 +758,7 @@ namespace Podcatcher.ViewModels
         /************************************* Private implementations *******************************/
         #region private
         private static DispatcherTimer m_screenUpdateTimer = null;
+        private Stream m_downloadStream;
 
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
         {
@@ -821,31 +829,6 @@ namespace Podcatcher.ViewModels
 
         #endregion
 
-        #region propertyChanged
-        public event PropertyChangedEventHandler PropertyChanged; 
-        public event PropertyChangingEventHandler PropertyChanging;
-        private Stream m_downloadStream;
-        private void NotifyPropertyChanging(String propertyName)
-        {
-            PropertyChangingEventHandler handler = PropertyChanging;
-            if (null != handler)
-            {
-                PropertyChangingEventArgs args = new PropertyChangingEventArgs(propertyName);
-                handler(this, args);
-            }
-        }
-
-        private void NotifyPropertyChanged(String propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (null != handler)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-        #endregion
-
-
         internal void setPlaying()
         {
             if (EpisodePlayState == EpisodePlayStateEnum.Playing || EpisodePlayState == EpisodePlayStateEnum.Streaming)
@@ -874,8 +857,7 @@ namespace Podcatcher.ViewModels
             }
             else
             {
-                EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Idle
-                                                                     : PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded;
+                resetPlayState();
             }
 
             if (m_screenUpdateTimer != null)

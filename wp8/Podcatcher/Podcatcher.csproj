@@ -107,6 +107,7 @@
     <Compile Include="CustomControls\PodcastSearchResultControl.xaml.cs" />
     <Compile Include="CustomControls\PodcastSubscriptionControl.xaml.cs" />
     <Compile Include="CustomControls\PopularPodcastsControl.xaml.cs" />
+    <Compile Include="Extensions\ModelDBSaver.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="PlaylistDBContext.cs" />
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
