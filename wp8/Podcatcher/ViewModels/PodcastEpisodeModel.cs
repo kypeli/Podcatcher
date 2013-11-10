@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -658,6 +659,21 @@ namespace Podcatcher.ViewModels
                                                                                                                           : PodcastEpisodeModel.EpisodePlayStateEnum.Downloaded);
         }
 
+        public PodcastSubscriptionModel getSubscriptionModel()
+        {
+            PodcastSubscriptionModel sub = null;
+            using (var db = new PodcastSqlModel())
+            {
+                sub = db.Subscriptions.FirstOrDefault(s => s.PodcastId == this.PodcastId);
+                if (sub == null)
+                {
+                    Debug.WriteLine("Warning: Got null subscription!");
+                }
+            }
+
+            return sub;
+        }
+
         #endregion
 
         /************************************* Public implementations *******************************/
@@ -831,19 +847,19 @@ namespace Podcatcher.ViewModels
 
         internal void setPlaying()
         {
-            if (EpisodePlayState == EpisodePlayStateEnum.Playing || EpisodePlayState == EpisodePlayStateEnum.Streaming)
+            if (m_screenUpdateTimer != null)
             {
-                return;
+                m_screenUpdateTimer.Stop();
+                m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
+                m_screenUpdateTimer = null;
             }
 
-            if (m_screenUpdateTimer != null && m_screenUpdateTimer.IsEnabled)
-            {
-                return;
-            }
-
-            EpisodePlayState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
-                                                                 : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             m_screenUpdateTimer = new DispatcherTimer();
+
+            PodcastEpisodeModel.EpisodePlayStateEnum playState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
+                                                                                                   : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
+            StoreProperty<PodcastEpisodeModel.EpisodePlayStateEnum>("EpisodePlayState", playState);
+
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
             m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
             m_screenUpdateTimer.Start();
@@ -884,6 +900,17 @@ namespace Podcatcher.ViewModels
                 case EpisodePlayStateEnum.Streaming:
                     setPlaying();
                     break;
+            }
+        }
+
+        protected override void StorePropertyToDB<T>(String propertyName, T value)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel dbEpisode = db.Episodes.First(ep => ep.EpisodeId == this.EpisodeId);
+                PropertyInfo property = dbEpisode.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyName);
+                property.SetValue(dbEpisode, value);
+                db.SubmitChanges();
             }
         }
     }

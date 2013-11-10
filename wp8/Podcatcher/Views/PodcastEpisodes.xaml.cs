@@ -135,12 +135,9 @@ namespace Podcatcher.Views
                 App.episodeDownloadManager = PodcastEpisodesDownloadManager.getInstance();
             }
 
-            App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged -= new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
             App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged += new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
 
-            PodcastPlaybackManager.getInstance().OnPodcastStartedPlaying -= new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
             PodcastPlaybackManager.getInstance().OnPodcastStartedPlaying += new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
-            PodcastPlaybackManager.getInstance().OnPodcastStoppedPlaying -= new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
             PodcastPlaybackManager.getInstance().OnPodcastStoppedPlaying += new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
         }
 
@@ -164,6 +161,10 @@ namespace Podcatcher.Views
             }                
 
             PodcastSubscriptionsManager.getInstance().NewPlayableEpisode -= new PodcastSubscriptionsManager.EpisodesEventHandler(m_subscription_NewPlayableEpisode);
+
+            App.episodeDownloadManager.OnPodcastEpisodeDownloadStateChanged -= new PodcastDownloadManagerHandler(episodeDownloadManager_PodcastEpisodeDownloadStateChanged);
+            PodcastPlaybackManager.getInstance().OnPodcastStartedPlaying -= new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
+            PodcastPlaybackManager.getInstance().OnPodcastStoppedPlaying -= new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
         }
 
         /************************************* Priovate implementations *******************************/

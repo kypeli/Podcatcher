@@ -581,18 +581,10 @@ namespace Podcatcher
             this.NowPlaying.Visibility = System.Windows.Visibility.Collapsed;
             this.ApplicationBar.IsVisible = false;
 
-            if (BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing)
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
+                || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
             {
-                // We are already stopped (playback ended or something). Let's update the episode state.
-                PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode = null;
-            }
-            else
-            {
-                if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
-                    || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
-                {
-                    BackgroundAudioPlayer.Instance.Stop();
-                }
+                BackgroundAudioPlayer.Instance.Stop();
             }
         }
 

@@ -72,11 +72,6 @@ namespace Podcatcher
 
             set
             {
-                if (m_currentlyPlayingEpisode != null)
-                {
-                    m_currentlyPlayingEpisode.resetPlayState();
-                }
-
                 using (var db = new Podcatcher.PlaylistDBContext())
                 {
                     PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
@@ -92,7 +87,14 @@ namespace Podcatcher
                         return;
                     }
 
+                    // Reset any previously playing episode.
+                    if (m_currentlyPlayingEpisode != null)
+                    {
+                        m_currentlyPlayingEpisode.resetPlayState();
+                    }
+
                     m_currentlyPlayingEpisode = value;
+
                     if (m_currentlyPlayingEpisode != null)
                     {
                         // We can't handle video podcasts' events so we don't handle them.
@@ -152,20 +154,13 @@ namespace Podcatcher
 
                 try
                 {
-                    CurrentlyPlayingEpisode.SavedPlayPos = BackgroundAudioPlayer.Instance.Position.Ticks;
+                    CurrentlyPlayingEpisode.StoreProperty<long>("SavedPlayPos", BackgroundAudioPlayer.Instance.Position.Ticks);
                 }
                 catch (Exception)
                 {
                     Debug.WriteLine("Could not set saved play pos; not available.");
                     CurrentlyPlayingEpisode.SavedPlayPos = 0;
                 } 
-
-                using (var db = new PodcastSqlModel())
-                {
-                    PodcastEpisodeModel savingEpisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId);
-                    savingEpisode.SavedPlayPos = CurrentlyPlayingEpisode.SavedPlayPos;
-                    db.SubmitChanges();
-                }
             }
 
             if (startedFromPlayQueue)
@@ -192,7 +187,6 @@ namespace Podcatcher
                 && CurrentlyPlayingEpisode.EpisodeDownloadState == PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded)
             {
                 PodcastPlayer player = PodcastPlayer.getIntance();
-                CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
                 player.playEpisode(CurrentlyPlayingEpisode);
             }
             else
@@ -201,13 +195,11 @@ namespace Podcatcher
                 if (isAudioPodcast(CurrentlyPlayingEpisode))
                 {
                     audioStreaming(CurrentlyPlayingEpisode);
-                    CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }
                 else
                 {
                     PodcastPlayer player = PodcastPlayer.getIntance();
                     videoStreaming(episode);
-                    CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Streaming;
                 }
             }
 
@@ -569,28 +561,13 @@ namespace Podcatcher
                     } else if (currentEpisode.EpisodeId != CurrentlyPlayingEpisode.EpisodeId)
                     {
                         CurrentlyPlayingEpisode = currentEpisode;
-                       //  CurrentlyPlayingEpisode.setPlaying();
                     }
 
                     if (CurrentlyPlayingEpisode.TotalLengthTicks == 0)
                     {
-                        CurrentlyPlayingEpisode.TotalLengthTicks = BackgroundAudioPlayer.Instance.Track.Duration.Ticks;
-                        using (var db = new PodcastSqlModel())
-                        {
-                            PodcastEpisodeModel episode = db.episodeForEpisodeId(CurrentlyPlayingEpisode.EpisodeId);
-                            if (episode == null)
-                            {
-                                Debug.WriteLine("Warning: Got NULL episode from DB when trying to update this episode.");
-                                return;
-                            }
-
-                            episode.TotalLengthTicks = CurrentlyPlayingEpisode.TotalLengthTicks;
-                            db.SubmitChanges();
-
-                            PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(episode.PodcastSubscription);
-                        }
+                        CurrentlyPlayingEpisode.StoreProperty<long>("TotalLengthTicks", BackgroundAudioPlayer.Instance.Track.Duration.Ticks);
+                        PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.getSubscriptionModel());
                     }
-
                     break;
 
                 case PlayState.Paused:
@@ -598,13 +575,7 @@ namespace Podcatcher
                     if (CurrentlyPlayingEpisode != null)
                     {
                         CurrentlyPlayingEpisode = App.refreshEpisodeFromAudioAgent(CurrentlyPlayingEpisode);
-                        CurrentlyPlayingEpisode.EpisodePlayState = PodcastEpisodeModel.EpisodePlayStateEnum.Paused;
-                        using (var db = new PodcastSqlModel())
-                        {
-                            PodcastEpisodeModel updatedEpisode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == CurrentlyPlayingEpisode.EpisodeId);
-                            updatedEpisode.EpisodePlayState = CurrentlyPlayingEpisode.EpisodePlayState;
-                            db.SubmitChanges();
-                        }
+                        CurrentlyPlayingEpisode.StoreProperty<PodcastEpisodeModel.EpisodePlayStateEnum>("EpisodePlayState", PodcastEpisodeModel.EpisodePlayStateEnum.Paused);
                     }
                     else
                     {
@@ -687,7 +658,7 @@ namespace Podcatcher
                         }
                     }
 
-                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.PodcastSubscriptionInstance);
+                    PodcastSubscriptionsManager.getInstance().podcastPlaystateChanged(CurrentlyPlayingEpisode.getSubscriptionModel());
                     handlerStoppedPlaying = OnPodcastStoppedPlaying;
                     if (handlerStoppedPlaying != null)
                     {

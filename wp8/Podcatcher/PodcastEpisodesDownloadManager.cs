@@ -247,13 +247,8 @@ namespace Podcatcher
                 return;
             }
 
-            using (var db = new PodcastSqlModel()) 
-            {
-                PodcastEpisodeModel episode = db.Episodes.First(e => e.EpisodeId == m_currentEpisodeDownload.EpisodeId);
-                episode.EpisodeDownloadState = m_currentEpisodeDownload.EpisodeDownloadState;
-                episode.EpisodeFile = m_currentEpisodeDownload.EpisodeFile;
-                db.SubmitChanges();
-            }
+            m_currentEpisodeDownload.StoreProperty<PodcastEpisodeModel.EpisodeDownloadStateEnum>("EpisodeDownloadState", m_currentEpisodeDownload.EpisodeDownloadState);
+            m_currentEpisodeDownload.StoreProperty<String>("EpisodeFile", m_currentEpisodeDownload.EpisodeFile);
         }
 
         private void processStoredQueuedTransfers()
@@ -569,7 +564,6 @@ namespace Podcatcher
         private void updateEpisodeWhenDownloaded(PodcastEpisodeModel episode)
         {
             Debug.WriteLine("Updating episode information for episode when download completed: " + episode.EpisodeName);
-
             episode.EpisodeDownloadState = PodcastEpisodeModel.EpisodeDownloadStateEnum.Downloaded;
 
             using (var db = new PodcastSqlModel())

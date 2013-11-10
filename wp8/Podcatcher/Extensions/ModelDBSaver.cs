@@ -11,6 +11,8 @@ namespace Podcatcher.Extensions
 {
     public abstract class DBBackedModel : INotifyPropertyChanged
     {
+        protected abstract void StorePropertyToDB<T>(String propertyName, T value);
+
         public void StoreProperty<T>(String propertyName, T value)
         {
             PropertyInfo[] properties = GetType().GetProperties();
@@ -20,9 +22,8 @@ namespace Podcatcher.Extensions
                 Debug.WriteLine("Error: Could not find property {0} for object {1}.", propertyName, GetType().Name);
             }
 
-            NotifyPropertyChanging();
+            StorePropertyToDB<T>(propertyName, value);
             property.SetValue(this, value);
-            NotifyPropertyChanged(propertyName);
         }
 
         #region propertyChanged
@@ -46,6 +47,7 @@ namespace Podcatcher.Extensions
             }
         }
         #endregion
+
 
     }
 }
