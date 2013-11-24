@@ -35,7 +35,7 @@ namespace Podcatcher.Views
 {
     public partial class SubscriptionSettings : PhoneApplicationPage
     {
-        private int m_podcastId = 0;
+        private PodcastSubscriptionModel m_subscription = null;
 
         public SubscriptionSettings()
         {
@@ -44,22 +44,26 @@ namespace Podcatcher.Views
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
-            m_podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
-            PodcastSubscriptionModel subscription = null;
-            using (var db = new PodcastSqlModel()) 
+
+            if (m_subscription == null)
             {
-                subscription = db.subscriptionModelForIndex(m_podcastId);
-                this.DataContext = subscription;
+                int podcastId = int.Parse(NavigationContext.QueryString["podcastId"]);
+                using (var db = new PodcastSqlModel())
+                {
+                    m_subscription = db.subscriptionModelForIndex(podcastId);
+                }
             }
+
+            this.DataContext = m_subscription;
         }
 
-        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
         {
             PodcastSubscriptionModel subscriptionDataContext = this.DataContext as PodcastSubscriptionModel;
             PodcastSubscriptionModel subscription = null;
             using (var db = new PodcastSqlModel())
             {
-                subscription = db.subscriptionModelForIndex(m_podcastId);
+                subscription = db.subscriptionModelForIndex(m_subscription.PodcastId);
                 subscription.SubscriptionSelectedKeepNumEpisodesIndex = subscriptionDataContext.SubscriptionSelectedKeepNumEpisodesIndex;
                 subscription.IsSubscribed = subscriptionDataContext.IsSubscribed;
                 subscription.IsAutoDownload = subscriptionDataContext.IsAutoDownload;
@@ -67,6 +71,10 @@ namespace Podcatcher.Views
 
                 db.SubmitChanges();
             }
+
+            m_subscription = null;
+
+            NavigationService.GoBack();
         }
     }
 }

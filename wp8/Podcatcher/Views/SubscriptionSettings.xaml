@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:toolkitPrimitives="clr-namespace:Microsoft.Phone.Controls.Primitives;assembly=Microsoft.Phone.Controls.Toolkit" 
+    xmlns:corelib="clr-namespace:System;assembly=mscorlib"
     x:Class="Podcatcher.Views.SubscriptionSettings"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -15,7 +16,15 @@
     mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True"
     Style="{StaticResource TurnstilePage}">
-
+    
+    <phone:PhoneApplicationPage.Resources>
+        <DataTemplate x:Name="PodcatcherFullModePickerTemplate">
+            <StackPanel>
+                <TextBlock Text="{Binding}" FontSize="42" />
+            </StackPanel>
+        </DataTemplate>
+    </phone:PhoneApplicationPage.Resources>
+    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
@@ -57,12 +66,23 @@
                     <StackPanel Margin="0,9,12,0">
             			<StackPanel Orientation="Vertical">
             				<TextBlock TextWrapping="Wrap" Text="Keep episodes for this subscription"  Width="424" Style="{StaticResource PhoneTextLargeStyle}"/>
-            				<toolkit:ListPicker x:Name="KeepEpisodesSetting" SelectedIndex="{Binding SubscriptionSelectedKeepNumEpisodesIndex, Mode=TwoWay}">
-                                <toolkit:ListPickerItem>All</toolkit:ListPickerItem>
-                                <toolkit:ListPickerItem>3</toolkit:ListPickerItem>
-                                <toolkit:ListPickerItem>10</toolkit:ListPickerItem>
-                                <toolkit:ListPickerItem>20</toolkit:ListPickerItem>
-                                <toolkit:ListPickerItem>30</toolkit:ListPickerItem>
+            				<toolkit:ListPicker x:Name="KeepEpisodesSetting" 
+                                                SelectedIndex="{Binding SubscriptionSelectedKeepNumEpisodesIndex, Mode=TwoWay}"
+                                                ExpansionMode="FullScreenOnly"
+                                                FullModeItemTemplate="{StaticResource PodcatcherFullModePickerTemplate}"
+                                                Header="Selected"
+                                                FullModeHeader="Keep number of episodes">
+                                <corelib:String>All</corelib:String>
+                                <corelib:String>1</corelib:String>
+                                <corelib:String>2</corelib:String>
+                                <corelib:String>3</corelib:String>
+                                <corelib:String>4</corelib:String>
+                                <corelib:String>5</corelib:String>
+                                <corelib:String>10</corelib:String>
+                                <corelib:String>20</corelib:String>
+                                <corelib:String>30</corelib:String>
+                                <corelib:String>40</corelib:String>
+                                <corelib:String>50</corelib:String>
                             </toolkit:ListPicker>
             			</StackPanel>
             			<TextBlock TextWrapping="Wrap" Text="This specifies how many episodes to keep for this subscription and the rest will be deleted." Style="{StaticResource PhoneTextSubtleStyle}"/>
