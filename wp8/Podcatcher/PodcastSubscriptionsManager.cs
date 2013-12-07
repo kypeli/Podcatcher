@@ -21,6 +21,7 @@
 using Coding4Fun.Toolkit.Controls;
 using Microsoft.Live;
 using Microsoft.Phone.Tasks;
+using Newtonsoft.Json.Linq;
 using Podcatcher.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -273,7 +274,7 @@ namespace Podcatcher
             Debug.WriteLine("Importing from gPodder for user, " + nc.UserName + ", URL: " + gpodderImportUri.ToString());
         }
 
-        public void exportSubscriptions()
+        async public void exportSubscriptions()
         {
             List<PodcastSubscriptionModel> subscriptions = App.mainViewModels.PodcastSubscriptions.ToList();
             if (subscriptions.Count == 0)
@@ -289,18 +290,13 @@ namespace Podcatcher
                 {
                     if (liveConnect == null)
                     {
-                        loginUserToSkyDrive();
-                    }
-                    else
-                    {
-                        DoOPMLExport();
+                        await loginUserToSkyDrive();
                     }
                 }
-                else if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
-                {
-                    DoOPMLExport();
-                }
+
             }
+
+            DoOPMLExport();
         }
 
         public void newDownloadedEpisode(PodcastEpisodeModel e)
@@ -403,7 +399,7 @@ namespace Podcatcher
                                                               Environment.TickCount));
         }
 
-        private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
+        async private void wc_DownloadPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             if (e.Error != null
                 || e.Cancelled)
@@ -487,7 +483,7 @@ namespace Podcatcher
                 db.addSubscription(podcastModel);
             }
 
-            podcastModel.fetchChannelLogo();
+            await podcastModel.fetchChannelLogo();
 
             SubscriptionManagerArgs addArgs = new SubscriptionManagerArgs();
             addArgs.addedSubscription = podcastModel;
@@ -705,7 +701,10 @@ namespace Podcatcher
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadOPMLCompleted);
             wc.DownloadStringAsync(uri);
 
-            OnPodcastChannelAddStarted(this, null);
+            if (OnPodcastChannelAddStarted != null)
+            {
+                OnPodcastChannelAddStarted(this, null);
+            }
         }
 
         void wc_DownloadOPMLCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -739,42 +738,36 @@ namespace Podcatcher
             }
         }
 
-        private void loginUserToSkyDrive()
+        async private Task loginUserToSkyDrive()
         {
-            LiveAuthClient auth = new LiveAuthClient(App.LSKEY_LIVE_CLIENT_ID); 
-            auth.LoginCompleted +=
-                new EventHandler<LoginCompletedEventArgs>(greetUser_LoginCompleted);
-            auth.LoginAsync(new string[] { "wl.skydrive_update" });
-        }
-
-        void greetUser_LoginCompleted(object sender, LoginCompletedEventArgs e)
-        {
-            if (e.Status == LiveConnectSessionStatus.Connected)
-            {
-                liveConnect = new LiveConnectClient(e.Session);
-                liveConnect.GetCompleted +=
-                    new EventHandler<LiveOperationCompletedEventArgs>(greetUser_GetCompleted);
-                liveConnect.GetAsync("me");
-            }
-            else
+            LiveAuthClient auth = new LiveAuthClient(App.LSKEY_LIVE_CLIENT_ID);
+            LiveLoginResult loginResult = await auth.LoginAsync(new string[] { "wl.signin", "wl.skydrive_update" });
+            if (loginResult.Status != LiveConnectSessionStatus.Connected)
             {
                 Debug.WriteLine("Could not finish SkyDrive login.");
                 MessageBox.Show("Sorry. Could not log in to SkyDrive. Please try again.");
             }
-        }
-
-        void greetUser_GetCompleted(object sender, LiveOperationCompletedEventArgs e)
-        {
-            if (e.Error == null)
-            {
-                Debug.WriteLine("I am logged in to SkyDrive!");
-                DoOPMLExport();
-            }
             else
             {
-                Debug.WriteLine("Error logging in to SkyDrive: " + e.Error);
-                MessageBox.Show("Sorry. Could not log in to SkyDrive. Please try again.");
+                liveConnect = new LiveConnectClient(auth.Session);
             }
+        }
+
+        async private Task<bool> userIsLoggedToSkyDrive()
+        {
+            if (liveConnect == null)
+            {
+                return false;
+            }
+
+            var auth = new LiveAuthClient(App.LSKEY_LIVE_CLIENT_ID);
+            var result = await auth.InitializeAsync(new[] { "wl.signin", "wl.skydrive_update" });
+            if (result.Status == LiveConnectSessionStatus.NotConnected)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void DoOPMLExport()
@@ -848,10 +841,21 @@ namespace Podcatcher
             }
         }
 
-        private void exportToSkyDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
+        async private void exportToSkyDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
         {
-            liveConnect.UploadCompleted += new EventHandler<LiveOperationCompletedEventArgs>(opmlLiveOperation_UploadCompleted);
-            liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite);
+            try
+            {
+                await liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite);
+                MessageBox.Show("Exported to SkyDrive succesfully!");
+
+                SubscriptionManagerArgs managerArgs = new SubscriptionManagerArgs();
+                managerArgs.state = SubscriptionsState.FinishedSkydriveExport;
+                OnOPMLExportToSkydriveChanged(this, managerArgs);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("There was an error uploading to SkyDrive. Please try again.");
+            }
         }
 
         private void exportViaEmail(IsolatedStorageFileStream isoStream)
@@ -865,23 +869,38 @@ namespace Podcatcher
             emailTask.Show();
         }
 
-        private void opmlLiveOperation_UploadCompleted(object sender, LiveOperationCompletedEventArgs args)
+        async internal void importSubscriptionsFromSkyDrive()
         {
-            SubscriptionManagerArgs managerArgs = new SubscriptionManagerArgs();
-            managerArgs.state = SubscriptionsState.FinishedSkydriveExport;
-            OnOPMLExportToSkydriveChanged(this, managerArgs);
-
-            if (args.Error == null)
+            if (await userIsLoggedToSkyDrive() == false)
             {
-                MessageBox.Show("Exported to SkyDrive succesfully!");
-
+                await loginUserToSkyDrive();
             }
-            else
+
+            LiveOperationResult result = await liveConnect.GetAsync("me/skydrive/files");
+            if (result.Result.ContainsKey("data"))
             {
-                MessageBox.Show("There was an error uploading to SkyDrive. Please try again.");
+                JObject json = JObject.Parse(result.RawResult);
+                var podcatcherSubscriptions = from s in json["data"].Values<JObject>()
+                                              where ((String)s["name"]).Contains("PodcatcherSubscriptions")
+                                              select new
+                                              {
+                                                Id = (String)s["id"],
+                                                Created = DateTime.Parse((String)s["updated_time"]),
+                                                Source = (String)s["source"]
+                                              };
+
+                foreach(var item in podcatcherSubscriptions) 
+                {
+                    Debug.WriteLine("id: {0}, created {1}", item.Id, item.Created);
+                }
+
+                var subscription = podcatcherSubscriptions.OrderByDescending(sub => sub.Created).First();
+                Debug.WriteLine("Going to get file {0} from {1}: ", subscription.Id, subscription.Source);
+
+                PodcastSubscriptionsManager.getInstance().addSubscriptionFromOPMLFile(subscription.Source);
             }
         }
-        #endregion
 
+        #endregion
     }
 }
