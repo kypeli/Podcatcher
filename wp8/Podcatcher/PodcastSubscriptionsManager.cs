@@ -72,9 +72,9 @@ namespace Podcatcher
         public event SubscriptionManagerHandler OnPodcastChannelRequiresAuthentication;
         
 
-        public event SubscriptionManagerHandler OnGPodderImportStarted;
-        public event SubscriptionManagerHandler OnGPodderImportFinished;
-        public event SubscriptionManagerHandler OnGPodderImportFinishedWithError;
+        public event SubscriptionManagerHandler OnExternalServiceImportStarted;
+        public event SubscriptionManagerHandler OnExternalServiceImportFinished;
+        public event SubscriptionManagerHandler OnExternalServiceImportFinishedWithError;
 
         public event SubscriptionManagerHandler OnPodcastSubscriptionsChanged;
 
@@ -258,12 +258,12 @@ namespace Podcatcher
                 
                 SubscriptionManagerArgs args = new SubscriptionManagerArgs();
                 args.message = "Please give both gPodder username and password.";
-                OnGPodderImportFinishedWithError(this, args);
+                OnExternalServiceImportFinishedWithError(this, args);
                 
                 return;
             }
 
-            OnGPodderImportStarted(this, null);
+            OnExternalServiceImportStarted(this, null);
 
             Uri gpodderImportUri = new Uri(string.Format("http://gpodder.net/subscriptions/{0}.xml", nc.UserName));
             WebClient wc = new WebClient();
@@ -458,7 +458,10 @@ namespace Podcatcher
                     m_activeExternalImportsCount--;
                     if (m_activeExternalImportsCount <= 0)
                     {
-                        OnGPodderImportFinished(this, null);
+                        if (OnExternalServiceImportFinished != null)
+                        {
+                            OnExternalServiceImportFinished(this, null);
+                        }
                     }
                 }
                 return;
@@ -602,9 +605,9 @@ namespace Podcatcher
                 m_activeExternalImportsCount--;
                 if (m_activeExternalImportsCount <= 0)
                 {
-                    if (OnGPodderImportFinished != null)
+                    if (OnExternalServiceImportFinished != null)
                     {
-                        OnGPodderImportFinished(this, null);
+                        OnExternalServiceImportFinished(this, null);
                     }
                 }
             }
@@ -655,7 +658,7 @@ namespace Podcatcher
 
                 SubscriptionManagerArgs args = new SubscriptionManagerArgs();
                 args.message = "Error importing from gPodder. Please try again.";
-                OnGPodderImportFinishedWithError(this, args);
+                OnExternalServiceImportFinishedWithError(this, args);
                 return;
             }
 
@@ -667,7 +670,7 @@ namespace Podcatcher
 
                 SubscriptionManagerArgs args = new SubscriptionManagerArgs();
                 args.message = "No subscriptions could be imported.";
-                OnGPodderImportFinishedWithError(this, args);
+                OnExternalServiceImportFinishedWithError(this, args);
                 return;
             }
 
@@ -871,6 +874,13 @@ namespace Podcatcher
 
         async internal void importSubscriptionsFromSkyDrive()
         {
+            if (MessageBox.Show("Podcatcher will try to find and import the latest podcasts that were exported from Podcatcher. Please login to SkyDrive to continue.",
+                                "Import from SkyDrive",
+                                MessageBoxButton.OKCancel) != MessageBoxResult.OK)
+            {
+                return;
+            }
+
             if (await userIsLoggedToSkyDrive() == false)
             {
                 await loginUserToSkyDrive();
@@ -894,10 +904,17 @@ namespace Podcatcher
                     Debug.WriteLine("id: {0}, created {1}", item.Id, item.Created);
                 }
 
-                var subscription = podcatcherSubscriptions.OrderByDescending(sub => sub.Created).First();
+                var subscription = podcatcherSubscriptions.OrderByDescending(sub => sub.Created).FirstOrDefault();
                 Debug.WriteLine("Going to get file {0} from {1}: ", subscription.Id, subscription.Source);
 
-                PodcastSubscriptionsManager.getInstance().addSubscriptionFromOPMLFile(subscription.Source);
+                if (subscription != null)
+                {
+                    PodcastSubscriptionsManager.getInstance().addSubscriptionFromOPMLFile(subscription.Source);
+                }
+                else
+                {
+                    MessageBox.Show("No subscriptions exported by Podcatcher could be found from SkyDrive.");
+                }
             }
         }
 

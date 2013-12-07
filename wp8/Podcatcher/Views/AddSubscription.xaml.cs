@@ -56,6 +56,12 @@ namespace Podcatcher.Views
             m_subscriptionManager.OnPodcastChannelRequiresAuthentication
                 += new SubscriptionManagerHandler(subscriptionManager_OnPodcastChannelRequiresAuthentication);
 
+            m_subscriptionManager.OnExternalServiceImportFinished
+                += new SubscriptionManagerHandler(subscriptionManager_OnExternalServiceImportFinished);
+            m_subscriptionManager.OnExternalServiceImportFinishedWithError
+                += new SubscriptionManagerHandler(subscriptionManager_OnExternalServiceImportFinishedWithError);
+
+
         }
 
         /************************************* Private implementations *******************************/
@@ -125,5 +131,33 @@ namespace Podcatcher.Views
         {
             NavigationService.Navigate(new Uri(string.Format("/Views/ImportPodcastsViaOPML.xaml"), UriKind.Relative));
         }
+
+        private void ImportFromSkydriveMenuItem_Click(object sender, EventArgs e)
+        {
+            PodcastSubscriptionsManager.getInstance().importSubscriptionsFromSkyDrive();
+        }
+
+        private void subscriptionManager_OnExternalServiceImportFinishedWithError(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Hide();
+
+            ToastPrompt toast = new ToastPrompt();
+            toast.Title = "Error";
+            toast.Message = e.message;
+
+            toast.Show();
+        }
+
+        private void subscriptionManager_OnExternalServiceImportFinished(object source, SubscriptionManagerArgs e)
+        {
+            progressOverlay.Hide();
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+            progressOverlay.Hide();
+        }
+
+
     }
 }

@@ -397,10 +397,6 @@ namespace Podcatcher
                     item.Click += new EventHandler(ExportSubscriptionsMenuItem_Click);
                     this.ApplicationBar.MenuItems.Add(item);
 
-                    item = new ApplicationBarMenuItem() { Text = "Import subscriptions from SkyDrive" };
-                    item.Click += new EventHandler(ImportFromSkyDriveMenuItem_Click);
-                    this.ApplicationBar.MenuItems.Add(item);
-
                     item = new ApplicationBarMenuItem() { Text = "About" };
                     item.Click += new EventHandler(AboutSubscriptionIconButton_Click);
                     this.ApplicationBar.MenuItems.Add(item);
@@ -494,11 +490,6 @@ namespace Podcatcher
                 PodcastSubscriptionsManager.getInstance().exportSubscriptions();
             }
         }
-
-        private void ImportFromSkyDriveMenuItem_Click(object sender, EventArgs e)
-        {
-            PodcastSubscriptionsManager.getInstance().importSubscriptionsFromSkyDrive();
-        }        
 
         private void PlayOrderChanged(object sender, SelectionChangedEventArgs e)
         {

@@ -38,11 +38,11 @@ namespace Podcatcher.Views
         {
             InitializeComponent();
 
-            m_subscriptionManager.OnGPodderImportStarted
+            m_subscriptionManager.OnExternalServiceImportStarted
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportStarted);
-            m_subscriptionManager.OnGPodderImportFinished
+            m_subscriptionManager.OnExternalServiceImportFinished
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinished);
-            m_subscriptionManager.OnGPodderImportFinishedWithError
+            m_subscriptionManager.OnExternalServiceImportFinishedWithError
                 += new SubscriptionManagerHandler(subscriptionManager_OnGPodderImportFinishedWithError);
 
             if (App.IsTrial)
