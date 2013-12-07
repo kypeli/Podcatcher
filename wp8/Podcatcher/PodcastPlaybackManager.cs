@@ -175,11 +175,7 @@ namespace Podcatcher
             else
             {
                 CurrentlyPlayingEpisode = episode;
-            
-                // Clear play queue (yes) when we start playback from episode listing.
-                // And we clear the queue after the current episode is being set, so that we don't delete the currently 
-                // playing one.
-                clearPlayQueue();
+                addSilentlyToPlayqueue(CurrentlyPlayingEpisode);
             }
 
             // Play locally from a downloaded file.
@@ -476,7 +472,10 @@ namespace Podcatcher
                 playlistDB.SubmitChanges();
             }
 
-            App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
+            });
         }
 
         public bool isCurrentlyPlaying()
