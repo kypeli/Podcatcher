@@ -35,6 +35,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 
 namespace Podcatcher
@@ -94,6 +95,7 @@ namespace Podcatcher
                     }
 
                     m_currentlyPlayingEpisode = value;
+                    Debug.WriteLine("SET PLAYING EPISODE HASH: " + RuntimeHelpers.GetHashCode(m_currentlyPlayingEpisode));
 
                     if (m_currentlyPlayingEpisode != null)
                     {

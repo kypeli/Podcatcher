@@ -28,6 +28,7 @@ using Microsoft.Phone.BackgroundAudio;
 using System.Diagnostics;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Podcatcher
 {
@@ -49,6 +50,8 @@ namespace Podcatcher
 
         internal void SetupNowPlayingView()
         {
+            this.DataContext = null;
+
             PodcastPlaybackManager pm = PodcastPlaybackManager.getInstance();
 
             if (pm.CurrentlyPlayingEpisode != null)
@@ -71,6 +74,8 @@ namespace Podcatcher
                     m_podcastLogo = getLogoForSubscription(s);
                 }
             }
+
+            Debug.WriteLine("NOW PLAYING EPISODE HASH: " + RuntimeHelpers.GetHashCode(pm.CurrentlyPlayingEpisode));
 
             this.DataContext = pm.CurrentlyPlayingEpisode; 
             this.PodcastLogo.Source = m_podcastLogo;

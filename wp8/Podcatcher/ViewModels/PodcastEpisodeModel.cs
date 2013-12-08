@@ -31,6 +31,7 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -770,7 +771,7 @@ namespace Podcatcher.ViewModels
 
         /************************************* Private implementations *******************************/
         #region private
-        private static DispatcherTimer m_screenUpdateTimer = null;
+        private DispatcherTimer m_screenUpdateTimer = null;
         private Stream m_downloadStream;
 
         private void PodcastEpisodeModel_OnPodcastEpisodeFinishedDownloading(object source, PodcastEpisodeModel.PodcastEpisodesArgs e)
@@ -838,6 +839,8 @@ namespace Podcatcher.ViewModels
         {
             Debug.WriteLine("Episode - tick.");
             ProgressBarValue = PodcastPlayer.getEpisodePlayPosition();
+
+            Debug.WriteLine("TICK - PLAYING EPISODE HASH: " + RuntimeHelpers.GetHashCode(this));
         }
 
         #endregion
@@ -846,19 +849,18 @@ namespace Podcatcher.ViewModels
         {
             if (m_screenUpdateTimer != null)
             {
-                m_screenUpdateTimer.Stop();
-                m_screenUpdateTimer.Tick -= new EventHandler(episodePlayback_Tick);
-                m_screenUpdateTimer = null;
+                return;
             }
 
             m_screenUpdateTimer = new DispatcherTimer();
-
             PodcastEpisodeModel.EpisodePlayStateEnum playState = String.IsNullOrEmpty(EpisodeFile) ? PodcastEpisodeModel.EpisodePlayStateEnum.Streaming
                                                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             StoreProperty<PodcastEpisodeModel.EpisodePlayStateEnum>("EpisodePlayState", playState);
 
             m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
             m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
+            Debug.WriteLine("STARTED EPISODE HASH: " + RuntimeHelpers.GetHashCode(this));
+
             m_screenUpdateTimer.Start();
         }
 
@@ -875,6 +877,8 @@ namespace Podcatcher.ViewModels
 
             if (m_screenUpdateTimer != null)
             {
+                Debug.WriteLine("STOPPED EPISODE HASH: " + RuntimeHelpers.GetHashCode(this));
+
                 m_screenUpdateTimer.Stop();
                 m_screenUpdateTimer = null;
             }

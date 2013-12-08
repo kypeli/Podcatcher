@@ -141,6 +141,16 @@ namespace Podcatcher.Views
             PodcastPlaybackManager.getInstance().OnPodcastStoppedPlaying += new EventHandler(PodcastEpisodes_OnPodcastPlaystateChanged);
         }
 
+        protected override void OnNavigatingFrom(System.Windows.Navigation.NavigatingCancelEventArgs e)
+        {
+            base.OnNavigatingFrom(e);
+            PodcastEpisodeModel playingEpisode = m_subscription.EpisodesPublishedDescending.Where(ep => ep.EpisodeId == PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();
+            if (playingEpisode != null)
+            {
+                playingEpisode.setNoPlaying();
+            }
+        }
+
         void episodeDownloadManager_PodcastEpisodeDownloadStateChanged(object source, PodcastDownloadManagerArgs args)
         {
             int episodeId = args.episodeId;

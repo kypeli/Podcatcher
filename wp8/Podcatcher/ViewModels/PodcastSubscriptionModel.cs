@@ -461,7 +461,7 @@ namespace Podcatcher.ViewModels
 
                         if (PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode != null)
                         {
-                            PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();
+                            PodcastEpisodeModel playingEpisode = m_episodes.Where(ep => ep.EpisodeId == PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();
                             if (playingEpisode != null)
                             {
                                 playingEpisode.initializeState(PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode);

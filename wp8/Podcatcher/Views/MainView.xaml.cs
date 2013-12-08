@@ -254,7 +254,6 @@ namespace Podcatcher
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             this.EpisodeDownloadList.ItemsSource = m_episodeDownloadManager.EpisodeDownloadQueue;
-            NowPlaying.SetupNowPlayingView();
             setupApplicationBarForIndex(NavigationPivot.SelectedIndex);
 
             if (App.mainViewModels.LatestEpisodesListProperty.Count == 0)
@@ -282,8 +281,8 @@ namespace Podcatcher
         {
             // TODO
             // NavigationService.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
-            this.NowPlaying.SetupNowPlayingView();
             this.NowPlaying.Visibility = System.Windows.Visibility.Visible;
+            this.NowPlaying.SetupNowPlayingView();
             Scheduler.Dispatcher.Schedule(() =>     // We have to do this hack so that Windows Phone's UI doesn't get confused when we add the application bar. 
             {
                 updatePlayerButtonsInApplicationBar();
@@ -369,6 +368,10 @@ namespace Podcatcher
         private void NavigationPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             setupApplicationBarForIndex(this.NavigationPivot.SelectedIndex);
+            if (this.NavigationPivot.SelectedIndex == 1)
+            {
+                this.NowPlaying.SetupNowPlayingView();
+            }
         }
 
         private void setupApplicationBarForIndex(int index)
