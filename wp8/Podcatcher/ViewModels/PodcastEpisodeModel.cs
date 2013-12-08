@@ -408,17 +408,14 @@ namespace Podcatcher.ViewModels
         {
             get
             {
-                return m_newEpisodeVisibility;
+                return (SavedPlayPos == 0 
+                        && EpisodeDownloadState == EpisodeDownloadStateEnum.Idle
+                        && EpisodePlayState == EpisodePlayStateEnum.Idle) 
+                        ? Visibility.Visible 
+                        : Visibility.Collapsed;
             }
 
-            set
-            {
-                if (m_newEpisodeVisibility != value) 
-                {
-                    m_newEpisodeVisibility = value;
-                    NotifyPropertyChanged("NewEpisodeVisibility");
-                }
-            }
+            private set { }
         }
 
         // And this too.

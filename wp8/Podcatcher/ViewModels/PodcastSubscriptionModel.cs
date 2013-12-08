@@ -459,11 +459,6 @@ namespace Podcatcher.ViewModels
 
                         m_episodes = new ObservableCollection<PodcastEpisodeModel>(query);
 
-                        for (int i = 0; i < m_episodes.Count && i < NewEpisodesCount; i++)
-                        {
-                            m_episodes[i].NewEpisodeVisibility = Visibility.Visible;
-                        }
-
                         if (PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode != null)
                         {
                             PodcastEpisodeModel playingEpisode = db.Episodes.Where(ep => ep.EpisodeId == PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();

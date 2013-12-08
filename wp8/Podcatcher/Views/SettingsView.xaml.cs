@@ -103,7 +103,7 @@ namespace Podcatcher.Views
             long usedBytes = 0;
             using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                m_fileList = storage.GetFileNames(App.PODCAST_DL_DIR + "/*").ToList<String>();
+                m_fileList = storage.GetFileNames(App.PODCAST_DL_DIR + "/*.*").ToList<String>();
                 IsolatedStorageFileStream fileStream = null;
                 foreach (String filename in m_fileList)
                 {
