@@ -95,7 +95,6 @@ namespace Podcatcher
                     }
 
                     m_currentlyPlayingEpisode = value;
-                    Debug.WriteLine("SET PLAYING EPISODE HASH: " + RuntimeHelpers.GetHashCode(m_currentlyPlayingEpisode));
 
                     if (m_currentlyPlayingEpisode != null)
                     {

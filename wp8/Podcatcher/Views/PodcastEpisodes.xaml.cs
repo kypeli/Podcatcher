@@ -28,6 +28,7 @@ using Podcatcher.ViewModels;
 using System.Collections.ObjectModel;
 using Microsoft.Phone.Shell;
 using System.Windows.Media.Imaging;
+using System.Diagnostics;
 
 namespace Podcatcher.Views
 {
@@ -144,10 +145,18 @@ namespace Podcatcher.Views
         protected override void OnNavigatingFrom(System.Windows.Navigation.NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
-            PodcastEpisodeModel playingEpisode = m_subscription.EpisodesPublishedDescending.Where(ep => ep.EpisodeId == PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();
-            if (playingEpisode != null)
+
+            try
             {
-                playingEpisode.setNoPlaying();
+                PodcastEpisodeModel playingEpisode = m_subscription.EpisodesPublishedDescending.Where(ep => ep.EpisodeId == PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode.EpisodeId).FirstOrDefault();
+                if (playingEpisode != null)
+                {
+                    playingEpisode.setNoPlaying();
+                }
+            }
+            catch (NullReferenceException)
+            {
+                Debug.WriteLine("No episode playing.");
             }
         }
 

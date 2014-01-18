@@ -75,8 +75,6 @@ namespace Podcatcher
                 }
             }
 
-            Debug.WriteLine("NOW PLAYING EPISODE HASH: " + RuntimeHelpers.GetHashCode(pm.CurrentlyPlayingEpisode));
-
             this.DataContext = pm.CurrentlyPlayingEpisode; 
             this.PodcastLogo.Source = m_podcastLogo;
         }
