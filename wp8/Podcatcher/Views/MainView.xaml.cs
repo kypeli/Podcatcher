@@ -231,9 +231,17 @@ namespace Podcatcher
 
         void m_subscriptionsManager_OnPodcastSubscriptionsChanged(object source, SubscriptionManagerArgs e)
         {
-            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing)
+            switch (e.state)
             {
-                this.SubscriptionsList.StopPullToRefreshLoading(true, true);
+                case PodcastSubscriptionsManager.SubscriptionsState.RefreshingSubscription:
+                    PodcastSubscriptionModel subscription = e.subscription;
+                    subscription.SubscriptionStatus = "Refreshing...";
+                    break;
+
+                case PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing:
+                    this.SubscriptionsList.StopPullToRefreshLoading(true, true);
+                    break;
+
             }
         }
 

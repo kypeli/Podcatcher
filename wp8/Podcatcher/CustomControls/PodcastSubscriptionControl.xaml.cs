@@ -107,5 +107,11 @@ namespace Podcatcher
                 Debug.WriteLine("Could not pin to start screen. The subscription is already pinned.");
             }
         }
+
+        private void MenuItemRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            PodcastSubscriptionModel subscriptionToRefresh = (sender as MenuItem).DataContext as PodcastSubscriptionModel;
+            PodcastSubscriptionsManager.getInstance().refreshSubscription(subscriptionToRefresh);
+        }
     }
 }

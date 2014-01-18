@@ -46,7 +46,7 @@ namespace Podcatcher
     public class SubscriptionManagerArgs
     {
         public String message;
-        public PodcastSubscriptionModel addedSubscription;
+        public PodcastSubscriptionModel subscription;
         public PodcastSubscriptionsManager.SubscriptionsState state;
         public bool isImportingFromExternalService = false;
         public Uri podcastFeedRSSUri;
@@ -92,6 +92,7 @@ namespace Podcatcher
         public enum SubscriptionsState
         {
             StartedRefreshing,
+            RefreshingSubscription,
             FinishedRefreshing,
             StartedSkydriveExport,
             FinishedSkydriveExport
@@ -228,9 +229,10 @@ namespace Podcatcher
 
         public void refreshSubscriptions()
         {
+            SubscriptionManagerArgs stateChangedArgs = new SubscriptionManagerArgs();
             if (NetworkInterface.GetIsNetworkAvailable() == false)
             {
-                Debug.WriteLine("No network available. Won't refresh.");
+                Debug.WriteLine("No network available. Won't refresh.");                
                 stateChangedArgs.state = PodcastSubscriptionsManager.SubscriptionsState.FinishedRefreshing;
                 OnPodcastSubscriptionsChanged(this, stateChangedArgs);                
                 return;
@@ -371,7 +373,6 @@ namespace Podcatcher
         #region privateImplementations
         private static PodcastSubscriptionsManager m_subscriptionManagerInstance = null;
         private Random m_random                               = null;
-        private SubscriptionManagerArgs stateChangedArgs      = new SubscriptionManagerArgs();
         private List<PodcastSubscriptionModel> m_subscriptions = null;
         int m_activeExternalImportsCount                      = 0;
         private LiveConnectClient liveConnect                 = null;
@@ -489,7 +490,7 @@ namespace Podcatcher
             await podcastModel.fetchChannelLogo();
 
             SubscriptionManagerArgs addArgs = new SubscriptionManagerArgs();
-            addArgs.addedSubscription = podcastModel;
+            addArgs.subscription = podcastModel;
             addArgs.isImportingFromExternalService = importingFromExternalService;
 
             OnPodcastChannelAddFinished(this, addArgs);
@@ -508,6 +509,8 @@ namespace Podcatcher
 
         private void refreshNextSubscription()
         {
+            SubscriptionManagerArgs stateChangedArgs = new SubscriptionManagerArgs();
+
             if (m_subscriptions.Count < 1)
             {
                 if (OnPodcastSubscriptionsChanged == null)
@@ -558,6 +561,10 @@ namespace Podcatcher
             }
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
             wc.DownloadStringAsync(refreshUri, subscription);
+
+            stateChangedArgs.state = SubscriptionsState.RefreshingSubscription;
+            stateChangedArgs.subscription = subscription;
+            OnPodcastSubscriptionsChanged(this, stateChangedArgs);                            
         }
 
         async void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -578,6 +585,7 @@ namespace Podcatcher
             }
 
             subscription.CachedPodcastRSSFeed = e.Result as string;
+            subscription.SubscriptionStatus = "";
 
             Debug.WriteLine("Starting refreshing episodes for " + subscription.PodcastName);
             await Task.Run(() => subscription.EpisodesManager.updatePodcastEpisodes());
@@ -596,7 +604,7 @@ namespace Podcatcher
 
         private void PodcastSubscriptionsManager_OnPodcastAddedFinished(object source, SubscriptionManagerArgs e)
         {
-            PodcastSubscriptionModel subscriptionModel = e.addedSubscription;
+            PodcastSubscriptionModel subscriptionModel = e.subscription;
             Debug.WriteLine("Podcast added successfully. Name: " + subscriptionModel.PodcastName);
 
             subscriptionModel.EpisodesManager.updatePodcastEpisodes();

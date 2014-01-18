@@ -547,6 +547,24 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        private String m_subscriptionStatus = "";
+        public String SubscriptionStatus
+        {
+            get
+            {
+                return m_subscriptionStatus;
+            }
+
+            set
+            {
+                if (m_subscriptionStatus != value)
+                {
+                    m_subscriptionStatus = value;
+                    NotifyPropertyChanged("SubscriptionStatus");
+                }
+            }
+        }
+
         public void reloadPartiallyPlayedEpisodes() 
         {
             PartiallyPlayedEpisodes = partiallyPlayedEpisodesCount(PodcastId);
