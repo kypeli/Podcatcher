@@ -65,7 +65,7 @@ namespace Podcatcher.Views
             if (App.IsTrial)
             {
                 MarketplaceDetailTask marketplaceDetailTask = new MarketplaceDetailTask();
-                marketplaceDetailTask.ContentIdentifier = "5d5cebe9-420a-4566-a468-04c94aa34d93";
+                marketplaceDetailTask.ContentIdentifier = "da41187b-c86f-44bb-820b-b4b8aee4cd25";
                 marketplaceDetailTask.ContentType = MarketplaceContentType.Applications;
                 marketplaceDetailTask.Show();
             }

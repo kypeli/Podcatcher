@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{da41187b-c86f-44bb-820b-b4b8aee4cd25}" Title="Podcatcher" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Podcatcher author" Description="Sample description" Publisher="Podcatcher" PublisherID="{5ae350c8-006f-4413-b1a4-53f9be378359}">
+  <App xmlns="" ProductID="{da41187b-c86f-44bb-820b-b4b8aee4cd25}" Title="Podcatcher BETA" RuntimeType="Silverlight" Version="3.0.0.0" Genre="apps.normal" Author="Johan Paul - johan.paul@gmail.com" Description="Sample description" Publisher="Podcatcher" PublisherID="{5ae350c8-006f-4413-b1a4-53f9be378359}">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -11,7 +11,7 @@
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="Views/MainView.xaml" ActivationPolicy="Resume"/>
+      <DefaultTask Name="_default" NavigationPage="Views/MainView.xaml" ActivationPolicy="Resume" />
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="PodcatcherToken" TaskName="_default">
