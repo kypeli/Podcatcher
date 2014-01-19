@@ -889,9 +889,24 @@ namespace Podcatcher
                 return;
             }
 
-            if (await userIsLoggedToSkyDrive() == false)
+            try
             {
-                await loginUserToSkyDrive();
+                if (await userIsLoggedToSkyDrive() == false)
+                {
+                    await loginUserToSkyDrive();
+                }
+            }
+            catch (LiveAuthException e)
+            {
+                Debug.WriteLine("User did not log in or got some other Live exception. Cannot import subscriptions.");
+                MessageBox.Show("Authentication to SkyDrive was not successful. Thus, cannot import your subscriptions. Please try again.");
+                return;
+            }
+            catch (LiveConnectException e)
+            {
+                Debug.WriteLine("Error communicating to SkyDrive. Cannot import subscriptions.");
+                MessageBox.Show("Error communicating to SkyDrive. Thus, cannot import your subscriptions. Please try again.");
+                return;
             }
 
             LiveOperationResult result = await liveConnect.GetAsync("me/skydrive/files");
