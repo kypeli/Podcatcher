@@ -393,6 +393,9 @@ namespace Podcatcher
 
             RootFrame.Navigated += CompleteInitializePhoneApplication;
 
+            // Assign the URI-mapper class to the application frame.
+            RootFrame.UriMapper = new PodcatcherSchemeURIMapper();
+
             // Handle navigation failures
             RootFrame.NavigationFailed += RootFrame_NavigationFailed;
 
