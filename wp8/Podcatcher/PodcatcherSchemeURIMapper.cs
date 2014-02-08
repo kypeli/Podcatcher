@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
+using PodcastWP;
+using Microsoft.Phone.BackgroundAudio;
 
 namespace Podcatcher
 {
@@ -14,26 +16,44 @@ namespace Podcatcher
 
         public override Uri MapUri(Uri uri)
         {
-            tempUri = System.Net.HttpUtility.UrlDecode(uri.ToString());
-
-            // URI association launch for contoso.
-            if (tempUri.Contains("Launch"))
+            if (PodcastHelper.HasPodcastUri(uri))
             {
-                Debug.WriteLine("URI Scheme: Launch");
+                BackgroundAudioPlayer bap = BackgroundAudioPlayer.Instance;
+                var action = PodcastHelper.RetrievePodcastAction(uri);
 
-                // TODO more.
-                return new Uri("/Views/MainView.xaml", UriKind.Relative);
+                switch (action.Command)
+                {
+                    case PodcastCommand.Launch:
+                        // Do nothing.
+                        break;
+                    case PodcastCommand.Pause:
+                        if (bap.CanPause)
+                        {
+                            bap.Pause();
+                        }
+                        break;
+                    case PodcastCommand.Play:
+                        if (bap.PlayerState != PlayState.Playing)
+                        {
+                            bap.Play();
+                        }
+                        break;
+                    case PodcastCommand.SkipNext:
+                        if (bap.PlayerState == PlayState.Playing)
+                        {
+                            bap.SkipNext();
+                        }
+                        break;
+                    case PodcastCommand.SkipPrevious:
+                        if (bap.PlayerState == PlayState.Playing)
+                        {
+                            bap.SkipPrevious();
+                        }
+                        break;
+                }
 
-
-/*                // Get the category ID (after "CategoryID=").
-                int categoryIdIndex = tempUri.IndexOf("CategoryID=") + 11;
-                string categoryId = tempUri.Substring(categoryIdIndex);
-
-                // Map the show products request to ShowProducts.xaml
-                return new Uri("/ShowProducts.xaml?CategoryID=" + categoryId, UriKind.Relative);
- */
+                return new Uri("MainPage.xaml", UriKind.Relative);
             }
-
             // Otherwise perform normal launch.
             return uri;
         }
