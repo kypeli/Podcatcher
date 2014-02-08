@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{da41187b-c86f-44bb-820b-b4b8aee4cd25}" Title="Podcatcher BETA" RuntimeType="Silverlight" Version="3.0.0.0" Genre="apps.normal" Author="Johan Paul - johan.paul@gmail.com" Description="Sample description" Publisher="Podcatcher" PublisherID="{5ae350c8-006f-4413-b1a4-53f9be378359}">
+  <App xmlns="" ProductID="{e117d78a-e53c-49ee-99bb-bc88f5b7dfc2}" Title="Podcatcher BETA" RuntimeType="Silverlight" Version="3.0.0.0" Genre="apps.normal" Author="Johan Paul - johan.paul@gmail.com" Description="Sample description" Publisher="Johan Paul" PublisherID="{5ae350c8-006f-4413-b1a4-53f9be378359}">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
