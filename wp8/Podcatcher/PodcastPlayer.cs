@@ -35,18 +35,15 @@ namespace Podcatcher
                 try
                 {
                     audioPlayback(episodeModel);
-//                    setupUIForEpisodePlaying();
                 }
                 catch (FileNotFoundException e)
                 {
                     Console.WriteLine("Error: File not found. " + e.Message);
                     App.showErrorToast("Cannot find episode.");
-//                    showNoPlayerLayout();
                 }
             }
             else
             {
-//                PlaybackStopped();
                 videoPlayback(episodeModel);
             }
         }
@@ -118,7 +115,6 @@ namespace Podcatcher
                 && BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
             {
                 BackgroundAudioPlayer.Instance.Play();
-          //      setupUIForEpisodePlaying();
             }
             else
             {
@@ -139,8 +135,6 @@ namespace Podcatcher
         private void startNewPlayback(PodcastEpisodeModel episodeModel, bool streaming)
         {
             m_currentPlayerEpisode = episodeModel;
-            // setupPlayerUIContent(episodeModel);
-            // updatePrimary(episodeModel);
 
             if (episodeModel.SavedPlayPos > 0)
             {
@@ -295,14 +289,11 @@ namespace Podcatcher
                 case PlayState.Playing:
                     // Player is playing
                     Debug.WriteLine("Podcast player is playing...");
-//                    setupPlayerUIContent(PodcastPlaybackManager.getInstance().CurrentlyPlayingEpisode);
-//                    setupUIForEpisodePlaying();
                     break;
 
                 case PlayState.Paused:
                     // Player is on pause
                     Debug.WriteLine("Podcast player is paused.");
-//                    setupUIForEpisodePaused();
                     break;
 
                 case PlayState.Shutdown:
@@ -311,15 +302,11 @@ namespace Podcatcher
                     // Player stopped
                     Debug.WriteLine("Podcast player stopped.");
                     m_currentPlayerEpisode = null;
-//                    GoBack();
                     break;
 
                 case PlayState.TrackEnded:
                     break;
             }
         }
-
-
-
     }
 }
