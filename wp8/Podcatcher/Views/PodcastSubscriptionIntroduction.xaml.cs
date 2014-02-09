@@ -31,6 +31,7 @@ using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using System.Net.Http;
 
 namespace Podcatcher.Views
 {
@@ -41,36 +42,29 @@ namespace Podcatcher.Views
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e) {
+        async protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e) {
             string podcastUrl = (string)NavigationContext.QueryString["podcastUrl"];
-            
-            Uri podcastUri;
-            try {
-                podcastUri = new Uri(podcastUrl);
-            } catch(Exception) {
-               Console.WriteLine("Malformed podcast address.");
-                // TODO: Show toast 
-               return;
-            }
 
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
-            wc.DownloadStringAsync(podcastUri);
-        }
-
-        void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            if (e.Error != null)
+            try
             {
-                Debug.WriteLine("Malformed podcast address.");
+                Uri podcastUri = new Uri(podcastUrl);
+                String podcastPageXML = await new HttpClient().GetStringAsync(podcastUri);
 
+                PodcastSubscriptionModel subscription = PodcastFactory.podcastModelFromRSS(podcastPageXML);
+                PodcastName.Text = subscription.PodcastName;
+                PodcastIcon.Source = new BitmapImage(subscription.PodcastLogoUrl);
+                PodcastDescription.Text = subscription.PodcastDescription;
             }
-
-            PodcastSubscriptionModel subscription = PodcastFactory.podcastModelFromRSS((string)e.Result);
-            
-            PodcastName.Text = subscription.PodcastName;
-            PodcastIcon.Source = new BitmapImage(subscription.PodcastLogoUrl);
-            PodcastDescription.Text = subscription.PodcastDescription;
+            catch (UriFormatException)
+            {
+                Console.WriteLine("Malformed podcast address.");
+                App.showErrorToast("Cannot show information. Malformed web address.");
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("Could not connect to the XML feed.");
+                App.showErrorToast("Cannot fetch podcast information.");
+            }
         }
     }
 }
