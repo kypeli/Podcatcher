@@ -81,17 +81,7 @@ namespace Podcatcher
         {
             PodcastEpisodeModel podcastEpisode = this.DataContext as PodcastEpisodeModel;
             PhoneApplicationFrame applicationFrame = Application.Current.RootVisual as PhoneApplicationFrame;
-
-            if (podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Playing
-                || podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Paused
-                || podcastEpisode.EpisodePlayState == PodcastEpisodeModel.EpisodePlayStateEnum.Streaming)
-            {
-                applicationFrame.Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
-            }
-            else
-            {
-                applicationFrame.Navigate(new Uri(string.Format("/Views/PodcastEpisodeDescriptionView.xaml?episodeId={0}", (this.DataContext as PodcastEpisodeModel).EpisodeId), UriKind.Relative));
-            }
+            applicationFrame.Navigate(new Uri(string.Format("/Views/PodcastEpisodeDescriptionView.xaml?episodeId={0}", (this.DataContext as PodcastEpisodeModel).EpisodeId), UriKind.Relative));
         }
 
         #endregion
