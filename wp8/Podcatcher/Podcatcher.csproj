@@ -330,6 +330,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\external\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PodcastWP">
+      <HintPath>packages\PodcastWP.1.0.0.4\lib\PodcastWP.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http">
       <HintPath>packages\Microsoft.Net.Http.2.2.15\lib\sl4-windowsphone71\System.Net.Http.dll</HintPath>
     </Reference>

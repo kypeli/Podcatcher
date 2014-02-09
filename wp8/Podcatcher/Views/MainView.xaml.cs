@@ -596,12 +596,7 @@ namespace Podcatcher
         {
             this.NowPlaying.Visibility = System.Windows.Visibility.Collapsed;
             this.ApplicationBar.IsVisible = false;
-
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
-                || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
-            {
-                BackgroundAudioPlayer.Instance.Stop();
-            }
+            PodcastPlaybackManager.getInstance().stop();
         }
 
         private void ffButtonClicked(object sender, EventArgs e)

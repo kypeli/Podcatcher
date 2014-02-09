@@ -79,6 +79,7 @@ namespace Podcatcher
                     if (current != null)
                     {
                         current.IsCurrent = false;
+                        db.SubmitChanges();
                     }
 
                     if (value != null 
@@ -125,14 +126,12 @@ namespace Podcatcher
 
                         newCurrent.IsCurrent = true;
                         m_currentlyPlayingEpisode.setPlaying();
-                    }
 
-                    db.SubmitChanges();
+                        db.SubmitChanges();
+                    }
                 }
             }
         }
-
-
 
         public void play(PodcastEpisodeModel episode, bool startedFromPlayQueue = false)
         {
@@ -210,6 +209,22 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>(); // Notify playlist changed.
+        }
+
+        public void stop()
+        {
+            if (CurrentlyPlayingEpisode != null)
+            {
+                CurrentlyPlayingEpisode.setNoPlaying();
+                CurrentlyPlayingEpisode = null;
+            }
+
+            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
+                || BackgroundAudioPlayer.Instance.PlayerState == PlayState.Paused)
+            {
+                BackgroundAudioPlayer.Instance.Stop();
+            }
+
         }
 
         public void startPlaylistPlayback()
