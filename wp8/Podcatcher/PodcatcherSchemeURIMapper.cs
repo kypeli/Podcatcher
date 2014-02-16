@@ -52,7 +52,7 @@ namespace Podcatcher
                         break;
                 }
 
-                return new Uri("MainPage.xaml", UriKind.Relative);
+                return new Uri("/Views/MainView.xaml", UriKind.Relative);
             }
             // Otherwise perform normal launch.
             return uri;
