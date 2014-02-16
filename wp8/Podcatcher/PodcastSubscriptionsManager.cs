@@ -562,9 +562,12 @@ namespace Podcatcher
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_RefreshPodcastRSSCompleted);
             wc.DownloadStringAsync(refreshUri, subscription);
 
-            stateChangedArgs.state = SubscriptionsState.RefreshingSubscription;
-            stateChangedArgs.subscription = subscription;
-            OnPodcastSubscriptionsChanged(this, stateChangedArgs);                            
+            if (OnPodcastSubscriptionsChanged != null)
+            {
+                stateChangedArgs.state = SubscriptionsState.RefreshingSubscription;
+                stateChangedArgs.subscription = subscription;
+                OnPodcastSubscriptionsChanged(this, stateChangedArgs);
+            }
         }
 
         async void wc_RefreshPodcastRSSCompleted(object sender, DownloadStringCompletedEventArgs e)
