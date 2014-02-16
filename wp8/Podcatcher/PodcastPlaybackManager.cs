@@ -499,6 +499,66 @@ namespace Podcatcher
             return CurrentlyPlayingEpisode != null;
         }
 
+        public TimeSpan getTrackPlayPosition()
+        {
+            TimeSpan position = TimeSpan.Zero;
+            try
+            {
+                if (BackgroundAudioPlayer.Instance == null
+                    || BackgroundAudioPlayer.Instance.Track == null
+                    || BackgroundAudioPlayer.Instance.Position == null)
+                {
+                    position = TimeSpan.Zero;
+                }
+
+                position = BackgroundAudioPlayer.Instance.Position;
+            }
+            catch (InvalidOperationException ioe)
+            {
+                Debug.WriteLine("Error when updating player: " + ioe.Message);
+            }
+            catch (ArgumentException arge)
+            {
+                Debug.WriteLine("Catched argument error when trying to access BackgroundAudioPlayer. Error: " + arge.Message);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Some other exception from player. Message: " + ex.Message);
+            }
+
+            return position;
+        }
+
+        public TimeSpan getTrackPlayDuration()
+        {
+            TimeSpan duration = TimeSpan.Zero;
+            try
+            {
+                if (BackgroundAudioPlayer.Instance == null
+                    || BackgroundAudioPlayer.Instance.Track == null
+                    || BackgroundAudioPlayer.Instance.Position == null)
+                {
+                    duration = TimeSpan.Zero;
+                }
+
+                duration = BackgroundAudioPlayer.Instance.Track.Duration;
+            }
+            catch (InvalidOperationException ioe)
+            {
+                Debug.WriteLine("Error when updating player: " + ioe.Message);
+            }
+            catch (ArgumentException arge)
+            {
+                Debug.WriteLine("Catched argument error when trying to access BackgroundAudioPlayer. Error: " + arge.Message);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Some other exception from player. Message: " + ex.Message);
+            }
+
+            return duration;
+        }
+
         /****************************** Private implementations *******************************/
 
         private void showAddedNotification(int count)

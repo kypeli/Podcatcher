@@ -855,7 +855,7 @@ namespace Podcatcher.ViewModels
                                                                                                    : PodcastEpisodeModel.EpisodePlayStateEnum.Playing;
             StoreProperty<PodcastEpisodeModel.EpisodePlayStateEnum>("EpisodePlayState", playState);
 
-            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 2000); // Fire the timer every two seconds. 
+            m_screenUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000); // Fire the timer every second. We update the play pos here as well.
             m_screenUpdateTimer.Tick += new EventHandler(episodePlayback_Tick);
             m_screenUpdateTimer.Start();
         }

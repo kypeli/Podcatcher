@@ -37,6 +37,7 @@ namespace Podcatcher
         private Dictionary<int, WeakReference> m_logoCache = new Dictionary<int, WeakReference>();
         private BitmapImage m_podcastLogo = null;
         private int m_currentlyPlayingEpisodeId = -1;
+        private PodcastPlaybackManager m_playbackManager = null;
 
         public PodcastNowPlaying()
         {
@@ -52,9 +53,9 @@ namespace Podcatcher
         {
             this.DataContext = null;
 
-            PodcastPlaybackManager pm = PodcastPlaybackManager.getInstance();
+            m_playbackManager = PodcastPlaybackManager.getInstance();
 
-            if (pm.CurrentlyPlayingEpisode != null)
+            if (m_playbackManager.CurrentlyPlayingEpisode != null)
             {
                 this.Visibility = Visibility.Visible;
             }
@@ -65,17 +66,17 @@ namespace Podcatcher
             }
 
             if (m_currentlyPlayingEpisodeId < 0
-                || pm.CurrentlyPlayingEpisode.EpisodeId != m_currentlyPlayingEpisodeId)
+                || m_playbackManager.CurrentlyPlayingEpisode.EpisodeId != m_currentlyPlayingEpisodeId)
             {
-                m_currentlyPlayingEpisodeId = pm.CurrentlyPlayingEpisode.EpisodeId;
+                m_currentlyPlayingEpisodeId = m_playbackManager.CurrentlyPlayingEpisode.EpisodeId;
                 using (var db = new PodcastSqlModel())
                 {
-                    PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == pm.CurrentlyPlayingEpisode.PodcastId);
+                    PodcastSubscriptionModel s = db.Subscriptions.First(sub => sub.PodcastId == m_playbackManager.CurrentlyPlayingEpisode.PodcastId);
                     m_podcastLogo = getLogoForSubscription(s);
                 }
             }
 
-            this.DataContext = pm.CurrentlyPlayingEpisode; 
+            this.DataContext = m_playbackManager.CurrentlyPlayingEpisode; 
             this.PodcastLogo.Source = m_podcastLogo;
         }
 
@@ -107,9 +108,13 @@ namespace Podcatcher
             return logo;
         }
 
-        private void NowPlayingTapped(object sender, System.Windows.Input.GestureEventArgs e)
+        private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Views/PodcastPlayerView.xaml", UriKind.Relative));
+            TimeSpan position = m_playbackManager.getTrackPlayPosition();
+            TimeSpan duration = m_playbackManager.getTrackPlayDuration();
+
+            CurrentPlayTime.Text = position.ToString("hh\\:mm\\:ss");
+            TotalPlayTime.Text = duration.ToString("hh\\:mm\\:ss");
         }
     }
 }
