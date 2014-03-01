@@ -33,6 +33,9 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using Podcatcher.ViewModels;
 using Coding4Fun.Toolkit.Controls;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Xml;
 
 namespace Podcatcher.CustomControls
 {
@@ -43,7 +46,7 @@ namespace Podcatcher.CustomControls
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        async private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(this.searchTerm.Text))
             {
@@ -53,51 +56,21 @@ namespace Podcatcher.CustomControls
 
             progressOverlay.Show();
 
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadSearchResultsCompleted);
             string searchQueryString = String.Format("https://gpodder.net/search.xml?q=\"{0}\"", this.searchTerm.Text);
             Debug.WriteLine("Search string: " + searchQueryString);
-            wc.DownloadStringAsync(new Uri(searchQueryString));
-        }
 
-        void wc_DownloadSearchResultsCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            if (e.Error != null)
-            {
-                Debug.WriteLine("ERROR: Web error happened. Error: " + e.Error.ToString());
-                ToastPrompt toast = new ToastPrompt();
-                toast.Title = "Error";
-                toast.Message = "Could not get search results.";
-
-                toast.Show();
-                return;
-            }
-
-            XDocument searchXml;
             try
             {
-                searchXml = XDocument.Parse(e.Result);
-            }
-            catch (System.Xml.XmlException ex)
-            {
-                Debug.WriteLine("ERROR: Cannot parse gPodder.net search result XML. Error: " + ex.Message);
-                ToastPrompt toast = new ToastPrompt();
-                toast.Title = "Error";
-                toast.Message = "Could not get search results.";
+                String searchResult = await new HttpClient().GetStringAsync(searchQueryString);
+                XDocument searchXml = XDocument.Parse(searchResult);
 
-                toast.Show();
-                return;
-            }
+                var query = from podcast in searchXml.Descendants("podcast")
+                select podcast;
 
-            var query = from podcast in searchXml.Descendants("podcast")
-                        select podcast;
-
-            List<GPodderResultModel> results = new List<GPodderResultModel>();
-            foreach (var result in query)
-            {
-                GPodderResultModel resultModel = new GPodderResultModel();
-                try
+                List<GPodderResultModel> results = new List<GPodderResultModel>();
+                foreach (var result in query)
                 {
+                    GPodderResultModel resultModel = new GPodderResultModel();
                     XElement logoElement = result.Element("logo_url");
 
                     if (logoElement == null
@@ -114,18 +87,33 @@ namespace Podcatcher.CustomControls
 
                     resultModel.PodcastName = result.Element("title").Value;
                     resultModel.PodcastUrl = result.Element("url").Value;
-                }
-                catch (UriFormatException)
-                {
-                    Debug.WriteLine("Could not parse logo from the feed.");
+
+                    results.Add(resultModel);
                 }
 
-                results.Add(resultModel);
+                Debug.WriteLine("Found {0} results.", results.Count);
+                this.SearchResultList.ItemsSource = results;
+            }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine("ERROR: Web error happened. Error: " + ex.Message);
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Could not get search results.";
+
+                toast.Show();
+            }
+            catch (XmlException ex)
+            {
+                Debug.WriteLine("ERROR: Cannot parse gPodder.net search result XML. Error: " + ex.Message);
+                ToastPrompt toast = new ToastPrompt();
+                toast.Title = "Error";
+                toast.Message = "Could not get search results.";
+
+                toast.Show();
             }
 
-            Debug.WriteLine("Found {0} results.", results.Count);
-            this.SearchResultList.ItemsSource = results;
-            this.progressOverlay.Hide();
+            progressOverlay.Hide();
         }
     }
 }
