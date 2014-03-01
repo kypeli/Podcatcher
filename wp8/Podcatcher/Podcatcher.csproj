@@ -125,6 +125,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utils\ApplicationSettings.cs" />
     <Compile Include="ViewModels\BrowsePodcastItemModel.cs" />
     <Compile Include="ViewModels\BrowsePodcastsGroupModel.cs" />
     <Compile Include="ViewModels\GPodderResultModel.cs" />

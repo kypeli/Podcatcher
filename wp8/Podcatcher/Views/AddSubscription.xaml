@@ -41,7 +41,7 @@
 
                 <!-- Search podcasts pivot item -->
                 <controls:PivotItem Header="search">
-                    <pc:PodcastSearchControl x:Name="SearchControl"/>
+                    <pc:PodcastSearchControl/>
                 </controls:PivotItem>                
             </controls:Pivot>
 

@@ -110,8 +110,8 @@ namespace Podcatcher
 
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            TimeSpan position = m_playbackManager.getTrackPlayPosition();
-            TimeSpan duration = m_playbackManager.getTrackPlayDuration();
+            TimeSpan position = PodcastPlayer.getIntance().getTrackPlayPosition();
+            TimeSpan duration = PodcastPlayer.getIntance().getTrackPlayDuration();
 
             CurrentPlayTime.Text = position.ToString("hh\\:mm\\:ss");
             TotalPlayTime.Text = duration.ToString("hh\\:mm\\:ss");
