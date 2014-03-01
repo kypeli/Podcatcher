@@ -35,7 +35,7 @@ namespace Podcatcher
                     case PodcastCommand.Play:
                         if (bap.PlayerState != PlayState.Playing)
                         {
-                            bap.Play();
+                            PodcastPlaybackManager.getInstance().startDefaultBehaviorPlayback();
                         }
                         break;
                     case PodcastCommand.SkipNext:

@@ -18,7 +18,7 @@
     		<TextBox x:Name="searchTerm" TextWrapping="Wrap"/>
     		<Button Content="Search" Width="150" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Button_Click" />
     	</StackPanel>
-        <ListBox x:Name="SearchResultList" Margin="8,186,8,81">
+        <ListBox x:Name="SearchResultList" Margin="8,186,8,0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <pc:PodcastSearchResultControl />

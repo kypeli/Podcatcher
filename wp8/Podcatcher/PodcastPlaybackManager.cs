@@ -211,6 +211,17 @@ namespace Podcatcher
             App.mainViewModels.PlayQueue = new System.Collections.ObjectModel.ObservableCollection<PlaylistItem>(); // Notify playlist changed.
         }
 
+        public void play(PlaylistItem playlistItem)
+        {
+            using (PodcastSqlModel db = new PodcastSqlModel()) {
+                PodcastEpisodeModel episode = db.Episodes.FirstOrDefault(ep => ep.EpisodeId == playlistItem.EpisodeId);
+                if (episode != null)
+                {
+                    play(episode);
+                }
+            }
+        }
+
         public void stop()
         {
             if (CurrentlyPlayingEpisode != null)
@@ -497,6 +508,36 @@ namespace Podcatcher
         public bool isCurrentlyPlaying()
         {
             return CurrentlyPlayingEpisode != null;
+        }
+
+
+        public void startDefaultBehaviorPlayback()
+        {
+            using (PlaylistDBContext db = new PlaylistDBContext()) {
+                PlaylistItem current = db.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
+                if (current != null)
+                {
+                    App.showNotificationToast("Playing recent episode.");
+                    play(current);
+                    return;
+                }
+                else
+                {
+                    Debug.WriteLine("No previously played episode could be found.");
+                }
+            }
+
+            using (PodcastSqlModel db = new PodcastSqlModel())
+            {
+                // Did not find a suitable episode that was previously played, so we have to start a "new" playback.
+                // This playback is the latest published episode.
+                PodcastEpisodeModel newestEpisode = db.Episodes.OrderByDescending(ep => ep.EpisodePublished).FirstOrDefault();
+                if (newestEpisode != null) 
+                {
+                    App.showNotificationToast("Playing newest episode.");
+                    play(newestEpisode);
+                }
+            }
         }
 
         /****************************** Private implementations *******************************/
