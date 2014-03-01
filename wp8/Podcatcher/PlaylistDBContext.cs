@@ -26,7 +26,7 @@ namespace Podcatcher
     public class PlaylistDBContext : DataContext
     {
         private const string m_connection = "Data Source=isostore:/PodcatcherPlaylists.sdf";
-        private int PLAYLIST_DB_VERSION = 2;
+        private int PLAYLIST_DB_VERSION = 3;
         
         public Table<PlaylistItem> Playlist;
 
@@ -52,12 +52,16 @@ namespace Podcatcher
                     updater.AddColumn<PlaylistItem>("TotalPlayTicks");
                 }
 
+                if (updater.DatabaseSchemaVersion < 3)
+                {
+                    updater.AddColumn<PlaylistItem>("LastPlayed");
+                }
+
                 updater.DatabaseSchemaVersion = PLAYLIST_DB_VERSION;
                 updater.Execute();
             }
 
             Playlist = GetTable<PlaylistItem>();
-            // TODO: Handle scheme changes.                    
         }
     }
 }

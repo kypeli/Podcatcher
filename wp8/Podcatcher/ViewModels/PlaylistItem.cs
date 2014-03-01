@@ -127,6 +127,13 @@ namespace Podcatcher.ViewModels
             get;
             set;
         }
+
+        [Column(DbType = "DATETIME DEFAULT 1970-01-01 NOT NULL")]
+        public DateTime LastPlayed
+        {
+            get;
+            set;
+        }
 #endregion
 
     }
