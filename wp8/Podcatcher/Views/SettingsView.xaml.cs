@@ -38,8 +38,10 @@ namespace Podcatcher.Views
     {
         private static bool initialized = false;
         private SettingsModel m_settings = null;
-        private String m_podcastUsage = null;
-        private List<String> m_fileList = null;
+        private String m_podcastUsageText = null;
+        private String m_podcastCountText = null;
+
+        List<String> m_podcastFileList = new List<string>();
 
         public SettingsView()
         {
@@ -89,37 +91,25 @@ namespace Podcatcher.Views
             // Find out when we are in the Usage pivot.
             if (this.NavigationPivot.SelectedIndex == 3)
             {
-                if (m_podcastUsage == null)
-                {
-                    m_podcastUsage = getUsageString();
-                }
-
-                this.UsageText.Text = m_podcastUsage;
+                UpdateUsageInformation();
             }
+        }
+
+        private void UpdateUsageInformation()
+        {
+            if (m_podcastUsageText == null)
+            {
+                m_podcastUsageText = getUsageString();
+                m_podcastCountText = String.Format("{0} podcasts downloaded", m_podcastFileList.Count);
+            }
+
+            this.UsageText.Text = m_podcastUsageText;
+            this.NumPodcastsText.Text = m_podcastCountText;
         }
 
         private String getUsageString()
         {
-            long usedBytes = 0;
-            using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
-            {
-                m_fileList = storage.GetFileNames(App.PODCAST_DL_DIR + "/*.*").ToList<String>();
-                IsolatedStorageFileStream fileStream = null;
-                foreach (String filename in m_fileList)
-                {
-                    try
-                    {
-                        fileStream = storage.OpenFile(App.PODCAST_DL_DIR + "/" + filename, System.IO.FileMode.Open);
-                        Debug.WriteLine("File: {0}, Size: {1}", filename, fileStream.Length);
-                        usedBytes += fileStream.Length;
-                        fileStream.Close();
-                    }
-                    catch (IsolatedStorageException)
-                    {
-                        App.showNotificationToast("Notice: Could not read all files.");
-                    }
-                }
-            }
+            long usedBytes = getDownloadedBytes();
 
             String units = "GB";
             // Check if we are over a gigabyte
@@ -135,6 +125,32 @@ namespace Podcatcher.Views
             }
 
             return String.Format("{0} {1}", usedBytes, units);
+        }
+
+        private long getDownloadedBytes()
+        {
+            long usedBytes = 0;
+            using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                m_podcastFileList = storage.GetFileNames(App.PODCAST_DL_DIR + "/*.*").ToList<String>();
+                IsolatedStorageFileStream fileStream = null;
+                foreach (String filename in m_podcastFileList)
+                {
+                    try
+                    {
+                        fileStream = storage.OpenFile(App.PODCAST_DL_DIR + "/" + filename, System.IO.FileMode.Open);
+                        Debug.WriteLine("File: {0}, Size: {1}", filename, fileStream.Length);
+                        usedBytes += fileStream.Length;
+                        fileStream.Close();
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        Debug.WriteLine("Could not read file: " + App.PODCAST_DL_DIR + "/" + filename);
+                    }
+                }
+            }
+
+            return usedBytes;
         }
 
         private void DeleteAllButton_Tap(object sender, System.Windows.Input.GestureEventArgs e)
@@ -158,7 +174,38 @@ namespace Podcatcher.Views
                 PodcastSubscriptionsManager.getInstance().removedPlayableEpisode(episode);
             }
 
-            this.UsageText.Text = getUsageString();
+            long bytes = getDownloadedBytes();
+            if (bytes != 0)
+            {
+                if (MessageBox.Show("I have deleted all episodes from the database. But there are still some files on the filesystem that were not be deleted. Do you want to delete these too?",
+                    "Attention", 
+                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    deleteAllDownloadedFiles();
+                }
+            }
+
+            m_podcastUsageText = null;
+            UpdateUsageInformation();
+        }
+
+        private void deleteAllDownloadedFiles()
+        {
+            using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                List<string> filelist = storage.GetFileNames(App.PODCAST_DL_DIR + "/*.*").ToList<String>();
+                foreach (String filename in filelist)
+                {
+                    try
+                    {
+                        storage.DeleteFile(App.PODCAST_DL_DIR + "/" + filename);
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        Debug.WriteLine("Could not delete file: " + App.PODCAST_DL_DIR + "/" + filename);
+                    }
+                }
+            }
         }
     }
 }

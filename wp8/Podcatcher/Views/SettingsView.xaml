@@ -105,8 +105,9 @@
             <controls:PivotItem Header="usage">
                 <ScrollViewer HorizontalAlignment="Left" Margin="0" Grid.Row="1">
                     <StackPanel Margin="0,0,8,8">
-                    	<TextBlock TextWrapping="Wrap" Text="Your podcast downloads use this much space:" Width="447"/>
-                        <TextBlock TextWrapping="Wrap" x:Name="UsageText" Margin="0,20" HorizontalAlignment="Center" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="Podcast usage:" Margin="0,0,0,15" Width="447" FontSize="32"/>
+                        <TextBlock TextWrapping="Wrap" x:Name="NumPodcastsText" Margin="0,5" HorizontalAlignment="Left" Style="{StaticResource PhoneTextLargeStyle}"/>
+                        <TextBlock TextWrapping="Wrap" x:Name="UsageText" Margin="0,5" HorizontalAlignment="Left" Style="{StaticResource PhoneTextLargeStyle}"/>
                         <Button Tap="DeleteAllButton_Tap" Content="Delete all downloaded podcasts"/>
                     </StackPanel>
                 </ScrollViewer>
