@@ -517,30 +517,36 @@ namespace Podcatcher
 
         public void startDefaultBehaviorPlayback()
         {
-            using (PlaylistDBContext db = new PlaylistDBContext()) {
-                PlaylistItem current = db.Playlist.Where(item => item.IsCurrent).FirstOrDefault();
-                if (current != null)
-                {
-                    App.showNotificationToast("Playing recent episode.");
-                    play(current);
-                    return;
-                }
-                else
-                {
-                    Debug.WriteLine("No previously played episode could be found.");
-                }
-            }
-
             using (PodcastSqlModel db = new PodcastSqlModel())
             {
+                try
+                {
+                    PodcastEpisodeModel latestPlayed = db.Episodes.Where(ep => (ep.LastPlayed.HasValue == true && ep.LastPlayed.Value.Year > 2013)).OrderByDescending(ep => ep.LastPlayed).FirstOrDefault();
+                    if (latestPlayed != null)
+                    {
+                        App.showNotificationToast("Playing recently played episode.");
+                        play(latestPlayed);
+                        return;
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    Debug.WriteLine("Could not find a suitable latest episode played.");
+                }
+
                 // Did not find a suitable episode that was previously played, so we have to start a "new" playback.
                 // This playback is the latest published episode.
-                PodcastEpisodeModel newestEpisode = db.Episodes.OrderByDescending(ep => ep.LastPlayed).FirstOrDefault();
-                if (newestEpisode != null) 
+                PodcastEpisodeModel newestEpisode = db.Episodes.OrderByDescending(ep => ep.EpisodePublished).FirstOrDefault();
+                if (newestEpisode != null)
                 {
                     App.showNotificationToast("Playing newest episode.");
                     play(newestEpisode);
                 }
+                else
+                {
+                    Debug.WriteLine("Uups, cannot find a newest episode to play.");
+                }
+
             }
         }
 
