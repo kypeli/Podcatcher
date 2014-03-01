@@ -131,6 +131,7 @@ namespace Podcatcher
                             db.SubmitChanges();
                         }
 
+                        m_currentlyPlayingEpisode.StoreProperty<DateTime>("LastPlayed", DateTime.Now);
                         m_currentlyPlayingEpisode.setPlaying();
                     }
                 }
@@ -534,7 +535,7 @@ namespace Podcatcher
             {
                 // Did not find a suitable episode that was previously played, so we have to start a "new" playback.
                 // This playback is the latest published episode.
-                PodcastEpisodeModel newestEpisode = db.Episodes.OrderByDescending(ep => ep.EpisodePublished).FirstOrDefault();
+                PodcastEpisodeModel newestEpisode = db.Episodes.OrderByDescending(ep => ep.LastPlayed).FirstOrDefault();
                 if (newestEpisode != null) 
                 {
                     App.showNotificationToast("Playing newest episode.");

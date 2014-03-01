@@ -127,13 +127,6 @@ namespace Podcatcher.ViewModels
             get;
             set;
         }
-
-        [Column]
-        public DateTime? LastPlayed
-        {
-            get;
-            set;
-        }
 #endregion
 
     }

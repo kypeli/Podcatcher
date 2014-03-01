@@ -128,6 +128,11 @@ namespace Podcatcher
                     App.forceReloadOfEpisodeData = true;
                 }
 
+                if (updater.DatabaseSchemaVersion < 11)
+                {
+                    updater.AddColumn<PodcastEpisodeModel>("LastPlayed");
+                }
+
                 updater.DatabaseSchemaVersion = DB_VERSION;
                 updater.Execute();
             }
@@ -401,7 +406,7 @@ namespace Podcatcher
         #region privateImplementations
         private const string m_connectionString = "Data Source=isostore:/Podcatcher.sdf";
 
-        private const int DB_VERSION = 10;
+        private const int DB_VERSION = 11;
 
         private bool isValidSubscriptionModelIndex(int index)
         {

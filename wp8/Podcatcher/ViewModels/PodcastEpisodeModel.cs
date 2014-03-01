@@ -389,6 +389,13 @@ namespace Podcatcher.ViewModels
             }
         }
 
+        [Column]
+        public DateTime? LastPlayed
+        {
+            get;
+            set;
+        }
+
         private BackgroundTransferRequest m_transferRequest;
         public BackgroundTransferRequest DownloadRequest
         {
