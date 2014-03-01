@@ -128,8 +128,8 @@ namespace Podcatcher.ViewModels
             set;
         }
 
-        [Column(DbType = "DATETIME DEFAULT 1970-01-01 NOT NULL")]
-        public DateTime LastPlayed
+        [Column]
+        public DateTime? LastPlayed
         {
             get;
             set;

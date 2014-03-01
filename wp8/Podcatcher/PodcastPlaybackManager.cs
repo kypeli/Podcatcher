@@ -75,18 +75,18 @@ namespace Podcatcher
             {
                 using (var db = new Podcatcher.PlaylistDBContext())
                 {
+                    if (value != null
+                        && m_currentlyPlayingEpisode != null
+                        && (value as PodcastEpisodeModel).EpisodeId == m_currentlyPlayingEpisode.EpisodeId)
+                    {
+                        return;
+                    }
+
                     PlaylistItem current = db.Playlist.FirstOrDefault(item => item.IsCurrent == true);
                     if (current != null)
                     {
                         current.IsCurrent = false;
                         db.SubmitChanges();
-                    }
-
-                    if (value != null 
-                        && m_currentlyPlayingEpisode != null 
-                        && (value as PodcastEpisodeModel).EpisodeId == m_currentlyPlayingEpisode.EpisodeId)
-                    {
-                        return;
                     }
 
                     // Reset any previously playing episode.
@@ -122,12 +122,16 @@ namespace Podcatcher
                             };
 
                             db.Playlist.InsertOnSubmit(newCurrent);
+                            db.SubmitChanges();
                         }
 
-                        newCurrent.IsCurrent = true;
-                        m_currentlyPlayingEpisode.setPlaying();
+                        if (!newCurrent.IsCurrent)
+                        {
+                            newCurrent.IsCurrent = true;
+                            db.SubmitChanges();
+                        }
 
-                        db.SubmitChanges();
+                        m_currentlyPlayingEpisode.setPlaying();
                     }
                 }
             }
@@ -227,7 +231,6 @@ namespace Podcatcher
             if (CurrentlyPlayingEpisode != null)
             {
                 CurrentlyPlayingEpisode.setNoPlaying();
-                CurrentlyPlayingEpisode = null;
             }
 
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing
