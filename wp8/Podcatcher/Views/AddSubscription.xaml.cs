@@ -132,9 +132,9 @@ namespace Podcatcher.Views
             NavigationService.Navigate(new Uri(string.Format("/Views/ImportPodcastsViaOPML.xaml"), UriKind.Relative));
         }
 
-        private void ImportFromSkydriveMenuItem_Click(object sender, EventArgs e)
+        private void ImportFromOneDriveMenuItem_Click(object sender, EventArgs e)
         {
-            PodcastSubscriptionsManager.getInstance().importSubscriptionsFromSkyDrive();
+            PodcastSubscriptionsManager.getInstance().importSubscriptionsFromOneDrive();
         }
 
         private void subscriptionManager_OnExternalServiceImportFinishedWithError(object source, SubscriptionManagerArgs e)

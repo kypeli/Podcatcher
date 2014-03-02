@@ -111,6 +111,7 @@
     <Compile Include="CustomControls\PopularPodcastsControl.xaml.cs" />
     <Compile Include="Extensions\ModelDBSaver.cs" />
     <Compile Include="LocalizedStrings.cs" />
+    <Compile Include="OneDrive\OneDriveManager.cs" />
     <Compile Include="PlaylistDBContext.cs" />
     <Compile Include="PodcastEpisodesDownloadManager.cs" />
     <Compile Include="PodcastFactory.cs" />

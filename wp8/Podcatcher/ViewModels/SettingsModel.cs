@@ -40,7 +40,7 @@ namespace Podcatcher.ViewModels
 
         public enum ExportMode
         {
-            ExportToSkyDrive,
+            ExportToOneDrive,
             ExportViaEmail
         };
 

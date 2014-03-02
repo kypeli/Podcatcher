@@ -65,7 +65,7 @@ namespace Podcatcher
         public const long MAX_SIZE_FOR_WIFI_DOWNLOAD_NO_POWER       = 104857600;
         public const long MAX_SIZE_FOR_CELLULAR_DOWNLOAD            = 20000000;
 
-        // Client ID for Live services. Currently we only use SkyDrive
+        // Client ID for Live services. Currently we only use OneDrive
         public const string LSKEY_LIVE_CLIENT_ID                    = "00000000400E9C91";
 
         // Name of our background task that checks for new episodes for pinned subscriptions

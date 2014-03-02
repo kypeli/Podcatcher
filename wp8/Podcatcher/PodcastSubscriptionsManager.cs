@@ -21,7 +21,7 @@
 using Coding4Fun.Toolkit.Controls;
 using Microsoft.Live;
 using Microsoft.Phone.Tasks;
-using Newtonsoft.Json.Linq;
+using Podcatcher.OneDrive;
 using Podcatcher.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -78,7 +78,7 @@ namespace Podcatcher
 
         public event SubscriptionManagerHandler OnPodcastSubscriptionsChanged;
 
-        public event SubscriptionManagerHandler OnOPMLExportToSkydriveChanged;
+        public event SubscriptionManagerHandler OnOPMLExportToOneDriveChanged;
 
         public event EpisodesEventHandler NewPlayableEpisode;
         public event EpisodesEventHandler RemovedPlayableEpisode;
@@ -94,8 +94,8 @@ namespace Podcatcher
             StartedRefreshing,
             RefreshingSubscription,
             FinishedRefreshing,
-            StartedSkydriveExport,
-            FinishedSkydriveExport
+            StartedOneDriveExport,
+            FinishedOneDriveExport
         }
 
         public static PodcastSubscriptionsManager getInstance()
@@ -288,11 +288,11 @@ namespace Podcatcher
 
             using (var db = new PodcastSqlModel())
             {
-                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToOneDrive)
                 {
-                    if (liveConnect == null)
+                    if (await OneDriveManager.getInstance().userIsLoggedToOneDrive() == false)
                     {
-                        await loginUserToSkyDrive();
+                        await OneDriveManager.getInstance().loginUserToOneDrive();
                     }
                 }
 
@@ -375,7 +375,6 @@ namespace Podcatcher
         private Random m_random                               = null;
         private List<PodcastSubscriptionModel> m_subscriptions = null;
         int m_activeExternalImportsCount                      = 0;
-        private LiveConnectClient liveConnect                 = null;
 
         private PodcastSubscriptionsManager()
         {
@@ -752,37 +751,6 @@ namespace Podcatcher
             }
         }
 
-        async private Task loginUserToSkyDrive()
-        {
-            LiveAuthClient auth = new LiveAuthClient(App.LSKEY_LIVE_CLIENT_ID);
-            LiveLoginResult loginResult = await auth.LoginAsync(new string[] { "wl.signin", "wl.skydrive_update" });
-            if (loginResult.Status != LiveConnectSessionStatus.Connected)
-            {
-                Debug.WriteLine("Could not finish SkyDrive login.");
-                MessageBox.Show("Sorry. Could not log in to SkyDrive. Please try again.");
-            }
-            else
-            {
-                liveConnect = new LiveConnectClient(auth.Session);
-            }
-        }
-
-        async private Task<bool> userIsLoggedToSkyDrive()
-        {
-            if (liveConnect == null)
-            {
-                return false;
-            }
-
-            var auth = new LiveAuthClient(App.LSKEY_LIVE_CLIENT_ID);
-            var result = await auth.InitializeAsync(new[] { "wl.signin", "wl.skydrive_update" });
-            if (result.Status == LiveConnectSessionStatus.NotConnected)
-            {
-                return false;
-            }
-
-            return true;
-        }
 
         private void DoOPMLExport()
         {
@@ -839,13 +807,13 @@ namespace Podcatcher
 
                 using (var db = new PodcastSqlModel())
                 {
-                    if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                    if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToOneDrive)
                     {
                         SubscriptionManagerArgs args = new SubscriptionManagerArgs();
-                        args.state = SubscriptionsState.StartedSkydriveExport;
-                        OnOPMLExportToSkydriveChanged(this, args);
+                        args.state = SubscriptionsState.StartedOneDriveExport;
+                        OnOPMLExportToOneDriveChanged(this, args);
 
-                        exportToSkyDrive(opmlExportFileName, isoStream);
+                        exportToOneDrive(opmlExportFileName, isoStream);
                     }
                     else if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
                     {
@@ -855,20 +823,20 @@ namespace Podcatcher
             }
         }
 
-        async private void exportToSkyDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
+        async private void exportToOneDrive(String opmlExportFileName, IsolatedStorageFileStream sourceStream)
         {
             try
             {
-                await liveConnect.UploadAsync("me/skydrive", opmlExportFileName, sourceStream, OverwriteOption.Overwrite);
-                MessageBox.Show("Exported to SkyDrive succesfully!");
+                await OneDriveManager.getInstance().uploadFile("me/SkyDrive", opmlExportFileName, sourceStream);
+                MessageBox.Show("Exported to OneDrive succesfully!");
 
                 SubscriptionManagerArgs managerArgs = new SubscriptionManagerArgs();
-                managerArgs.state = SubscriptionsState.FinishedSkydriveExport;
-                OnOPMLExportToSkydriveChanged(this, managerArgs);
+                managerArgs.state = SubscriptionsState.FinishedOneDriveExport;
+                OnOPMLExportToOneDriveChanged(this, managerArgs);
             }
             catch (Exception e)
             {
-                MessageBox.Show("There was an error uploading to SkyDrive. Please try again.");
+                MessageBox.Show("There was an error uploading to OneDrive. Please try again.");
             }
         }
 
@@ -883,10 +851,10 @@ namespace Podcatcher
             emailTask.Show();
         }
 
-        async internal void importSubscriptionsFromSkyDrive()
+        async internal void importSubscriptionsFromOneDrive()
         {
-            if (MessageBox.Show("Podcatcher will try to find and import the latest podcasts that were exported from Podcatcher. Please login to SkyDrive to continue.",
-                                "Import from SkyDrive",
+            if (MessageBox.Show("Podcatcher will try to find and import the latest podcasts that were exported from Podcatcher. Please login to OneDrive to continue.",
+                                "Import from OneDrive",
                                 MessageBoxButton.OKCancel) != MessageBoxResult.OK)
             {
                 return;
@@ -894,54 +862,36 @@ namespace Podcatcher
 
             try
             {
-                if (await userIsLoggedToSkyDrive() == false)
+                if (await OneDriveManager.getInstance().userIsLoggedToOneDrive() == false)
                 {
-                    await loginUserToSkyDrive();
+                    await OneDriveManager.getInstance().loginUserToOneDrive();
                 }
             }
             catch (LiveAuthException e)
             {
                 Debug.WriteLine("User did not log in or got some other Live exception. Cannot import subscriptions.");
-                MessageBox.Show("Authentication to SkyDrive was not successful. Thus, cannot import your subscriptions. Please try again.");
+                MessageBox.Show("Authentication to OneDrive was not successful. Thus, cannot import your subscriptions. Please try again.");
                 return;
             }
             catch (LiveConnectException e)
             {
-                Debug.WriteLine("Error communicating to SkyDrive. Cannot import subscriptions.");
-                MessageBox.Show("Error communicating to SkyDrive. Thus, cannot import your subscriptions. Please try again.");
+                Debug.WriteLine("Error communicating to OneDrive. Cannot import subscriptions.");
+                MessageBox.Show("Error communicating to OneDrive. Thus, cannot import your subscriptions. Please try again.");
                 return;
             }
 
-            LiveOperationResult result = await liveConnect.GetAsync("me/skydrive/files");
-            if (result.Result.ContainsKey("data"))
+            OneDriveManager.OneDriveFile latestExport = (await OneDriveManager.getInstance().getFileListing("me/SkyDrive/files"))
+                                                            .OrderByDescending(file => file.Created)
+                                                            .Where(file => file.Name.Contains("PodcatcherSubscriptions"))
+                                                            .FirstOrDefault();
+            if (latestExport == null)
             {
-                JObject json = JObject.Parse(result.RawResult);
-                var podcatcherSubscriptions = from s in json["data"].Values<JObject>()
-                                              where ((String)s["name"]).Contains("PodcatcherSubscriptions")
-                                              select new
-                                              {
-                                                Id = (String)s["id"],
-                                                Created = DateTime.Parse((String)s["updated_time"]),
-                                                Source = (String)s["source"]
-                                              };
-
-                foreach(var item in podcatcherSubscriptions) 
-                {
-                    Debug.WriteLine("id: {0}, created {1}", item.Id, item.Created);
-                }
-
-                var subscription = podcatcherSubscriptions.OrderByDescending(sub => sub.Created).FirstOrDefault();
-                Debug.WriteLine("Going to get file {0} from {1}: ", subscription.Id, subscription.Source);
-
-                if (subscription != null)
-                {
-                    PodcastSubscriptionsManager.getInstance().addSubscriptionFromOPMLFile(subscription.Source);
-                }
-                else
-                {
-                    MessageBox.Show("No subscriptions exported by Podcatcher could be found from SkyDrive.");
-                }
+                MessageBox.Show("Could not find any exported podcasts from Podcatcher on OneDrive. Make sure to have the exported OPML file in your root OneDrive folder.");
+                return;
             }
+
+            Debug.WriteLine("Going to get file {0} (Id: {1}) from {2}: ", latestExport.Name, latestExport.Id, latestExport.Url);
+            PodcastSubscriptionsManager.getInstance().addSubscriptionFromOPMLFile(latestExport.Url);
         }
 
         #endregion

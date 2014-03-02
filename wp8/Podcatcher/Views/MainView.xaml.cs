@@ -98,8 +98,8 @@ namespace Podcatcher
             m_subscriptionsManager = PodcastSubscriptionsManager.getInstance();
             m_subscriptionsManager.OnPodcastSubscriptionsChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnPodcastSubscriptionsChanged);
 
-            // Hook to SkyDrive export events
-            m_subscriptionsManager.OnOPMLExportToSkydriveChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnOPMLExportToSkydriveChanged);
+            // Hook to OneDrive export events
+            m_subscriptionsManager.OnOPMLExportToOneDriveChanged += new SubscriptionManagerHandler(m_subscriptionsManager_OnOPMLExportToOneDriveChanged);
 
             m_applicationSettings = IsolatedStorageSettings.ApplicationSettings;
 
@@ -245,15 +245,15 @@ namespace Podcatcher
             }
         }
 
-        void m_subscriptionsManager_OnOPMLExportToSkydriveChanged(object source, SubscriptionManagerArgs e)
+        void m_subscriptionsManager_OnOPMLExportToOneDriveChanged(object source, SubscriptionManagerArgs e)
         {
-            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.StartedSkydriveExport)
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.StartedOneDriveExport)
             {
-                ProgressText.Text = "Exporting to SkyDrive";
+                ProgressText.Text = "Exporting to OneDrive";
                 deleteProgressOverlay.Visibility = Visibility.Visible;
             }
 
-            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedSkydriveExport)
+            if (e.state == PodcastSubscriptionsManager.SubscriptionsState.FinishedOneDriveExport)
             {
                 deleteProgressOverlay.Visibility = Visibility.Collapsed;
             }
@@ -484,9 +484,9 @@ namespace Podcatcher
             String exportNotificationText = "";
             using (var db = new PodcastSqlModel())
             {
-                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToSkyDrive)
+                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToOneDrive)
                 {
-                    exportNotificationText = "This will export your podcast subscriptions information in OPML format to your SkyDrive account. Do you want to continue?";
+                    exportNotificationText = "This will export your podcast subscriptions information in OPML format to your OneDrive account. Do you want to continue?";
                 }
                 else if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportViaEmail)
                 {

@@ -66,11 +66,11 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock TextWrapping="Wrap" Text="Export subscriptions" VerticalAlignment="Center" Width="292" Style="{StaticResource PhoneTextLargeStyle}" HorizontalAlignment="Left"/>
                                 <toolkit:ListPicker x:Name="ExportMode" SelectedIndex="{Binding SelectedExportIndex, Mode=TwoWay}">
-                                    <toolkit:ListPickerItem>To SkyDrive</toolkit:ListPickerItem>
+                                    <toolkit:ListPickerItem>To OneDrive</toolkit:ListPickerItem>
                                     <toolkit:ListPickerItem>Via email</toolkit:ListPickerItem>
                                 </toolkit:ListPicker>
                             </StackPanel>
-                            <TextBlock TextWrapping="Wrap" Text="You can select weather you want to export your subscriptions OPML file to your SkyDrive account or send the content via email." Style="{StaticResource PhoneTextSubtleStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Text="You can select weather you want to export your subscriptions OPML file to your OneDrive account or send the content via email." Style="{StaticResource PhoneTextSubtleStyle}"/>
                         </StackPanel>
 
                     </StackPanel>

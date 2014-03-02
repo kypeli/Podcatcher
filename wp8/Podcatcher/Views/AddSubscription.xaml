@@ -61,7 +61,7 @@
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Add podcasts from RSS URL" Click="addPodcastFromURL_clicked" />
-                <shell:ApplicationBarMenuItem Text="Import from SkyDrive" Click="ImportFromSkydriveMenuItem_Click"  />
+                <shell:ApplicationBarMenuItem Text="Import from OneDrive" Click="ImportFromOneDriveMenuItem_Click"  />
                 <shell:ApplicationBarMenuItem Text="Import from gPodder" Click="importPodcastsFromGPodder_clicked" />
                 <shell:ApplicationBarMenuItem Text="Import OPML file via URL" Click="importViaOPML_clicked" />
             </shell:ApplicationBar.MenuItems>
