@@ -25,6 +25,8 @@ using Microsoft.Phone.Controls;
 using Podcatcher.ViewModels;
 using System.Linq;
 using System.Collections.Generic;
+using Podcatcher.OneDrive;
+using System.Diagnostics;
 
 namespace Podcatcher
 {
@@ -75,6 +77,18 @@ namespace Podcatcher
 
             this.DataContext = null;
             this.DataContext = m_episodeModel;
+        }
+
+        async private void MenuItemBackup_Click(object sender, RoutedEventArgs e)
+        {
+            String podcastName = m_episodeModel.GetProperty<PodcastSubscriptionModel>("PodcastSubscription").GetProperty<String>("PodcastName");
+            String folderId = await OneDriveManager.getInstance().createFolderIfNotExists(String.Format("Podcasts/{0}", podcastName));
+
+            Debug.WriteLine(String.Format("Backing up podcast to OneDrive, Podcast: {0}, Episode: {1}", podcastName, m_episodeModel.EpisodeName));
+
+            App.showNotificationToast(String.Format("Started backing up '{0}'.", m_episodeModel.EpisodeName));
+            await OneDriveManager.getInstance().uploadFileBackground(folderId, new Uri(m_episodeModel.EpisodeFile, UriKind.Relative));
+            App.showNotificationToast("Backup completed.");
         }
 
         private void Episode_Tap(object sender, System.Windows.Input.GestureEventArgs e)

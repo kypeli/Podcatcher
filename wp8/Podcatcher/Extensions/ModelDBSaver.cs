@@ -12,6 +12,7 @@ namespace Podcatcher.Extensions
     public abstract class DBBackedModel : INotifyPropertyChanged
     {
         protected abstract void StorePropertyToDB<T>(String propertyName, T value);
+        protected abstract T GetPropertyFromDB<T>(String propertyName);
 
         public void StoreProperty<T>(String propertyName, T value)
         {
@@ -24,6 +25,11 @@ namespace Podcatcher.Extensions
 
             StorePropertyToDB<T>(propertyName, value);
             property.SetValue(this, value);
+        }
+
+        public T GetProperty<T>(String propertyName)
+        {
+            return GetPropertyFromDB<T>(propertyName);
         }
 
         #region propertyChanged

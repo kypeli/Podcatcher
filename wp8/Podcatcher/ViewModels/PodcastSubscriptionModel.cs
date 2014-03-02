@@ -17,6 +17,7 @@
  */
 
 using Microsoft.Phone.Shell;
+using Podcatcher.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,6 +29,7 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,7 +39,7 @@ using System.Windows.Media.Imaging;
 namespace Podcatcher.ViewModels
 {
     [Table]
-    public class PodcastSubscriptionModel : INotifyPropertyChanged
+    public class PodcastSubscriptionModel : DBBackedModel
     {
         private enum SubscriptionSettingDeleteEpisodes
         {
@@ -890,6 +892,28 @@ namespace Podcatcher.ViewModels
             }
 
         }
+
+        protected override void StorePropertyToDB<T>(String propertyName, T value)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel dbSub= db.Subscriptions.First(sub => sub.PodcastId == this.PodcastId);
+                PropertyInfo property = dbSub.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyName);
+                property.SetValue(dbSub, value);
+                db.SubmitChanges();
+            }
+        }
+
+        protected override T GetPropertyFromDB<T>(String propertyName)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastSubscriptionModel dbSub = db.Subscriptions.First(sub => sub.PodcastId == this.PodcastId);
+                PropertyInfo property = dbSub.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyName);
+                return (T)property.GetValue(dbSub);
+            }
+        }
+
 
         /************************************* Private implementation *******************************/
         #region privateImplementations        

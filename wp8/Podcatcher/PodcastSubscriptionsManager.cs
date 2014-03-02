@@ -285,19 +285,6 @@ namespace Podcatcher
                 return;
             }
 
-
-            using (var db = new PodcastSqlModel())
-            {
-                if (db.settings().SelectedExportIndex == (int)SettingsModel.ExportMode.ExportToOneDrive)
-                {
-                    if (await OneDriveManager.getInstance().userIsLoggedToOneDrive() == false)
-                    {
-                        await OneDriveManager.getInstance().loginUserToOneDrive();
-                    }
-                }
-
-            }
-
             DoOPMLExport();
         }
 
@@ -860,27 +847,7 @@ namespace Podcatcher
                 return;
             }
 
-            try
-            {
-                if (await OneDriveManager.getInstance().userIsLoggedToOneDrive() == false)
-                {
-                    await OneDriveManager.getInstance().loginUserToOneDrive();
-                }
-            }
-            catch (LiveAuthException e)
-            {
-                Debug.WriteLine("User did not log in or got some other Live exception. Cannot import subscriptions.");
-                MessageBox.Show("Authentication to OneDrive was not successful. Thus, cannot import your subscriptions. Please try again.");
-                return;
-            }
-            catch (LiveConnectException e)
-            {
-                Debug.WriteLine("Error communicating to OneDrive. Cannot import subscriptions.");
-                MessageBox.Show("Error communicating to OneDrive. Thus, cannot import your subscriptions. Please try again.");
-                return;
-            }
-
-            OneDriveManager.OneDriveFile latestExport = (await OneDriveManager.getInstance().getFileListing("me/SkyDrive/files"))
+            OneDriveFile latestExport = (await OneDriveManager.getInstance().getFileListing("me/SkyDrive/files"))
                                                             .OrderByDescending(file => file.Created)
                                                             .Where(file => file.Name.Contains("PodcatcherSubscriptions"))
                                                             .FirstOrDefault();

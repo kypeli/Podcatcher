@@ -915,5 +915,15 @@ namespace Podcatcher.ViewModels
                 db.SubmitChanges();
             }
         }
+
+        protected override T GetPropertyFromDB<T>(String propertyName)
+        {
+            using (var db = new PodcastSqlModel())
+            {
+                PodcastEpisodeModel dbEpisode = db.Episodes.First(ep => ep.EpisodeId == this.EpisodeId);
+                PropertyInfo property = dbEpisode.GetType().GetProperties().FirstOrDefault(p => p.Name == propertyName);
+                return (T)property.GetValue(dbEpisode);
+            }
+        }
     }
 }

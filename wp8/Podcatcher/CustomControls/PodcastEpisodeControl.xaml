@@ -10,7 +10,7 @@
     d:DesignWidth="480" d:DesignHeight="800">
 
     <UserControl.Resources>
-        <c:DeleteEnabledConverter x:Name="deleteEnabledConverter"/>
+        <c:DownloadedEnabledConverter x:Name="downloadedEnabledConverter"/>
         <c:MarkAsListenedEnabledConverter x:Name="markAsListenedEnabledConverter"/>
         <c:PlayButtonImageConverter x:Name="playButtonImage" />
         <c:DownloadButtonImageConverter x:Name="downloadButtonImage" />
@@ -70,12 +70,15 @@
         <toolkit:ContextMenuService.ContextMenu>
             <toolkit:ContextMenu >
                 <toolkit:MenuItem Header="Add to play queue" Click="MenuItemAddToQueue_Click"/>
+                <toolkit:MenuItem Header="Backup to OneDrive" Click="MenuItemBackup_Click" 
+                                  Visibility="{Binding EpisodeDownloadState, 
+                                  Converter={StaticResource downloadedEnabledConverter}}"/>
                 <toolkit:MenuItem Header="Mark as listened" Click="MenuItemMarkAsListened_Click" 
                                   Visibility="{Binding SavedPlayPos, 
                                   Converter={StaticResource markAsListenedEnabledConverter}}"/>
                 <toolkit:MenuItem Header="Delete episode" Click="MenuItemDelete_Click" 
                                   Visibility="{Binding EpisodeDownloadState, 
-                                  Converter={StaticResource deleteEnabledConverter}}"/>
+                                  Converter={StaticResource downloadedEnabledConverter}}"/>
             </toolkit:ContextMenu>
         </toolkit:ContextMenuService.ContextMenu>
         

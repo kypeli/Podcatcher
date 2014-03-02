@@ -84,7 +84,7 @@ namespace Podcatcher.Converters
         }
     }
 
-    public class DeleteEnabledConverter : IValueConverter
+    public class DownloadedEnabledConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
