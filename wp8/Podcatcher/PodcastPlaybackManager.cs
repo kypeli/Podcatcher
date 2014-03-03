@@ -309,7 +309,7 @@ namespace Podcatcher
             return null;
         }
 
-        public async void addToPlayqueue(Collection<PodcastEpisodeModel> episodes)
+        public async void addToPlayqueue(Collection<PodcastEpisodeModel> episodes, bool showNotification = true)
         {
             using (var db = new PlaylistDBContext())
             {
@@ -326,26 +326,16 @@ namespace Podcatcher
             }
 
             App.mainViewModels.PlayQueue = new ObservableCollection<PlaylistItem>();
-            showAddedNotification(episodes.Count);
+
+            if (showNotification)
+            {
+                showAddedNotification(episodes.Count);
+            }
         }
 
         public async void addToPlayqueue(PodcastEpisodeModel episode, bool showNotification = true)
         {
-            using (var db = new PlaylistDBContext())
-            {
-                addToPlayqueue(episode, db);
-                db.SubmitChanges();
-            }
-
-            using (var db = new PodcastSqlModel())
-            {
-                await Task.Run(() => sortPlaylist(db.settings().PlaylistSortOrder));
-            }
-
-            if (showNotification)
-            {
-                showAddedNotification(1);
-            }
+            addToPlayqueue(new Collection<PodcastEpisodeModel> { episode }, showNotification);
         }
 
         public void addSilentlyToPlayqueue(PodcastEpisodeModel episode)
