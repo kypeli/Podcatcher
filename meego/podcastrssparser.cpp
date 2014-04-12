@@ -61,9 +61,7 @@ bool PodcastRSSParser::populateChannelFromChannelXML(PodcastChannel *channel, QB
         QString url = imageNode.firstChildElement("url").text(); // And the url to it.
 
         if (url.isEmpty()){
-            qWarning() << "No RSS image url found";
             nodeList = channelNode.toElement().elementsByTagName("itunes:image");
-            qDebug() << nodeList.length();
             imageNode = nodeList.at(0);
             url = imageNode.toElement().attribute("href");
         }
