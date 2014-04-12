@@ -117,6 +117,10 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
 
         episode->setTitle(node.firstChildElement("title").text());
         episode->setDescription(node.firstChildElement("description").text());
+
+        if (episode->description().isEmpty())
+            episode->setDescription(node.firstChildElement("itunes:summary").text());
+
         episode->setDuration(node.firstChildElement("itunes:duration").text());
 
         QDomNamedNodeMap attrMap = node.firstChildElement("enclosure").attributes();
