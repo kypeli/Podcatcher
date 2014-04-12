@@ -56,8 +56,21 @@ bool PodcastRSSParser::populateChannelFromChannelXML(PodcastChannel *channel, QB
     channel->setDescription(channelNode.firstChildElement("description").text());
 
     if (channel->logoUrl().isEmpty()) {
-        QDomNode imageNode = channelNode.toElement().elementsByTagName("image").at(0); // Find the logo.
-        channel->setLogoUrl(imageNode.firstChildElement("url").text());                // And the url to it.
+        QDomNodeList nodeList = channelNode.toElement().elementsByTagName("image");
+        QDomNode imageNode = nodeList.at(0); // Find the logo.
+        QString url = imageNode.firstChildElement("url").text(); // And the url to it.
+
+        if (url.isEmpty()){
+            qWarning() << "No RSS image url found";
+            nodeList = channelNode.toElement().elementsByTagName("itunes:image");
+            qDebug() << nodeList.length();
+            imageNode = nodeList.at(0);
+            url = imageNode.toElement().attribute("href");
+        }
+
+        if (!url.isEmpty())
+            channel->setLogoUrl(url);
+
     }
 
     channel->dumpInfo();
@@ -209,7 +222,7 @@ QDateTime PodcastRSSParser::parsePubDate(const QDomNode &node)
 
         tryParseDate = pubDateString.left(QString("d MMM yyyy HH:mm:ss").length());
         pubDate = loc.toDateTime(tryParseDate,
-                                        "d MMM yyyy HH:mm:ss");
+                                 "d MMM yyyy HH:mm:ss");
     }
 
     if (!pubDate.isValid()) {
@@ -218,7 +231,7 @@ QDateTime PodcastRSSParser::parsePubDate(const QDomNode &node)
 
         tryParseDate = pubDateString.left(QString("yyyy-MM-dd").length());
         pubDate = loc.toDateTime(tryParseDate,
-                                        "yyyy-MM-dd");
+                                 "yyyy-MM-dd");
     }
 
     return pubDate;
