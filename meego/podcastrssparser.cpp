@@ -56,8 +56,19 @@ bool PodcastRSSParser::populateChannelFromChannelXML(PodcastChannel *channel, QB
     channel->setDescription(channelNode.firstChildElement("description").text());
 
     if (channel->logoUrl().isEmpty()) {
-        QDomNode imageNode = channelNode.toElement().elementsByTagName("image").at(0); // Find the logo.
-        channel->setLogoUrl(imageNode.firstChildElement("url").text());                // And the url to it.
+        QDomNodeList nodeList = channelNode.toElement().elementsByTagName("image");
+        QDomNode imageNode = nodeList.at(0); // Find the logo.
+        QString url = imageNode.firstChildElement("url").text(); // And the url to it.
+
+        if (url.isEmpty()){
+            nodeList = channelNode.toElement().elementsByTagName("itunes:image");
+            imageNode = nodeList.at(0);
+            url = imageNode.toElement().attribute("href");
+        }
+
+        if (!url.isEmpty())
+            channel->setLogoUrl(url);
+
     }
 
     channel->dumpInfo();
@@ -104,6 +115,10 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
 
         episode->setTitle(node.firstChildElement("title").text());
         episode->setDescription(node.firstChildElement("description").text());
+
+        if (episode->description().isEmpty())
+            episode->setDescription(node.firstChildElement("itunes:summary").text());
+
         episode->setDuration(node.firstChildElement("itunes:duration").text());
 
         QDomNamedNodeMap attrMap = node.firstChildElement("enclosure").attributes();
