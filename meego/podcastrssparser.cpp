@@ -117,7 +117,11 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
         episode->setDescription(node.firstChildElement("description").text());
 
         if (episode->description().isEmpty())
+            episode->setDescription(node.firstChildElement("content:encoded").text());
+
+        if (episode->description().isEmpty())
             episode->setDescription(node.firstChildElement("itunes:summary").text());
+
 
         episode->setDuration(node.firstChildElement("itunes:duration").text());
 
