@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>gfx/cancel-podcast-download.png</file>
+        <file>gfx/d-pointer-logo.png</file>
+        <file>gfx/d-pointer-logo-small.png</file>
+        <file>gfx/refresh.png</file>
+        <file>gfx/scrollbar.png</file>
+        <file>gfx/Podcatcher_generic_podcast_cover.png</file>
+        <file>gfx/gpodder-logo.png</file>
+        <file>gfx/playback_ff.png</file>
+        <file>gfx/playback_pause.png</file>
+        <file>gfx/playback_play.png</file>
+        <file>gfx/playback_rew.png</file>
+        <file>gfx/playback_stop.png</file>
+        <file>qml/Podcatcher.qml</file>
+        <file>qml/pages/AudioStreamer.qml</file>
+        <file>qml/pages/EmptyChannelPage.qml</file>
+    </qresource>
+</RCC>

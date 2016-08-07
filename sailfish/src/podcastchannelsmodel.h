@@ -1,0 +1,75 @@
+/**
+ * This file is part of Podcatcher for N9.
+ * Author: Johan Paul (johan.paul@gmail.com)
+ *
+ * Podcatcher for N9 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Podcatcher for N9 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#ifndef PODCASTCHANNELSMODEL_H
+#define PODCASTCHANNELSMODEL_H
+
+#include <QAbstractListModel>
+
+#include "podcastchannel.h"
+#include "podcastsqlmanager.h"
+
+class PodcastManager;
+class PodcastChannelsModel : public QAbstractListModel
+{
+    Q_OBJECT
+
+    enum ChannelRoles {
+        ChannelIdRole = Qt::UserRole + 1,
+        TitleRole,
+        DescriptionRole,
+        LogoRole,
+        IsRefreshingRole,
+        IsDownloadingRole,
+        UnplayedEpisodesRole,
+        AutoDownloadOnRole
+    };
+
+public:
+    ~PodcastChannelsModel();
+
+    int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+
+    bool addChannel(PodcastChannel *channel);
+    bool removeChannel(PodcastChannel *channel);
+    QList<PodcastChannel *> channels();
+
+    PodcastChannel * podcastChannelById(int id);
+    bool channelAlreadyExists(PodcastChannel *channel);
+    void refreshChannel(int id);
+    void setAutoDownloadToDB(bool autoDownload);
+    void updateChannel(PodcastChannel *channel);
+    QHash<int, QByteArray> roleNames() const;
+
+signals:
+
+public slots:
+
+private slots:
+    void onChannelChanged();
+
+private:
+    explicit PodcastChannelsModel(QObject *parent = 0);  // Do not let instantiation of this class...
+    QList<PodcastChannel *> m_channels;
+    PodcastSQLManager *m_sqlmanager;
+    QHash<int, QByteArray> m_roles;
+
+    friend class PodcastManager;                         // ..except for PodcastManager;
+};
+
+#endif // PODCASTCHANNELSMODEL_H
