@@ -55,14 +55,6 @@ Page {
         //contentHeight: mainPageColumn.height
         anchors.fill: parent
 
-        PushUpMenu{
-            MenuItem {
-                text: qsTr("Add Podcast")
-                onClicked: {
-                    openFile("BrowsePodcasts.qml");
-                }
-            }
-        }
 
         EmptyChannelPage {
             id: emptyText
@@ -105,7 +97,7 @@ Page {
                 visible: (podcastChannelsList.count > 0);
                 spacing: 1
                 width: parent.width
-                height: parent.height - mainPageTitle.height - audioStreamerUi.height - Theme.paddingMedium
+                height: parent.height - mainPageTitle.height/* - audioStreamerUi.height*/ - Theme.paddingMedium
                 clip: true
 
                 delegate: ListItem {
@@ -200,14 +192,10 @@ Page {
 
                 VerticalScrollDecorator{}
             }
+
+
         }
 
-        AudioStreamer {
-            id: audioStreamerUi
-            width: parent.width
-            height: 0
-            visible: false
-        }
 
 
         /*
@@ -224,31 +212,32 @@ Page {
         topMargin: 10
         leftMargin: 10
     }
-
-    Connections {
+*/
+        Connections {
+            /*
         target: ui
         onShowInfoBanner: {
             uiInfoBanner.text = text
             uiInfoBanner.show();
         }
+        */
 
-        onDownloadingPodcasts: {
-            console.log("Downloading changed:" + downloading)
-            if (downloading) {
-                mainPage.state = "downloading"
-            } else {
-                mainPage.state = ""
+            onDownloadingPodcasts: {
+                console.log("Downloading changed:" + downloading)
+                if (downloading) {
+                    mainPage.state = "downloading"
+                } else {
+                    mainPage.state = ""
+                }
             }
         }
-    }*/
 
         Connections {
             target: audioStreamer
 
             onPlayStream: {
                 console.log("Showing audio streamer.");
-                audioStreamerUi.height = 130
-                audioStreamerUi.visible = true
+                audioStreamerUi.show();
             }
         }
 
@@ -266,6 +255,14 @@ Page {
 
         PullDownMenu {
             id: myMenu
+
+            MenuItem {
+                text: "About"
+                onClicked: {
+                    openFile("About.qml");
+                }
+            }
+
             MenuItem {
                 text: "Refresh all subscriptions"
                 onClicked: {
@@ -274,14 +271,24 @@ Page {
                     uiInfoBanner.show();
                 }
             }
+
             MenuItem {
-                text: "About"
+                text: qsTr("Add Podcast")
                 onClicked: {
-                    openFile("About.qml");
+                    openFile("BrowsePodcasts.qml");
                 }
             }
+
         }
 
     }
+
+
+    AudioStreamer {
+        id: audioStreamerUi
+    }
+
+
+
 
 }

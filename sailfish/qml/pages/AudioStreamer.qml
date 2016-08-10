@@ -20,7 +20,7 @@ import QtMultimedia 5.2
 
 import Sailfish.Silica 1.0
 
-Item {
+DockedPanel {
     id: streamerItem
 
     signal playStream(string url, string title)
@@ -28,10 +28,18 @@ Item {
 
     property string title
 
-    height: parent.height
+    height: Theme.itemSizeExtraLarge + 2* Theme.paddingLarge
     width: parent.width
 
     state: ""
+
+    opacity: 1
+    Rectangle{
+        anchors.fill: parent
+        color: Theme.highlightDimmerColor
+        opacity: .9
+    }
+
 
     function durationText(curPos) {
         var curPosSecs = Math.floor((parseInt(curPos) / 1000));
@@ -68,125 +76,98 @@ Item {
     }
 
     Column {
-        width: parent.width
-        height: parent.height
+        id: buttonGroup
+        spacing: Theme.paddingSmall
+        anchors.fill: parent
+        anchors.margins: Theme.paddingMedium
 
-        Rectangle {
-            id: highlight2
-            width: parent.width
-            height: 1
-            color: "#FFFFFF"
-            border.width: 0
+
+        Label {
+            id: streamTitleLabel
+            text: title
+            width: parent.width //- durationLabel.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeTiny
         }
 
-        Rectangle {
-            id: highlight1
-            width: parent.width
-            height: 1
-            color: "#CDCECF"
-            border.width: 0
-        }
+        Row {
+            spacing: 100
+            anchors.horizontalCenter: parent.horizontalCenter
 
-        Rectangle {
-            id: audioStreamerUI
-            width: parent.width
-            height: parent.height
-            anchors.margins: 10
-            color: "#E4E5E6"
-
-            Column {
-                id: buttonGroup
-                anchors.centerIn: parent
-                spacing: 10
-                width: parent.width
-
-                Label {
-                    id: streamTitleLabel
-                    text: title
-                    width: parent.width - durationLabel.width
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    elide: Text.ElideRight
-                    horizontalAlignment: Text.AlignHCenter
-                }
-
-                Row {
-                    spacing: 100
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Image {
-                        id: rew;
-                        source: "qrc:/gfx/playback_rew.png"
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                console.log("Setting audio position to " + audioPlayer.position - 10000 + "s")
-                                audioPlayer.position = audioPlayer.position - 10000
-                            }
-                        }
-                    }
-
-                    Image {
-                        id: play;
-                        source: "qrc:/gfx/playback_play.png"
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                streamerItem.state = "playing";
-                                audioPlayer.play();
-                            }
-                        }
-                    }
-
-                    Image {
-                        id: pause;
-                        source: "qrc:/gfx/playback_pause.png"
-                        visible: false
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                streamerItem.state = "paused";
-                                audioPlayer.pause();
-                            }
-                        }
-                    }
-
-                    Image {
-                        id: ff;
-                        source: "qrc:/gfx/playback_ff.png"
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                console.log("Setting audio position to " + audioPlayer.position + 10000 + "s")
-                                audioPlayer.position = audioPlayer.position + 10000
-                            }
-                        }
-                    }
-
-                    Image {
-                        id: stop;
-                        source: "qrc:/gfx/playback_stop.png"
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                streamerItem.state = "stopped";
-                                audioPlayer.stop();
-                            }
-                        }
-                    }
-                }
-
-                Label {
-                    id: durationLabel
-                    text: durationText(audioPlayer.position);
-                    font.pointSize: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
+            IconButton {
+                id: rew
+                icon.source: "image://theme/icon-m-left?" + (pressed
+                                                             ? Theme.highlightColor
+                                                             : Theme.primaryColor)
+                onClicked: {
+                    console.log("Setting audio position to " + audioPlayer.position - 10000 + "s")
+                    audioPlayer.position = audioPlayer.position - 10000
                 }
             }
+
+
+            IconButton {
+                id: play
+                icon.source: "image://theme/icon-m-play?" + (pressed
+                                                             ? Theme.highlightColor
+                                                             : Theme.primaryColor)
+                onClicked: {
+                    streamerItem.state = "playing";
+                    audioPlayer.play();
+                }
+            }
+
+
+            IconButton {
+                id: pause
+                icon.source: "image://theme/icon-m-pause?" + (pressed
+                                                              ? Theme.highlightColor
+                                                              : Theme.primaryColor)
+                onClicked: {
+                    streamerItem.state = "paused";
+                    audioPlayer.pause();
+                }
+            }
+
+
+
+            IconButton {
+                id:ff
+                icon.source: "image://theme/icon-m-right?" + (pressed
+                                                              ? Theme.highlightColor
+                                                              : Theme.primaryColor)
+                onClicked: {
+                    console.log("Setting audio position to " + audioPlayer.position + 10000 + "s")
+                    audioPlayer.position = audioPlayer.position + 10000
+                }
+            }
+
+
+
+            IconButton {
+                id: stop
+                icon.source: "image://theme/icon-m-close?" + (pressed
+                                                              ? Theme.highlightColor
+                                                              : Theme.primaryColor)
+                onClicked: {
+                    streamerItem.state = "stopped";
+                    audioPlayer.stop();
+                }
+            }
+
+
+        }
+
+        Label {
+            id: durationLabel
+            text: durationText(audioPlayer.position);
+            font.pixelSize: Theme.fontSizeTiny
+            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
+
 
     onPlayStream: {
         audioPlayer.source = url;
@@ -209,6 +190,7 @@ Item {
 
         onStopped: {
             stopStream(audioPlayer.source);
+            hide();
         }
     }
 
@@ -248,17 +230,6 @@ Item {
             PropertyChanges {
                 target: play
                 visible: true
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            from: "*"
-            to: "stopped"
-            ParallelAnimation {
-                NumberAnimation { target: streamerItem; property: "height"; to: 0; duration: 500 }
-                NumberAnimation { target: buttonGroup; property: "opacity"; to: 0; duration: 400 }
             }
         }
     ]
