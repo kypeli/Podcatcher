@@ -235,7 +235,7 @@ void PodcastEpisode::onPodcastEpisodeDownloadCompleted()
         return;
     }
 
-// TODO: Proper way of handling downloads that are not audio or video formats.
+    // TODO: Proper way of handling downloads that are not audio or video formats.
 
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Download of podcast was not succesfull: " << reply->errorString();
@@ -314,16 +314,16 @@ bool PodcastEpisode::hasBeenCanceled() const
 void PodcastEpisode::cancelCurrentDownload()
 {
     if (m_currentDownload != 0 &&
-        m_state == DownloadingState) {
+            m_state == DownloadingState) {
         qDebug() << "Canceling current episode download request...";
 
         setHasBeenCanceled(true);
 
         // Abort current download.
         disconnect(m_currentDownload, SIGNAL(finished()),
-                this, SLOT(onPodcastEpisodeDownloadCompleted()));
+                   this, SLOT(onPodcastEpisodeDownloadCompleted()));
         disconnect(m_currentDownload, SIGNAL(downloadProgress(qint64,qint64)),
-                this, SLOT(onDownloadProgress(qint64, qint64)));
+                   this, SLOT(onDownloadProgress(qint64, qint64)));
         m_currentDownload->abort();
 
     }
@@ -380,7 +380,7 @@ void PodcastEpisode::onAudioUrlMetadataChanged()
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
 
     if (m_streamResolverTries >= 5) {
-        qDebug() << "Did not find a proper MP3 URL to stream! Giving up after " << m_streamResolverTries << " tries.";
+        qDebug() << "Did not find a proper audio URL to stream! Giving up after " << m_streamResolverTries << " tries.";
         emit streamingUrlResolved("", "");
         m_streamResolverManager->deleteLater();
     }
@@ -417,8 +417,12 @@ bool PodcastEpisode::isValidAudiofile(QNetworkReply *reply) const
     QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
 
     if (contentType == "audio/mpeg" ||
-        contentType == "audio/mpeg3") {
-        qDebug() << "Found MP3 URL to stream: " << reply->url();
+            contentType == "audio/mpeg3" ||
+            contentType == "audio/ogg"   ||
+            contentType == "audio/x-ogg"   ||
+            contentType == "audio/aac"   ||
+            contentType  == "audio/x-m4a") {
+        qDebug() << "Found audio URL to stream: " << reply->url();
         return true;
     }
 

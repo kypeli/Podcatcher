@@ -103,7 +103,8 @@ DockedPanel {
                                                              : Theme.primaryColor)
                 onClicked: {
                     console.log("Setting audio position to " + audioPlayer.position - 10000 + "s")
-                    audioPlayer.position = audioPlayer.position - 10000
+                    //audioPlayer.position = audioPlayer.position - 10000
+                    audioPlayer.seek(audioPlayer.position - 10000);
                 }
             }
 
@@ -140,7 +141,8 @@ DockedPanel {
                                                               : Theme.primaryColor)
                 onClicked: {
                     console.log("Setting audio position to " + audioPlayer.position + 10000 + "s")
-                    audioPlayer.position = audioPlayer.position + 10000
+                    //audioPlayer.position = audioPlayer.position + 10000
+                    audioPlayer.seek(audioPlayer.position + 10000);
                 }
             }
 
