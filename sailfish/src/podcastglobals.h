@@ -24,6 +24,7 @@
 const QString PODCATCHER_WORKDIR_NAME(".podcatcher");
 const QString PODCATCHER_PATH = QString("%1/%2/").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation))
                                           .arg(PODCATCHER_WORKDIR_NAME);
-const QString PODCATCHER_PODCAST_DLDIR = QString("%1/MyDocs/.sounds/podcasts/").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+//const QString PODCATCHER_PODCAST_DLDIR = QString("%1/MyDocs/.sounds/podcasts/").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+const QString PODCATCHER_PODCAST_DLDIR = QString("%1/podcasts/").arg(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
 #endif // PODCASTGLOBALS_H
