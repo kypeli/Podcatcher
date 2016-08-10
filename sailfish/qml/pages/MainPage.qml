@@ -257,25 +257,34 @@ Page {
             id: myMenu
 
             MenuItem {
-                text: "About"
+                text: qsTr("About")
                 onClicked: {
                     openFile("About.qml");
                 }
             }
 
+
             MenuItem {
-                text: "Refresh all subscriptions"
+                text: qsTr("Settings")
                 onClicked: {
-                    ui.refreshChannels();
-                    uiInfoBanner.text = "Refreshing all subscriptions...";
-                    uiInfoBanner.show();
+                    openFile("Settings.qml");
                 }
             }
+
 
             MenuItem {
                 text: qsTr("Add Podcast")
                 onClicked: {
                     openFile("BrowsePodcasts.qml");
+                }
+            }
+
+            MenuItem {
+                text: qsTr("Refresh all subscriptions")
+                onClicked: {
+                    ui.refreshChannels();
+                    uiInfoBanner.text = "Refreshing all subscriptions...";
+                    uiInfoBanner.show();
                 }
             }
 

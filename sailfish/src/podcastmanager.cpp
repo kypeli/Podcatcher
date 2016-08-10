@@ -680,9 +680,9 @@ bool PodcastManager::isDownloading()
 
 void PodcastManager::onAutodownloadOnChanged()
 {
-    /*qDebug() << "Setting changed: autodl: " << QVariant(m_autoDlConf->value()).toBool();
+    qDebug() << "Setting changed: autodl: " << QVariant(m_autoDlConf->value()).toBool();
 
-    m_autodownloadOnSettings = QVariant(m_autoDlConf->value()).toBool();*/
+    m_autodownloadOnSettings = QVariant(m_autoDlConf->value()).toBool();
 
     foreach (PodcastChannel *channel, m_channelsModel->channels()) {
         channel->setAutoDownloadOn(m_autodownloadOnSettings);
@@ -693,23 +693,23 @@ void PodcastManager::onAutodownloadOnChanged()
 
 void PodcastManager::onAutodownloadNumChanged()
 {
-   /* qDebug() << "Setting changed: autodownload number of episodes: " << QVariant(m_autoDlNumConf->value()).toInt();
+    qDebug() << "Setting changed: autodownload number of episodes: " << QVariant(m_autoDlNumConf->value()).toInt();
 
-    m_autodownloadNumSettings = QVariant(m_autoDlNumConf->value()).toInt();*/
+    m_autodownloadNumSettings = QVariant(m_autoDlNumConf->value()).toInt();
 }
 
 void PodcastManager::onAutodelDaysChanged()
 {
-    /*qDebug() << "Setting changed: autodelete after days: " << QVariant(m_keepNumEpisodesConf->value()).toInt();
+    qDebug() << "Setting changed: autodelete after days: " << QVariant(m_keepNumEpisodesConf->value()).toInt();
 
-    m_keepNumEpisodesSettings = QVariant(m_keepNumEpisodesConf->value()).toInt();*/
+    m_keepNumEpisodesSettings = QVariant(m_keepNumEpisodesConf->value()).toInt();
 }
 
 void PodcastManager::onAutodelUnplayedChanged()
 {
-    /*qDebug() << "Setting changed: autodelete unplayed episodes: " << QVariant(m_autoDelUnplayedConf->value()).toBool();
+    qDebug() << "Setting changed: autodelete unplayed episodes: " << QVariant(m_autoDelUnplayedConf->value()).toBool();
 
-    m_autoDelUnplayedSettings = QVariant(m_autoDelUnplayedConf->value()).toBool();*/
+    m_autoDelUnplayedSettings = QVariant(m_autoDelUnplayedConf->value()).toBool();
 }
 
 void PodcastManager::cleanupEpisodes()
