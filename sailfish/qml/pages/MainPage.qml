@@ -143,9 +143,11 @@ Page {
                         anchors.left: channelLogoId.right
                         anchors.leftMargin: Theme.paddingMedium;
                         anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: unplayedNumber.left
+                        anchors.rightMargin: Theme.paddingMedium
                         text: title
-                        width: parent.width - Theme.horizontalPageMargin - Theme.paddingMedium - unplayedNumber.width
-                        wrapMode: Text.WordWrap
+                        //width: parent.width - 2*Theme.horizontalPageMargin - Theme.paddingMedium - unplayedNumber.width
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                         color: listItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                     }
 
@@ -213,14 +215,14 @@ Page {
         leftMargin: 10
     }
 */
+
         Connections {
-            /*
-        target: ui
-        onShowInfoBanner: {
-            uiInfoBanner.text = text
-            uiInfoBanner.show();
-        }
-        */
+
+            target: ui
+            onShowInfoBanner: {
+                //uiInfoBanner.text = text
+                //uiInfoBanner.show();
+            }
 
             onDownloadingPodcasts: {
                 console.log("Downloading changed:" + downloading)
@@ -230,6 +232,8 @@ Page {
                     mainPage.state = ""
                 }
             }
+
+
         }
 
         Connections {
@@ -290,14 +294,12 @@ Page {
 
         }
 
-    }
 
+    }
 
     AudioStreamer {
         id: audioStreamerUi
     }
-
-
 
 
 }
