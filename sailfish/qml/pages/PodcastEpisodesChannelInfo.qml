@@ -53,6 +53,7 @@ Column{
     TextSwitch{
         id: autoDownloadSwitch
         text: "Auto-download"
+        checked: channel.isAutoDownloadOn
 
         onCheckedChanged: {
             appWindow.autoDownloadChanged(channel.channelId, checked);
