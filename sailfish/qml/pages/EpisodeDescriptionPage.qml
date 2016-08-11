@@ -82,7 +82,7 @@ Page {
                 width: parent.width - 2*Theme.horizontalPageMargin
                 height: parent.height - podcastEpisodeRect.height
                 contentWidth: episodeDescription.width
-                contentHeight: episodeDescription.height //+ Theme.paddingMedium
+                contentHeight: episodeDescription.height + Theme.paddingMedium
                 clip: true
                 flickableDirection: Flickable.VerticalFlick
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -96,8 +96,12 @@ Page {
                     anchors.top:  parent.top
                     anchors.topMargin: 10
 
-
                     text: episodeDescriptionPage.episodeDescriptionText
+
+                    onLinkActivated: {
+                        Qt.openUrlExternally(link);
+
+                    }
                 }
 
             VerticalScrollDecorator{
