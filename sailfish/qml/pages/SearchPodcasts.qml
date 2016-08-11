@@ -53,7 +53,7 @@ Page {
             anchors.fill: parent
             spacing: Theme.paddingSmall
                      anchors{
-                         leftMargin: Theme.horizontalPageMargin
+                         //leftMargin: Theme.horizontalPageMargin
                          rightMargin: Theme.horizontalPageMargin
                          bottomMargin: Theme.paddingMedium
                      }
@@ -89,7 +89,7 @@ Page {
                 delegate:
                     ListItem {
                     id: searchItem
-                    contentHeight: Theme.itemSizeMedium
+                    contentHeight: Theme.itemSizeLarge
                     width: parent.width
 
                     Image {
@@ -128,18 +128,24 @@ Page {
                                 Label {
                                     id: channelName;
                                     text: title
-                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                    //truncationMode: TruncationMode.Fade
+                                    wrapMode: Text.Wrap
+                                    verticalAlignment: Text.AlignVCenter
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: channelNameItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                                     width: parent.width - subscribeButton.width
+                                    height: channelNameItem.height - channelUrl.height - Theme.paddingSmall
+
+
                                 }
 
-                                Button {
+                                IconButton{
+
                                     id: subscribeButton
                                     anchors.leftMargin: Theme.paddingMedium
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: "Subscribe"
-                                    width: Theme.buttonWidthSmall
+
+                                    icon.source: "image://theme/icon-m-add"
 
                                     onClicked: {
                                         console.log("Subscribe to podcast with url: " + url)
@@ -147,6 +153,7 @@ Page {
                                         pageStack.pop(mainPage);
                                     }
                                 }
+
                             }
 
                             Label {
@@ -155,7 +162,7 @@ Page {
                                 font.pixelSize: Theme.fontSizeTiny
                                 color: channelNameItem.highlighted ? Theme.highlightColor : Theme.secondaryColor
                                 width: parent.width
-                                elide: Text.ElideRight
+                                truncationMode: TruncationMode.Elide
                             }
 
                         }
