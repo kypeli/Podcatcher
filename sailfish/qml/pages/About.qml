@@ -91,7 +91,7 @@ Page {
                           "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
                           "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
                           "...also greets to Fopaman and BCG<BR>of Sorcerers!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
-                          "See you next time on a <B>Jolla</B> device!"
+                          "Now on a <B>Jolla</B>!"
                     horizontalAlignment: Text.AlignHCenter;
                     textFormat: Text.RichText
                     width: parent.width
