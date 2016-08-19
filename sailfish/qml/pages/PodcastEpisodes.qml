@@ -61,7 +61,7 @@ Page {
                 text: "Refresh"
                 onClicked: {
                     appWindow.refreshEpisodes(channel.channelId)
-                    //refreshingBanner.show()
+                    refreshingBanner.show()
                 }
                 anchors.horizontalCenter: parent.horizontalCenter
             }
@@ -114,27 +114,29 @@ Page {
             id: episodeDescriptionPage
         }
 
-        //        InfoBanner {
-        //            id: refreshingBanner
-        //            text:  "Refreshing episodes..."
-        //            timerShowTime: 1500
-        //        }
 
 
-        //        Connections {
-        //            target: ui
-        //            onShowInfoBanner: {
-        //                console.log("Showing banner: "+text);
-        //                uiInfoBanner.text = text
-        //                uiInfoBanner.show();
-        //            }
-        //        }
+        Connections {
+            target: ui
+            onShowInfoBanner: {
+                console.log("Showing banner: "+text);
+                uiInfoBanner.text = text
+                uiInfoBanner.show();
+            }
+        }
 
-        //        InfoBanner {
-        //            id: uiInfoBanner
-        //            topMargin: 10
-        //            leftMargin: 10
-        //        }
 
+
+    }
+    InfoBanner {
+        id: refreshingBanner
+        text:  "Refreshing episodes..."
+        timerShowTime: 1500
+    }
+
+    InfoBanner {
+        id: uiInfoBanner
+        topMargin: 10
+        leftMargin: 10
     }
 }

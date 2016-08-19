@@ -27,12 +27,10 @@ BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
-BuildRequires:  pkgconfig(contentaction5)
 BuildRequires:  desktop-file-utils
 
 %description
-Short description of my SailfishOS Application
-
+Your mobile podcast client for Jolla SailfishOS.\nPodcatcher for SailfishOS is your intelligent podcast client for the Jolla smartphone. You can easily subscribe to new podcasts by searching them from the gPodder.net database. Episodes can be automatically downloaded to the device or you can stream them immediately from the Internet.
 
 %prep
 %setup -q -n %{name}-%{version}

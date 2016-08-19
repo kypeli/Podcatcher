@@ -63,7 +63,7 @@ Item {
         smooth: true
         color: "transparent"
         width: parent.width
-        height:  parent.height// - 75
+        height:  parent.height -Theme.paddingMedium
 
         SilicaListView {
             id: podcastEpisodesList
@@ -78,7 +78,7 @@ Item {
             delegate: ListItem {
                 id: podcastItem
                 state: episodeState
-                contentHeight: Theme.itemSizeLarge
+                contentHeight: episodeName.height + lastPlayed.height + Theme.paddingSmall
                 width: parent.width
 
 
@@ -122,9 +122,30 @@ Item {
                     id: downloadedIndicator
                     width: 10
                     height: parent.height
-                    color: "#9501C5"
+                    //color: "#9501C5"
+                    color: Theme.highlightBackgroundColor
                     anchors.left: parent.left
                     visible: false
+                }
+
+
+                Item{
+                    id: downloadProgress
+                    anchors.fill: parent
+                    visible: cancelButton.visible
+                    Rectangle{
+
+                        anchors.fill: parent
+                        color: Theme.highlightBackgroundColor
+                        opacity: 0.5
+                    }
+                }
+
+                OpacityRampEffect {
+                    sourceItem:downloadProgress
+                    direction: OpacityRamp.LeftToRight
+                    slope: 1000
+                    offset: (alreadyDownloadedSize/totalDownloadSize)
                 }
 
 
@@ -139,7 +160,7 @@ Item {
                         leftMargin: Theme.horizontalPageMargin
                     }
 
-                    width: podcastItem.width - downloadedIndicator.width - downloadProgress.width - 30
+                    width: podcastItem.width - downloadedIndicator.width - playButton.width - Theme.paddingMedium -2* Theme.horizontalPageMargin
                     height: Text.paintedHeight
                     wrapMode: Text.WordWrap
                 }
@@ -148,6 +169,7 @@ Item {
                     id: channelPublished
                     anchors{
                         top: episodeName.bottom
+                        topMargin: Theme.paddingSmall
                         left: parent.left
                         leftMargin: Theme.horizontalPageMargin
                     }
@@ -161,6 +183,7 @@ Item {
                     id: lastPlayed
                     anchors{
                         top: episodeName.bottom
+                        topMargin: Theme.paddingSmall
                         left: parent.left
                         leftMargin: Theme.horizontalPageMargin
                     }
@@ -171,9 +194,25 @@ Item {
                 }
 
                 Label {
+                    id: queued
+                    anchors{
+                        top: episodeName.bottom
+                        topMargin: Theme.paddingSmall
+                        left: parent.left
+                        leftMargin: Theme.horizontalPageMargin
+                    }
+                    font.pixelSize: Theme.fontSizeTiny
+                    color: podcastItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                    text: qsTr("Queued")
+                    height: Text.paintedHeight
+                    visible: false
+                }
+
+                Label {
                     id: downloadBytesText
                     anchors{
                         top: episodeName.bottom
+                        topMargin: Theme.paddingSmall
                         left: parent.left
                         leftMargin: Theme.horizontalPageMargin
                     }
@@ -186,15 +225,13 @@ Item {
 
 
 
-
-
-                Button {
+                IconButton {
                     id: downloadButton
-                    text: "GET"
+                    icon.source: "image://theme/icon-m-cloud-download"
                     anchors.right: parent.right
-                    anchors.rightMargin: 15
+                    anchors.rightMargin: Theme.horizontalPageMargin
+
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 100
                     visible: true
 
                     onClicked: {
@@ -202,22 +239,43 @@ Item {
                     }
                 }
 
-                QueueButton {
-                    id: queueing
-                    visible: false
+
+                IconButton {
+                    id: queueButton
+                    icon.source: "image://theme/icon-m-remove"
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.horizontalPageMargin
-                    //anchors.top:  parent.top
                     anchors.verticalCenter: parent.verticalCenter
+                    visible: false
+
+                    onClicked: {
+                        console.log("Cancel queue of: " + channelId + " index: "+index);
+                        appWindow.cancelQueue(channelId, index);
+                    }
                 }
 
-                Button {
-                    id: playButton
-                    text: "PLAY"
+
+                IconButton {
+                    id: cancelButton
+                    icon.source: "image://theme/icon-m-reset"
                     anchors.right: parent.right
-                    anchors.rightMargin: 15
+                    anchors.rightMargin: Theme.horizontalPageMargin
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 100
+                    visible: false
+
+                    onClicked: {
+                        console.log("Cancel download of: " + channelId + "index: "+index);
+                        appWindow.cancelDownload(channelId, index);
+                    }
+                }
+
+
+                IconButton {
+                    id: playButton
+                    icon.source: "image://theme/icon-m-play"
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.horizontalPageMargin
+                    anchors.verticalCenter: parent.verticalCenter
                     visible: false
 
                     onClicked: {
@@ -225,13 +283,13 @@ Item {
                     }
                 }
 
-                Button {
+
+                IconButton {
                     id: webButton
-                    text: "WEB"
+                    icon.source: "image://theme/icon-m-play"
                     anchors.right: parent.right
-                    anchors.rightMargin: 15
+                    anchors.rightMargin: Theme.horizontalPageMargin
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 100
                     visible: false
 
                     onClicked: {
@@ -252,14 +310,14 @@ Item {
                     width: 170
                 }
 
-                PodcastDownloadingProgress {
+                /* PodcastDownloadingProgress {
                     id: downloadProgress
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.horizontalPageMargin
-                    width: 170
+                    width: playButton.width
                     visible: false
                     anchors.verticalCenter: parent.verticalCenter
-                }
+                }*/
 
                 states: [
                     State {
@@ -273,7 +331,7 @@ Item {
                             visible: true
                         }
                         PropertyChanges {
-                            target: downloadProgress
+                            target: cancelButton
                             visible: false
                         }
                     },
@@ -284,22 +342,31 @@ Item {
                             visible: false
                         }
                         PropertyChanges {
-                            target: queueing
+                            target: queueButton
                             visible: true
                         }
                         PropertyChanges {
-                            target: channelPublished
+                            target: queued
                             visible: true
+                        }
+
+                        PropertyChanges {
+                            target: channelPublished
+                            visible: false
                         }
                     },
                     State {
                         name: "downloading"
                         PropertyChanges {
-                            target: queueing
+                            target: queueButton
                             visible: false
                         }
                         PropertyChanges {
-                            target: downloadProgress
+                            target: queued
+                            visible: false
+                        }
+                        PropertyChanges {
+                            target: cancelButton
                             visible: true
                         }
                         PropertyChanges {
@@ -318,7 +385,7 @@ Item {
                     State {
                         name: "downloaded"
                         PropertyChanges {
-                            target: downloadProgress
+                            target: cancelButton
                             visible: false
                         }
                         PropertyChanges {
@@ -347,7 +414,8 @@ Item {
                         PropertyChanges {
                             target: downloadedIndicator
                             visible: true
-                            color:  "#d8d8d9"
+                            //color:  "#d8d8d9"
+                            color: Theme.highlightColor
                         }
                         PropertyChanges {
                             target: playButton
@@ -370,6 +438,10 @@ Item {
                             visible: false
                         }
                         PropertyChanges {
+                            target: cancelButtonButton
+                            visible: false
+                        }
+                        PropertyChanges {
                             target: playButton
                             visible: false
                         }
@@ -380,6 +452,10 @@ Item {
                         PropertyChanges {
                             target: errorDownloadingLabel
                             visible: true
+                        }
+                        PropertyChanges {
+                            target: queued
+                            visible: false
                         }
 
                     },

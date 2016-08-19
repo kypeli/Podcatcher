@@ -26,7 +26,7 @@ Item {
     width: downloadLabel.width + cancelButton.width
     height: podcastItem.height
 
-    Label {
+    /*Label {
         id: downloadLabel
         anchors.left: parent.left
         anchors.right: cancelButton.left
@@ -35,23 +35,27 @@ Item {
         text: "Downloading"
         width: parent.width - cancelButton.width
         truncationMode: TruncationMode.Fade
-    }
+    }*/
 
     ProgressBar {
         id: progressBar
-        width: downloadLabel.width
+        //width: downloadLabel.width
         //width: parent.width
         maximumValue: model.totalDownloadSize
         value: model.alreadyDownloadedSize
-        anchors.left: downloadLabel.left
-        anchors.top: downloadLabel.bottom
-        //anchors.topMargin: Theme.paddingSmall
-        //anchors.right: cancelButton.right
+        onValueChanged: console.log("Downloaded: "+ value)
+        anchors.left: podcastItem.left
+        anchors.right: podcastItem.right
+//        anchors.left: downloadLabel.left
+//        anchors.top: downloadLabel.bottom
+//        anchors.right: parent.right
+//        //anchors.topMargin: Theme.paddingSmall
+//        //anchors.right: cancelButton.right
     }
 
     Image {
         id: cancelButton
-        source: "qrc:///gfx/cancel-podcast-download.png"
+        source: "image://theme/icon-m-clear"
         anchors.right:  parent.right
         anchors.verticalCenter: downloadLabel.verticalCenter
         width: Theme.fontSizeSmall

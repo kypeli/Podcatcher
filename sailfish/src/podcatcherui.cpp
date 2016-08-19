@@ -19,7 +19,7 @@
 #include <QtQuick>
 #include <QtDebug>
 
-#include <contentaction5/contentaction.h>
+//#include <contentaction5/contentaction.h>
 
 
 #include "podcatcherui.h"
@@ -173,6 +173,7 @@ void PodcatcherUI::onPlayPodcast(int channelId, int index)
 
     qDebug() << "Launching the music player for file" << file;
 
+    /*
     ContentAction::Action launchPlayerAction;
     launchPlayerAction = ContentAction::Action::defaultActionForFile(file);
     if (!launchPlayerAction.isValid()) {
@@ -180,6 +181,10 @@ void PodcatcherUI::onPlayPodcast(int channelId, int index)
         emit showInfoBanner("I am sorry! Could not launch audio player for this podcast.");
     } else {
         launchPlayerAction.trigger();
+    }*/
+
+    if (! QDesktopServices::openUrl(file)){
+         emit showInfoBanner("I am sorry! Could not launch audio player for this podcast.");
     }
 }
 

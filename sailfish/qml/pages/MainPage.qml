@@ -28,7 +28,7 @@ Page {
     property int contextUnplayedEpisodes;
 
     property variant audioStreamer : audioStreamerUi
-    //property variant infoBanner : uiInfoBanner
+    property variant infoBanner : uiInfoBanner
 
     state: ""
 
@@ -42,7 +42,7 @@ Page {
     }
 
     function addPodcast(url, logo) {
-        //        fetchingChannelBanner.show();
+        fetchingChannelBanner.show();
         ui.addPodcast(url, logo);
     }
 
@@ -76,10 +76,10 @@ Page {
                     anchors.left: parent.left
                     anchors.leftMargin: Theme.horizontalPageMargin
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "qrc:///gfx/refresh.png"
+                    source: "image://theme/icon-s-sync"
                     visible: (mainPage.state == "downloading");
                     NumberAnimation on rotation {
-                        from: 360; to: 0;
+                        from: -360; to: 0;
                         running: mainPage.state == "downloading"
                         loops: Animation.Infinite; duration: 1400
                     }
@@ -189,7 +189,7 @@ Page {
 
                 onCountChanged: {
                     console.log("And hiding the banner...");
-                    //fetchingChannelBanner.hide();
+                    fetchingChannelBanner.hide();
                 }
 
                 VerticalScrollDecorator{}
@@ -199,29 +199,12 @@ Page {
         }
 
 
-
-        /*
-    InfoBanner {
-        id: uiInfoBanner
-        topMargin: 10
-        leftMargin: 10
-    }
-
-    InfoBanner {
-        id: fetchingChannelBanner
-        timerEnabled: false
-        text: "Fetching channel information..."
-        topMargin: 10
-        leftMargin: 10
-    }
-*/
-
         Connections {
 
             target: ui
             onShowInfoBanner: {
-                //uiInfoBanner.text = text
-                //uiInfoBanner.show();
+                uiInfoBanner.text = text
+                uiInfoBanner.show();
             }
 
             onDownloadingPodcasts: {
@@ -301,5 +284,15 @@ Page {
         id: audioStreamerUi
     }
 
+
+    InfoBanner {
+        id: uiInfoBanner
+    }
+
+    InfoBanner {
+        id: fetchingChannelBanner
+        timerEnabled: false
+        text: "Fetching channel information..."
+    }
 
 }

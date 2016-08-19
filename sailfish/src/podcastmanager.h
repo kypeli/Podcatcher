@@ -26,7 +26,6 @@
 #include <QFutureWatcher>
 #include <QNetworkReply>
 
-//#include <gq/gconfitem.h>
 #include <MGConfItem>
 
 #include "podcastchannel.h"

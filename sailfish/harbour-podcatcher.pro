@@ -18,8 +18,8 @@ QT += sql xml concurrent
 CONFIG += sailfishapp
 
 CONFIG += link_pkgconfig
-PKGCONFIG += sailfishapp contentaction5 mlite5
-
+PKGCONFIG += sailfishapp mlite5
+#PKGCONFIG += contentaction5
 
 SOURCES += src/Podcatcher.cpp \
     src/dbhelper.cpp \
@@ -52,8 +52,8 @@ CONFIG += sailfishapp_i18n
 # modify the localized app name in the the .desktop file.
 TRANSLATIONS += translations/Podcatcher-de.ts
 
-RESOURCES += \
-    res.qrc
+#RESOURCES += \
+#    res.qrc
 
 DISTFILES += \
     qml/Utils.js \
@@ -66,7 +66,6 @@ DISTFILES += \
     qml/pages/PodcastEpisodesChannelInfo.qml \
     qml/pages/PodcastEpisodesList.qml \
     qml/pages/PodcastChannelLogo.qml \
-    qml/pages/QueueButton.qml \
     qml/pages/PodcastDownloadingProgress.qml \
     qml/pages/EpisodeDescriptionPage.qml \
     qml/pages/SearchPodcasts.qml \
@@ -75,7 +74,8 @@ DISTFILES += \
     qml/pages/Settings.qml \
     harbour-podcatcher.desktop \
     rpm/harbour-podcatcher.spec \
-    rpm/harbour-podcatcher.yaml
+    rpm/harbour-podcatcher.yaml \
+    qml/pages/InfoBanner.qml
 
 HEADERS += \
     src/dbhelper.h \

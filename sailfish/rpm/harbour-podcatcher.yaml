@@ -11,8 +11,7 @@ License: GPLV3
 # Usually this line does not need to be modified.
 Sources:
 - '%{name}-%{version}.tar.bz2'
-Description: |
-  Short description of my SailfishOS Application
+Description: Your mobile podcast client for Jolla SailfishOS.\nPodcatcher for SailfishOS is your intelligent podcast client for the Jolla smartphone. You can easily subscribe to new podcasts by searching them from the gPodder.net database. Episodes can be automatically downloaded to the device or you can stream them immediately from the Internet.
 Configure: none
 # The qtc5 builder inserts macros to allow QtCreator to have fine
 # control over qmake/make execution
@@ -25,7 +24,7 @@ PkgConfigBR:
   - Qt5Core
   - Qt5Qml
   - Qt5Quick
-  - contentaction5
+#  - contentaction5
 
 # Build dependencies without a pkgconfig setup can be listed here
 #PkgBR:
