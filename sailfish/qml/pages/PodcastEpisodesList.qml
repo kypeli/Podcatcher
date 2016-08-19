@@ -69,16 +69,14 @@ Item {
             id: podcastEpisodesList
             anchors.fill: podcastEpisodesInfoRect
             model: episodesModel
-            clip: true
-            spacing: 20
+            clip: true            
             anchors.top:  podcastEpisodesInfoRect.top
-            anchors.leftMargin: 5
             cacheBuffer: parent.height
 
             delegate: ListItem {
                 id: podcastItem
                 state: episodeState
-                contentHeight: episodeName.height + lastPlayed.height + Theme.paddingSmall
+                contentHeight: episodeName.height + lastPlayed.height + Theme.paddingSmall + Theme.paddingMedium
                 width: parent.width
 
 

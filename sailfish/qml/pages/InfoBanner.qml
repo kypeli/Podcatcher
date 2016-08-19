@@ -8,7 +8,7 @@ DockedPanel {
     height: label.height + Theme.paddingLarge
     dock: Dock.Top
 
-    property string text: value =""
+    property string text: ""
     property bool timerEnabled: true
     property alias timerShowTime: autoClose.interval
 

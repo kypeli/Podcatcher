@@ -56,6 +56,7 @@ PodcastManager::PodcastManager(QObject *parent) :
             this, SLOT(savePodcastChannel(PodcastChannel*)));
 
 
+
     // Get the current settings values.
     qDebug() << "Current settings: ";
     m_autoDlConf = new MGConfItem("/apps/ControlPanel/Podcatcher/autodownload", this);
