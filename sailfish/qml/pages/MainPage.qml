@@ -68,7 +68,7 @@ Page {
             PageHeader {
                 id: mainPageTitle
 
-                title: "Podcatcher"
+                title: qsTr("Podcatcher")
 
 
                 Image  {
@@ -108,14 +108,14 @@ Page {
                     menu: ContextMenu {
                         id: contextMenu;
                         MenuItem {
-                            text: "Mark all podcasts as played"
+                            text: qsTr("Mark all podcasts as played")
                             visible: unplayedEpisodes > 0
                             onClicked: {
                                 appWindow.allListened(model.channelId);
                             }
                         }
                         MenuItem {
-                            text: "Remove subscription";
+                            text: qsTr("Remove subscription");
                             onClicked: {
                                 channelRemorse.execute(listItem,"Removing",
                                                        function(){
@@ -293,7 +293,7 @@ Page {
     InfoBanner {
         id: fetchingChannelBanner
         timerEnabled: false
-        text: "Fetching channel information..."
+        text: qsTr("Fetching channel information...")
     }
 
 }

@@ -29,7 +29,7 @@ Page {
 
     Component.onCompleted: {
 
-            mainPage.version = "Podcatcher for SailfishOS";
+            mainPage.version = qsTr("Podcatcher for SailfishOS");
 
     }
 
@@ -108,7 +108,7 @@ Page {
             anchors.topMargin: Theme.paddingMedium
             anchors.left: parent.left
             anchors.right: parent.right
-            text: "Licensed and distributed under the <B>GPLv3 license</B>.<BR><center>http://www.gnu.org/copyleft/gpl.html</center>"
+            text: qsTr("Licensed and distributed under the <B>GPLv3 license</B>.<BR><center>http://www.gnu.org/copyleft/gpl.html</center>")
             textFormat: Text.RichText
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter;

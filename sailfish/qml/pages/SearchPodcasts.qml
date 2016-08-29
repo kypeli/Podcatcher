@@ -43,7 +43,7 @@ Page {
                       searchPodcastsList.count == 0);
             Label {
                 anchors.centerIn: parent
-                text: "No podcasts found."
+                text: qsTr("No podcasts found.")
                 font.pixelSize: 35
                 font.bold: true
             }
@@ -61,12 +61,12 @@ Page {
 
             PageHeader{
                    id: searchPageTitle
-                   title: "Search podcasts"
+                   title: qsTr("Search podcasts")
             }
 
             SearchField {
                 id: searchWord
-                placeholderText: "Keyword"
+                placeholderText: qsTr("Keyword")
 
                 width: parent.width
 

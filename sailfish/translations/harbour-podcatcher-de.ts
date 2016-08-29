@@ -78,12 +78,12 @@
 <context>
     <name>EmptyChannelPage</name>
     <message>
-        <location filename="../qml/pages/EmptyChannelPage.qml" line="31"/>
+        <location filename="../qml/pages/EmptyChannelPage.qml" line="33"/>
         <source>No podcast subscriptions yet</source>
         <translation>Noch keine Podcasts abonniert</translation>
     </message>
     <message>
-        <location filename="../qml/pages/EmptyChannelPage.qml" line="40"/>
+        <location filename="../qml/pages/EmptyChannelPage.qml" line="42"/>
         <source>Why don&apos;t you add some...</source>
         <translation>Warum nicht einen hinzufügen…</translation>
     </message>
@@ -267,7 +267,6 @@
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="88"/>
-        <location filename="../qml/pages/Settings.qml" line="110"/>
         <source>Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.</source>
         <translation>Entferne heruntergeladene Folgen älter als die angegebene Anzahl an Tagen. 0 bedeutet keine zu entfernen.</translation>
     </message>

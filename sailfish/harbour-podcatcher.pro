@@ -35,8 +35,6 @@ SOURCES += src/Podcatcher.cpp \
 
 OTHER_FILES += qml/Podcatcher.qml \
     qml/cover/CoverPage.qml \
-    qml/pages/FirstPage.qml \
-    qml/pages/SecondPage.qml \
     rpm/Podcatcher.changes.in \
     translations/*.ts
 
@@ -50,10 +48,8 @@ CONFIG += sailfishapp_i18n
 # planning to localize your app, remember to comment out the
 # following TRANSLATIONS line. And also do not forget to
 # modify the localized app name in the the .desktop file.
-TRANSLATIONS += translations/Podcatcher-de.ts
+TRANSLATIONS += translations/harbour-podcatcher-de.ts
 
-#RESOURCES += \
-#    res.qrc
 
 DISTFILES += \
     qml/Utils.js \
@@ -90,4 +86,7 @@ HEADERS += \
     src/podcastsqlmanager.h \
     src/podcasttester.h \
     src/podcatcherui.h
+
+RESOURCES += \
+    res.qrc
 

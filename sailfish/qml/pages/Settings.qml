@@ -57,8 +57,8 @@ Dialog {
 
     TextSwitch{
         id: autoDownload
-        text: "Auto-download podcasts"
-        description: "Should Podcatcher automatically download new episodes when the device is connected to the WiFi."
+        text: qsTr("Auto-download podcasts")
+        description: qsTr("Should Podcatcher automatically download new episodes when the device is connected to the WiFi.")
     }
 
     ComboBox{
@@ -107,7 +107,6 @@ Dialog {
     TextSwitch{
         id: keepUnplayed
         text: qsTr("Keep unplayed episodes")
-        description: qsTr("Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.")
     }
 }
 

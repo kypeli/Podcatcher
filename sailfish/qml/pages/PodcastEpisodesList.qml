@@ -95,10 +95,10 @@ Item {
                 menu: ContextMenu{
                     visible: (episodeState == "downloaded" || episodeState == "played" || episodeState == "get")
                     MenuItem {
-                        text: "Delete downloaded podcast"
+                        text: qsTr("Delete downloaded podcast")
                         visible: (episodeState == "downloaded" || episodeState == "played");
                         onClicked: {
-                            episodeRemorse.execute(podcastItem,"Deleting",
+                            episodeRemorse.execute(podcastItem,qsTr("Deleting"),
                                                    function(){
                                                        console.log("Emiting deleteDownloaded() "+ channelId + index);
                                                        appWindow.deleteDownloaded(channelId, index);
@@ -106,7 +106,7 @@ Item {
                         }
                     }
                     MenuItem {
-                        text: "Start streaming the podcast"
+                        text: qsTr("Start streaming the podcast")
                         visible: (episodeState == "get")
                         onClicked: {
                             appWindow.startStreaming(channelId, index);
@@ -485,27 +485,6 @@ Item {
         }
     }
 
-    ContextMenu { id: episodeContextMenu;
-        MenuItem {
-            text: "Delete downloaded podcast"
-            onClicked: {
-                console.log("Emiting deleteDownloaded() "+ podcastsEpisodesList.channelId + podcastEpisodesList.currentIndex);
-                appWindow.deleteDownloaded(podcastsEpisodesList.channelId, podcastEpisodesList.currentIndex);
-            }
-
-        }
-    }
-
-    ContextMenu { id: streamingContextMenu;
-        MenuItem {
-            text: "Start streaming the podcast"
-            onClicked: {
-                appWindow.startStreaming(podcastsEpisodesList.channelId, podcastEpisodesList.currentIndex);
-            }
-
-        }
-
-    }
 
     Connections {
         target: ui

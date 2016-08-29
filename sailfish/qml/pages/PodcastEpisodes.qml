@@ -28,7 +28,7 @@ Page {
         PullDownMenu{
 
             MenuItem {
-                text: "Remove subscription"
+                text: qsTr("Remove subscription")
                 onClicked: {
                     remorseSubscription.execute(qsTr("Remove subscription"), function(){
                         appWindow.deleteChannel(channel.channelId);
@@ -40,7 +40,7 @@ Page {
 
 
             MenuItem {
-                text: "Delete all downloaded podcasts"
+                text: qsTr("Delete all downloaded podcasts")
                 onClicked: {
                     //queryDeletePodcasts.open();
                     remorseDownloads.execute("Delete all downloaded podcasts", function(){
@@ -51,7 +51,7 @@ Page {
             }
 
             MenuItem {
-                text: "Mark all podcasts as played"
+                text: qsTr("Mark all podcasts as played")
                 onClicked: {
                     appWindow.allListened(channel.channelId);
                 }
@@ -59,7 +59,7 @@ Page {
 
 
             MenuItem {
-                text: "Refresh"
+                text: qsTr("Refresh")
                 onClicked: {
                     appWindow.refreshEpisodes(channel.channelId)
                     refreshingBanner.show()
@@ -131,7 +131,7 @@ Page {
     }
     InfoBanner {
         id: refreshingBanner
-        text:  "Refreshing episodes..."
+        text:  qsTr("Refreshing episodes...")
         timerShowTime: 1500
     }
 

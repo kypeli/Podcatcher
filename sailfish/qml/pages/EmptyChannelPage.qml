@@ -17,6 +17,8 @@
  * along with Podcatcher for Sailfish OS.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 2.0
+import Sailfish.Silica 1.0
+
 
 Item {
     anchors.verticalCenter: parent.verticalCenter
@@ -27,8 +29,8 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         font.pointSize: 24
         font.bold: true
-        color: "grey"
-        text: "No podcast subscriptions yet"
+        color: Theme.highlightColor
+        text: qsTr("No podcast subscriptions yet")
     }
 
     Text {
@@ -36,8 +38,8 @@ Item {
         anchors.topMargin: 15
         anchors.horizontalCenter: parent.horizontalCenter
         font.pointSize: 21
-        color: "grey"
-        text: "Why don't you add some..."
+        color: Theme.highlightColor
+        text: qsTr("Why don't you add some...")
     }
 
 }

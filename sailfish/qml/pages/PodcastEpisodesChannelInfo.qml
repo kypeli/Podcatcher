@@ -53,7 +53,7 @@ Column{
 
     TextSwitch{
         id: autoDownloadSwitch
-        text: "Auto-download"
+        text: qsTr("Auto-download")
         checked: channel.isAutoDownloadOn
 
         onCheckedChanged: {

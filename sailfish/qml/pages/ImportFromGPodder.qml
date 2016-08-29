@@ -28,7 +28,7 @@ Dialog {
 
         DialogHeader{
             id: header
-            title: "Import podcasts from gPodder.net"
+            title: qsTr("Import podcasts from gPodder.net")
             acceptText: "Import"
         }
 
@@ -37,7 +37,7 @@ Dialog {
         TextField {
             id: usernameField
             width: parent.width
-            placeholderText: "Username"
+            placeholderText: qsTr("Username")
 
             EnterKey.iconSource: "image://theme/icon-m-enter-next"
             EnterKey.onClicked: passwordField.focus = true
@@ -47,7 +47,7 @@ Dialog {
         TextField {
             id: passwordField
             width: parent.width
-            placeholderText: "Password"
+            placeholderText: qsTr("Password")
             echoMode: TextInput.Password
 
             Keys.onReturnPressed: {

@@ -40,7 +40,7 @@ Page {
 
 
             MenuItem {
-                text: "Import podcasts from gPodder"
+                text: qsTr("Import podcasts from gPodder")
                 onClicked: {
                     //pageStack.push(Qt.resolvedUrl("ImportFromGPodder.qml"))
                     //importFromGPodderSheet.open();
@@ -50,14 +50,14 @@ Page {
             }
 
             MenuItem {
-                text: "Add URL manually"
+                text: qsTr("Add URL manually")
                 onClicked: {
                     pageStack.push(addNewPodcastComponent)
                 }
             }
 
             MenuItem {
-                text: "Search"
+                text: qsTr("Search")
                 onClicked: {
                     myMenu.close();
                     openFile("SearchPodcasts.qml");
@@ -82,7 +82,7 @@ Page {
             visible: (popularPodcastsModel.status == XmlListModel.Error);
             Label {
                 anchors.centerIn: parent
-                text: "I am sorry!<BR><BR>"
+                text: qsTr("I am sorry!<BR><BR>")
                 font.pixelSize: 25
                 font.bold: true
                 width: parent.width
@@ -91,7 +91,7 @@ Page {
 
             Label {
                 anchors.centerIn: parent
-                text: "Cannot get popular podcasts at this time."
+                text: qsTr("Cannot get popular podcasts at this time.")
                 width: parent.width
                 elide: Text.ElideRight
             }
@@ -99,7 +99,7 @@ Page {
 
         PageHeader{
             id: queryPageTitle
-            title: "Popular podcasts"
+            title: qsTr("Popular podcasts")
         }
 
 
@@ -172,7 +172,7 @@ Page {
                     }
                     Button {
                         id: subscribeButton
-                        text: "Subscribe"
+                        text: qsTr("Subscribe")
                         anchors.horizontalCenter: popularItemId.horizontalCenter
                         anchors.top: popularItemId.bottom
                         anchors.topMargin: Theme.paddingSmall
@@ -252,13 +252,13 @@ Page {
                     spacing: Theme.paddingMedium
 
                     DialogHeader{
-                        title: "Add new podcast"
-                        acceptText: "Add"
+                        title: qsTr("Add new podcast")
+                        acceptText: qsTr("Add")
                     }
 
                     TextField {
                         id: podcastUrl
-                        placeholderText: "Podcast RSS URL"
+                        placeholderText: qsTr("Podcast RSS URL")
                         width: parent.width
 
                         Keys.onReturnPressed: {
