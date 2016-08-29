@@ -7,5 +7,9 @@ Licensed under the GPLv2 license.
 
 
 -- 
+Moritz Carmesin
+carolus@carmesinus.de
+
+Originally developed by
 Johan Paul
 johan@paul.fi
