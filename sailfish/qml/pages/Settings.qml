@@ -64,7 +64,7 @@ Dialog {
     ComboBox{
         id: autoDownloadNum
 
-        label: qsTr("How many podcasts to auto-download")
+        label: qsTr("Episodes to auto-download")
         description: qsTr("The number of podcast episodes that should be automatically downloaded.")
 
         menu: ContextMenu{
@@ -84,7 +84,7 @@ Dialog {
 
     ComboBox{
         id: keepEpisodes
-        label: qsTr("Remove podcast episodes older than days")
+        label: qsTr("Remove old episodes")
         description: qsTr("Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.")
 
         menu: ContextMenu{
