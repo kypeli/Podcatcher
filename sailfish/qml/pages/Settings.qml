@@ -23,6 +23,9 @@ import  org.nemomobile.configuration 1.0
 
 Dialog {
 
+    property variant downloadNumbers: ['1', '5', '0'];
+    property variant keepDays: ['5', '10', '0'];
+
     ConfigurationValue{
         id:autoDownloadConf
         key: "/apps/ControlPanel/Podcatcher/autodownload"
@@ -68,16 +71,13 @@ Dialog {
         description: qsTr("The number of podcast episodes that should be automatically downloaded.")
 
         menu: ContextMenu{
-            MenuItem{
-                text: "1"
-            }
+            Repeater{
+                model: downloadNumbers
 
-            MenuItem{
-                text: "5"
-            }
+                MenuItem{
+                    text: modelData
+                }
 
-            MenuItem{
-                text: "0"
             }
         }
     }
@@ -88,16 +88,13 @@ Dialog {
         description: qsTr("Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.")
 
         menu: ContextMenu{
-            MenuItem{
-                text: "5"
-            }
+            Repeater{
+                model: keepDays
 
-            MenuItem{
-                text: "10"
-            }
+                MenuItem{
+                    text: modelData
+                }
 
-            MenuItem{
-                text: "0"
             }
         }
     }
@@ -112,8 +109,8 @@ Dialog {
 
 onOpened: {
     autoDownload.checked = autoDownloadConf.value;
-    autoDownloadNum.value = autoDownloadNumConf.value;
-    keepEpisodes.value = keepEpisodesConf.value;
+    autoDownloadNum.currentIndex = downloadNumbers.indexOf(autoDownloadNumConf.value)
+    keepEpisodes.currentIndex = keepDays.indexOf(keepEpisodesConf.value)
     keepUnplayed.checked = keepUnplayedConf.value;
 }
 
