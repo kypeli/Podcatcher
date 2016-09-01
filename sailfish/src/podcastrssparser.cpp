@@ -51,6 +51,10 @@ bool PodcastRSSParser::populateChannelFromChannelXML(PodcastChannel *channel, QB
     QDomElement docElement = xmlDocument.documentElement();
 
     QDomNode channelNode = docElement.elementsByTagName("channel").at(0);    // Get the only channel element we have.
+
+    if(channelNode.isNull()) //maybe a youtube feed
+        return false;
+
     channel->setTitle(channelNode.firstChildElement("title").text());        // Find the title.
 
     channel->setDescription(channelNode.firstChildElement("description").text());
