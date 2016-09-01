@@ -95,8 +95,8 @@ void PodcatcherUI::addPodcast(QString rssUrl, QString logoUrl)
         logoCache.insert(rssUrl, logoUrl);
     }
 
-    QString newPodcast = rssUrl.toLower();
-    if (newPodcast.indexOf(QString("http://")) != 0) {
+    QString newPodcast = rssUrl/*.toLower()*/;
+    if (newPodcast.indexOf(QString("http://")) != 0 && newPodcast.indexOf(QString("https://"))) {
         newPodcast.prepend("http://");
     }
     qDebug() << "User entered podcast to fetch: " << rssUrl << " - fetching " << newPodcast;
