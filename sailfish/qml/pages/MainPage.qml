@@ -204,6 +204,8 @@ Page {
 
             target: ui
             onShowInfoBanner: {
+                fetchingChannelBanner.hide(true);
+                uiInfoBanner.hide(true);
                 uiInfoBanner.text = text
                 uiInfoBanner.show();
             }
