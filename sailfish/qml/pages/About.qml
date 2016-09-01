@@ -29,7 +29,7 @@ Page {
 
     Component.onCompleted: {
 
-            mainPage.version = qsTr("Podcatcher for SailfishOS");
+        mainPage.version = qsTr("Podcatcher for SailfishOS");
 
     }
 
@@ -77,22 +77,28 @@ Page {
                 Label {
                     id: creditText
                     font.pixelSize: Theme.fontSizeMedium
-                    text: "<B>Johan Paul</B><br>" +
-                          "johan@paul.fi<BR>" +
-                          "Twitter: @kypeli<BR><br>" +
-                          "UX and icon by<br><b>Niklas Gustafsson</B><br>" +
-                          "niklas@nikui.net<BR><BR>" +
-                          "Tested by<BR><b>Mats Sjöberg</B><BR>" +
-                          "mats@sjoberg.fi<BR><BR>" +
-                          "Port to SailfishOS<BR><b>Moritz Carmesin</B><BR>" +
-                          "carolus@carmesinus.de<BR><BR>" +
-                          "Special thanks to <B>gPodder.net</B> for<BR>providing an awesome<BR>backend for finding podcasts!<BR><BR><BR>" +
-                          "Greetings go to<BR><BR>@zchydem and @jan_ekholm!<BR><BR>" +
-                          "Team Qontactors and<BR>team CoCo of Harmattan<BR><BR><BR>" +
-                          "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
-                          "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
-                          "...also greets to Fopaman and BCG<BR>of Sorcerers!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
-                          "Now on a <B>Jolla</B>!"
+                    text:
+                        "SailfishOS Version<BR><b>Moritz Carmesin</B><BR>" +
+                        "carolus@carmesinus.de<BR><BR>" +
+                        "Original Author<BR>"+
+                        "<B>Johan Paul</B><br>" +
+                        "johan@paul.fi<BR>" +
+                        "Twitter: @kypeli<BR><br>" +
+                        "UX and icon by<br><b>Niklas Gustafsson</B><br>" +
+                        "niklas@nikui.net<BR><BR>" +
+                        "Translations<br>"+
+                        "German: <b>Moritz Carmesin</b><br>"+
+                        "French: <b>Quent-in</b><br>"+
+                        "<BR><BR>" +
+                        "Tested by<BR><b>Mats Sjöberg</B><BR>" +
+                        "mats@sjoberg.fi<BR><BR>" +
+                        "Special thanks to <B>gPodder.net</B> for<BR>providing an awesome<BR>backend for finding podcasts!<BR><BR><BR>" +
+                        "Greetings go to<BR><BR>@zchydem and @jan_ekholm!<BR><BR>" +
+                        "Team Qontactors and<BR>team CoCo of Harmattan<BR><BR><BR>" +
+                        "Don't forget to read<BR>my blog at<BR><B>http://www.johanpaul.com/blog</B><BR><BR><BR>" +
+                        "See you all next time!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
+                        "...also greets to Fopaman and BCG<BR>of Sorcerers!<BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>" +
+                        "Now on a <B>Jolla</B>!"
                     horizontalAlignment: Text.AlignHCenter;
                     textFormat: Text.RichText
                     width: parent.width

@@ -9,7 +9,7 @@
         <translation>Podcatcher pour SailfishOS</translation>
     </message>
     <message>
-        <location filename="../qml/pages/About.qml" line="111"/>
+        <location filename="../qml/pages/About.qml" line="117"/>
         <source>Licensed and distributed under the &lt;B&gt;GPLv3 license&lt;/B&gt;.&lt;BR&gt;&lt;center&gt;http://www.gnu.org/copyleft/gpl.html&lt;/center&gt;</source>
         <translation>Distribué sous les termes de la licence &lt;B&gt;GPLv3&lt;/B&gt;.&lt;BR&gt;&lt;center&gt;http://www.gnu.org/copyleft/gpl.html&lt;/center&gt;</translation>
     </message>
@@ -236,22 +236,22 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="55"/>
+        <location filename="../qml/pages/Settings.qml" line="58"/>
         <source>Settings</source>
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="60"/>
+        <location filename="../qml/pages/Settings.qml" line="63"/>
         <source>Auto-download podcasts</source>
         <translation>Récupération automatique des podcasts</translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="61"/>
+        <location filename="../qml/pages/Settings.qml" line="64"/>
         <source>Should Podcatcher automatically download new episodes when the device is connected to the WiFi.</source>
         <translation>Podcatcher téléchargera automatiquement les nouveaux épisodes quand le périphérique sera connecté en Wifi.</translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="67"/>
+        <location filename="../qml/pages/Settings.qml" line="70"/>
         <source>Episodes to auto-download</source>
         <translation>Nombre de podcasts à récupérer</translation>
     </message>
@@ -261,7 +261,7 @@
         <translation>Suppression des anciens épisodes</translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="68"/>
+        <location filename="../qml/pages/Settings.qml" line="71"/>
         <source>The number of podcast episodes that should be automatically downloaded.</source>
         <translation>Nombre d&apos;épisodes qui devront être automatiquement téléchargés</translation>
     </message>
@@ -271,7 +271,7 @@
         <translation>Supprimer les épisodes qui sont plus anciens que le nombre de jour spécifié ici. 0 indiquant qu&apos;ils seront tous conservés.</translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="109"/>
+        <location filename="../qml/pages/Settings.qml" line="106"/>
         <source>Keep unplayed episodes</source>
         <translation>Conserver les épisodes non lus</translation>
     </message>

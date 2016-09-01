@@ -9,7 +9,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/About.qml" line="111"/>
+        <location filename="../qml/pages/About.qml" line="117"/>
         <source>Licensed and distributed under the &lt;B&gt;GPLv3 license&lt;/B&gt;.&lt;BR&gt;&lt;center&gt;http://www.gnu.org/copyleft/gpl.html&lt;/center&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -124,27 +124,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="248"/>
+        <location filename="../qml/pages/MainPage.qml" line="250"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="256"/>
+        <location filename="../qml/pages/MainPage.qml" line="258"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="264"/>
+        <location filename="../qml/pages/MainPage.qml" line="266"/>
         <source>Add Podcast</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="271"/>
+        <location filename="../qml/pages/MainPage.qml" line="273"/>
         <source>Refresh all subscriptions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="296"/>
+        <location filename="../qml/pages/MainPage.qml" line="298"/>
         <source>Fetching channel information...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -236,33 +236,33 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="55"/>
+        <location filename="../qml/pages/Settings.qml" line="58"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="60"/>
+        <location filename="../qml/pages/Settings.qml" line="63"/>
         <source>Auto-download podcasts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="61"/>
+        <location filename="../qml/pages/Settings.qml" line="64"/>
         <source>Should Podcatcher automatically download new episodes when the device is connected to the WiFi.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="67"/>
-        <source>How many podcasts to auto-download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Settings.qml" line="68"/>
-        <source>The number of podcast episodes that should be automatically downloaded.</source>
+        <location filename="../qml/pages/Settings.qml" line="70"/>
+        <source>Episodes to auto-download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="87"/>
-        <source>Remove podcast episodes older than days</source>
+        <source>Remove old episodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/Settings.qml" line="71"/>
+        <source>The number of podcast episodes that should be automatically downloaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -271,7 +271,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/Settings.qml" line="109"/>
+        <location filename="../qml/pages/Settings.qml" line="106"/>
         <source>Keep unplayed episodes</source>
         <translation type="unfinished"></translation>
     </message>
