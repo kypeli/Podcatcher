@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>About</name>
     <message>
@@ -49,7 +49,7 @@
     <message>
         <location filename="../qml/pages/BrowsePodcasts.qml" line="175"/>
         <source>Subscribe</source>
-        <translation>S'abonner</translation>
+        <translation>S&apos;abonner</translation>
     </message>
     <message>
         <location filename="../qml/pages/BrowsePodcasts.qml" line="255"/>
@@ -80,7 +80,7 @@
     <message>
         <location filename="../qml/pages/EmptyChannelPage.qml" line="33"/>
         <source>No podcast subscriptions yet</source>
-        <translation>Aucun abonnement aux podcasts pour l'instant</translation>
+        <translation>Aucun abonnement aux podcasts pour l&apos;instant</translation>
     </message>
     <message>
         <location filename="../qml/pages/EmptyChannelPage.qml" line="42"/>
@@ -98,7 +98,7 @@
     <message>
         <location filename="../qml/pages/ImportFromGPodder.qml" line="40"/>
         <source>Username</source>
-        <translation>Nom d'utilisateur</translation>
+        <translation>Nom d&apos;utilisateur</translation>
     </message>
     <message>
         <location filename="../qml/pages/ImportFromGPodder.qml" line="50"/>
@@ -121,30 +121,30 @@
     <message>
         <location filename="../qml/pages/MainPage.qml" line="118"/>
         <source>Remove subscription</source>
-        <translation>Supprimer l'abonnement</translation>
+        <translation>Supprimer l&apos;abonnement</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="248"/>
+        <location filename="../qml/pages/MainPage.qml" line="250"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="256"/>
+        <location filename="../qml/pages/MainPage.qml" line="258"/>
         <source>Settings</source>
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="264"/>
+        <location filename="../qml/pages/MainPage.qml" line="266"/>
         <source>Add Podcast</source>
         <translation>Ajouter un podcast</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="271"/>
+        <location filename="../qml/pages/MainPage.qml" line="273"/>
         <source>Refresh all subscriptions</source>
         <translation>Actualiser tous les abonnements</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="296"/>
+        <location filename="../qml/pages/MainPage.qml" line="298"/>
         <source>Fetching channel information...</source>
         <translation>Obtention des informations sur la chaîne...</translation>
     </message>
@@ -156,7 +156,7 @@
         <location filename="../qml/pages/PodcastEpisodes.qml" line="33"/>
         <location filename="../qml/pages/PodcastEpisodes.qml" line="74"/>
         <source>Remove subscription</source>
-        <translation>Supprimer l'abonnement</translation>
+        <translation>Supprimer l&apos;abonnement</translation>
     </message>
     <message>
         <location filename="../qml/pages/PodcastEpisodes.qml" line="43"/>
@@ -252,23 +252,23 @@
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="67"/>
-        <source>How many podcasts to auto-download</source>
+        <source>Episodes to auto-download</source>
         <translation>Nombre de podcasts à récupérer</translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/Settings.qml" line="87"/>
+        <source>Remove old episodes</source>
+        <translation>Suppression des anciens épisodes</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="68"/>
         <source>The number of podcast episodes that should be automatically downloaded.</source>
-        <translation>Nombre d'épisodes qui devront être automatiquement téléchargés</translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Settings.qml" line="87"/>
-        <source>Remove podcast episodes older than days</source>
-        <translation>Suppression des anciens épisodes</translation>
+        <translation>Nombre d&apos;épisodes qui devront être automatiquement téléchargés</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="88"/>
         <source>Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.</source>
-        <translation>Supprimer les épisodes qui sont plus anciens que le nombre de jour spécifié ici. 0 indiquant qu'ils seront tous conservés.</translation>
+        <translation>Supprimer les épisodes qui sont plus anciens que le nombre de jour spécifié ici. 0 indiquant qu&apos;ils seront tous conservés.</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="109"/>

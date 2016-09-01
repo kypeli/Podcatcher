@@ -124,27 +124,27 @@
         <translation>Abonnement aufheben</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="248"/>
+        <location filename="../qml/pages/MainPage.qml" line="250"/>
         <source>About</source>
         <translation>Über</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="256"/>
+        <location filename="../qml/pages/MainPage.qml" line="258"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="264"/>
+        <location filename="../qml/pages/MainPage.qml" line="266"/>
         <source>Add Podcast</source>
         <translation>Podcast hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="271"/>
+        <location filename="../qml/pages/MainPage.qml" line="273"/>
         <source>Refresh all subscriptions</source>
         <translation>Alle Abonnements aktualisieren</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="296"/>
+        <location filename="../qml/pages/MainPage.qml" line="298"/>
         <source>Fetching channel information...</source>
         <translation>Lade Kanalinformationen …</translation>
     </message>
@@ -252,18 +252,18 @@
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="67"/>
-        <source>How many podcasts to auto-download</source>
-        <translation>Wie viele Auto-Downloads</translation>
+        <source>Episodes to auto-download</source>
+        <translation>Folgen automatisch herunterladen</translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/Settings.qml" line="87"/>
+        <source>Remove old episodes</source>
+        <translation>Alte Folgen löschen</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="68"/>
         <source>The number of podcast episodes that should be automatically downloaded.</source>
         <translation>Anzahl der automatisch heruntergeladenen Podcasts</translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Settings.qml" line="87"/>
-        <source>Remove podcast episodes older than days</source>
-        <translation>Entferne heruntergeladene Folgen älter als … Tage</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="88"/>
