@@ -1,19 +1,19 @@
 /**
- * This file is part of Podcatcher for N9.
+ * This file is part of Podcatcher for Sailfish OS.
  * Author: Johan Paul (johan.paul@gmail.com)
  *
- * Podcatcher for N9 is free software: you can redistribute it and/or modify
+ * Podcatcher for Sailfish OS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Podcatcher for N9 is distributed in the hope that it will be useful,
+ * Podcatcher for Sailfish OS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Podcatcher for N9.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Podcatcher for Sailfish OS.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <QDomDocument>
 #include <QDomElement>
@@ -51,6 +51,10 @@ bool PodcastRSSParser::populateChannelFromChannelXML(PodcastChannel *channel, QB
     QDomElement docElement = xmlDocument.documentElement();
 
     QDomNode channelNode = docElement.elementsByTagName("channel").at(0);    // Get the only channel element we have.
+
+    if(channelNode.isNull()) //maybe a youtube feed
+        return false;
+
     channel->setTitle(channelNode.firstChildElement("title").text());        // Find the title.
 
     channel->setDescription(channelNode.firstChildElement("description").text());
@@ -121,6 +125,7 @@ bool PodcastRSSParser::populateEpisodesFromChannelXML(QList<PodcastEpisode *> *e
 
         if (episode->description().isEmpty())
             episode->setDescription(node.firstChildElement("itunes:summary").text());
+
 
         episode->setDuration(node.firstChildElement("itunes:duration").text());
 

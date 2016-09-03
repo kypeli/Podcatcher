@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>gfx/Podcatcher_generic_podcast_cover.png</file>
+        <file>gfx/gpodder-logo.png</file>
+    </qresource>
+</RCC>
