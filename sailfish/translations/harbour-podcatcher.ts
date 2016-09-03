@@ -89,10 +89,23 @@
     </message>
 </context>
 <context>
+    <name>EpisodeDescriptionPage</name>
+    <message>
+        <location filename="../qml/pages/EpisodeDescriptionPage.qml" line="70"/>
+        <source>Published: </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ImportFromGPodder</name>
     <message>
         <location filename="../qml/pages/ImportFromGPodder.qml" line="31"/>
         <source>Import podcasts from gPodder.net</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/ImportFromGPodder.qml" line="32"/>
+        <source>Import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -124,6 +137,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/pages/MainPage.qml" line="120"/>
+        <source>Removing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/pages/MainPage.qml" line="250"/>
         <source>About</source>
         <translation type="unfinished"></translation>
@@ -144,6 +162,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/pages/MainPage.qml" line="276"/>
+        <source>Refreshing all subscriptions...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/pages/MainPage.qml" line="298"/>
         <source>Fetching channel information...</source>
         <translation type="unfinished"></translation>
@@ -160,6 +183,7 @@
     </message>
     <message>
         <location filename="../qml/pages/PodcastEpisodes.qml" line="43"/>
+        <location filename="../qml/pages/PodcastEpisodes.qml" line="46"/>
         <source>Delete all downloaded podcasts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -195,6 +219,17 @@
 <context>
     <name>PodcastEpisodesList</name>
     <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="37"/>
+        <source>Downloaded </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="49"/>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="54"/>
+        <source> of total </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="98"/>
         <source>Delete downloaded podcast</source>
         <translation type="unfinished"></translation>
@@ -212,6 +247,16 @@
     <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="205"/>
         <source>Queued</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="304"/>
+        <source>No media</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="493"/>
+        <source>Unable to stream podcast.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

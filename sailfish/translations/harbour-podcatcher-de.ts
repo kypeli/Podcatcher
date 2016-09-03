@@ -89,11 +89,24 @@
     </message>
 </context>
 <context>
+    <name>EpisodeDescriptionPage</name>
+    <message>
+        <location filename="../qml/pages/EpisodeDescriptionPage.qml" line="70"/>
+        <source>Published: </source>
+        <translation>Veröffentlicht: </translation>
+    </message>
+</context>
+<context>
     <name>ImportFromGPodder</name>
     <message>
         <location filename="../qml/pages/ImportFromGPodder.qml" line="31"/>
         <source>Import podcasts from gPodder.net</source>
         <translation>Podcasts von gPodder importieren</translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/ImportFromGPodder.qml" line="32"/>
+        <source>Import</source>
+        <translation type="unfinished">Importieren</translation>
     </message>
     <message>
         <location filename="../qml/pages/ImportFromGPodder.qml" line="40"/>
@@ -124,6 +137,11 @@
         <translation>Abonnement aufheben</translation>
     </message>
     <message>
+        <location filename="../qml/pages/MainPage.qml" line="120"/>
+        <source>Removing</source>
+        <translation>Lösche</translation>
+    </message>
+    <message>
         <location filename="../qml/pages/MainPage.qml" line="250"/>
         <source>About</source>
         <translation>Über</translation>
@@ -144,6 +162,11 @@
         <translation>Alle Abonnements aktualisieren</translation>
     </message>
     <message>
+        <location filename="../qml/pages/MainPage.qml" line="276"/>
+        <source>Refreshing all subscriptions...</source>
+        <translation type="unfinished">Aktualisiere alle Abonnements…</translation>
+    </message>
+    <message>
         <location filename="../qml/pages/MainPage.qml" line="298"/>
         <source>Fetching channel information...</source>
         <translation>Lade Kanalinformationen …</translation>
@@ -160,6 +183,7 @@
     </message>
     <message>
         <location filename="../qml/pages/PodcastEpisodes.qml" line="43"/>
+        <location filename="../qml/pages/PodcastEpisodes.qml" line="46"/>
         <source>Delete all downloaded podcasts</source>
         <translation>Alle Downloads löschen</translation>
     </message>
@@ -195,6 +219,17 @@
 <context>
     <name>PodcastEpisodesList</name>
     <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="37"/>
+        <source>Downloaded </source>
+        <translation>Heruntergeladen </translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="49"/>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="54"/>
+        <source> of total </source>
+        <translation> von </translation>
+    </message>
+    <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="98"/>
         <source>Delete downloaded podcast</source>
         <translation>Heruntergeladenen Podcast löschen</translation>
@@ -213,6 +248,16 @@
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="205"/>
         <source>Queued</source>
         <translation>In der Warteschlange</translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="304"/>
+        <source>No media</source>
+        <translation>Keine Medien</translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PodcastEpisodesList.qml" line="493"/>
+        <source>Unable to stream podcast.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
