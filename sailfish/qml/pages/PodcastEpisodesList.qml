@@ -34,7 +34,7 @@ Item {
         var downloaded_mbs = Math.round(downloadedStatus / 1024);  // 1MB = 1024kB
         var total_mbs = Math.round(totalDownloadStatus / 1024); // 1MB = 1024kB
 
-        var download_statusText = "Downloaded ";
+        var download_statusText = qsTr("Downloaded ");
 
         if (downloaded_mbs == 0) {
             download_statusText += Math.round(downloadedStatus % 1024) + " kB";
@@ -46,12 +46,12 @@ Item {
         if (total_mbs == 0) {
             total = Math.round(totalDownloadStatus % 1024);
             if (total > 0 ) {
-                download_statusText += " of total " + total + " kB";
+                download_statusText += qsTr(" of total ") + total + " kB";
             }
         } else {
             total = Math.round(totalDownloadStatus / 1024);
             if (total > 0 ) {
-                download_statusText += " of total " + total + " MB";
+                download_statusText += qsTr(" of total ") + total + " MB";
             }
         }
 
@@ -301,7 +301,7 @@ Item {
                 Label {
                     id: errorDownloadingLabel
                     visible: false
-                    text: "No media"
+                    text: qsTr("No media")
                     anchors.right: parent.right
                     font.pointSize: Theme.fontSizeSmall
                     anchors.rightMargin: 5
@@ -490,7 +490,7 @@ Item {
         target: ui
         onStreamingUrlResolved: {
             if (streamUrl.length < 5) {
-                mainPage.infoBanner.text = "Unable to stream podcast.";
+                mainPage.infoBanner.text = qsTr("Unable to stream podcast.");
                 mainPahe.infoBanner.show();
             } else {
                 console.log("Streaming " + streamUrl + streamUrl);

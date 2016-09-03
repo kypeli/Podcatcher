@@ -117,7 +117,7 @@ Page {
                         MenuItem {
                             text: qsTr("Remove subscription");
                             onClicked: {
-                                channelRemorse.execute(listItem,"Removing",
+                                channelRemorse.execute(listItem,qsTr("Removing"),
                                                        function(){
                                                            console.log("Going to delete Channel "+model.channelId+"!");
                                                            appWindow.deleteChannel(model.channelId);
@@ -273,7 +273,7 @@ Page {
                 text: qsTr("Refresh all subscriptions")
                 onClicked: {
                     ui.refreshChannels();
-                    uiInfoBanner.text = "Refreshing all subscriptions...";
+                    uiInfoBanner.text = qsTr("Refreshing all subscriptions...");
                     uiInfoBanner.show();
                 }
             }

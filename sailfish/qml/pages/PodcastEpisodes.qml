@@ -43,7 +43,7 @@ Page {
                 text: qsTr("Delete all downloaded podcasts")
                 onClicked: {
                     //queryDeletePodcasts.open();
-                    remorseDownloads.execute("Delete all downloaded podcasts", function(){
+                    remorseDownloads.execute(qsTr("Delete all downloaded podcasts"), function(){
                         ui.deletePodcasts(channel.channelId);
                     }
                     )

@@ -67,7 +67,7 @@ Page {
                     anchors.left: channelLogo.right
                     anchors.leftMargin: Theme.paddingLarge
                     anchors.bottom: channelLogo.bottom
-                    text: "Published: " + episodeDescriptionPage.episodePublished
+                    text: qsTr("Published: ") + episodeDescriptionPage.episodePublished
                     font.pixelSize: Theme.fontSizeSmall
                     width: episodeDescriptionPage.width - channelLogo.width - 2*Theme.horizontalPageMargin - Theme.paddingMedium
                 }

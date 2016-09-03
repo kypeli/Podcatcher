@@ -29,7 +29,7 @@ Dialog {
         DialogHeader{
             id: header
             title: qsTr("Import podcasts from gPodder.net")
-            acceptText: "Import"
+            acceptText: qsTr("Import")
         }
 
 
