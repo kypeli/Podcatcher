@@ -93,7 +93,7 @@
     <message>
         <location filename="../qml/pages/EpisodeDescriptionPage.qml" line="70"/>
         <source>Published: </source>
-        <translation type="unfinished"></translation>
+        <translation>Publicerad: </translation>
     </message>
 </context>
 <context>
@@ -139,7 +139,7 @@
     <message>
         <location filename="../qml/pages/MainPage.qml" line="120"/>
         <source>Removing</source>
-        <translation type="unfinished"></translation>
+        <translation>Tar bort</translation>
     </message>
     <message>
         <location filename="../qml/pages/MainPage.qml" line="250"/>
@@ -164,7 +164,7 @@
     <message>
         <location filename="../qml/pages/MainPage.qml" line="276"/>
         <source>Refreshing all subscriptions...</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdaterar alla prenumerationer...</translation>
     </message>
     <message>
         <location filename="../qml/pages/MainPage.qml" line="298"/>
@@ -221,13 +221,13 @@
     <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="37"/>
         <source>Downloaded </source>
-        <translation type="unfinished"></translation>
+        <translation>Laddat ner </translation>
     </message>
     <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="49"/>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="54"/>
         <source> of total </source>
-        <translation type="unfinished"></translation>
+        <translation> av totalt </translation>
     </message>
     <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="98"/>
@@ -252,12 +252,12 @@
     <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="304"/>
         <source>No media</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingen media</translation>
     </message>
     <message>
         <location filename="../qml/pages/PodcastEpisodesList.qml" line="493"/>
         <source>Unable to stream podcast.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan inte strömma podd.</translation>
     </message>
 </context>
 <context>
@@ -308,12 +308,12 @@
     <message>
         <location filename="../qml/pages/Settings.qml" line="71"/>
         <source>The number of podcast episodes that should be automatically downloaded.</source>
-        <translation>Antal poddar som skall laddas ner automatiskt.</translation>
+        <translation>Antal poddavsnitt som skall laddas ner automatiskt.</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="88"/>
         <source>Remove podcast episodes that are older than the number of days specified here. 0 means do not remove any.</source>
-        <translation>Ta bort poddar som är äldre än det antal dagar som anges här (0 = Ta inte bort något).</translation>
+        <translation>Ta bort poddavsnitt som är äldre än det antal dagar som anges här (0 = Ta inte bort något).</translation>
     </message>
     <message>
         <location filename="../qml/pages/Settings.qml" line="106"/>
